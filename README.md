@@ -287,10 +287,10 @@ cd ../04-脚本   && npm install
 
 ```bash
 cd 07-测试工具
-npm test          # 一条命令跑完 12 道门禁、共 458 项断言（2026-10-11 实测全绿；CI 也会在每次推送时重跑，见 badges）
+npm test          # 一条命令跑完 12 道门禁、共 458 项断言（2026-10-11 实测全绿；CI 每次推送都会重跑一遍，见上面的徽章）
 ```
 
-- `check-public-repo.js`：公开仓库自检（不该进公开仓库的路径/二进制/PII 一律拒收）
+- `check-public-repo.js`：公开仓库自检（不该进公开仓库的路径/二进制/PII 一律拒收；本机 7 项、CI 6 项 —— 差的第 7 项是「拿本地 `.env` 的真密钥去反查全部被跟踪文件」，CI 上没有 `.env`，脚本按设计打印 `[SKIP]`）
 - `check-frozen-node.js`：断网快照与页面口径必须一致（code 长度 15,823 字节 = 链上 `eth_getCode`、48 条 `eth_call`、如实记录 2 条 revert、10 格保费、8 条事件）
 - `check-verify-pack.js`：贴到区块浏览器 verify 表单里的东西必须复现得了 —— 源文件无 import（本身即 flatten）、盘上 `.bytecode.txt` 与本次重编逐字节一致、运行时长度 = 677 主网上实测的 15,823 / 4,746 字节
 - `check-canonical.js`：确定性哈希口径（递归键排序、数值精度）自检（8 项）
