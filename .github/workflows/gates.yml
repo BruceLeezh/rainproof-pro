@@ -38,6 +38,12 @@ jobs:
             07-测试工具/package-lock.json
 
       # 04-脚本 在前：07-测试工具 的 check 脚本会 require 它下面的模块
+      #
+      # 注意（2026-10-11 踩过）：07-测试工具/package-lock.json 里
+      # node_modules/ganache/node_modules/fsevents 必须带 "optional": true。
+      # chokidar 把它声明成 optionalDependencies（只在 macOS 装），但 npm 写 lockfile 时漏了这个标记，
+      # `npm ci` 就会按必需依赖校验平台，在 Linux 上报 EBADPLATFORM 直接红。
+      # 若哪天有人重跑 `npm install` 把 lockfile 重写掉了，CI 会以这个报错复现，补回这一行即可。
       - name: 装依赖（04-脚本）
         working-directory: 04-脚本
         run: npm ci
