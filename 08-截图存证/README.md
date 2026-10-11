@@ -4,9 +4,9 @@
 >
 > *Everything in this folder is **evidence, not illustration** — the only rule is one chain per page.*
 
-**English, one line per evidence chain**: **v1** = Sepolia `11155111`, the stage-one trace kept as a control · **v3** = the local replay chain, where the underwriting layer was replayed end to end (policy → oracle feed → AI judgement → payout) · **v2** = BOT Chain Testnet `968`, the live demo baseline that the demo site, the 60-second video and the on-chain verifier all read. One address, two chains, two different contracts — always quote the chain name together with the chainId.
+**English, one line per evidence chain**: **v1** = Sepolia `11155111`, the stage-one trace kept as a control · **v3 (local replay)** = the local replay chain, where the underwriting layer was replayed end to end (policy → oracle feed → AI judgement → payout) · **underwriting contract on BOT Chain Mainnet `677`** (deployed 2026-10-08) = the live demo baseline that the demo site and the on-chain verifier read by default · **v2** = BOT Chain Testnet `968`, the testnet trace (six policies, all paid out; the 60-second video was recorded on it on 10-07). One address, three chains, three different contracts — always quote the chain name together with the chainId.
 
-## 1. 两条链、两份证据，不混写
+## 1. 三条链、各是各的证据，不混写
 
 | 证据链 | 链 · 地址 | 本目录里的文件 | 出现在哪 |
 |---|---|---|---|
@@ -14,20 +14,21 @@
 | **主网 677 的 v3 部署**（2026-10-08 10:06）| `链上留痕-主网677-v3部署.md` + `核验台-主网677-v3-2026-10-08.png`（节点直读：合约 `0x89e7C942535930B61cB61631051E8b0bD670596a`、tx `0x54fc1e69…9f436`、区块 25,921,072、`eth_getCode` 15,823 字节、gas 0.07036372 BOT）|
 | **断网也能看到主网（链上快照兜底）**（2026-10-11）| `演示页-断网快照-主网677-2026-10-11.png` + `05-演示站点/frozen-node.js`（三层节点全连不上时，演示页自动改用这份快照：链名如实写「BOT Chain Mainnet · 链上快照」并打顶部横幅；数据 = 池子 0.05 BOT、五城 67/128/39/162/0 mm、10 格差异化保费、8 条事件含成都拒收；生成器 `07-测试工具/make-frozen-node.js`，口径门禁 `check-frozen-node.js` 17 项）| 给「国内打不开主网」的评委看主网长什么样，不依赖任何节点 |
 | **v3（回放链上验的承保层）** | 本机回放链（chainId 伪装 `11155111`，用 `07-测试工具/replay_chain.js` 拨表）· `0x89e7C942535930B61cB61631051E8b0bD670596a` | `历史回放-2026-08-09上海暴雨.md`、`09-AI判定留痕/2026-08-09上海暴雨回放/snapshot-policy0.json` + `judgement-policy0.json` | PPT 第 6 页第三条证据（v3 本地回放链）、答辩「v3 真的跑过」 |
-| **v2（演示页读的承保层 · 968）** | BOT Chain 测试网 `968` · `0x89e7C942535930B61cB61631051E8b0bD670596a`（主网 677 已部署 v3，见上表「主网 677 的 v3 部署」一行） | `演示页-968-视口.png`（PPT 第 7 页用这张）、`演示页-完整.png`、`演示页-长图.png`、`演示页-链上动态与核验链接.png`、`手机窄屏验证-390px.png`、`核验台-默认视图.png`、`核验台-查合约.png`、`核验台-查交易.png`、`核验台-查账户.png`、`09-AI判定留痕/承保复核-chain968-policy0…5.json`（6 份） | 60 秒录屏、一页纸、核验台现场演示、答辩、PPT「真实数据跑一遍」一页 |
+| **v2（测试网留痕 · 968）** | BOT Chain 测试网 `968` · `0x89e7C942535930B61cB61631051E8b0bD670596a`（**演示基线是主网 677 上的 v3**，见上表「主网 677 的 v3 部署」一行；968 上的 v2 现为测试网留痕） | `演示页-968-视口.png`（PPT 第 7 页用这张）、`演示页-完整.png`、`演示页-长图.png`、`演示页-链上动态与核验链接.png`、`手机窄屏验证-390px.png`、`核验台-默认视图.png`、`核验台-查合约.png`、`核验台-查交易.png`、`核验台-查账户.png`、`09-AI判定留痕/承保复核-chain968-policy0…5.json`（6 份） | 60 秒录屏（录于 10-07）、一页纸、核验台现场演示、答辩、PPT「真实数据跑一遍」一页 |
 
-⚠️ **同一个地址、两条链、两个不同合约**（部署账户在两条链上的 nonce 都是 0）。所以：
+⚠️ **同一个地址、三条链、三个不同合约**（部署账户在三条链上的 nonce 都是 0）。所以：
 
-- ❌ 不要把两条链的地址 / 哈希放进**同一张表**或**同一页**；
-- ✅ 每页写清 `chainId` 与链名：v1 写 `11155111 · Sepolia`，v2 写 `968 · BOT Chain Testnet`；
-- ✅ 引哈希时说全称：「Sepolia 上的 …」／「BOT Chain 968 上的 …」；
-- ✅ **v2 上线不使 v1 的证据作废** —— 地址变了是**新增**证据，不是作废证据。
-- ✅ 演示页读 **968 上的 v2**；Sepolia 上的 v1 是**第一阶段留痕与对照**。
-  分节样板已在 `02-作战与答辩/汉客松-交易哈希清单.md`：§三（Sepolia）／§五（BOT Chain 968）。
+- ❌ 不要把三条链的地址 / 哈希放进**同一张表**或**同一页**；
+- ✅ 每页写清 `chainId` 与链名：v1 写 `11155111 · Sepolia`，**主网 677 上的 v3 写 `677 · BOT Chain Mainnet`**，v2 写 `968 · BOT Chain Testnet`；
+- ✅ 引哈希时说全称：「Sepolia 上的 …」／「BOT Chain 677 上的 …」／「BOT Chain 968 上的 …」；
+- ✅ **v2/v3 上线不使 v1 的证据作废** —— 地址变了是**新增**证据，不是作废证据。
+- ✅ 演示页与核验台默认读 **677 主网上的 v3（2026-10-08 起）**；**968 上的 v2 是测试网留痕**（要看它加 `?rpc=https://rpc.bohr.life`）；Sepolia 上的 v1 是**第一阶段留痕与对照**。
+  分节样板已在 `02-作战与答辩/汉客松-交易哈希清单.md`：§三（Sepolia）／§五（BOT Chain 968 留痕）／§5.3（BOT Chain 677 主网 v3）。
 
 ## 2. 截图与录屏的重做规则（2026-10-07 更新）
 
 - **本目录的 `演示页-*.png`、`核验台-*.png`、`手机窄屏验证-390px.png` 全部是 10-07 14:42–14:45 重拍的 968 版**（页面已切到 BOT Chain 测试网 968 + v2）。文件名沿用旧名，不改名以免打断已写的引用；**每张图自己的顶栏就写着 `BOT Chain Testnet`，看链名即可自证**。
+  （⚠️ 本行口径已于 2026-10-08 更新：演示基线现在是主网 677 上的 v3，968 上的 v2 为测试网留痕；见 02-作战与答辩/中期检查-口径-2026-10-07.md:23。）
 - **10-07 17:35–17:41 又全部重拍了一遍**：`ui-redesign` 的「量测仪」UI 上线后，旧图与页面已经长得不一样了。这一轮重拍含 `演示页-968-视口.png`（PPT 第 7 页用那张，1440×880）、上面那 8 张，以及 `截图断言报告-2026-10-07.json`（同一套断言重跑，8 张全 `ok: true`）。
 - **10-07 18:49–18:50 再重拍一次（上面那 8 张 + 断言报告）**：起因是「链上动态」行排版定稿 —— 区块号与「多久前」改成两行（原来挤在一格里会压住事件名标签）、右侧入口从短哈希改成「**核验**」两个字。同一版界面在 **18:55 重录了 60 秒视频**（`提交材料/雨证-60秒演示.mp4`，60.5 秒 / 17.9 MB）。**看图与录屏都以 18:4x–18:5x 这一轮的时间戳为准**。
 - **10-07 19:13–19:19 再重拍一次（上面那 8 张 + `演示页-968-视口.png` + 断言报告）**：起因是五支柱图的一个真 bug —— `.colwrap` 用 flex 布局时数字标签占流量高度，柱子超过约 91% 高就会被 flex-shrink 压扁，青/金分界因此落到阈值线**以下**（上海 287、广州 303 这两根最明显，已在 `gauge-check.js` 里量到：修复前分界偏线十几像素，修复后 1440 下 −0.22 / 0 / +0.41 px）。修法是数字标签改绝对定位按柱高摆放 + `belowPct` 分母夹进 `[阈值, 2×阈值]`。同一版界面在 **19:2x 重录了 60 秒视频**（`提交材料/雨证-60秒演示.mp4`，60.6 秒 / 18.0 MB）。另：头部「连接钱包」改成**只开只读面板**（贴一个地址即可核对该地址的保单），钱包插件只由面板里那颗按钮叫起，点账户按钮本身不再触发插件弹窗。
