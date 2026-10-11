@@ -1,0 +1,72 @@
+{
+  "what": "A5 源码验证包：03-合约 的部署件源码、编译参数与字节码哈希。验浏览器若支持 verify，按这里的 compiler/settings 提交；不支持时这份清单就是替代证据。",
+  "reproduce": "cd 07-测试工具 && npm run compile:v3 && node make-verify-pack.js",
+  "runtimeLengthIsOnChainMeasured": "运行时字节数与 10-08 在主网 677 上 eth_getCode 的实测长度一致；逐字节一致性需在有代理时再跑一次 eth_getCode 比对。",
+  "chains": "Sepolia 11155111 = v1 留痕 / BOT Chain 968 = v2 / BOT Chain 677 = v3，三链同址不同合约。",
+  "contracts": [
+    {
+      "name": "RainDeliveryInsuranceV3",
+      "sourceFile": "03-合约/RainDeliveryInsuranceV3.sol",
+      "sourceSha256": "0x4151dd750cc2a0b18ceaf5cbe88b4a97cbf72b31ee6412e1b35e62049a900e26",
+      "compiler": "0.8.37+commit.f401782d.Emscripten.clang",
+      "settings": {
+        "optimizer": {
+          "enabled": true,
+          "runs": 200
+        },
+        "evmVersion": "paris",
+        "viaIR": true
+      },
+      "creationBytecode": {
+        "bytes": 15928,
+        "sha256": "0xd1a511170e3e3c679bdf8dc9e02842caf59a6218e50ad61dfc93bad33058f91b",
+        "keccak256": "0x58092c0f8d62d6b49adc5b6702c0c0b5e2e87825240b50d60cf7695fb0cae02d"
+      },
+      "runtimeBytecode": {
+        "bytes": 15823,
+        "sha256": "0xf415f6d30c548f42bb52a328ece810745fd7d79fcf3e55121ece6c7f4ee85bdc",
+        "keccak256": "0x68cf9c8d03fdfa709f0520dde68dac4e50faa3b2371bb5a9df72bddc6851fcdb"
+      },
+      "isFlattenedSingleFile": true,
+      "constructorArgsAbiEncoded": "",
+      "deployedOn": {
+        "chainId": 677,
+        "address": "0x89e7C942535930B61cB61631051E8b0bD670596a",
+        "deployTx": "0x54fc1e694748338d63a2e9f6f46cf2c8623eaa141b71a10904a7b56dc3b9f436",
+        "deployBlock": 25921072
+      }
+    },
+    {
+      "name": "OperatorMultisig",
+      "sourceFile": "03-合约/OperatorMultisig.sol",
+      "sourceSha256": "0x6280a8d99984b76dbf600a4623489516f7ac83d277abf7cbe90b0686fc82045b",
+      "compiler": "0.8.37+commit.f401782d.Emscripten.clang",
+      "settings": {
+        "optimizer": {
+          "enabled": true,
+          "runs": 200
+        },
+        "evmVersion": "paris",
+        "viaIR": false
+      },
+      "creationBytecode": {
+        "bytes": 5568,
+        "sha256": "0x8e36a2bd79940a1c15c11031ae2ceba99bdff13a9e3fa0741a8224885dba6205",
+        "keccak256": "0xf10df8bdcb862c2e2d6106ccab1e877fbdc75069725294ba646e7d51701975c2"
+      },
+      "runtimeBytecode": {
+        "bytes": 4746,
+        "sha256": "0x4bbaf22e239d65bb2f292e731ae558ada60bd27b0c0864966ba739e540cdfbd1",
+        "keccak256": "0xb2c26ac993b3e61dff461ee09fa7f573d591bde479978f201818b0fb0c1a7c7a"
+      },
+      "isFlattenedSingleFile": true,
+      "constructorArgsAbiEncoded": "0x000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003000000000000000000000000b466b1d1fa19026e08c3311c555d220ae2e1ba3a000000000000000000000000da2e6266529ce8b3e606b17628072c15cfa33d28000000000000000000000000bc360891fa4708d57ef21bcbecfa303fbbb7bb26",
+      "deployedOn": {
+        "chainId": 677,
+        "address": "0x676b791da72Ef072718c9f078377bF21be1b160f",
+        "deployTx": "0x16a80230a0d7cb6b4e3e2c551730d89a60a1c5f9f34ae6416ac45a22ecef8b3f",
+        "deployBlock": 25923049
+      }
+    }
+  ]
+}

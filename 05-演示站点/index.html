@@ -686,6 +686,12 @@
     <section class="sec">
       <div class="hd"><h2>开一张保单<span class="en">Open a policy</span></h2><span class="n">buyPolicy(regionId, hours)</span></div>
       <div class="block">
+        <div class="note jade" id="howto">
+          <b>三步上手：</b>① 点一个城市 → ② 选保障时长 → ③ 看链上算出来的保费与触发阈值。
+          <b>不需要钱包、不花钱</b>：这三步只发只读的 <code>eth_call</code>，页面不签名、不广播任何交易
+          （真要投保才用得上钱包）。<br>
+          <span class="en">Three steps: pick a city → pick a cover window → read the premium and trigger computed on-chain. No wallet and no gas — these are read-only eth_call requests; nothing is ever signed or broadcast.</span>
+        </div>
         <div class="k">配送区域<span class="eni">Delivery region</span></div>
         <div class="chips" id="regionChips" style="margin-top:8px"></div>
         <label class="vh" for="regionSel">配送区域</label>
@@ -704,6 +710,8 @@
           <div><div class="lb">应付保费<span class="eni">Premium</span></div><div class="amt" id="premiumShow">—</div></div>
           <div class="side" id="premiumSide">premiumOf(1, 72)<br>链上取值 / on-chain</div>
         </div>
+        <!-- 这一行是「我刚才那一下，链上真的回了一个数」的凭据：点城市/换时长都会跟着变。 -->
+        <div class="note dim" id="callProof">正在连链上读取…<span class="en">reading on-chain…</span></div>
 
         <div class="spec">
           <div class="r"><span class="l">触发条件（增量 ≥）<span class="eni">Trigger (increase ≥)</span></span><span class="v2" id="threshShow">—</span></div>
@@ -1003,6 +1011,18 @@ async function getReadProvider() {
   }
 }
 
+/* 两条横幅都是 position:fixed 浮层，必须给正文让出它们的真实高度：
+   手机上这句文案会折成好几行，写死 44px 会把页面标题压掉一半。 */
+function syncBarPad() {
+  let h = 0;
+  for (const id of ["frozenBar", "fakeChainBar"]) {
+    const el = document.getElementById(id);
+    if (el) h = Math.max(h, el.offsetHeight);
+  }
+  document.body.style.paddingTop = h ? h + "px" : "";
+}
+addEventListener("resize", syncBarPad);
+
 /* 快照横幅：不像假链那样冻结写操作（本来也没钱包），但必须让人一眼看出「这不是实时数据」。 */
 function showFrozenBanner() {
   if (document.getElementById("frozenBar")) return;
@@ -1017,7 +1037,7 @@ function showFrozenBanner() {
     (FROZEN.meta.capturedAt || "上一轮") + " 读到的原始链上回答 —— 不是实时数据。" +
     "要实时读数请在能连主网的网络上刷新（或在网址后加 ?rpc=<可用节点>）。";
   document.body.appendChild(bar);
-  document.body.style.paddingTop = "44px";
+  syncBarPad();
 }
 
 /* 假链报警：不可忽略的红色横幅 + 冻结所有写操作。
@@ -1033,7 +1053,7 @@ function showFakeChainWarning() {
     "，chainId 被伪装成 " + (S.chain.chainName || "已知链") + "）—— 不是真链！投保/注资已锁死。" +
     "去掉网址里的 ?rpc= 参数，或清掉 localStorage[\"" + LS_KEY + "\"] 后刷新。";
   document.body.appendChild(bar);
-  document.body.style.paddingTop = "44px";
+  syncBarPad();
 }
 
 /* ---------------- 初始化 ---------------- */
@@ -1869,8 +1889,12 @@ $("addrInput").addEventListener("keydown", e => { if (e.key === "Enter") $("save
 async function refreshPremium() {
   const region = Number($("regionSel").value) || 1;
   const hours = Number($("hoursInput").value) || 72;   // 兜底必须等于下拉框的默认档（72，见 check-ui ②）——写 24 会静默换成另一条档线
-  if (!S.readC || !S.meta) return null;
-  let p = S.meta.premium;
+  const proofEl = $("callProof");
+  if (!S.readC || !S.meta) {
+    if (proofEl) proofEl.innerHTML = "还没接上节点：接上后这里会显示这一次只读调用到底回了什么数。<span class=\"en\">Not connected yet — once a node answers, the actual eth_call reply shows up here.</span>";
+    return null;
+  }
+  let p = S.meta.premium, fromChain = false;
   try {
     if (S.kind === "v3") {
       // v3 的保费是 premiumOf(regionId, hours_, riderTier, channel, count)：站点卖的是散单零售，
@@ -1883,6 +1907,7 @@ async function refreshPremium() {
       S.meta.threshold = Number(await S.readC["thresholdOf(uint256)"](hours));
       S.premiumLabel = `premiumOf(${region}, ${hours})`;
     }
+    fromChain = true;
     $("threshShow").textContent = S.meta.threshold + " mm";
     const os = $("overSub");
     if (os) os.innerHTML = `按 ${hours} 小时窗口<span class="eni">${hours} h window</span>`;
@@ -1891,6 +1916,18 @@ async function refreshPremium() {
   $("premiumShow").textContent = fmtEth(p) + " " + SYM();
   const side = $("premiumSide");
   if (side) side.innerHTML = `${esc(S.premiumLabel || ("premiumOf(" + region + ", " + hours + ")"))}<br>链上取值 / on-chain`;
+  // 「我刚才点的那一下，链上真的回了一个数」——把这次调用的名字、返回值、块高和「要不要钱包」写在同一行。
+  if (proofEl) {
+    const call = esc(S.premiumLabel || ("premiumOf(" + region + ", " + hours + ")"));
+    const bn = S.chain && S.chain.blockNumber != null ? Number(S.chain.blockNumber).toLocaleString("en-US") : "—";
+    if (!fromChain) {
+      proofEl.innerHTML = `⚠ 这个地址上没读到 <code>${call}</code>，显示的是兜底价 —— 换个合约地址再看。<span class="en">This call did not answer on the current address; showing a fallback value.</span>`;
+    } else if (S.chain && S.chain.frozen) {
+      proofEl.innerHTML = `✓ 已回数：<code>${call}</code> = <b>${fmtEth(p)} ${SYM()}</b> · 读的是页面自带快照（块高 ${bn} 那次的链上回答）· 只读调用，不需要钱包<span class="en">Bundled snapshot read — still no wallet needed.</span>`;
+    } else {
+      proofEl.innerHTML = `✓ 已回数：<code>${call}</code> = <b>${fmtEth(p)} ${SYM()}</b> · 块高 ${bn} · 只读 <code>eth_call</code>，不需要钱包、不花 gas<span class="en">Read-only eth_call — no wallet, no gas.</span>`;
+    }
+  }
   return p;
 }
 

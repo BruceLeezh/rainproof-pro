@@ -412,7 +412,7 @@ function showFakeChainBar(bn) {
   bar.textContent = "⚠ 当前连的是本地假链（块高 " + Number(bn).toLocaleString("en-US") +
     "，chainId 被伪装成本地登记过的链）—— 这一页查到的不是真链数据。去掉网址里的 ?rpc= 参数后刷新。 / This is a local fake chain with a spoofed chainId — what you see is not real chain data. Remove the ?rpc= parameter and reload.";
   document.body.appendChild(bar);
-  document.body.style.paddingTop = "44px";
+  syncBarPad();
 }
 
 const $ = id => document.getElementById(id);
@@ -430,6 +430,17 @@ let FROZEN_MODE = false;
 let FROZEN_WHY = "auto";
 const FROZEN_LABEL = "frozen-node.js（页面自带快照）";
 
+function syncBarPad() {
+  // 横幅都是 fixed 浮层：按真实高度给正文留位（手机上文案折行会变高，写死 44px 会压住标题）。
+  let h = 0;
+  for (const id of ["frozenBar", "fakeChainBar"]) {
+    const el = document.getElementById(id);
+    if (el) h = Math.max(h, el.offsetHeight);
+  }
+  document.body.style.paddingTop = h ? h + "px" : "";
+}
+addEventListener("resize", syncBarPad);
+
 function showFrozenBar() {
   if (document.getElementById("frozenBar")) return;
   const bar = document.createElement("div");
@@ -443,7 +454,7 @@ function showFrozenBar() {
     "（2026-10-08 读到的原始链上回答，块高覆盖到 " + Number(FROZEN.meta.blockNumber).toLocaleString("en-US") + "）—— 不是实时数据；" +
     "交易级核验需要能连主网的网络。 / Bundled on-chain snapshot, not live data.";
   document.body.appendChild(bar);
-  document.body.style.paddingTop = "44px";
+  syncBarPad();
 }
 
 function enterFrozen(reason) {

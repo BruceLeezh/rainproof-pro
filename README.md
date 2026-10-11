@@ -1,5 +1,8 @@
 # 雨证 · RainProof
 
+[![Gates](https://github.com/juice-butterfly/rainproof/actions/workflows/gates.yml/badge.svg)](https://github.com/juice-butterfly/rainproof/actions/workflows/gates.yml)
+[![Deploy demo site](https://github.com/juice-butterfly/rainproof/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/juice-butterfly/rainproof/actions/workflows/deploy-demo.yml)
+
 > **可验证的 AI 参数化配送险** —— 把「你信不信我」换成「你自己验」。
 
 汉客松 S1 & ETH Wuhan 2026 参赛作品 · 赛程 2026-10-06 20:00 → 2026-10-08 12:00
@@ -284,16 +287,19 @@ cd ../04-脚本   && npm install
 
 ```bash
 cd 07-测试工具
-npm test          # = check-canonical && check-ai && check-ui && check-feed-verify && check-pricing-grid && e2e && e2e:v2 && e2e:multisig && e2e:v3（共 426 项断言）
+npm test          # 一条命令跑完 12 道门禁、共 458 项断言（2026-10-11 实测全绿；CI 也会在每次推送时重跑，见 badges）
 ```
 
-- `check-canonical.js`：确定性哈希口径（递归键排序、数值精度）自检
+- `check-public-repo.js`：公开仓库自检（不该进公开仓库的路径/二进制/PII 一律拒收）
+- `check-frozen-node.js`：断网快照与页面口径必须一致（code 长度 15,823 字节 = 链上 `eth_getCode`、48 条 `eth_call`、如实记录 2 条 revert、10 格保费、8 条事件）
+- `check-verify-pack.js`：贴到区块浏览器 verify 表单里的东西必须复现得了 —— 源文件无 import（本身即 flatten）、盘上 `.bytecode.txt` 与本次重编逐字节一致、运行时长度 = 677 主网上实测的 15,823 / 4,746 字节
+- `check-canonical.js`：确定性哈希口径（递归键排序、数值精度）自检（8 项）
 - `check-ai.js`：判定规则 R1–R5 + 1369 个用例的硬约束扫描（任何一格出现「PAY 且置信度低于门槛」即失败）
 - `check-ui.js`：前端契约 —— 降雨看板刻度与触发线必须指同一个地方（修过的 bug 不复发）、保障时长只能是 24/48/72 三档下拉、三个页面 JS 引用的 id/class 都真实存在（防 UI 改版让按钮静默失效）、演示界面里不许出现演讲提示（讲稿与分镜只放在 `提交材料/` 与 `02-作战与答辩/`）
 - `e2e_contract.js`：本地链上跑完整业务流（v1 合约），73 项断言
 - `e2e_v2.js`：本地链上跑 v2 合约的九项改动（A1 保费网格 / A3 限购 / A4 冷静期 / A4b 喂价新鲜度 / A5 sources 上链 / A6 在保敞口 / A7 国标分档 / A8 白名单 / A9 productId），101 项断言 —— 它在部署前抓出过 `withdrawPool` 的 uint256 下溢缺陷
 
-### 连真链（演示链路 = BOT Chain 测试网 968；换链只改 RPC 环境变量）
+### 连真链（演示链路 = BOT Chain 主网 677，跑 v3 合约；换链只改 RPC 环境变量）
 
 ```bash
 cd 04-脚本

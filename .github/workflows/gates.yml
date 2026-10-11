@@ -1,0 +1,53 @@
+# 门禁：每次推 main（或提 PR）都在干净机器上重跑一遍全部自动化断言。
+#
+# 为什么需要它：赛期那套「五道 232 项」是**在我们自己电脑上**跑的 —— 依赖本机 node_modules、
+# 本机路径、本机 .env。评委（或我们自己换台机器）没有任何办法确认这些话是真的。
+# 这个 workflow 把「README 说的全绿」变成任何人都能点开看的公开记录。
+#
+# 它跑的就是本仓库唯一的入口：`cd 07-测试工具 && npm test`（12 步，426 项断言）。
+# 两个目录各装一次依赖：07-测试工具 需要 ethers/ganache/solc；04-脚本 的 canonical.js / hook-watch.js
+# 被 check-canonical / check-ai / check-feed-verify 直接 require（hook-watch 还 require 了 dotenv）。
+name: Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gates-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            04-脚本/package-lock.json
+            07-测试工具/package-lock.json
+
+      # 04-脚本 在前：07-测试工具 的 check 脚本会 require 它下面的模块
+      - name: 装依赖（04-脚本）
+        working-directory: 04-脚本
+        run: npm ci
+
+      - name: 装依赖（07-测试工具）
+        working-directory: 07-测试工具
+        run: npm ci
+
+      # 一次跑完 12 步：公开仓库自检 · 快照与字节码 · A5 verify 包 · 哈希口径 · AI 判定 ·
+      # 前端契约 · 喂价闸门 · 定价网格 · 四套端到端（v1 / v2 / 多签 / v3）
+      - name: 全部门禁
+        working-directory: 07-测试工具
+        run: npm test
