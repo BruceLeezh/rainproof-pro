@@ -367,6 +367,8 @@
 </div>
 
 <script src="ethers.umd.min.js"></script>
+<!-- 链上快照：连不上任何节点时的兜底（与 index.html 共用同一份文件，由 07-测试工具/make-frozen-node.js 生成） -->
+<script src="frozen-node.js"></script>
 <script>
 "use strict";
 
@@ -416,11 +418,88 @@ function showFakeChainBar(bn) {
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+/* ================= 链上快照兜底（frozen-node.js） =================
+   与 05-演示站点/index.html 共用同一份快照文件。这一页走的是 raw JSON-RPC，
+   所以用快照的 rpc 视图：只覆盖读操作（链 / 高度 / 代码 / 余额 / 区块时间 / 事件）。
+   交易详情与回执不在快照范围里 —— 快照模式下点交易会给一句实话，而不是编一个 nonce 出来。 */
+const FROZEN = window.FROZEN_NODE || null;
+const SNAP = QS.get("snap");
+let FROZEN_MODE = false;
+// 为什么进了快照模式：?snap=1 是主动选的，others = 节点真的都连不上。横幅用词必须跟着走，
+// 否则 ?snap=1 时会谎称「节点都连不上」。
+let FROZEN_WHY = "auto";
+const FROZEN_LABEL = "frozen-node.js（页面自带快照）";
+
+function showFrozenBar() {
+  if (document.getElementById("frozenBar")) return;
+  const bar = document.createElement("div");
+  bar.id = "frozenBar";
+  bar.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:99999;background:#b7791f;color:#fff;" +
+    "font:700 14px/1.7 system-ui,'Microsoft YaHei',sans-serif;padding:8px 14px;text-align:center;" +
+    "box-shadow:0 2px 10px rgba(0,0,0,.35)";
+  bar.textContent = (FROZEN_WHY === "?snap=1"
+    ? "⛓ 链上快照：按网址参数 ?snap=1 强制只看快照（现场不赌网络），这一页用的是页面自带的快照"
+    : "⛓ 链上快照：节点都连不上（官方 rpc.botchain.ai 在部分网络不可直连），这一页用的是页面自带的快照") +
+    "（2026-10-08 读到的原始链上回答，块高覆盖到 " + Number(FROZEN.meta.blockNumber).toLocaleString("en-US") + "）—— 不是实时数据；" +
+    "交易级核验需要能连主网的网络。 / Bundled on-chain snapshot, not live data.";
+  document.body.appendChild(bar);
+  document.body.style.paddingTop = "44px";
+}
+
+function enterFrozen(reason) {
+  if (FROZEN_MODE) return;
+  FROZEN_MODE = true;
+  FROZEN_WHY = reason === "?snap=1" ? "?snap=1" : "auto";
+  S.rpc = FROZEN_LABEL;
+  S.lat = 0;
+  if ($("rpcShown")) $("rpcShown").textContent = FROZEN_LABEL;
+  showFrozenBar();
+}
+
+// 快照能回答什么、不能回答什么都在这里；答不了就抛，让页面走它自己的失败提示（而不是给一个假值）。
+function frozenRpc(method, params) {
+  const F = FROZEN;
+  const wantAddr = (p) => String((p && p[0]) || "").toLowerCase();
+  const known = F.meta.address.toLowerCase();
+  switch (method) {
+    case "eth_chainId": return F.rpc.chainId;
+    case "eth_blockNumber": return F.rpc.blockNumber;
+    case "eth_gasPrice": return F.rpc.gasPrice;
+    case "eth_getCode":
+      if (wantAddr(params) === known) return F.rpc.code;
+      throw new Error("快照只存了 " + F.meta.address + " 这一个地址的代码 / snapshot covers only the deployed address");
+    case "eth_getBalance": {
+      const a = F.rpc.accounts[wantAddr(params)];
+      if (a) return a.balance;
+      throw new Error("快照只存了 " + F.meta.address + " 的余额 / snapshot covers only the deployed address");
+    }
+    case "eth_getTransactionCount": {
+      const a = F.rpc.accounts[wantAddr(params)];
+      if (a) return a.transactionCount;
+      throw new Error("快照只存了 " + F.meta.address + " 的 nonce / snapshot covers only the deployed address");
+    }
+    case "eth_getBlockByNumber": {
+      const k = F.rpc.blocks[String(params[0])] || F.rpc.blocks["0x" + Number(params[0]).toString(16)];
+      if (k) return k;
+      throw new Error("快照里没有这个区块的时间戳（只存了确凿知道的那几条）/ block timestamp not in snapshot");
+    }
+    case "eth_getLogs": {
+      const f = (params && params[0]) || {};
+      const a = String(f.address || "").toLowerCase();
+      return (!a || a === known) ? F.logs : [];
+    }
+    default:
+      throw new Error("快照里没有这个方法（只存了读操作）：" + method + " / not in snapshot");
+  }
+}
+
 /* ================= JSON-RPC ================= */
 /* requireNonNull=true 时，把「返回 null 的节点」也当失败，继续试下一个 —— 有些节点
    对较旧的交易返回 null 回执（2026-10-06 实测：publicnode 对区块 11,833,556 的部署
    交易返回 null receipt，tenderly 正常）。null 是合法的成功响应，默认不会触发换节点。 */
 async function rpc(method, params, timeout = 20000, requireNonNull = false) {
+  if (FROZEN_MODE) return frozenRpc(method, params);
+  if (SNAP === "1" && FROZEN) { enterFrozen("?snap=1"); return frozenRpc(method, params); }
   let lastErr, sawNull = false;
   for (const url of [S.rpc, ...NODES.filter(n => n !== S.rpc)]) {
     const ctl = new AbortController();
@@ -450,6 +529,8 @@ async function rpc(method, params, timeout = 20000, requireNonNull = false) {
     }
   }
   if (sawNull && !lastErr) return null;
+  // 所有节点都连不上：还有页面自带的链上快照兜底（?snap=0 可关掉）
+  if (FROZEN && SNAP !== "0") { enterFrozen("all nodes unreachable"); return frozenRpc(method, params); }
   throw lastErr || new Error("所有节点都连不上 / all nodes unreachable");
 }
 
@@ -532,6 +613,7 @@ async function chainStatus(silent) {
     $("dot").className = "dot on";
     if (bn < MIN_REAL_BLOCK) { $("connText").textContent = "本地假链（非 " + chainName + "） / local fake chain (not " + chainName + ")"; showFakeChainBar(bn); }
     else { $("connText").textContent = "已连接 / connected: " + chainName; }
+    if (FROZEN_MODE) { $("connText").textContent = "已连接（页面自带快照，非实时）/ bundled snapshot (not live): " + chainName; showFrozenBar(); }
     return bn;
   } catch (e) {
     $("dot").className = "dot err";
@@ -639,6 +721,20 @@ async function lookupTx(hash) {
   $("resultSec").classList.remove("hidden");
   $("resultKind").textContent = "交易 / Transaction";
   $("resultBody").innerHTML = `<div class="panel"><div class="loading">正在读这笔交易 / reading this tx</div></div>`;
+
+  if (FROZEN_MODE) {
+    $("logSec").classList.add("hidden");
+    $("resultBody").innerHTML = `<div class="panel">
+      <div class="ptitle"><span class="tag">快照模式 / snapshot mode</span></div>
+      <div class="v">这一页正在用<b>页面自带的链上快照</b>（节点都连不上）。快照只存了<b>读操作</b> —— 合约地址、代码长度、余额、
+      五城降雨、阈值、保费网格、事件纸带 —— <b>没有存交易详情和回执</b>。</div>
+      <div class="v small" style="margin-top:10px">想看这笔交易的核验，请在一台能连通 BOT Chain 主网的机器上打开这一页
+      （去掉网址里的 ?snap 参数，或在这台机器上开代理后刷新）。 / Transaction-level checks need a network that can reach the mainnet RPC.</div>
+      <div class="addrline" style="margin-top:12px"><span class="a">${esc(hash)}</span></div>
+    </div>`;
+    $("resultSec").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
 
   const [tx, rc] = await Promise.all([
     rpc("eth_getTransactionByHash", [hash]),
