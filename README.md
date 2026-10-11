@@ -12,11 +12,40 @@
 > **Verifiable AI parametric delivery insurance** — replace *"trust me"* with *"verify it yourself"*.
 
 - **What it is** — a parametric rain policy for food-delivery riders. The rules live in a smart contract, the rainfall reading is written on-chain by an oracle, and the payout fires when the on-chain rainfall crosses the tier line. No claim filing, no loss adjustment, the rider proves nothing.
-- **Live demo baseline** — BOT Chain Testnet **968**, contract `0x89e7C942535930B61cB61631051E8b0bD670596a` (RPC `rpc.bohr.life`, explorer `scan.bohr.life`). Demo site: https://juice-butterfly.github.io/rainproof/
-- **v3 underwriting layer** (verified end-to-end on a local replay chain) — cover windows **12 h / 24 h only** (GB/T 28592—2012), threshold table 12 h → **30 / 70 mm**, 24 h → **50 / 100 mm**, two payout tiers **50% / 75%**.
+- **Deployed on BOT Chain Mainnet (chainId 677)** — underwriting contract `0x89e7C942535930B61cB61631051E8b0bD670596a` (v3, runtime 15,823 B; deploy tx `0x54fc1e69…f436`). Demo site: https://juice-butterfly.github.io/rainproof/ — it reads mainnet 677 by default and falls back to Testnet 968 (RPC `rpc.bohr.life`) when the mainnet RPC is unreachable from your network. Explorer links: see the delivery checklist below.
+- **v3 underwriting layer** (deployed on mainnet 677; verified end-to-end on a local replay chain) — cover windows **12 h / 24 h only** (GB/T 28592—2012), threshold table 12 h → **30 / 70 mm**, 24 h → **50 / 100 mm**, two payout tiers **50% / 75%**.
 - **AI judgement layer** — three independent weather models are crossed-checked, deterministic rules R1–R5 return **DENY / PAY**, and the input hash + output hash go on-chain. The LLM never decides, and its explanation never enters the hash.
 - **Verify it yourself** — open `06-核验台单文件/汉客松-链上核验台.html` (one file, no backend) or the demo site's `verifier.html`, paste any transaction hash or address, and read the raw `eth_getLogs` / `eth_getTransactionByHash` output. No block explorer required.
 - **Team** 神麻 · 汉客松 S1 & ETH Wuhan 2026. The rest of this README is Chinese-first; this block is the English summary.
+
+---
+
+## 主网交付清单（BOT Chain Mainnet · chainId 677）
+
+> 下列链接都指向 BOT Chain 官方浏览器 `scan.botchain.ai`。**注意：国内网络直连 `*.botchain.ai` 目前不通（TCP 443 被拦），打开链接需要代理/VPN**；链上事实本身可以用任意 RPC 独立复核（见本节末尾命令），不依赖浏览器、也不依赖我们的页面。
+
+| 这条证明什么 | 地址 / 交易 |
+|---|---|
+| 承保合约 **v3**（运行时 15,823 字节） | [`0x89e7C942535930B61cB61631051E8b0bD670596a`](https://scan.botchain.ai/address/0x89e7C942535930B61cB61631051E8b0bD670596a) |
+| 部署 v3（区块 25,921,072 · gas 3,518,186 = **0.07036372 BOT**） | [tx `0x54fc1e69…f436`](https://scan.botchain.ai/tx/0x54fc1e694748338d63a2e9f6f46cf2c8623eaa141b71a10904a7b56dc3b9f436) |
+| **2/3 多签** `OperatorMultisig`（运行时 4,746 字节） | [`0x676b791da72Ef072718c9f078377bF21be1b160f`](https://scan.botchain.ai/address/0x676b791da72Ef072718c9f078377bF21be1b160f) · 部署 [tx `0x16a80230…8b3f`](https://scan.botchain.ai/tx/0x16a80230a0d7cb6b4e3e2c551730d89a60a1c5f9f34ae6416ac45a22ecef8b3f) |
+| `operator` 已移交多签（原单钥匙从此改不动喂价与判定） | [tx `0xf713302a…fea3`](https://scan.botchain.ai/tx/0xf713302aa8c54b4b809f068f6c864e200ccd29654c5baaf1e8a694cbec03fea3) |
+| 2-of-3 真跑通一次状态写入（2 票 · `executed=true`） | [submit `0x312dcd0c…fbf5`](https://scan.botchain.ai/tx/0x312dcd0c4cf0e17153ee2a018e8b8dac0e6a2e8c4f45d4e1a05d8c8f46b1fbf5) · [confirm `0x7b679243…9832`](https://scan.botchain.ai/tx/0x7b67924326127bf07f941c2c9b0ace51f971062e23dd6abf1b03ba0282539832) |
+| 注池 0.05 BOT（`fundPool`，任何人可触发） | [tx `0xe36da83a…f9aa`](https://scan.botchain.ai/tx/0xe36da83a8a107d8fe4e90c998a9d012a2a69ee46ee6831ea2cebd8e208dff9aa) |
+| 喂价：武汉 67 mm | [tx `0x1d5384ce…d8af`](https://scan.botchain.ai/tx/0x1d5384ce45c70042f3bb7744120ede46e6f6a936d358eb4c89f822fb5678d8af) |
+| 喂价：上海 128 mm | [tx `0x377fc386…fe84`](https://scan.botchain.ai/tx/0x377fc38670443cfaabb753d04cbdb5845af51897ce796ed9a6dd86951b6bfe84) |
+| 喂价：北京 39 mm | [tx `0x7ca72ceb…4d8e`](https://scan.botchain.ai/tx/0x7ca72ceb8d279828e866425885a9725bc6c9cc28e44109bba46f46eb5a1b4d8e) |
+| 喂价：广州 162 mm | [tx `0x57c9daec…38e1`](https://scan.botchain.ai/tx/0x57c9daecbf02ffa70ecc16bcd13bdf67bd1ebeda6886a388b2e363f7b24238e1) |
+| 成都被闸门拒收（三模型离散度超容差，读数不上链，拒收也留痕） | [tx `0x25383509…f956`](https://scan.botchain.ai/tx/0x25383509ce33c3a84526889bf4e7ed0fb968af2dfe3ad13d100f73500ae3f956) |
+| **真实产品交互**：钱包投保 2 笔 → 冷静期退保 2 笔 | 退保 [tx `0x6fa9c09a…4476`](https://scan.botchain.ai/tx/0x6fa9c09ab04ece18444350571460281fc184362569cd3ef8e1aefc3c21224476) · [tx `0x5519b6d1…bc29`](https://scan.botchain.ai/tx/0x5519b6d1f3b40af47518c733db72253aff0be100b95871c5dffd2667d694bc29) |
+| 10 格差异化保费网格（5 城 × 12h/24h，20 笔多签交易） | 完整哈希见 [链上留痕-主网677-v3部署.md](08-截图存证/链上留痕-主网677-v3部署.md) §六 |
+
+自己独立复核（不需要浏览器，也不需要我们的页面）：
+
+```powershell
+$env:SEPOLIA_RPC='https://rpc.botchain.ai'    # 变量名是历史遗留，内容填目标链的 RPC
+node 04-脚本/push-rainfall.js --status        # 资金池 / 五城累计降雨 / 阈值 / 喂价时效
+```
 
 ---
 

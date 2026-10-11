@@ -18,10 +18,11 @@
     "check-ui": "node check-ui.js",
     "check-feed-verify": "node check-feed-verify.js",
     "check-pricing-grid": "node check-pricing-grid.js",
+    "check-public-repo": "node check-public-repo.js",
     "ai:collect": "node ../04-脚本/ai-collect.js",
     "ai:judge": "node ../04-脚本/ai-judge.js",
     "ai:submit": "node ../04-脚本/submit-judgement.js",
-    "test": "npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-feed-verify && npm run check-pricing-grid && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3"
+    "test": "npm run check-public-repo && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-feed-verify && npm run check-pricing-grid && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3"
   },
   "dependencies": {
     "ethers": "^6.13.0",
