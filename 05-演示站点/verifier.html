@@ -535,7 +535,7 @@ async function chainStatus(silent) {
     return bn;
   } catch (e) {
     $("dot").className = "dot err";
-    $("connText").textContent = "连不上节点（主网需开代理）/ node unreachable";
+    $("connText").textContent = "连不上节点（当前网络可能无法直连主网 RPC）/ node unreachable";
     $("lat").textContent = "—";
     if (!silent) showErr("连不上 BOT Chain 节点 / cannot reach the BOT Chain node: " + e.message,
       "检查网络。这一页先试 <b>rpc.botchain.ai</b>（主网，实测必须走代理），再试 <b>rpc.bohr.life</b>（测试网，直连可达）。两个都不通时，改用仓库里的截图存证。");

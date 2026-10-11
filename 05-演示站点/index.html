@@ -770,7 +770,7 @@
   <span>BOT Chain <b>677</b></span>
   <span>合约 <b id="footAddr" title="0x89e7C942535930B61cB61631051E8b0bD670596a">0x89e7…596a</b></span>
   <span>节点 <b id="footNode">rpc.botchain.ai</b></span>
-  <span class="sp">⚠️ 主网节点 <code>rpc.botchain.ai</code> 在国内<b>需开代理</b>才能直连；没开代理时页面会自动退到测试网 968（数据同样全部来自链上）<span class="eni">Mainnet RPC needs a proxy in some networks — the page then falls back to testnet 968 automatically</span></span>
+  <span class="sp">⚠️ 主网节点 <code>rpc.botchain.ai</code> 在部分网络（如中国大陆）<b>无法直连</b>；连不上时页面会依次退到只读中转 → 测试网 968 → 页面自带的链上快照，退到哪一层都会在链名/横幅上如实标出（外网环境正常时读的就是主网实时数据）<span class="eni">Some networks (e.g. mainland China) cannot reach the mainnet RPC; the page then falls back to the read-only relay, then testnet 968, then its bundled on-chain snapshot — always labelled on the chain name / banner. On the open internet it reads mainnet live</span></span>
   <span class="sp">不依赖任何区块浏览器 · 数据直接向公共节点提问<span class="eni">No block explorer needed — every number is read straight from the public node</span></span>
 </footer>
 
@@ -783,11 +783,11 @@
     每次判定都把输入快照和输出结论各算一个哈希写上链，第三方拿同一份快照重跑，得到的是逐字节相同的结果。</p>
     <p>这一页不依赖任何区块浏览器：合约地址、账户余额、降雨值、事件日志，全部直接向节点提问取得
     （<code>rpc.botchain.ai</code>）。</p>
-    <p><b>想看主网 677，请先开代理。</b>国内直连 <code>rpc.botchain.ai</code> 实测不通（直连超时、走代理 200）。
-    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968」三层并行探测（每条比前一条晚 1.2 秒出发，
-    哪个先答上就用哪个），并在顶部如实标出**当前读的是哪条链** —— 退到 968 时会写明
-    <b>BOT Chain Testnet</b>，不会假装还在主网。没有代理时也能把整套演示看完：数据全部真实来自链上，
-    只是合约换成了 v2、保单换成了那 6 张已赔的。</p>
+    <p><b>主网 677 走 <code>rpc.botchain.ai</code>。</b>外网可直连；中国大陆等网络直连不通（实测直连超时、走代理 200）。
+    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968 → 页面自带的链上快照」四层并行探测（每条比前一条晚 1.2 秒出发，
+    哪个先答上就用哪个），并在顶部如实标出<b>当前读的是哪一层</b> —— 退到 968 会写明 <b>BOT Chain Testnet</b>，
+    退到快照会写明「<b>BOT Chain Mainnet · 链上快照</b>」，都不会假装还在读实时主网。
+    连不上任何节点时，页面上仍然能把整套演示看完：数据全部真实来自链上，只是读到的是某一时刻的读数。</p>
   </div>
 </details>
 </div>
@@ -911,8 +911,8 @@ async function probeNode(url) {
 }
 /* ---------------- 链上快照兜底（frozen-node.js） ----------------
    为什么有这东西：国内网络直连 rpc.botchain.ai 连 TCP 都不通（2026-10-11 实测），第三方网关要么不认这条链
-   （thirdweb: Invalid chain）要么要 API key（Ankr: 403），Vercel 中转域名 vercel.app 又被 DNS 污染。主办方不给中转
-   （用户 10-11 明确），所以能自己兜住的只有一件事：把「最后一次连上主网时节点给的原始回答」烘进 frozen-node.js。
+   （thirdweb: Invalid chain；Ankr 认这条链但要付费 / 要 key —— 2026-10-11 实测匿名 403），Vercel 中转域名 vercel.app 在国内又被 DNS 污染。
+   主办方给不了中转（用户 10-11 明确），而 677 的付费网关不值得买。**按「评委在外网」规划：官方节点仍是第一层，快照只做最低兜底。**
    三层节点全挂时用它，界面会如实写「链上快照」——不假装是实时数据。?snap=1 强制只看快照，?snap=0 关掉兜底。 */
 const FROZEN = window.FROZEN_NODE || null;
 const ZERO_HASH = "0x" + "00".repeat(32);
@@ -1057,16 +1057,16 @@ async function boot() {
     // rpc.botchain.ai 在没有代理的网络里连不上（2026-10-08 实测：直连 curl = 000，走 7890 = 200），
     // 这时 getReadProvider 会自动退到测试网 968。必须说出来，别让人以为看的是主网数据。
     if (S.chain && S.chain.chainId === 968 && !RPC_OVERRIDE) {
-      toast("主网节点 rpc.botchain.ai 不可达（国内需开代理才能直连），已自动切到测试网 968（v2 口径）/ mainnet RPC needs a proxy here — fell back to testnet 968");
+      toast("主网节点 rpc.botchain.ai 在当前网络不可达（中国大陆需代理才能直连），已自动切到测试网 968（v2 口径）/ mainnet RPC unreachable here — fell back to testnet 968");
     }
     // 页脚写的节点名要跟实际连的一致，否则读着 968、页脚还写着 rpc.botchain.ai。
     if (S.chain && $("footNode")) $("footNode").textContent = S.chain.frozen ? "链上快照（离线文件 frozen-node.js）" : S.chain.url.replace(/^https?:\/\//, "");
   } catch (e) {
     window.__bootErr = (e && e.message) || String(e);   // 现场排障：这一次到底为什么没连上（快照兜底若也抛错，会记在这里）
     $("dot").className = "dot err";
-    $("netText").textContent = "节点连不上（主网需开代理）";
+    $("netText").textContent = "节点连不上（该网络可能无法直连主网 RPC）";
     // 三层都连不上时，别让人对着三个「—」猜原因 —— 直说怎么办。
-    toast("三层节点都连不上：主网 rpc.botchain.ai 在国内需开代理，Vercel 中转与测试网 rpc.bohr.life 也不可达。请先在这台机器上开代理，然后刷新。", "err");
+    toast("三层节点都连不上，且页面自带的链上快照也不可用（可能被 ?snap=0 关掉）。请检查网络或代理；外网环境下刷新即可读到主网实时数据。", "err");
   }
 
   // 地址优先用 URL 参数 / 浏览器里记着的；但记着的那个可能指向换链前的旧部署（没代码），
