@@ -717,7 +717,7 @@
           <div class="r"><span class="l">触发条件（增量 ≥）<span class="eni">Trigger (increase ≥)</span></span><span class="v2" id="threshShow">—</span></div>
           <div class="r"><span class="l">赔付档位<span class="eni">Payout tier</span></span><span class="v2" id="tierShow">按国标三级 · 50 / 75 / 100%<span class="eni">per GB standard</span></span></div>
           <div class="r"><span class="l">本单赔付上限<span class="eni">Max payout</span></span><span class="v2 money" id="payoutShow">—</span></div>
-          <div class="r"><span class="l">生效延迟<span class="eni">Effective delay</span></span><span class="v2" id="coolShow">无（v2 去掉冷静期）<span class="eni">none (v2 removed it)</span></span></div>
+          <div class="r"><span class="l">生效延迟<span class="eni">Effective delay</span></span><span class="v2" id="coolShow">—<span class="eni">—</span></span></div>
         </div>
 
         <button class="btn primary block" id="buyBtn" style="margin-top:var(--s4)" disabled>连接钱包后投保<span class="eni">Connect to buy</span></button>
@@ -1207,11 +1207,12 @@ async function attachContract(addr, quiet) {
     $("tierShow").innerHTML = (S.meta.tiers === 2
       ? '按国标两档 · 50 / 75%<span class="eni">per GB standard</span>'
       : '按国标三级 · 50 / 75 / 100%<span class="eni">per GB standard</span>');
-    // 生效延迟：v2 冷静期为 0（投保即生效），v3 默认 3 天（防逆选择）。
+    // 生效延迟 = 链上 coolingPeriod（677 上是 3 天，防逆选择）；读到 0 就是投保即生效。
+    // 不要在这里写「哪一版去掉的冷静期」——同一个 0 也出现在读不到链上值时，那样会把「未知」说成「没有」。
     const cd = S.meta.cooling;
     $("coolShow").innerHTML = cd > 0
       ? `投保后 ${cd / 86400} 天生效<span class="eni">effective ${cd / 86400} days after buying</span>`
-      : '无（v2 去掉冷静期）<span class="eni">none (v2 removed it)</span>';
+      : '无（投保即生效）<span class="eni">none — effective immediately</span>';
     // 判定口径那句里也写着档位数，v3 只有两档 —— 两处口径不能互相打架。
     $("tierHint").innerHTML = (S.meta.tiers === 2
       ? '实赔按国标档位打折：<strong>暴雨 50% / 大暴雨 75%</strong>。<br><span class="en">Claims use the post-purchase increase: the reading at purchase is the baseline, and only new rainfall ≥ the threshold enters judgement. A payout is scaled by tier — 50% / 75%.</span>'
