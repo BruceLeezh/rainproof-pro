@@ -1590,7 +1590,7 @@ async function getReadProvider() {
    手机上这句文案会折成好几行，写死 44px 会把页面标题压掉一半。 */
 function syncBarPad() {
   let h = 0;
-  for (const id of ["frozenBar", "fakeChainBar"]) {
+  for (const id of ["frozenBar", "fakeChainBar", "warnBar"]) {
     const el = document.getElementById(id);
     if (el) h = Math.max(h, el.offsetHeight);
   }
@@ -1631,6 +1631,39 @@ function showFakeChainWarning() {
   syncBarPad();
 }
 
+/* 降级与喂价的两条前置提示（B12 / B13）—— 一个条子、多条文案，避免两条 fixed 浮层叠在一起。
+   B12：降级到 968 不能只靠一次 toast，顶上要一直写着「读的是测试网 v2 口径」。
+   B13：链上保单要求喂价在 MAX_FEED_AGE 内，过期了 buyPolicy 直接 revert「stale feed」——上台前必须看得见。
+   两个数字都问链（lastFeedAt / MAX_FEED_AGE），问不到就不说话，不猜。 */
+const WARN = new Map();
+function setWarn(key, txt) {
+  if (txt) WARN.set(key, txt); else WARN.delete(key);
+  let bar = document.getElementById("warnBar");
+  if (!WARN.size) { if (bar) { bar.remove(); syncBarPad(); } return; }
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "warnBar";
+    bar.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:99998;background:#8a6d1f;color:#fff;" +
+      "font:700 14px/1.7 system-ui,'Microsoft YaHei',sans-serif;padding:8px 14px;text-align:center;" +
+      "box-shadow:0 2px 10px rgba(0,0,0,.35)";
+    document.body.appendChild(bar);
+  }
+  bar.innerHTML = [...WARN.values()].map(esc).join("<br>");
+  syncBarPad();
+}
+async function refreshFeedWarn() {
+  if (!S.readC || !S.meta || !S.meta.maxFeedAge || !S.chain || !S.chain.isReal || S.chain.frozen) return setWarn("feed", "");
+  const region = Number($("regionSel").value) || 1;
+  try {
+    const at = Number(await S.readC.lastFeedAt(region));
+    const win = S.meta.maxFeedAge / 3600;
+    if (!at) return setWarn("feed", `⚠ ${RName(region)}：还没喂过价 —— 链上要求投保时喂价在 ${win} 小时内，现在投保会被拒绝（stale feed）。演示前先跑一次 04-脚本/push-rainfall.js。`);
+    const hours = (Date.now() / 1000 - at) / 3600;
+    if (hours <= win) return setWarn("feed", "");
+    setWarn("feed", `⚠ ${RName(region)}：喂价是 ${Math.floor(hours)} 小时前（链上保鲜窗口 ${win} 小时）—— 现在投保会被合约拒绝「stale feed」。上台前先喂一次价。`);
+  } catch (e) { setWarn("feed", ""); }
+}
+
 /* ---------------- 初始化 ---------------- */
 async function boot() {
   // 合约地址：URL 参数 > localStorage
@@ -1661,6 +1694,7 @@ async function boot() {
     // 这时 getReadProvider 会自动退到测试网 968。必须说出来，别让人以为看的是主网数据。
     if (S.chain && S.chain.chainId === 968 && !RPC_OVERRIDE) {
       toast("主网节点 rpc.botchain.ai 在当前网络不可达（中国大陆需代理才能直连），已自动切到测试网 968（v2 口径）/ mainnet RPC unreachable here — fell back to testnet 968");
+      setWarn("testnet", "⚠ 现在读到的是测试网 968 的 v2 数据，不是主网 677 的现行产品（主网节点 rpc.botchain.ai 在此网络不可达）。968 是 24/48/72 三档、三级分档；677 现行是 12/24、两级 —— 别把这一屏当主网口径对外引用。");
     }
     // 页脚写的节点名要跟实际连的一致，否则读着 968、页脚还写着 rpc.botchain.ai。
     if (S.chain && $("footNode")) $("footNode").textContent = S.chain.frozen ? "链上快照（离线文件 frozen-node.js）" : S.chain.url.replace(/^https?:\/\//, "");
@@ -1778,7 +1812,9 @@ async function attachContract(addr, quiet) {
       maxH:     await S.readC.MAX_HOURS(),
       cooling:  Number(await soft(() => S.readC.coolingPeriod(), 0n)),
       tiers:    Number(S.kind === "v3" ? await soft(() => S.readC.TIER_COUNT(), 2n) : 3n),
-      paused:   await soft(() => S.readC.paused(), false)
+      paused:   await soft(() => S.readC.paused(), false),
+      // 喂价保鲜窗口（v2/v3 都有这个常量）；读不到就留 null —— 宁可不说，也不拿 24h 当默认值去吓人。
+      maxFeedAge: Number(await soft(() => S.readC.MAX_FEED_AGE(), 0n)) || null
     };
     $("premiumShow").textContent = fmtEth(S.meta.premium) + " " + SYM();
     $("payoutShow").textContent  = fmtEth(S.meta.payout) + " " + SYM();
@@ -1803,6 +1839,7 @@ async function attachContract(addr, quiet) {
     $("cfgHint").innerHTML = `已连上合约 <span class="mono">${esc(addr)}</span>（代码 ${(code.length-2)/2} 字节）`
       + (S.kind === "v3" ? " · <b>v3</b>" : "")
       + (S.meta.paused ? ' <span class="tag red">合约已暂停</span>' : "");
+    await refreshFeedWarn();
   } catch (e) {
     toast("地址上有合约，但这个 ABI 读不出它的参数 —— 确认地址上部署的是 RainDeliveryInsuranceV2 / V3 吗？", "err");
     return false;
@@ -2085,6 +2122,7 @@ function selectRegion(id) {
   if (Number(s.value) === Number(id)) return;
   s.value = String(id);
   s.dispatchEvent(new Event("change"));
+  refreshFeedWarn();
 }
 
 /* ---------------- 真值面板：真实观测值 vs 链上演示值 ----------------
