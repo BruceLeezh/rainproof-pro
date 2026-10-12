@@ -394,7 +394,11 @@
     background:linear-gradient(180deg,rgba(255,200,87,.95),rgba(255,200,87,.55))}
   .colwrap.on .pbar{outline:1.5px solid var(--measure);outline-offset:2px}
   .colwrap.on .colv{color:var(--measure)}
-  .foot5{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s6);padding:0 var(--s4);margin-top:var(--s3)}
+  /* 柱脚必须和柱子同列：.foot5 是 .gauge 的兄弟节点、不吃它的第一列（46px 刻度列 + var(--s4) 列间距），
+     少了这个左偏移每个城市名就会比它那根柱子左移 46px+间距 —— 2026-10-12 现场发现。
+     改 .gauge 的刻度列宽或列间距时，这里必须一起改。 */
+  .foot5{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s6);padding:0 var(--s4);margin-top:var(--s3);
+    margin-left:calc(46px + var(--s4))}
   .foot5 .c{text-align:center}
   .foot5 .c b{display:block;font-size:var(--t-body);font-weight:600;color:var(--ink-2)}
   .foot5 .c.on b{color:var(--ink)}
@@ -609,7 +613,8 @@
     /* 标题行与筛选片在窄屏换行 —— 它们的 min-content 合计约 372px，不换行会把整页顶宽 */
     .hd{flex-wrap:wrap;row-gap:var(--s2)}
     .filters{flex-wrap:wrap;row-gap:var(--s2)}
-    .foot5{gap:var(--s1)}
+    /* 柱脚与柱子同列：列间距跟 .cols5 保持一致，左偏移跟 .gauge 的 30px 刻度列一致 */
+    .foot5{gap:var(--s3);margin-left:calc(30px + var(--s4))}
   }
   /* Bilingual: small English under or after the Chinese label (read-only additions). */
   .en{display:block;font-size:var(--t-lab);font-weight:400;font-style:normal;color:var(--ink-3);letter-spacing:.04em;margin-top:2px}
