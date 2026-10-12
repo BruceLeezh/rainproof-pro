@@ -761,7 +761,7 @@
    新值全部落在 body[data-page] 这一层。颜色、数据、动效、事件逻辑一律未改。
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* ── 0. 投影：把六个页面装进同一个文档 ─────────────────────────────────────── */
+/* ── 0. 投影：把五个页面装进同一个文档 ─────────────────────────────────────── */
 .page{display:none}
 body[data-page="home"] #p-home,
 body[data-page="p1"]   #p1,
@@ -770,13 +770,13 @@ body[data-page="p3"]   #p3,
 body[data-page="p4"]   #p4,
 body[data-page="p5"]   #p5{display:block}
 
-/* 两个脚注互斥：首页用 #homeFoot（贴在各入口卡下面），五个内页用全局 .foot。
+/* 两个脚注互斥：首页用 #homeFoot（贴在各入口卡下面），四个内页用全局 .foot。
    不加这一条会出现「首页上两个脚注都显示」——首页脚注 + 全局脚注。 */
 body[data-page="home"] #homeFoot{display:flex}
 body:not([data-page="home"]) #homeFoot{display:none}
 body[data-page="home"] > .wrap > .foot{display:none}
 
-/* ── 1. 顶栏：六页共用，吸顶 ──────────────────────────────────────────────── */
+/* ── 1. 顶栏：五页共用，吸顶 ──────────────────────────────────────────────── */
 body[data-page] header.plate{position:sticky;top:0;z-index:30;
   background:rgba(5,10,18,.88);backdrop-filter:blur(14px) saturate(150%)}
 @supports not (backdrop-filter:blur(14px)){
@@ -803,16 +803,16 @@ body[data-page]:not([data-page="home"]) .navbar{display:block}
 #p-home{position:relative;z-index:1}
 /* 首页不追「一屏」：用固定留白把 hero 与入口卡压在一起。
    原来写 min-height:calc(100vh - 300px) 是错的 —— 窗口一高就撑出一大片空白。
-   首页的任务是把项目讲清楚 + 给出五个入口，不是填满屏幕。 */
+   首页的任务是把项目讲清楚 + 给出四个入口，不是填满屏幕。 */
 #p-home .cover{border-bottom:0;min-height:0;padding:44px 0 40px}
 
-/* 入口矩阵：五张卡，取代「一条长卷」 */
+/* 入口矩阵：四张卡，取代「一条长卷」 */
 .entry{margin:0 0 36px}
 .entry-hd{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 14px}
 .entry-hd h3{font-size:var(--t-h1);font-weight:640;letter-spacing:-.01em;color:var(--ink)}
 .entry-hd em{font-style:normal;font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.2px}
 .entry-hd .r{margin-left:auto;font-size:var(--t-data);color:var(--ink-3)}
-.entry-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.entry-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .entry-grid > *{min-width:0}
 
 /* 入口卡：hover 只改描边与底色（DESIGN.md：不位移、不加阴影）。
@@ -985,7 +985,6 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
     <a href="#insure"    data-go="p2">投保<span class="idx">02</span></a>
     <a href="#mypolicy"  data-go="p3">我的保单<span class="idx">03</span></a>
     <a href="#ops"       data-go="p4">合约与运营<span class="idx">04</span></a>
-    <a href="#notes"     data-go="p5">只读与说明<span class="idx">05</span></a>
     <a class="home" href="#home" data-go="home">← 回到首页</a>
   </div>
 </nav>
@@ -1041,13 +1040,13 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   </div>
 </section>
 
-<!-- ── 入口矩阵（V4 新增）：把原来一条长卷里的五个板块，变成五张可跳转的卡 ──────
+<!-- ── 入口矩阵（V4 新增）：把原来一条长卷里的四个板块，变成四张可跳转的卡 ──────
      卡上的说辞全部取自它要去的那一页的既有文案，没有新造口径。
      左侧 2px 色条与目标页的分区归属同色（青=量测 / 琥珀=金额 / 鸢尾=留痕）。 -->
 <section class="entry">
   <div class="entry-hd">
-    <h3>五个入口，从这里进去</h3>
-    <em>five doors</em>
+    <h3>四个入口，从这里进去</h3>
+    <em>four doors</em>
     <span class="r">每一页都是独立地址 · 可刷新、可后退、可分享</span>
   </div>
   <div class="entry-grid">
@@ -1084,14 +1083,29 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
       <span class="go">进入 →</span>
     </a>
 
-    <a class="navcard" href="#notes" data-go="p5">
-      <span class="ni">05</span>
-      <span class="nt">只读模式与诚实说明</span>
-      <span class="nd">没连钱包也能看全部数据；喂价是中心化预言机，这是已知边界。</span>
-      <span class="ntag">notes</span>
-      <span class="go">进入 →</span>
-    </a>
+  </div>
+</section>
 
+<!-- ── 只读模式与诚实说明（原 #notes 独立页，2026-10-12 晚并入首页末尾）────── -->
+<section class="sec" data-dom="measure">
+  <div class="hd">
+    <h2>只读模式与诚实说明<span class="en">Read-only mode &amp; notes</span></h2>
+    <span class="n">已知边界 · 不假装</span>
+  </div>
+  <div class="panel plain">
+  <div class="note">
+    <p><b>只读模式：</b>没连钱包也能看全部数据。现场万一 MetaMask 出问题，照样能演示「链上有什么」。</p>
+    <p><b>诚实说明：</b>喂价脚本是<b>中心化预言机</b>，数据可信度取决于运营方；生产环境应改用去中心化预言机网络
+    （AI 层在链下做的三件事见投保页的「AI 层做了什么」）。它<b>不判断「人有没有真的受损」</b>，那需要平台的订单数据，属于路线图。
+    每次判定都把输入快照和输出结论各算一个哈希写上链，第三方拿同一份快照重跑，得到的是逐字节相同的结果。</p>
+    <p>这里的数字不依赖任何区块浏览器：合约地址、账户余额、降雨值、事件日志，全部直接向节点提问取得
+    （<code>rpc.botchain.ai</code>）。</p>
+    <p><b>主网 677 走 <code>rpc.botchain.ai</code>。</b>外网可直连；中国大陆等网络直连不通（实测直连超时、走代理 200）。
+    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968 → 页面自带的链上快照」四层并行探测（每条比前一条晚 1.2 秒出发，
+    哪个先答上就用哪个），并在顶部如实标出<b>当前读的是哪一层</b> —— 退到 968 会写明 <b>BOT Chain Testnet</b>，
+    退到快照会写明「<b>BOT Chain Mainnet · 链上快照</b>」，都不会假装还在读实时主网。
+    连不上任何节点时，整套演示仍然看得完：数据全部真实来自链上，只是读到的是某一时刻的读数。</p>
+  </div>
   </div>
 </section>
 
@@ -1131,7 +1145,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
       <div class="filters" id="rainMode" style="margin-bottom:var(--s3)">
         <button class="f on" data-mode="chain" aria-pressed="true">演示值 · 链上<span class="eni">Demo (on-chain)</span></button>
         <button class="f" data-mode="real" aria-pressed="false">真值 · 真实观测<span class="eni">Real rainfall</span></button>
-        <button class="f" data-mode="live" aria-pressed="false">实时 · 现网直连<span class="eni">Live (off-chain)</span></button>
+        <button class="f" data-mode="live" aria-pressed="false">实时 · 现网直连<span class="eni">Live (browser-direct)</span></button>
       </div>
       <div class="block" id="rainBoard">
         <div class="loading">正在读取各区域降雨<span class="eni">reading rainfall</span></div>
@@ -1318,50 +1332,19 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   </div>
 
   <nav class="pnav">
-    <span class="hint">配置改完，这一页就没有别的动作了。最后是「这一页没做什么」。</span>
+    <span class="hint">配置改完，这一页就没有别的动作了。诚实说明在首页末尾。</span>
     <span class="btns">
       <a class="btn" href="#dashboard" data-go="p1">← 回到看板</a>
-      <a class="btn primary" href="#notes" data-go="p5">只读与说明 →</a>
+      <a class="btn primary" href="#home" data-go="home">回到首页 →</a>
     </span>
   </nav>
 </section>
 </div><!-- /#p4 -->
 
 
-<!-- ══════════════ 页 5 · 只读模式与诚实说明 ══════════════ -->
-<div class="page" id="p5">
-<section class="sec" data-dom="measure">
-  <div class="hd">
-    <h2>只读模式与诚实说明<span class="en">Read-only mode &amp; notes</span></h2>
-    <span class="n">已知边界 · 不假装</span>
-  </div>
-  <div class="panel plain">
-  <div class="note">
-    <p><b>只读模式：</b>没连钱包也能看全部数据。现场万一 MetaMask 出问题，照样能演示「链上有什么」。</p>
-    <p><b>诚实说明：</b>喂价脚本是<b>中心化预言机</b>，数据可信度取决于运营方；生产环境应改用去中心化预言机网络
-    （AI 层在链下做的三件事见投保页的「AI 层做了什么」）。它<b>不判断「人有没有真的受损」</b>，那需要平台的订单数据，属于路线图。
-    每次判定都把输入快照和输出结论各算一个哈希写上链，第三方拿同一份快照重跑，得到的是逐字节相同的结果。</p>
-    <p>这一页不依赖任何区块浏览器：合约地址、账户余额、降雨值、事件日志，全部直接向节点提问取得
-    （<code>rpc.botchain.ai</code>）。</p>
-    <p><b>主网 677 走 <code>rpc.botchain.ai</code>。</b>外网可直连；中国大陆等网络直连不通（实测直连超时、走代理 200）。
-    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968 → 页面自带的链上快照」四层并行探测（每条比前一条晚 1.2 秒出发，
-    哪个先答上就用哪个），并在顶部如实标出<b>当前读的是哪一层</b> —— 退到 968 会写明 <b>BOT Chain Testnet</b>，
-    退到快照会写明「<b>BOT Chain Mainnet · 链上快照</b>」，都不会假装还在读实时主网。
-    连不上任何节点时，页面上仍然能把整套演示看完：数据全部真实来自链上，只是读到的是某一时刻的读数。</p>
-  </div>
-  </div>
+<!-- 页 5「只读模式与诚实说明」已于 2026-10-12 晚并入首页末尾（原 #notes 地址见下方 ROUTES 的别名） -->
 
-  <nav class="pnav">
-    <span class="hint">这里是路的尽头。还有疑问，回首页重看。</span>
-    <span class="btns">
-      <a class="btn" href="#ops" data-go="p4">← 回到合约配置</a>
-      <a class="btn primary" href="#home" data-go="home">回到首页</a>
-    </span>
-  </nav>
-</section>
-</div><!-- /#p5 -->
-
-<!-- 全局脚注：只在五个内页出现（首页用上面的 #homeFoot） -->
+<!-- 全局脚注：只在四个内页出现（首页用上面的 #homeFoot） -->
 <footer class="foot">
   <span><b>雨证 · RainProof</b> · 参数化降雨险</span>
   <span>BOT Chain <b>677</b></span>
@@ -1667,10 +1650,10 @@ function showFakeChainWarning() {
   syncBarPad();
 }
 
-/* 降级与喂价的两条前置提示（B12 / B13）—— 一个条子、多条文案，避免两条 fixed 浮层叠在一起。
-   B12：降级到 968 不能只靠一次 toast，顶上要一直写着「读的是测试网 v2 口径」。
-   B13：链上保单要求喂价在 MAX_FEED_AGE 内，过期了 buyPolicy 直接 revert「stale feed」——上台前必须看得见。
-   两个数字都问链（lastFeedAt / MAX_FEED_AGE），问不到就不说话，不猜。 */
+/* 降级提示（B12）—— 一个条子、多条文案，避免多条 fixed 浮层叠在一起。
+   降级到 968 不能只靠一次 toast，顶上要一直写着「读的是测试网 v2 口径」。
+   2026-10-12 撤掉 B13 那条喂价过期提示：赛期没有路演、评委线上看，那条提示对评委没有信息量，只是台上话术；
+   链上保鲜窗口本身还在合约里，「链上动态」与「这一屏的读数从哪来」照样能看出数据新旧。 */
 const WARN = new Map();
 function setWarn(key, txt) {
   if (txt) WARN.set(key, txt); else WARN.delete(key);
@@ -1686,18 +1669,6 @@ function setWarn(key, txt) {
   }
   bar.innerHTML = [...WARN.values()].map(esc).join("<br>");
   syncBarPad();
-}
-async function refreshFeedWarn() {
-  if (!S.readC || !S.meta || !S.meta.maxFeedAge || !S.chain || !S.chain.isReal || S.chain.frozen) return setWarn("feed", "");
-  const region = Number($("regionSel").value) || 1;
-  try {
-    const at = Number(await S.readC.lastFeedAt(region));
-    const win = S.meta.maxFeedAge / 3600;
-    if (!at) return setWarn("feed", `⚠ ${RName(region)}：还没喂过价 —— 链上要求投保时喂价在 ${win} 小时内，现在投保会被拒绝（stale feed）。演示前先跑一次 04-脚本/push-rainfall.js。`);
-    const hours = (Date.now() / 1000 - at) / 3600;
-    if (hours <= win) return setWarn("feed", "");
-    setWarn("feed", `⚠ ${RName(region)}：喂价是 ${Math.floor(hours)} 小时前（链上保鲜窗口 ${win} 小时）—— 现在投保会被合约拒绝「stale feed」。上台前先喂一次价。`);
-  } catch (e) { setWarn("feed", ""); }
 }
 
 /* ---------------- 初始化 ---------------- */
@@ -1730,7 +1701,7 @@ async function boot() {
     // 这时 getReadProvider 会自动退到测试网 968。必须说出来，别让人以为看的是主网数据。
     if (S.chain && S.chain.chainId === 968 && !RPC_OVERRIDE) {
       toast("主网节点 rpc.botchain.ai 在当前网络不可达（中国大陆需代理才能直连），已自动切到测试网 968（v2 口径）/ mainnet RPC unreachable here — fell back to testnet 968");
-      setWarn("testnet", "⚠ 现在读到的是测试网 968 的 v2 数据，不是主网 677 的现行产品（主网节点 rpc.botchain.ai 在此网络不可达）。968 是 24/48/72 三档、三级分档；677 现行是 12/24、两级 —— 别把这一屏当主网口径对外引用。");
+      setWarn("testnet", "⚠ 现在读到的是测试网 968 的 v2 数据，不是主网 677 的现行产品（主网节点 rpc.botchain.ai 在此网络不可达）。968 是 24/48/72 三档、三级分档；677 现行是 12/24、两级 —— 两套口径不同，页内数字都取自这一层。");
     }
     // 页脚写的节点名要跟实际连的一致，否则读着 968、页脚还写着 rpc.botchain.ai。
     if (S.chain && $("footNode")) $("footNode").textContent = S.chain.frozen ? "链上快照（离线文件 frozen-node.js）" : S.chain.url.replace(/^https?:\/\//, "");
@@ -1848,9 +1819,7 @@ async function attachContract(addr, quiet) {
       maxH:     await S.readC.MAX_HOURS(),
       cooling:  Number(await soft(() => S.readC.coolingPeriod(), 0n)),
       tiers:    Number(S.kind === "v3" ? await soft(() => S.readC.TIER_COUNT(), 2n) : 3n),
-      paused:   await soft(() => S.readC.paused(), false),
-      // 喂价保鲜窗口（v2/v3 都有这个常量）；读不到就留 null —— 宁可不说，也不拿 24h 当默认值去吓人。
-      maxFeedAge: Number(await soft(() => S.readC.MAX_FEED_AGE(), 0n)) || null
+      paused:   await soft(() => S.readC.paused(), false)
     };
     $("premiumShow").textContent = fmtEth(S.meta.premium) + " " + SYM();
     $("payoutShow").textContent  = fmtEth(S.meta.payout) + " " + SYM();
@@ -1876,7 +1845,6 @@ async function attachContract(addr, quiet) {
     $("cfgHint").innerHTML = `已连上合约 <span class="mono">${esc(addr)}</span>（代码 ${(code.length-2)/2} 字节）`
       + (S.kind === "v3" ? " · <b>v3</b>" : "")
       + (S.meta.paused ? ' <span class="tag red">合约已暂停</span>' : "");
-    await refreshFeedWarn();
   } catch (e) {
     toast("地址上有合约，但这个 ABI 读不出它的参数 —— 确认地址上部署的是 RainDeliveryInsuranceV2 / V3 吗？", "err");
     return false;
@@ -2011,7 +1979,7 @@ async function send(fn, okMsg) {
     else if (/hours must be/.test(m))     hint = "：v2 只卖 24 / 48 / 72 小时三档";
     else if (/bad region/.test(m))        hint = "：区域编号不合法";
     else if (/region suspended/.test(m))  hint = "：这个区域被运营方暂停承保了";
-    else if (/stale feed/.test(m))        hint = "：这个区域超过 24 小时没有喂价，合约拒绝受理（先喂价再投保）";
+    else if (/stale feed/.test(m))        hint = "：这个区域的喂价已过期，合约拒绝受理（需要先喂一次价再投保）";
     else if (/not an eligible rider/.test(m)) hint = "：这个地址不在承保白名单里";
     else if (/too many policies/.test(m)) hint = "：这个地址的累计保单数已经到了上限";
     else if (/open exposure cap/.test(m)) hint = "：这个地址未了结的敞口到上限了，先等前面的保单结清";
@@ -2120,7 +2088,7 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
         </div>
         <div class="readline" style="margin-top:var(--s5)">
           <div>
-            <div class="hero-lb">${esc(cur.label)} · ${opt.live ? "现网累计（未上链）" : opt.real ? "真值累计（写链值）" : "累计降雨"}</div>
+            <div class="hero-lb">${esc(cur.label)} · ${opt.live ? "现网累计（浏览器直连）" : opt.real ? "真值累计（写链值）" : "累计降雨"}</div>
             <div class="hero">${cur.v}<u>mm</u></div>
           </div>
           <div class="kvbox"><span class="k">距阈值线</span><span class="v">${cur.hit ? "已越 " + (cur.v - thr) : thr - cur.v}<small>mm</small></span></div>
@@ -2166,7 +2134,6 @@ function selectRegion(id) {
   if (Number(s.value) === Number(id)) return;
   s.value = String(id);
   s.dispatchEvent(new Event("change"));
-  refreshFeedWarn();
 }
 
 /* ---------------- 真值面板：真实观测值 vs 链上演示值 ----------------
@@ -2234,7 +2201,7 @@ async function renderLive() {
   if (!box) return;
   const hours = liveHours();
   const head = (body) => `<div class="note dim">实时雨量 · 现网直连 <code>api.open-meteo.com</code> · 窗口 = 最近 ${hours} 小时`
-    + `<span class="eni">live rainfall pulled by this browser · off-chain</span></div>` + body;
+    + `<span class="eni">live rainfall pulled by this browser</span></div>` + body;
   const thr = Number(S.meta && S.meta.threshold);
   if (!Number.isFinite(thr) || thr <= 0) {
     box.innerHTML = head('<div class="empty">还没读到链上阈值（时长档位也没读到）—— 实时面板的阈值线不猜，先不画。</div>');
@@ -2265,11 +2232,10 @@ async function renderLive() {
     };
   });
   box.innerHTML = head('<div class="note dim">柱子 = 各城<b>最近 ' + hours + ' 小时</b>的现网累计降水；阈值线 = 链上为该窗口给出的阈值。'
-    + '它回答的是「如果此刻有人按这个数喂价，链上会看到多少」—— 但本面板<b>不写链</b>：链上没有定时器，链上数据要变新，得有人（或定时任务）去跑喂价脚本。'
-    + '<span class="en">Bars are the last ' + hours + ' h of live rainfall per city; the line is the on-chain threshold for that window. Nothing here is written on-chain: with no on-chain timer, freshness requires someone (or a scheduled job) to run the feeder.</span></div>'
+    + '它回答的是「如果此刻有人按这个数喂价，链上会看到多少」。'
+    + '<span class="en">Bars are the last ' + hours + ' h of live rainfall per city; the line is the on-chain threshold for that window.</span></div>'
     + boardHTML(meas, Number($("regionSel").value) || 1, thr, hours, { real: true, live: true })
-    + `<div class="note dim">拉取时刻 ${esc(new Date(LIVE.at).toLocaleString("zh-CN", { hour12: false }))} · 数据源 Open-Meteo forecast API（免 key、跨域开放）· <b>未上链</b>`
-    + ` · 链上排期见 <code>02-作战与答辩/实时雨量-链上排期交给A-2026-10-12.md</code></div>`);
+    + `<div class="note dim">拉取时刻 ${esc(new Date(LIVE.at).toLocaleString("zh-CN", { hour12: false }))} · 数据源 Open-Meteo forecast API（免 key、跨域开放）</div>`);
   bindBoardClicks(box);
 }
 
@@ -2671,7 +2637,7 @@ async function loadEvents() {
         desc = `保单 #${A("policyId")} · ${Number(A("kind")) === 1 ? "损失判定" : "喂价验收"} · `
              + `${Number(A("decision")) === 1 ? "赔付 PAY" : "不赔 DENY"} · 置信度 ${A("confidence")} · ${A("sources")} 个源 · `
              + (A("rainfallAtJudgement") === undefined ? "" : `判定时雨量 ${A("rainfallAtJudgement")} mm · `)
-             + `输入 ${shortHash(A("inputHash"))} 输出 ${shortHash(A("outputHash"))} · ${A("modelVersion")}`;
+             + `输入 ${shortHash(A("inputHash"))} 输出 ${shortHash(A("outputHash"))} · ${esc(A("modelVersion"))}`;
       else if (d.name === "UnderwritingDecision")
         desc = `${RName(A("regionId"))} 承保定价：保费 ${fmtEth(A("premium"))} ${SYM()} · `
              + `${["正常","加价","拒保"][Number(A("level"))] || "档 " + A("level")} · 依据 ${shortHash(A("reasonHash"))}`;
@@ -3006,15 +2972,14 @@ if (window.ethereum) {
     "#insure":    "p2",     // 投保
     "#mypolicy":  "p3",     // 我的保单
     "#ops":       "p4",     // 合约与运营
-    "#notes":     "p5"      // 只读与说明
+    "#notes":     "home"    // 历史地址：这一页的内容已并进首页末尾（2026-10-12 晚）
   };
   var TITLES = {
     home: "雨证 · RainProof",
     p1:   "降雨量测看板 · 雨证 RainProof",
     p2:   "开一张保单 · 雨证 RainProof",
     p3:   "我的保单 · 雨证 RainProof",
-    p4:   "合约配置与运营 · 雨证 RainProof",
-    p5:   "只读模式与诚实说明 · 雨证 RainProof"
+    p4:   "合约配置与运营 · 雨证 RainProof"
   };
 
   function pageFromHash(){

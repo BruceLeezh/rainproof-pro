@@ -12,7 +12,7 @@
 
 ## 页面 V4 的 hash 路由
 
-路由表在 `05-演示站点/index.html:2674-2681`，只做一件事：把 hash 变成 `body[data-page]`：
+路由表在 `05-演示站点/index.html:2986-3000`，只做一件事：把 hash 变成 `body[data-page]`：
 
 | hash | 页面 |
 |---|---|
@@ -21,9 +21,9 @@
 | `#insure` | 开一张保单 |
 | `#mypolicy` | 我的保单 |
 | `#ops` | 合约配置与运营 |
-| `#notes` | 只读模式与诚实说明 |
+| `#notes` | 历史别名：原「只读模式与诚实说明」页 2026-10-12 晚已并进首页末尾，这个地址落回 `#home` |
 
-- 导航高亮、`document.title` 都跟着 hash 走；`#dashboard#anchor` 这类写法只取第一段；浏览器前进 / 后退即 hashchange（`index.html:2691-2740`）。
+- 导航高亮、`document.title` 都跟着 hash 走；`#dashboard#anchor` 这类写法只取第一段；浏览器前进 / 后退即 hashchange（`index.html:3015-3052`）。
 
 ## 它读哪条链：四层回退
 
