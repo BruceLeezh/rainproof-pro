@@ -29,7 +29,8 @@ const vm = require("vm");
 const ROOT = path.join(__dirname, "..");
 const TOOLS = path.join(__dirname, "node_modules");
 const { ethers } = require(path.join(TOOLS, "ethers"));
-const { extractAbi, TARGET } = require("./sync_abi.js");
+const { extractAbi } = require("./sync_abi.js");
+const TARGET = path.join(ROOT, "05-演示站点", "index.html");
 
 const ARG = (k) => { const h = process.argv.slice(2).find((a) => a.startsWith(`${k}=`)); return h ? h.slice(k.length + 1) : null; };
 const V3_ABI = path.join(ROOT, "03-合约", "RainDeliveryInsuranceV3.abi.json");
@@ -92,10 +93,11 @@ function main() {
 
   console.log(`页面 ABI 输出形状 ⇄ 真链返回（${rel}）\n`);
 
-  const pageV3 = new ethers.Interface(extractAbi(html, "ABI_V3", rel));
-  const pageV2 = new ethers.Interface(extractAbi(html, "ABI_V2", rel));
+  // 页面的块名按 A 的约定：`const ABI` = v3（主网 677），`const ABI_V2` = v2（968 降级）
+  const pageV3 = new ethers.Interface(extractAbi(html, rel, "ABI"));
+  const pageV2 = new ethers.Interface(extractAbi(html, rel, "ABI_V2"));
 
-  ok("页面 ABI_V3 的每一处 outputs 形状都与 03-合约/RainDeliveryInsuranceV3.abi.json 一致（含字段名与顺序）",
+  ok("页面 const ABI（v3）的每一处 outputs 形状都与 03-合约/RainDeliveryInsuranceV3.abi.json 一致（含字段名与顺序）",
     JSON.stringify(shape(pageV3)) === JSON.stringify(shape(disk)));
 
   // ① 三个结构体读法：字段数 + 字段名 + 取值位置

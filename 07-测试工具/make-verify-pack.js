@@ -179,21 +179,13 @@ const manifest = {
   chains: "Sepolia 11155111 = v1 留痕 / BOT Chain 968 = v2 / BOT Chain 677 = v3，三链同址不同合约。",
   contracts,
 };
-// E7：只有全部检查通过才落地清单；内容与盘上逐字节相同时不写（否则每次跑都留下无谓的 mtime/换行 diff）
-// 换行沿用盘上那份（本仓库该文件是 CRLF）：JSON.stringify 只会给 \n，直接写会把整文件改成 LF，
-// 于是「内容没变」也会在 git status 里挂一个 M。
-const text = JSON.stringify(manifest, null, 2) + "\n";
+// 只有内容真的变了才写盘：门禁跑一次就改写被跟踪的 verify-manifest.json，会让每一次
+// `npm test` 都留下一个假 diff（2026-10-12 B 复核指出：A34 加的是内容断言，不是「有变化才写」）。
+const next = JSON.stringify(manifest, null, 2) + "\n";
 const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : null;
-const eol = prev && prev.includes("\r\n") ? "\r\n" : "\n";
-const next = eol === "\n" ? text : text.replace(/\n/g, "\r\n");
-if (bad) {
-  console.log(`\n❌ ${bad} 项失败 → ${path.relative(ROOT, OUT)} 原文件保留不动（失败不覆盖证据）`);
-  process.exit(1);
-}
-if (prev === next) {
-  console.log(`\n✅ 全部通过，且 ${path.relative(ROOT, OUT)} 内容未变 → 不写盘`);
-} else {
-  fs.writeFileSync(OUT, next, "utf8");
-  console.log(`\n✅ 全部通过 → 已写 ${path.relative(ROOT, OUT)}（换行沿用 ${eol === "\r\n" ? "CRLF" : "LF"}）`);
-}
-process.exit(0);
+// 失败时一个字节都不写：把「能复现的旧清单」留在盘上当证据，而不是用有问题的构建覆盖它。
+if (!bad && prev !== next) fs.writeFileSync(OUT, next, "utf8");
+
+console.log(`\n${bad ? "❌" : "✅"} ${bad} 项失败 → ${path.relative(ROOT, OUT)}` +
+  (bad ? "（校验失败，未写盘：原文件保留作证据）" : prev === next ? "（内容无变化，未改写）" : "（已按上面的一致结果重写）"));
+process.exit(bad ? 1 : 0);
