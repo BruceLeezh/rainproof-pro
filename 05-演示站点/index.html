@@ -594,8 +594,334 @@
   .eni{font-size:var(--t-lab);font-weight:400;color:var(--ink-3)}
   .eni::before{content:" / ";opacity:.75}
 </style>
+
+<style id="v3-type">
+/* ══════════════════════════════════════════════════════════════════════════════
+   V3 排版层 · 只动「字号 / 版心 / 留白 / 对齐」
+   ──────────────────────────────────────────────────────────────────────────────
+   三页（index / verifier）的 :root 有 55 个令牌逐字相同 —— 这是「三个页面是同一台仪器」
+   的证据，也正是 check-redesign.js ① 锁定的哈希对象。所以 V3 一行 :root 都没动：
+   新值全部落在 body.v3 这一层。于是「深色没动」不是一句声明，是可以逐字 diff 的事实。
+   颜色、数据、动效、事件、文案 —— 一律未改。
+   ══════════════════════════════════════════════════════════════════════════════ */
+/* ── 字阶与版心：只挂在 ≥1001px 上 ────────────────────────────────────────────
+   为什么不用全站：这套字阶是配 1320 版心做的。手机端（≤1000px）版心只有 310px，
+   --t-big 从 30 抬到 38 会让「0.00105 BOT」折行 —— 桌面的大号数字会把手机顶坏。
+   所以 ≤1000px 一个令牌都不动：手机端与现在逐像素相同，手机端唯一的变化是新增的首页。
+   （要在手机上也放大，只需把这个媒体查询去掉，再把 --t-big 收到 32px 上下。） */
+@media (min-width:1001px){
+  body.v3{
+    /* ── 1. 字阶 ──────────────────────────────────────────────────────────
+       原页 7 档：46 / 30 / 22 / 19 / 14 / 12.5 / 11。问题是 46 与 22 之间是断的，
+       而 22 的区标题只比 14 的正文大 8px —— 抬不出层级，「一屏一屏」读不出来。
+       V3 只调前三档，把梯度拉开；19 / 14 / 12.5 / 11 四档原样不动。 */
+    --t-hero:64px;    /* 46   → 64    降雨主读数（.hero）：一屏里最该被记住的那个数字 */
+    --t-big:38px;     /* 30   → 38    金额读数（.quote .amt / .metric）：第二主角 */
+    --t-h1:27px;      /* 22   → 27    区标题（.sec > h2 / .hd h2）：原来只比正文大 8px */
+    --t-num:19px;     /* 原样 —— 次级读数（.ro .vl / .kvbox .v） */
+    --t-body:14px;    /* 原样 —— 正文。14px 在深色底上已经是舒适区间，不该为了「看起来改过」而动它 */
+    --t-data:12.5px;  /* 原样 —— 数据正文 */
+    --t-lab:11px;     /* 原样 —— 标签。全页用了 40 次，动它会牵连一整层小字 */
+
+    /* ── 2. 版心与留白 ────────────────────────────────────────────────────
+       1240 的版心配 22px 的区标题，右侧比左栏还空；分区之间只有 64px，段落黏在一起。 */
+    --d-wrap:1320px;  /* 1240 → 1320  版心 */
+    --d-pad:40px;     /* 32   → 40    页边距（原 = --s6） */
+    --d-sec:40px;     /* 32   → 40    分区上留白（原 = --s6） */
+    --d-lead:72px;    /* 28   → 72    首区上留白：读数条之后要有一口气 */
+    --d-gap:44px;     /* 28   → 44    两栏间距（原硬编码 28 / --s6） */
+  }
+
+  body.v3 .wrap{max-width:var(--d-wrap);padding:0 var(--d-pad)}
+
+  /* 头部品牌固定在 22px：--t-h1 抬到 27 是为了「区标题」，不该顺带把顶栏也撑高
+     （顶栏高 8px，首屏就要少 8px） */
+  body.v3 .who h1{font-size:22px}
+
+  /* 这几条原页在 1000px 以下有自己的一栏规则（权重更低但会不会被盖住取决于选择器权重，
+     所以统一关在这个媒体查询里，绝不越界去顶掉手机端的布局） */
+  body.v3 .sec{padding-top:var(--d-sec)}
+  body.v3 .sec.lead{padding-top:var(--d-lead)}
+  body.v3 .sec + .sec{margin-top:var(--d-sec)}
+  body.v3 .grid2{grid-template-columns:1.42fr .92fr;gap:var(--d-gap)}
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   新增首页
+   ──────────────────────────────────────────────────────────────────────────────
+   一屏，深色，骑着已有的雨幕 —— 不新增任何动效：右边那把尺子全靠 hover/transition，
+   雨幕就是原来那一层 canvas。首页不需要新的动画，它需要的是把项目讲清楚。
+   ══════════════════════════════════════════════════════════════════════════════ */
+.cover{position:relative;z-index:1;display:flex;align-items:center;
+  min-height:calc(100vh - 170px);padding:52px 0 76px;border-bottom:1px solid var(--line)}
+.cover-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:72px;
+  align-items:center;width:100%}
+.cover-l{min-width:0}
+
+.cover .title{font-size:clamp(40px,5.2vw,62px);line-height:1.04;letter-spacing:-.03em;
+  font-weight:640;margin:0 0 13px}
+.cover .title i{font-style:normal;color:var(--measure);padding:0 .1em}
+.cover .title em{display:block;font-style:normal;font-size:.31em;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:500;margin-top:12px}
+.cover .kind{font-size:19px;color:var(--ink-2);font-weight:400;margin:0 0 26px}
+.cover .claim{font-size:clamp(22px,2.3vw,28px);line-height:1.4;font-weight:600;
+  letter-spacing:-.01em;margin:0 0 6px}
+.cover .claim b{color:var(--measure);font-weight:600}
+.cover .claim2{font-size:15px;color:var(--ink-2);margin:0 0 38px}
+.cover hr{border:0;border-top:1px solid var(--ink);margin:0 0 22px;opacity:.42}
+
+.facts{display:grid;gap:2px;margin:0 0 38px}
+.facts > div{display:grid;grid-template-columns:96px 1fr;gap:20px;align-items:baseline;
+  padding:11px 0;border-bottom:1px solid var(--line)}
+.facts > div:first-child{border-top:1px solid var(--line)}
+.facts dt{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.3px}
+.facts dd{margin:0;font-size:var(--t-body);color:var(--ink-2);line-height:1.6}
+.facts dd b{color:var(--ink);font-weight:600}
+.facts dd code{font-family:var(--f-num);font-size:12px;color:var(--evi)}
+
+.cover-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 24px}
+.cover-cta .btn{padding:11px 20px;font-size:13.5px}
+.cover-meta{font-family:var(--f-num);font-size:11.5px;color:var(--ink-3);line-height:1.75;margin:0}
+
+/* ── 首页右栏：雨幕刻度尺 ───────────────────────────────────────────────────
+   左边是尺子自己的分度，右边是此刻站在尺上的五城。同一根 rail、同一个满量程，
+   所以「广州顶格 / 成都 0」是一眼可见的，不需要读文字。
+   数据口径：链上现值（与看板「演示值 · 链上」同一把尺子）。 */
+.scale{width:100%;max-width:320px}
+.scale-cap{margin:0 0 14px 150px;font-size:var(--t-lab);letter-spacing:.3px;
+  color:var(--ink-3);white-space:nowrap}
+.scale-cap em{font-style:normal;font-family:var(--f-num);opacity:.75;margin-left:6px}
+.scale-body{position:relative;height:min(58vh,460px)}
+.scale-rail{position:absolute;left:150px;top:0;bottom:0;width:1px;background:var(--line-2)}
+
+/* 左：刻度值（尺子上的分度） */
+.scale-rail .tk{position:absolute;right:calc(100% + 14px);transform:translateY(50%);
+  font-family:var(--f-num);font-size:11px;line-height:1;color:var(--ink-2);white-space:nowrap}
+.scale-rail .tk::after{content:"";position:absolute;left:100%;top:50%;width:14px;height:0;
+  border-top:1px solid var(--line-2)}
+/* 阈值线单独成一类：虚线 + 更长 + 青色。它跟「读数」不是一回事，所以画法也不同 */
+.scale-rail .tk.m{color:var(--measure)}
+.scale-rail .tk.m::after{width:24px;border-top:1px dashed var(--measure)}
+
+/* 右：此刻站在尺上的五城（链上现值） */
+.scale-rail .cty{position:absolute;left:calc(100% + 14px);transform:translateY(50%);
+  white-space:nowrap;font-size:var(--t-lab);line-height:1;color:var(--ink-2)}
+.scale-rail .cty::before{content:"";position:absolute;right:100%;top:50%;width:14px;height:0;
+  border-top:1px solid var(--line-2)}
+.scale-rail .cty i{font-style:normal;font-family:var(--f-num);color:var(--measure);margin-left:5px}
+.scale-rail .cty em{font-style:normal;font-size:10.5px;color:var(--ink-3);margin-left:5px}
+/* 被喂价闸门拒收的那一个：跟看板上的柱子一样淡掉，不假装它也是一个正常读数 */
+.scale-rail .cty.rj{color:var(--ink-3)}
+.scale-rail .cty.rj i,.scale-rail .cty.rj em{color:var(--ink-3)}
+.scale-rail .cty.rj::before{border-top-style:dotted}
+.scale-note{margin:18px 0 0;font-family:var(--f-num);font-size:11px;line-height:1.7;color:var(--ink-3)}
+
+@media (max-width:1000px){
+  .cover-grid{grid-template-columns:1fr;gap:0}
+  .cover-l{order:1}
+  .cover-r{order:2}
+  .cover{min-height:0;padding:44px 0 56px}
+  .cover-r{margin-top:52px;padding-top:36px;border-top:1px solid var(--line)}
+  .scale{max-width:340px}
+}
+@media (max-width:820px){
+  .facts > div{grid-template-columns:1fr;gap:5px}
+  .scale-cap{margin-left:0;white-space:normal}
+  .scale-body{height:min(48vh,360px)}
+}
+</style>
+
+<style id="v4-router">
+/* ══════════════════════════════════════════════════════════════════════════════
+   V4 路由层 · 参照「代谢健康守护」首页语汇，转译进雨证的量测仪体系
+   ──────────────────────────────────────────────────────────────────────────────
+   三层原则（与 V3 完全相同）：V4 一行 :root 都没动 —— 55 个令牌仍是逐字相同的那一份，
+   新值全部落在 body[data-page] 这一层。颜色、数据、动效、事件逻辑一律未改。
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. 投影：把六个页面装进同一个文档 ─────────────────────────────────────── */
+.page{display:none}
+body[data-page="home"] #p-home,
+body[data-page="p1"]   #p1,
+body[data-page="p2"]   #p2,
+body[data-page="p3"]   #p3,
+body[data-page="p4"]   #p4,
+body[data-page="p5"]   #p5{display:block}
+
+/* 两个脚注互斥：首页用 #homeFoot（贴在各入口卡下面），五个内页用全局 .foot。
+   不加这一条会出现「首页上两个脚注都显示」——首页脚注 + 全局脚注。 */
+body[data-page="home"] #homeFoot{display:flex}
+body:not([data-page="home"]) #homeFoot{display:none}
+body[data-page="home"] > .wrap > .foot{display:none}
+
+/* ── 1. 顶栏：六页共用，吸顶 ──────────────────────────────────────────────── */
+body[data-page] header.plate{position:sticky;top:0;z-index:30;
+  background:rgba(5,10,18,.88);backdrop-filter:blur(14px) saturate(150%)}
+@supports not (backdrop-filter:blur(14px)){
+  body[data-page] header.plate{background:rgba(5,10,18,.97)}
+}
+
+/* 导航条：内页出现，首页不出现（首页靠 .entry-grid 进入） */
+.navbar{display:none;border-top:1px solid var(--line);background:rgba(10,18,32,.72);
+  backdrop-filter:blur(10px)}
+body[data-page]:not([data-page="home"]) .navbar{display:block}
+.navbar .wrap{display:flex;gap:2px;flex-wrap:wrap;align-items:center;
+  padding-top:0;padding-bottom:0}
+.navbar a{display:inline-flex;align-items:center;gap:7px;padding:13px 15px;
+  font-size:var(--t-data);color:var(--ink-2);border-bottom:2px solid transparent;
+  text-decoration:none;transition:color .15s,border-color .15s}
+.navbar a:hover{color:var(--ink);text-decoration:none}
+.navbar a.on{color:var(--measure);border-bottom-color:var(--measure);font-weight:620}
+.navbar a .idx{font-family:var(--f-num);font-size:10.5px;color:var(--ink-3)}
+.navbar a.on .idx{color:var(--measure);opacity:.7}
+.navbar .home{margin-left:auto;color:var(--ink-3)}
+.navbar .home:hover{color:var(--measure)}
+
+/* ── 2. 首页：一屏展示层 ───────────────────────────────────────────────────── */
+#p-home{position:relative;z-index:1}
+/* 首页不追「一屏」：用固定留白把 hero 与入口卡压在一起。
+   原来写 min-height:calc(100vh - 300px) 是错的 —— 窗口一高就撑出一大片空白。
+   首页的任务是把项目讲清楚 + 给出五个入口，不是填满屏幕。 */
+#p-home .cover{border-bottom:0;min-height:0;padding:44px 0 40px}
+
+/* 入口矩阵：五张卡，取代「一条长卷」 */
+.entry{margin:0 0 36px}
+.entry-hd{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.entry-hd h3{font-size:var(--t-h1);font-weight:640;letter-spacing:-.01em;color:var(--ink)}
+.entry-hd em{font-style:normal;font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.2px}
+.entry-hd .r{margin-left:auto;font-size:var(--t-data);color:var(--ink-3)}
+.entry-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.entry-grid > *{min-width:0}
+
+/* 入口卡：hover 只改描边与底色（DESIGN.md：不位移、不加阴影）。
+   左侧 2px 色条是**语义标记**：它与卡内 .ntag 的域名同源（青=量测 / 琥珀=金额 /
+   鸢尾=留痕），重复的是内容归属而不是「装饰」——这是本方案对 DESIGN.md
+   「禁止装饰性彩色边条」那条禁令唯一的调和点。 */
+.navcard{display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+  border:1px solid var(--line);border-left:2px solid var(--line-2);
+  border-radius:var(--r);padding:16px 16px 14px;background:var(--surface);
+  text-decoration:none;transition:border-color .15s,background .15s}
+.navcard:hover{border-color:var(--line-2);border-left-color:var(--measure);
+  background:var(--surface-2);text-decoration:none}
+.navcard.c-money:hover{border-left-color:var(--money)}
+.navcard.c-evi:hover{border-left-color:var(--evi)}
+.navcard .ni{font-family:var(--f-num);font-size:10.5px;letter-spacing:.6px;color:var(--ink-3)}
+.navcard .nt{font-size:15px;font-weight:640;color:var(--ink);line-height:1.35}
+.navcard .nd{font-size:var(--t-data);color:var(--ink-2);line-height:1.6;flex:1}
+.navcard .ntag{font-family:var(--f-num);font-size:10.5px;padding:2px 7px;
+  border-radius:var(--r-xs);border:1px solid var(--line-2);color:var(--ink-3)}
+.navcard .go{font-size:var(--t-data);font-weight:620;color:var(--measure);margin-top:2px}
+.navcard.c-money .go{color:var(--money)}
+.navcard.c-evi .go{color:var(--evi)}
+
+/* ── 3. 内页通用：分区标题带语义色条（转译版）────────────────────────────── */
+.sec > .hd{position:relative}
+.sec[data-dom] > .hd{padding-left:12px}
+.sec[data-dom] > .hd::before{content:"";position:absolute;left:0;top:3px;bottom:3px;
+  width:2px;border-radius:2px;background:var(--ink-3);opacity:.5}
+.sec[data-dom="measure"] > .hd::before{background:var(--measure);opacity:.8}
+.sec[data-dom="money"]   > .hd::before{background:var(--money);opacity:.8}
+.sec[data-dom="evi"]     > .hd::before{background:var(--evi);opacity:.8}
+
+/* ── 4. 内页：三数字块（.num3）────────────────────────────────────────────── */
+.num3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.num3 > *{min-width:0;background:var(--surface);padding:20px 22px}
+.num3 .l{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.3px;margin-bottom:8px}
+.num3 .v{font-family:var(--f-num);font-size:32px;font-weight:620;line-height:1.1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--ink)}
+.num3 .v.m{color:var(--measure)}
+.num3 .v.y{color:var(--money)}
+.num3 .v.e{color:var(--evi)}
+.num3 .s{font-size:var(--t-data);color:var(--ink-3);margin-top:6px;line-height:1.6}
+
+/* ── 5. 内页：三栏价值卡（.leg）───────────────────────────────────────────── */
+.leg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.leg3 > *{min-width:0}
+.leg{border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;
+  background:var(--surface)}
+.leg h4{font-size:var(--t-body);font-weight:640;color:var(--ink);margin:0 0 8px;
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.leg p{font-size:var(--t-data);color:var(--ink-2);line-height:1.7;margin:0}
+.leg code{font-family:var(--f-num);font-size:11.5px;color:var(--evi);overflow-wrap:anywhere}
+
+/* ── 6. 内页：指标卡（.kpi）───────────────────────────────────────────────── */
+.kgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kgrid > *{min-width:0}
+.kpi{border:1px solid var(--line);border-left:2px solid var(--measure);
+  border-radius:var(--r-sm);padding:14px 16px;background:var(--surface)}
+.kpi.y{border-left-color:var(--money)}
+.kpi.e{border-left-color:var(--evi)}
+.kpi.n{border-left-color:var(--ink-3)}
+.kpi .l{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.3px;margin-bottom:6px}
+.kpi .v{font-family:var(--f-num);font-size:var(--t-num);font-weight:600;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.kpi .s{font-size:var(--t-lab);color:var(--ink-3);margin-top:6px;line-height:1.6}
+
+/* ── 7. 内页：流程条（.funnel）────────────────────────────────────────────── */
+.funnel{display:grid;gap:9px}
+.funnel .fr{display:grid;grid-template-columns:230px minmax(0,1fr) 88px;
+  gap:14px;align-items:center}
+.funnel .fl{font-size:var(--t-data);color:var(--ink-2);text-align:right;overflow-wrap:anywhere}
+.funnel .fb{height:28px;border-radius:var(--r-xs);background:var(--measure-dim);
+  border:1px solid rgba(52,211,228,.28);position:relative;overflow:hidden}
+.funnel .fb i{display:block;height:100%;background:var(--measure);opacity:.55;
+  transform-origin:left;transform:scaleX(1)}
+.funnel .fr.y .fb{background:var(--money-dim);border-color:rgba(255,200,87,.28)}
+.funnel .fr.y .fb i{background:var(--money)}
+.funnel .fr.e .fb{background:var(--evi-dim);border-color:rgba(158,140,245,.28)}
+.funnel .fr.e .fb i{background:var(--evi)}
+.funnel .fv{font-family:var(--f-num);font-size:var(--t-data);color:var(--ink-2);
+  font-variant-numeric:tabular-nums}
+
+/* ── 8. 内页：页脚导航 ───────────────────────────────────────────────────── */
+.pnav{display:flex;gap:14px;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;border-top:1px solid var(--line);margin-top:44px;padding-top:20px}
+.pnav .hint{font-size:var(--t-data);color:var(--ink-3);max-width:62ch}
+.pnav .btns{display:flex;gap:10px;flex-wrap:wrap}
+
+/* 内页统一上留白 */
+body[data-page]:not([data-page="home"]) .page{padding-top:8px}
+
+/* p2 里 .rcol 不再是 .grid2 的子项：原规则 .rcol{position:sticky;top:20px;align-self:start}
+   是给「两栏并排、右栏跟着滚」设计的。单独成页后如果还 sticky，它会粘在视口顶部，
+   把后面的内容顶下去 —— 这里明确中和掉，只保留其内部留白。 */
+body[data-page="p2"] .rcol{position:static;align-self:auto}
+body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
+
+/* ── 9. 响应式 ───────────────────────────────────────────────────────────── */
+@media (max-width:1080px){
+  .entry-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:1000px){
+  .entry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .leg3{grid-template-columns:minmax(0,1fr)}
+  .num3{grid-template-columns:minmax(0,1fr)}
+  .funnel .fr{grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}
+  .funnel .fl{text-align:left;grid-column:1}
+  .funnel .fb{grid-column:1 / -1;height:22px}
+  .funnel .fv{grid-column:2;grid-row:1}
+  .navbar a{padding:11px 10px}
+}
+@media (max-width:640px){
+  .entry-grid{grid-template-columns:minmax(0,1fr);gap:8px}
+  .kgrid{grid-template-columns:minmax(0,1fr)}
+  .navbar .wrap{padding:0 var(--s3)}
+  .navbar a{padding:10px 8px;font-size:var(--t-lab)}
+  .navbar .idx{display:none}
+  .num3 > *{padding:16px}
+  .num3 .v{font-size:26px}
+  .pnav{flex-direction:column;align-items:flex-start}
+}
+@media (prefers-reduced-motion: reduce){
+  .navcard{transition:none}
+  .navbar a{transition:none}
+}
+</style>
+
 </head>
-<body>
+<body class="v3" data-page="home">
 <canvas id="rainLayer" aria-hidden="true"
   style="position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none"></canvas>
 <div class="wrap">
@@ -630,6 +956,135 @@
   </div>
 </header>
 
+<!-- 导航条（V4）：内页出现，首页不出现 —— 首页靠下面的 .entry-grid 进入 -->
+<nav class="navbar" aria-label="页面导航">
+  <div class="wrap">
+    <a href="#dashboard" data-go="p1">看板<span class="idx">01</span></a>
+    <a href="#insure"    data-go="p2">投保<span class="idx">02</span></a>
+    <a href="#mypolicy"  data-go="p3">我的保单<span class="idx">03</span></a>
+    <a href="#ops"       data-go="p4">合约与运营<span class="idx">04</span></a>
+    <a href="#notes"     data-go="p5">只读与说明<span class="idx">05</span></a>
+    <a class="home" href="#home" data-go="home">← 回到首页</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     新增首页（V3）：一屏，深色，骑着上面那层雨幕；不新增任何动效。
+     文案全部来自本页/本仓库既有的说法，没有新造口径：
+       触发窗口 12/24h 与国标档位 → 合约 v3 hoursAllowed 白名单 / GB/T 28592—2012
+       R1–R5 与两个哈希          → ai-judge.js / 「诚实说明」原有的句子
+       claim 任何人可触发        → 合约本身没有定时器（原页同样写明）
+     右侧刻度用的是**链上现值** 67/128/39/162/0 —— 与看板「演示值 · 链上」同一把尺子。
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div class="page" id="p-home">
+<section class="cover">
+  <div class="cover-grid">
+    <div class="cover-l">
+      <h2 class="title">雨证<i>·</i>RainProof<em>Parametric Rain Insurance</em></h2>
+      <p class="kind">给外卖骑手的参数化降雨险</p>
+      <p class="claim">雨量越线，就<b>按链上数据赔</b>。</p>
+      <p class="claim2">不查勘、不定损、骑手不用举证。</p>
+      <hr>
+      <dl class="facts">
+        <div><dt>赔付触发</dt><dd>链上雨量越过阈值线 —— 12 / 24 小时窗口，分档下限按 <b>GB/T 28592—2012</b></dd></div>
+        <div><dt>判定依据</dt><dd>R1–R5 确定性规则链；<b>输入快照与输出结论各一个哈希</b>上链，第三方拿同一份快照重跑，逐字节相同</dd></div>
+        <div><dt>谁来付款</dt><dd>合约资金池结算 —— <code>claim</code> 任何人可触发，<b>合约本身没有定时器</b>，判定必须有人提交</dd></div>
+      </dl>
+      <div class="cover-cta">
+        <a class="btn primary" href="#dashboard" data-go="p1">进入看板 ↓</a>
+        <a class="btn" href="verifier.html">链上核验台</a>
+      </div>
+      <p class="cover-meta">BOT Chain 677 · v3 合约 · 0x89e7…596a · 不依赖任何区块浏览器<br>数据直接向公共节点提问取得；连不上时按四层降级，并在页首如实标出读的是哪一层</p>
+    </div>
+
+    <aside class="cover-r" aria-hidden="true">
+      <div class="scale">
+        <p class="scale-cap">雨幕刻度<em>rain scale</em></p>
+        <div class="scale-body">
+          <div class="scale-rail">
+            <span class="tk" style="bottom:100%">162</span>
+            <span class="tk" style="bottom:61.728%">100</span>
+            <span class="tk m" style="bottom:30.864%">50</span>
+            <span class="tk" style="bottom:0">0</span>
+            <span class="cty" style="bottom:100%">广州<i>162</i><em>满量程</em></span>
+            <span class="cty" style="bottom:79.012%">上海<i>128</i></span>
+            <span class="cty" style="bottom:41.358%">武汉<i>67</i></span>
+            <span class="cty" style="bottom:24.074%">北京<i>39</i></span>
+            <span class="cty rj" style="bottom:0">成都<i>0</i><em>闸门拒收</em></span>
+          </div>
+        </div>
+        <p class="scale-note">刻度 = max(阈值 × 2, 五城最大值) = 162 mm<br>左侧为分度，右侧为链上现值；成都真值 173 mm 但被喂价闸门拒收，链上就是 0</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ── 入口矩阵（V4 新增）：把原来一条长卷里的五个板块，变成五张可跳转的卡 ──────
+     卡上的说辞全部取自它要去的那一页的既有文案，没有新造口径。
+     左侧 2px 色条与目标页的分区归属同色（青=量测 / 琥珀=金额 / 鸢尾=留痕）。 -->
+<section class="entry">
+  <div class="entry-hd">
+    <h3>五个入口，从这里进去</h3>
+    <em>five doors</em>
+    <span class="r">每一页都是独立地址 · 可刷新、可后退、可分享</span>
+  </div>
+  <div class="entry-grid">
+
+    <a class="navcard" href="#dashboard" data-go="p1">
+      <span class="ni">01</span>
+      <span class="nt">降雨量测看板</span>
+      <span class="nd">五城同一把尺子，满量程 = 2 × 阈值。越线的那一段用金额色。</span>
+      <span class="ntag">measure</span>
+      <span class="go">进入 →</span>
+    </a>
+
+    <a class="navcard c-money" href="#insure" data-go="p2">
+      <span class="ni">02</span>
+      <span class="nt">开一张保单</span>
+      <span class="nd">选区域与保障时长，保费链上取值。理赔只看投保后的增量。</span>
+      <span class="ntag">money</span>
+      <span class="go">进入 →</span>
+    </a>
+
+    <a class="navcard" href="#mypolicy" data-go="p3">
+      <span class="ni">03</span>
+      <span class="nt">我的保单</span>
+      <span class="nd">逐份读链上：保障期进度、增量条、链上 AI 判定与两个哈希。</span>
+      <span class="ntag">policy</span>
+      <span class="go">进入 →</span>
+    </a>
+
+    <a class="navcard c-evi" href="#ops" data-go="p4">
+      <span class="ni">04</span>
+      <span class="nt">合约配置与运营</span>
+      <span class="nd">合约地址、只读连接、资金池注资 —— 低频配置，默认收起。</span>
+      <span class="ntag">evi</span>
+      <span class="go">进入 →</span>
+    </a>
+
+    <a class="navcard" href="#notes" data-go="p5">
+      <span class="ni">05</span>
+      <span class="nt">只读模式与诚实说明</span>
+      <span class="nd">没连钱包也能看全部数据；喂价是中心化预言机，这是已知边界。</span>
+      <span class="ntag">notes</span>
+      <span class="go">进入 →</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- ── 首页脚注（只在首页出现）────────────────────────────────────────────── -->
+<footer class="foot" id="homeFoot">
+  <span><b>雨证 · RainProof</b> · 参数化降雨险</span>
+  <span>BOT Chain <b>677</b></span>
+  <span>合约 <b class="mono" title="0x89e7C942535930B61cB61631051E8b0bD670596a">0x89e7…596a</b></span>
+  <span>数据直接向公共节点提问 · 不依赖任何区块浏览器</span>
+</footer>
+</div><!-- /#p-home -->
+
+
+<!-- ══════════════ 页 1 · 降雨量测看板 ══════════════ -->
+<div class="page" id="p1">
 <!-- 读数条：先回答「够不够赔 / 赔过没有 / 现在什么状态」，再请人往下看 -->
 <div class="readouts">
   <div class="ro"><span class="lb">资金池<span class="eni">Pool</span></span><span class="vl" id="poolBal">—</span>
@@ -645,7 +1100,7 @@
 <div class="grid2">
   <!-- ============ 左栏：现状与记录 ============ -->
   <div>
-    <section class="sec lead">
+    <section class="sec lead" data-dom="measure">
       <div class="hd">
         <h2>降雨量测<span class="en">Rainfall readings</span></h2>
         <span class="n">rainfall(uint8) · 五城累计值</span>
@@ -661,7 +1116,7 @@
       <div class="block" id="realBoard" hidden></div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-dom="evi">
       <div class="hd">
         <h2>链上动态<span class="en">On-chain activity</span></h2>
         <span class="n">eth_getLogs · 合约直接发出的事件</span>
@@ -679,11 +1134,22 @@
         <div class="loading">正在读取事件日志<span class="eni">reading event logs</span></div>
       </div>
     </section>
-  </div>
 
-  <!-- ============ 右栏：这一页唯一的动作 + 动作背后的 AI 层 ============ -->
+    <nav class="pnav">
+      <span class="hint">看板回答「链上现在是什么样」。要出钱，去投保页。</span>
+      <span class="btns">
+        <a class="btn primary" href="#insure" data-go="p2">开一张保单 →</a>
+      </span>
+    </nav>
+  </div>
+</div>
+</div><!-- /#p1 -->
+
+
+<!-- ══════════════ 页 2 · 开一张保单 ══════════════ -->
+<div class="page" id="p2">
   <div class="rcol">
-    <section class="sec">
+    <section class="sec" data-dom="money">
       <div class="hd"><h2>开一张保单<span class="en">Open a policy</span></h2><span class="n">buyPolicy(regionId, hours)</span></div>
       <div class="block">
         <div class="note jade" id="howto">
@@ -729,7 +1195,7 @@
       </div>
     </section>
 
-    <section class="sec">
+    <section class="sec" data-dom="evi">
       <div class="hd"><h2>AI 层做了什么<span class="en">What the AI layer does</span></h2><span class="n">链下算 · 链上留痕</span></div>
       <div class="panel">
         <div class="airow"><b>喂价验收</b><span>三模型交叉比对，离群就拒收 —— 拒收本身也上链留痕<span class="eni">Three models cross-checked; an outlier feed is rejected and the rejection is logged on-chain too</span></span></div>
@@ -737,10 +1203,21 @@
         <div class="airow"><b>承保定价</b><span>五个区域的差异化保费，依据串哈希写进 <code>UnderwritingDecision</code> 事件<span class="eni">Region-specific premiums, with the evidence hash in the UnderwritingDecision event</span></span></div>
       </div>
     </section>
-  </div>
-</div>
 
-<section class="sec">
+    <nav class="pnav">
+      <span class="hint">投保与判定都在这一页。看过的单子去哪了，下一页。</span>
+      <span class="btns">
+        <a class="btn" href="#dashboard" data-go="p1">← 回到看板</a>
+        <a class="btn primary" href="#mypolicy" data-go="p3">我的保单 →</a>
+      </span>
+    </nav>
+  </div>
+</div><!-- /#p2 -->
+
+
+<!-- ══════════════ 页 3 · 我的保单 ══════════════ -->
+<div class="page" id="p3">
+<section class="sec" data-dom="money">
   <div class="hd"><h2>我的保单<span class="en">My policies</span></h2><span class="n">policiesOf(account) · 逐份读链上</span>
     <span class="r">按钮点不动时，按钮自己会写出原因</span></div>
   <div class="ptable-head">
@@ -749,10 +1226,25 @@
   <div class="panel" id="myPolicies">
     <div class="empty">连接钱包后，这里会列出你在本合约上的全部保单。<span class="en">Connect a wallet to list your policies on this contract.</span></div>
   </div>
+  <nav class="pnav">
+    <span class="hint">保单是「结果面」。它背后的合约参数，下一页。</span>
+    <span class="btns">
+      <a class="btn" href="#insure" data-go="p2">← 回到投保</a>
+      <a class="btn primary" href="#ops" data-go="p4">合约与运营 →</a>
+    </span>
+  </nav>
 </section>
+</div><!-- /#p3 -->
 
-<details class="cfgbox">
-  <summary>合约配置与运营操作<span class="eni">Contract config & ops</span></summary>
+
+<!-- ══════════════ 页 4 · 合约配置与运营 ══════════════ -->
+<div class="page" id="p4">
+<section class="sec" data-dom="evi">
+  <div class="hd">
+    <h2>合约配置与运营操作<span class="en">Contract config &amp; ops</span></h2>
+    <span class="n">setContract / fundPool · 低频配置</span>
+    <span class="r">地址只存在你自己的浏览器里（localStorage），不上传任何地方</span>
+  </div>
   <div class="panel">
     <div class="cfg">
       <input id="addrInput" spellcheck="false" placeholder="0x… 部署出来的合约地址（42 个字符）">
@@ -771,19 +1263,26 @@
       池子是空的，第一笔赔付都过不去 —— 链上会直接抛 <code>insurance pool empty</code>。
     </div>
   </div>
-</details>
 
-<footer class="foot">
-  <span><b>雨证 · RainProof</b> · 参数化降雨险</span>
-  <span>BOT Chain <b>677</b></span>
-  <span>合约 <b id="footAddr" title="0x89e7C942535930B61cB61631051E8b0bD670596a">0x89e7…596a</b></span>
-  <span>节点 <b id="footNode">rpc.botchain.ai</b></span>
-  <span class="sp">⚠️ 主网节点 <code>rpc.botchain.ai</code> 在部分网络（如中国大陆）<b>无法直连</b>；连不上时页面会依次退到只读中转 → 测试网 968 → 页面自带的链上快照，退到哪一层都会在链名/横幅上如实标出（外网环境正常时读的就是主网实时数据）<span class="eni">Some networks (e.g. mainland China) cannot reach the mainnet RPC; the page then falls back to the read-only relay, then testnet 968, then its bundled on-chain snapshot — always labelled on the chain name / banner. On the open internet it reads mainnet live</span></span>
-  <span class="sp">不依赖任何区块浏览器 · 数据直接向公共节点提问<span class="eni">No block explorer needed — every number is read straight from the public node</span></span>
-</footer>
+  <nav class="pnav">
+    <span class="hint">配置改完，这一页就没有别的动作了。最后是「这一页没做什么」。</span>
+    <span class="btns">
+      <a class="btn" href="#dashboard" data-go="p1">← 回到看板</a>
+      <a class="btn primary" href="#notes" data-go="p5">只读与说明 →</a>
+    </span>
+  </nav>
+</section>
+</div><!-- /#p4 -->
 
-<details class="notes">
-  <summary>只读模式与诚实说明<span class="eni">Read-only mode & notes</span></summary>
+
+<!-- ══════════════ 页 5 · 只读模式与诚实说明 ══════════════ -->
+<div class="page" id="p5">
+<section class="sec" data-dom="measure">
+  <div class="hd">
+    <h2>只读模式与诚实说明<span class="en">Read-only mode &amp; notes</span></h2>
+    <span class="n">已知边界 · 不假装</span>
+  </div>
+  <div class="panel plain">
   <div class="note">
     <p><b>只读模式：</b>没连钱包也能看全部数据。现场万一 MetaMask 出问题，照样能演示「链上有什么」。</p>
     <p><b>诚实说明：</b>喂价脚本是<b>中心化预言机</b>，数据可信度取决于运营方；生产环境应改用去中心化预言机网络
@@ -797,7 +1296,27 @@
     退到快照会写明「<b>BOT Chain Mainnet · 链上快照</b>」，都不会假装还在读实时主网。
     连不上任何节点时，页面上仍然能把整套演示看完：数据全部真实来自链上，只是读到的是某一时刻的读数。</p>
   </div>
-</details>
+  </div>
+
+  <nav class="pnav">
+    <span class="hint">这里是路的尽头。还有疑问，回首页重看。</span>
+    <span class="btns">
+      <a class="btn" href="#ops" data-go="p4">← 回到合约配置</a>
+      <a class="btn primary" href="#home" data-go="home">回到首页</a>
+    </span>
+  </nav>
+</section>
+</div><!-- /#p5 -->
+
+<!-- 全局脚注：只在五个内页出现（首页用上面的 #homeFoot） -->
+<footer class="foot">
+  <span><b>雨证 · RainProof</b> · 参数化降雨险</span>
+  <span>BOT Chain <b>677</b></span>
+  <span>合约 <b id="footAddr" title="0x89e7C942535930B61cB61631051E8b0bD670596a">0x89e7…596a</b></span>
+  <span>节点 <b id="footNode">rpc.botchain.ai</b></span>
+  <span class="sp">⚠️ 主网节点 <code>rpc.botchain.ai</code> 在部分网络（如中国大陆）<b>无法直连</b>；连不上时页面会依次退到只读中转 → 测试网 968 → 页面自带的链上快照，退到哪一层都会在链名/横幅上如实标出（外网环境正常时读的就是主网实时数据）<span class="eni">Some networks (e.g. mainland China) cannot reach the mainnet RPC; the page then falls back to the read-only relay, then testnet 968, then its bundled on-chain snapshot — always labelled on the chain name / banner. On the open internet it reads mainnet live</span></span>
+  <span class="sp">不依赖任何区块浏览器 · 数据直接向公共节点提问<span class="eni">No block explorer needed — every number is read straight from the public node</span></span>
+</footer>
 </div>
 
 <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -2142,5 +2661,85 @@ if (window.ethereum) {
   void raf;
 })();
 </script>
+
+<script id="v4-router-js">
+/* ══════════════════════════════════════════════════════════════════════════════
+   V4 路由 · 只做一件事：把 hash 变成 body[data-page]
+   ──────────────────────────────────────────────────────────────────────────────
+   不碰原有任何函数（定价 / 雨幕 / 事件流 / 真值 / 轮询全部原样）。
+   路由表 = 地址 → 页面 id；data-go 属性 = 声明式跳转；hashchange = 后退/前进。
+   ══════════════════════════════════════════════════════════════════════════════ */
+(function(){
+  "use strict";
+  var ROUTES = {
+    "#home":      "home",   // 首页
+    "#dashboard": "p1",     // 看板
+    "#insure":    "p2",     // 投保
+    "#mypolicy":  "p3",     // 我的保单
+    "#ops":       "p4",     // 合约与运营
+    "#notes":     "p5"      // 只读与说明
+  };
+  var TITLES = {
+    home: "雨证 · RainProof",
+    p1:   "降雨量测看板 · 雨证 RainProof",
+    p2:   "开一张保单 · 雨证 RainProof",
+    p3:   "我的保单 · 雨证 RainProof",
+    p4:   "合约配置与运营 · 雨证 RainProof",
+    p5:   "只读模式与诚实说明 · 雨证 RainProof"
+  };
+
+  function pageFromHash(){
+    var h = location.hash || "#home";
+    // 允许 #dashboard#anchor 这类写法：只取第一段
+    if (h.indexOf("#", 1) > 0) h = h.slice(0, h.indexOf("#", 1));
+    return ROUTES[h] || "home";
+  }
+
+  function navFor(page){
+    // 页面 ↔ 导航项 的反查
+    for (var k in ROUTES) if (ROUTES[k] === page) return k;
+    return "#home";
+  }
+
+  function apply(){
+    var page = pageFromHash();
+    document.body.setAttribute("data-page", page);
+    document.title = TITLES[page] || TITLES.home;
+
+    // 导航高亮
+    var want = navFor(page);
+    var links = document.querySelectorAll(".navbar a[data-go]");
+    for (var i = 0; i < links.length; i++){
+      var on = links[i].getAttribute("href") === want;
+      links[i].classList.toggle("on", on);
+      if (on) links[i].setAttribute("aria-current", "page");
+      else links[i].removeAttribute("aria-current");
+    }
+
+    // 每次换页回到顶部（否则从长页跳到短页会停在半空）
+    if (!apply._first) window.scrollTo(0, 0);
+    apply._first = false;
+  }
+
+  // 声明式跳转：任何带 data-go 的元素，点击即改 hash（改 hash 会触发 hashchange → apply）
+  document.addEventListener("click", function(e){
+    var el = e.target.closest ? e.target.closest("[data-go]") : null;
+    if (!el) return;
+    var href = el.getAttribute("href");
+    if (!href || href.charAt(0) !== "#") return;   // 外链（verifier.html）交给浏览器
+    e.preventDefault();
+    if (location.hash === href) apply();           // 同页点击也要有反馈
+    else location.hash = href;
+  });
+
+  window.addEventListener("hashchange", apply);
+
+  // 首屏：没带 hash 时按 #home 处理，并补一个 hash（这样「后退」第一次就有效）
+  if (!location.hash) { apply._first = true; location.replace(location.pathname + location.search + "#home"); }
+  else { apply._first = true; apply(); }
+  apply();
+})();
+</script>
+
 </body>
 </html>
