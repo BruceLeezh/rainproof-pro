@@ -68,7 +68,7 @@ for (const h of [12, 24]) {
 for (const h of [48, 72]) {
   const key = F.meta.address.toLowerCase() + ":" + iface.encodeFunctionData("hoursAllowed", [h]).toLowerCase();
   ok(F.calls[key] && !!F.calls[key].revert,
-    "④ hoursAllowed(" + h + ") 在快照里如实记录为 revert（v3 现行只卖 12/24；check-ui.js 的 24/48/72 是 v2 静态口径）");
+    "④ hoursAllowed(" + h + ") 在快照里如实记录为 revert（v3 现行只卖 12/24；check-ui.js 的静态脚手架同样只列 12/24）");
 }
 const premSel = iface.getFunction("premiumOf(uint8,uint256,uint8,uint8,uint256)").selector;
 const premKeys = Object.keys(F.calls).filter((k) => k.split(":")[1] && k.split(":")[1].startsWith(premSel));

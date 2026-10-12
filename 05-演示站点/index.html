@@ -1233,9 +1233,8 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
         <div class="chips" id="hoursChips" role="group" aria-labelledby="hoursLabel" style="margin-top:8px"></div>
         <label class="vh" id="hoursLabel">保障时长 / cover window</label>
         <select id="hoursInput" class="vh" disabled tabindex="-1" aria-hidden="true">
-          <option value="24">24 小时（1 天） / 24 h</option>
-          <option value="48">48 小时（2 天） / 48 h</option>
-          <option value="72" selected>72 小时（3 天，最长） / 72 h</option>
+          <option value="12">12 小时 / 12 h</option>
+          <option value="24" selected>24 小时（1 天） / 24 h</option>
         </select>
 
         <div class="quote">
@@ -1700,7 +1699,7 @@ async function boot() {
     // 这时 getReadProvider 会自动退到测试网 968。必须说出来，别让人以为看的是主网数据。
     if (S.chain && S.chain.chainId === 968 && !RPC_OVERRIDE) {
       toast("主网节点 rpc.botchain.ai 在当前网络不可达（中国大陆需代理才能直连），已自动切到测试网 968（v2 口径）/ mainnet RPC unreachable here — fell back to testnet 968");
-      setWarn("testnet", "⚠ 现在读到的是测试网 968 的 v2 数据，不是主网 677 的现行产品（主网节点 rpc.botchain.ai 在此网络不可达）。968 是 24/48/72 三档、三级分档；677 现行是 12/24、两级 —— 两套口径不同，页内数字都取自这一层。");
+      setWarn("testnet", "⚠ 现在读到的是测试网 968 的 v2 数据，不是主网 677 的现行产品（主网节点 rpc.botchain.ai 在此网络不可达）。这一层是 v2 留痕合约（链上卖 24/48/72 三档、三级分档），本页只列 677 现行的 12/24 两级口径 —— 这一层能卖的只有 24 小时，页内数字都取自这一层。");
     }
     // 页脚写的节点名要跟实际连的一致，否则读着 968、页脚还写着 rpc.botchain.ai。
     if (S.chain && $("footNode")) $("footNode").textContent = S.chain.frozen ? "链上快照（离线文件 frozen-node.js）" : S.chain.url.replace(/^https?:\/\//, "");
@@ -1784,15 +1783,14 @@ async function attachContract(addr, quiet) {
     // （judgements 少一个 rainfallAtJudgement、policies 少一个 payer）—— 2026-10-12 由 B 复核发现。
     try { await S.readC.entryThresholdOf(24); S.kind = "v3"; }
     catch (e) { S.kind = "v2"; S.readC = new ethers.Contract(addr, ABI_V2, S.provider); }
-    // 时长档先按合约的 hoursAllowed(h) 白名单收窄（v2 = {24,48,72}、v3 = {12,24}）。
+    // 时长档：候选只列**主网现行 v3 的产品口径 {12, 24}** —— 48/72 是 968 上 v2 的旧外推档、v3 已删，
+    // 不再出现在页面上（2026-10-12 用户裁定「只出现 12/24」，同时解掉 A38 / J10：静态脚手架别摆 v3 不卖的档）。
+    // 某一层实际能卖哪几档仍由链上 hoursAllowed(h) 说了算：v3 = {12,24}、v2 = {24,48,72} ⇒ 968 上这一栏
+    // 只剩 24 小时（12 会被 v2 拒），界面上出现的每一档都是这一层真能卖的。
     // 顺序很重要：v3 的 entryThresholdOf() 只对合约允许的档位有定义，拿 72 去问会 revert，
     // 一 revert 就把整块元信息拖垮（整页读数是「—」）—— 2026-10-08 第一次改的时候踩的就是这个坑。
-    // 候选档位是**固定的四档**，能卖哪几档由链上 hoursAllowed(h) 说了算：v3 = {12,24}、v2 = {24,48,72}。
-    // 以前是遍历静态 select 的选项（只有 24/48/72），于是 v3 只能把 48/72 标灰、看不到 12 小时档；
-    // 现在按链上的答案重建选项 —— 界面上出现的档位恰好就是合约肯卖的那几档。
-    const HOUR_LABEL = { 12: "12 小时 / 12 h", 24: "24 小时（1 天） / 24 h",
-                         48: "48 小时（2 天） / 48 h", 72: "72 小时（3 天，最长） / 72 h" };
-    const hourCands = [12, 24, 48, 72];
+    const HOUR_LABEL = { 12: "12 小时 / 12 h", 24: "24 小时（1 天） / 24 h" };
+    const hourCands = [12, 24];
     const allowed = [];
     for (const v of hourCands) {
       let ok = false;
@@ -2331,8 +2329,9 @@ function renderReal() {
   }
 })();
 
-/* 时长片：档位表直接取自 #hoursInput 的选项 —— 元信息那步已经按链上 hoursAllowed(h) 把选项重建过，
-   所以 968 上的 v2 是 24/48/72、677 上的 v3 是 12/24；合约不卖的档位根本不会出现在界面上。
+/* 时长片：档位表直接取自 #hoursInput 的选项 —— 元信息那步已按链上 hoursAllowed(h) 收窄过
+   （候选是主网现行 v3 的 {12,24}：677 上两档都在，968 上 v2 只卖 24 小时），
+   合约不卖的档位根本不会出现在界面上。
    （原生 select 仍留在 DOM 里当唯一真相：门禁 check-ui ② 要求它在，投保路径也从它读 hours。） */
 function markHoursChips() {
   const sel = $("hoursInput");

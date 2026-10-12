@@ -3,7 +3,7 @@
 // ① 降雨看板的「刻度」与「触发线」必须指同一个地方
 //    真实修过的 bug：条子按 0→阈值 画（阈值落在条尾），触发线却写死在 left:50%（=25mm），
 //    于是页面上「50 在块的最后、触发线却在中间」—— 视觉上自相矛盾。结论：错的是公式不是线。
-// ② 保障时长只能是几档下拉（静态脚手架 = 24/48/72，v3 现行 = 12/24）
+// ② 保障时长只列主网现行 v3 的两档（静态脚手架 12/24，运行时按链上 hoursAllowed 收窄）
 //    产品设计上短窗口档的公平保费比一次交易的手续费还便宜 51 倍，所以只卖有限几档
 //    （见 02-作战与答辩/定价-时长差异化设计.md）。自由输入会让人选出 1~72 的任意值。
 //    口径分两层，两层都对：静态 <select> 记的是 v2 的三档（那套设计的痕迹，本文件钉它不被改成自由输入），
@@ -49,22 +49,23 @@ console.log("\n[① 降雨看板] 刻度与触发线必须指同一个地方");
   ok("没有区域被算成负数", vals.every(([, v]) => pct(v) >= 0));
 }
 
-console.log("\n[② 保障时长] 只能是固定的几档下拉（静态脚手架 24/48/72 = v2 口径；v3 运行时收窄成 12/24）");
+console.log("\n[② 保障时长] 静态脚手架只能是主网现行 v3 的两档（12/24），某层实际卖哪几档由链上 hoursAllowed 说了算");
 {
   ok("hoursInput 是 <select> 不是自由输入框", /<select id="hoursInput"/.test(index) && !/<input id="hoursInput"/.test(index));
   const blk = index.match(/<select id="hoursInput"[\s\S]*?<\/select>/);
   const opts = blk ? [...blk[0].matchAll(/value="(\d+)"/g)].map(m => m[1]) : [];
-  ok("档位正好是 24 / 48 / 72（按顺序）", opts.join(",") === "24,48,72", opts.join(",") || "没解析到 options");
-  ok("默认选中 72 小时", blk ? /value="72"[^>]*selected/.test(blk[0]) : false);
+  ok("静态脚手架只有 12 / 24（按顺序；不再摆 v3 已删的 48/72）", opts.join(",") === "12,24", opts.join(",") || "没解析到 options");
+  ok("默认选中 24 小时（v3 两档里的长档）", blk ? /value="24"[^>]*selected/.test(blk[0]) : false);
   ok("JS 用 .value 读它（select 没有 valueAsNumber）", !/hoursInput"\)\.valueAsNumber/.test(index) && /Number\(\$\("hoursInput"\)\.value\)/.test(index));
-  ok("档位说明与设计页一致（上限 72）", /72 小时/.test(index));
+  ok("档位标签与设计页一致（12 小时 / 24 小时）", /12 小时/.test(index) && /24 小时/.test(index));
 
-  // A38：上面几条钉的是**静态脚手架**（v2 口径 24/48/72），而 v3 现行只卖 12/24 —— 两套口径不是矛盾，
-  // 是「静态标记 + 链上白名单收窄」两层。这条断言要求第二层存在：候选四档表 + 逐档问链上 hoursAllowed。
-  // 少了第二层，页面就会把 v3 不卖的 48/72 摆出来卖（点了链上必 revert），这才是不一致的坏法。
-  ok("静态候选由链上 hoursAllowed(h) 收窄（v3 只放 12/24，不是照静态三档直接卖）",
-     /const hourCands = \[12, 24, 48, 72\]/.test(index) && /hoursAllowed\(/.test(index),
-     "index.html 里没找到「候选四档 + hoursAllowed」的收窄代码");
+  // A38 / J10（2026-10-12 用户裁定「只出现 12/24」）：静态脚手架 = 主网现行 v3 口径 12/24，
+  // 运行时再按链上 hoursAllowed(h) 收窄成「这一层真能卖的档位」（968 上的 v2 只放 24）。
+  // 两层缺一不可：少了收窄，页面会把这一层不卖的档摆出来卖（点了链上必 revert）；
+  // 候选里带上 48/72，就会在 v3 上列出已删的档、默认值还是 677 非法的 72 小时。
+  ok("候选只有 12/24，并由链上 hoursAllowed(h) 收窄",
+     /const hourCands = \[12, 24\]/.test(index) && /hoursAllowed\(/.test(index),
+     "index.html 里没找到「候选 12/24 + hoursAllowed 收窄」的代码");
 }
 
 console.log("\n[③ DOM 契约] 页面 JS 引用的 id / class 必须真实存在");
