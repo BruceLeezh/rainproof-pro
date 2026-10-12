@@ -761,7 +761,7 @@
    新值全部落在 body[data-page] 这一层。颜色、数据、动效、事件逻辑一律未改。
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* ── 0. 投影：把六个页面装进同一个文档 ─────────────────────────────────────── */
+/* ── 0. 投影：把五个页面装进同一个文档 ─────────────────────────────────────── */
 .page{display:none}
 body[data-page="home"] #p-home,
 body[data-page="p1"]   #p1,
@@ -770,13 +770,13 @@ body[data-page="p3"]   #p3,
 body[data-page="p4"]   #p4,
 body[data-page="p5"]   #p5{display:block}
 
-/* 两个脚注互斥：首页用 #homeFoot（贴在各入口卡下面），五个内页用全局 .foot。
+/* 两个脚注互斥：首页用 #homeFoot（贴在各入口卡下面），四个内页用全局 .foot。
    不加这一条会出现「首页上两个脚注都显示」——首页脚注 + 全局脚注。 */
 body[data-page="home"] #homeFoot{display:flex}
 body:not([data-page="home"]) #homeFoot{display:none}
 body[data-page="home"] > .wrap > .foot{display:none}
 
-/* ── 1. 顶栏：六页共用，吸顶 ──────────────────────────────────────────────── */
+/* ── 1. 顶栏：五页共用，吸顶 ──────────────────────────────────────────────── */
 body[data-page] header.plate{position:sticky;top:0;z-index:30;
   background:rgba(5,10,18,.88);backdrop-filter:blur(14px) saturate(150%)}
 @supports not (backdrop-filter:blur(14px)){
@@ -803,10 +803,10 @@ body[data-page]:not([data-page="home"]) .navbar{display:block}
 #p-home{position:relative;z-index:1}
 /* 首页不追「一屏」：用固定留白把 hero 与入口卡压在一起。
    原来写 min-height:calc(100vh - 300px) 是错的 —— 窗口一高就撑出一大片空白。
-   首页的任务是把项目讲清楚 + 给出五个入口，不是填满屏幕。 */
+   首页的任务是把项目讲清楚 + 给出四个入口，不是填满屏幕。 */
 #p-home .cover{border-bottom:0;min-height:0;padding:44px 0 40px}
 
-/* 入口矩阵：五张卡，取代「一条长卷」 */
+/* 入口矩阵：四张卡，取代「一条长卷」 */
 .entry{margin:0 0 36px}
 .entry-hd{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 14px}
 .entry-hd h3{font-size:var(--t-h1);font-weight:640;letter-spacing:-.01em;color:var(--ink)}
@@ -1040,13 +1040,13 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   </div>
 </section>
 
-<!-- ── 入口矩阵（V4 新增）：把原来一条长卷里的五个板块，变成五张可跳转的卡 ──────
+<!-- ── 入口矩阵（V4 新增）：把原来一条长卷里的四个板块，变成四张可跳转的卡 ──────
      卡上的说辞全部取自它要去的那一页的既有文案，没有新造口径。
      左侧 2px 色条与目标页的分区归属同色（青=量测 / 琥珀=金额 / 鸢尾=留痕）。 -->
 <section class="entry">
   <div class="entry-hd">
-    <h3>五个入口，从这里进去</h3>
-    <em>five doors</em>
+    <h3>四个入口，从这里进去</h3>
+    <em>four doors</em>
     <span class="r">每一页都是独立地址 · 可刷新、可后退、可分享</span>
   </div>
   <div class="entry-grid">
@@ -1344,7 +1344,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
 
 <!-- 页 5「只读模式与诚实说明」已于 2026-10-12 晚并入首页末尾（原 #notes 地址见下方 ROUTES 的别名） -->
 
-<!-- 全局脚注：只在五个内页出现（首页用上面的 #homeFoot） -->
+<!-- 全局脚注：只在四个内页出现（首页用上面的 #homeFoot） -->
 <footer class="foot">
   <span><b>雨证 · RainProof</b> · 参数化降雨险</span>
   <span>BOT Chain <b>677</b></span>
