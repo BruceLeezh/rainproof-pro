@@ -459,7 +459,7 @@
   select{cursor:pointer;font-family:var(--f-ui);font-size:var(--t-body);appearance:none;padding-right:34px;
     background-image:linear-gradient(45deg,transparent 50%,var(--ink-2) 50%),linear-gradient(135deg,var(--ink-2) 50%,transparent 50%);
     background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
-  /* 时长片是 select 的代理控件：select 留在 DOM 里（原生语义与键盘可用），视觉上退出 */
+  /* 时长片是 select 的代理控件：select 留在 DOM 里（当状态与门禁契约：check-ui ② 要求它带着那三个选项在场；它 disabled，用户点不到），视觉上退出 */
   .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   label.mlabel{display:block;margin-bottom:6px}
   .k{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.06em}
@@ -1230,9 +1230,9 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
         <select id="regionSel" class="vh"></select>
 
         <div class="k" style="margin-top:var(--s4)">保障时长<span class="eni">Cover window</span></div>
-        <div class="chips" id="hoursChips" style="margin-top:8px"></div>
-        <label class="vh" for="hoursInput">保障时长</label>
-        <select id="hoursInput" class="vh" disabled>
+        <div class="chips" id="hoursChips" role="group" aria-labelledby="hoursLabel" style="margin-top:8px"></div>
+        <label class="vh" id="hoursLabel">保障时长 / cover window</label>
+        <select id="hoursInput" class="vh" disabled tabindex="-1" aria-hidden="true">
           <option value="24">24 小时（1 天） / 24 h</option>
           <option value="48">48 小时（2 天） / 48 h</option>
           <option value="72" selected>72 小时（3 天，最长） / 72 h</option>
@@ -2893,7 +2893,7 @@ if (window.ethereum) {
   const sel = $("regionSel");
   sel.innerHTML = REGIONS.map(r => `<option value="${r.id}">${r.label}（#${r.id}）</option>`).join("");
   // 城市片与时长片是这两个 select 的代理控件：点它们 = 写回 select 再触发它的 change，
-  // 原生 select 留在 DOM 里（原生语义、键盘可达，门禁 check-ui ② 也要求它带着那三个选项在场）
+  // 原生 select 留在 DOM 里（当状态与门禁契约：check-ui ② 要求它带着那三个选项在场；它 disabled + aria-hidden，不是用户控件，可达的是 #hoursChips 里的 button）
   $("regionChips").innerHTML = REGIONS.map(r =>
     `<button class="chip" data-region="${r.id}">${r.label}</button>`).join("");
   $("regionChips").onclick = (e) => {

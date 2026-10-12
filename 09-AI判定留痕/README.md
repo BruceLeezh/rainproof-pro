@@ -9,7 +9,7 @@
 |---|---|---|---|
 | `rainproof/judge-input@1` | `snapshot-policy{N}.json` | `snapshot` + `inputHash` | `snapshot.collectVersion` = `ai-collect-v1`；`snapshot.policyId`；`snapshot.collectedAt`；`snapshot.simulated`；`snapshot.epoch`；`snapshot.region`；`snapshot.policy`（rider / 时间窗 / 买入时雨量）；`snapshot.oracle`（`cumulativeMm` / `officialIncrementMm` / `contract` / `chainId`） |
 | `rainproof/judgement@1` | `judgement-policy{N}.json` | `judgement` + `outputHash` | `judgement.judgeVersion` = `ai-judge-v1`；`judgement.policyId`；`judgement.decidedAt`；`judgement.decision` / `decisionLabel`（DENY / PAY）；`judgement.confidence`；`judgement.sources`；`judgement.simulated`；`judgement.metrics`（`thresholdMm` / `minConfidence` / `officialIncrementMm` / 三模型增量 / `medianMm` / `spreadMm` / `agreeCount` / `divergencePct`） |
-| `rainproof/underwrite-review@1` | `承保复核-chain{chainId}-policy{N}.json` | `schema` / `review` / `reviewHash` / `reviewedAt` / `file` | 承保复核记录；`review.policyId`、`review.chainId`；`file` 字段写的是导出时的**旧本机绝对路径**（历史值，未回改） |
+| `rainproof/underwrite-review@1` | `承保复核-chain{chainId}-policy{N}.json` | `schema` / `review` / `reviewHash` / `reviewedAt` / `file` | 承保复核记录；`review.policyId`、`review.chainId`；`file` 字段写的是导出时的**旧本机绝对路径**（历史值，未回改）。**本目录 9 份实测全是 `@1`**（2026-10-12 复核）；当前脚本写的是 `@3`（`04-脚本/hook-watch.js:60-61`：`payoutWei` 也从 `review` 挪进 `observed` —— 未赔付保单链上 `payout` 恒 0，放进哈希会让「赔付后重算同一条留痕」换哈希）。**既有 `@1` 文件不回改、不重签** |
 
 ## 2. 根目录留痕（判断环节，按保单号 policyId）
 

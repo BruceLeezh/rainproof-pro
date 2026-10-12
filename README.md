@@ -240,6 +240,12 @@ AI 判定登记后不影响已生效的赔付条件。详见下面「已知边�
   `policyStatus()` 这类**会随赔付/退保而变的链上读数移出 `review`、改记在 `observed` 段**。
   它们原来在 `review` 里，等于同一份留痕隔天重算就换哈希 —— 「每条留痕的哈希都能当场重算」
   这条门禁会因链上状态自己变了而红，报的还不是错。`observed` 只给人看，不参与复算。
+  **2026-10-12 起（schema `rainproof/underwrite-review@3`；`04-脚本/hook-watch.js:60-61` 的
+  `REVIEW_VERSION = "hook-watch@3"`）**：`payoutWei` 也移出 `review` 进 `observed` —— 未赔付的
+  保单链上 `payout` 恒为 0，「能赔多少」得问与 `claim()` 同源的 `payoutOf()`（口径见
+  `04-脚本/keeper.js` 的 `payoutOf` 段）；把它放进 `review` 同样会让「赔付后重算同一条留痕」
+  换哈希。`09-AI判定留痕/` 里既有的 `@1` 记录**不回改、不重签**（那时 `review` 里确实有
+  可变量，属历史事实）。
 - **测试**：`check-canonical.js`、`check-ai.js`（29 项 + 1369 个用例的硬约束扫描，含「每条留痕的哈希都能当场重算」）、`check-feed-verify.js`（喂价闸门判定 12 项 + 承保复核判定 7 项，含「极差超容差但三个都离中位数很近 → 必须判一致」这条回归用例）、
   `check-ui.js`（前端契约：降雨看板刻度与触发线对齐、保障时长三档下拉、三个页面 DOM 引用完整）、
   `e2e_contract.js`（v1 合约，73 项断言）、`e2e_v2.js`（v2 合约，101 项断言）。
