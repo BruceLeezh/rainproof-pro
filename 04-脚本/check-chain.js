@@ -12,6 +12,10 @@
  *   node check-chain.js code   0x5f7040...     # 查合约（链上到底有没有代码）
  */
 
+// E23：本文件读的 `SEPOLIA_RPC` 就在 04-脚本/.env 里，但它原来没加载 .env（04-脚本 里
+// 唯一漏掉这行 require 的脚本）—— 于是「兜底工具」只认 shell 环境变量，.env 改了它不知道，
+// 默认悄悄退回 Sepolia 公共节点。补上这一行，注释里的「与 ai-collect / hook-watch 一致」才成立。
+require("dotenv").config();
 const { JsonRpcProvider } = require("ethers");
 
 // RPC 优先读环境变量（04-脚本/.env 的 SEPOLIA_RPC，与 ai-collect / hook-watch 一致），

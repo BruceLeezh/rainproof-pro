@@ -130,6 +130,27 @@ const ONLY_REGION = (() => {
   return n ? Number(n) : null;
 })();
 
+/* E22：--demo 的「+60~130mm」原来是裸 Math.random() —— 同一句命令两次跑，写进链上的累计值
+   与证据哈希都不一样，演示材料里的「模拟暴雨」没法复现。现在每次运行都有一个种子：
+   不带 --seed=（或没有 --seed=N）就取一个并**打出来**，把 seed 抄回去就能一模一样再跑一遍。
+   用 --seed=N（等号形式）而不是 `--seed N`，避免和「纯数字参数 = 区域号」的解析打架。 */
+const SEED = (() => {
+  const raw = (ARGV.find((a) => a.startsWith("--seed=")) || "").split("=")[1];
+  if (raw === undefined) return Date.now() % 2147483647;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 0 || n > 2147483646) {
+    throw new Error(`--seed= 需要一个 0~2147483646 的整数，收到：${JSON.stringify(raw)}`);
+  }
+  return n;
+})();
+// mulberry32（32 位种子 → [0,1)）：几行就够，不为一个演示随机数引依赖。
+const rng = ((a) => () => {
+  a = (a + 0x6d2b79f5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+})(SEED);
+
 /* ------------------------------------------------------------- 天气数据源 */
 
 /* ★ 日期口径统一走 ./shardate（东八区，A11）。原来这里是**主机本地时区**切法
@@ -467,7 +488,8 @@ async function main() {
     let mm, srcNote, conf, sources, snapshot;
     if (DEMO) {
       // 模拟暴雨：在链上现值基础上加 60~130mm，保证稳稳越过阈值
-      const add = 60 + Math.floor(Math.random() * 71);
+      // （种子化：见上面的 SEED/rng —— 只有 DEMO 用随机数，且 seed 会打出来）
+      const add = 60 + Math.floor(rng() * 71);
       mm = current + add;
       conf = 90;
       sources = 3;
@@ -591,6 +613,8 @@ async function main() {
         : "⚠️ 本次推送的是【模拟降雨数据】，仅用于演示。答辩材料里请如实说明。"
     ));
   }
+  // E22：把这次用的随机种子写进日志。要一模一样复现这组模拟增量，照抄这一行即可。
+  if (DEMO) console.log(C.dim(`   随机种子 seed=${SEED} —— 复现同一次：node push-rainfall.js --demo --seed=${SEED}`));
 
   if (over.length) {
     console.log("\n" + C.b("🎯 现在可以去前端点「申请赔付」了："));

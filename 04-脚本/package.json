@@ -10,6 +10,7 @@
     "deploy:v1": "node deploy.js --v1",
     "deploy:v2": "node deploy.js --v2",
     "deploy-multisig": "node deploy-multisig.js",
+    "deploy-pricing-v3": "node deploy-pricing-v3.js",
     "feed-verify": "node feed-verify.js",
     "push": "node push-rainfall.js",
     "status": "node push-rainfall.js --status",
@@ -26,7 +27,8 @@
     "submit": "node submit-judgement.js",
     "hook": "node hook-watch.js --once --v2",
     "rehearse": "node rehearse-v2.js",
-    "premium": "node set-premium.js"
+    "premium": "node set-premium.js",
+    "self-check": "node shardate.js --self-check && node hook-watch.js --self-check && node ai-collect.js --self-check && node push-rainfall.js --self-check"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

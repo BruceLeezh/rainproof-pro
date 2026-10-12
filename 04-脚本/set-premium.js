@@ -29,7 +29,8 @@
  *
  * 【用法】必须在 04-脚本 目录下跑（否则读不到 .env）
  *   node set-premium.js            只算不算，打印派生表（默认，安全）
- *   node set-premium.js --apply    真的发交易
+ *   node set-premium.js --apply    真的发交易（写上链后逐区域回读断言，对不上就报错退出）
+ *   node set-premium.js --apply --yes-mainnet   主网 677 必须额外确认这一次（与 deploy.js 同一道闸）
  *   node set-premium.js --hours=48 换窗口看看（只影响本次计算，链上仍应保持 72h）
  *
  * 【环境变量】.env：SEPOLIA_RPC / CONTRACT_ADDRESS / PRIVATE_KEY
@@ -164,7 +165,6 @@ async function pickKind(provider) {
   const abi = JSON.parse(fs.readFileSync(ABI_BY_KIND[kind], "utf8"));
   const c = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, provider);
   console.log(`\n链 chainId=${net.chainId}  合约 ${process.env.CONTRACT_ADDRESS}  ABI ${kind}`);
-
   // v2/v3 的保费按 (regionId, hours) 二维定价：hours 传错不会报错，只会读到**另一个窗口的价**，
   // 然后被当成「已经是目标值」跳过，或把错价写成目标价。所以先照链上的 hoursAllowed 校验一遍。
   if (abi.some((x) => x.name === "hoursAllowed")) {
@@ -189,15 +189,37 @@ async function pickKind(provider) {
 
   if (!APPLY) { console.log("\n[默认] 只算不算。确认无误后加 --apply 真的发交易。"); return; }
 
+  // E24：写路径先认链、再认主网 —— 与 deploy.js:127-136 / deploy-multisig.js:146-147 同一道闸。
+  //   改价是花真 gas 的真交易：RPC 指到一条认不出的链上时，下面「比对过了、写进去了」
+  //   全程不报错，等于把价写到了别处；677 是主网，要额外一次显式确认。
+  const KNOWN_CHAINS = { 11155111: "Sepolia", 677: "BOT Chain 主网", 968: "BOT Chain 测试网" };
+  if (!KNOWN_CHAINS[Number(net.chainId)]) {
+    throw new Error(`chainId=${net.chainId} 不是已知的真链（${Object.values(KNOWN_CHAINS).join(" / ")}），拒绝写价`);
+  }
+  if (Number(net.chainId) === 677 && !ARGV.includes("--yes-mainnet")) {
+    throw new Error("主网 677 改真价要加 --yes-mainnet（与 deploy.js 同一道闸，防误发）");
+  }
+  const sym = Number(net.chainId) === 677 || Number(net.chainId) === 968 ? "BOT" : "SepETH";
+
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
   const wc = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, wallet);
-  console.log(`\n签名账户 ${wallet.address}  余额 ${ethers.formatEther(await provider.getBalance(wallet.address))} ETH\n`);
+  console.log(`\n签名账户 ${wallet.address}  余额 ${ethers.formatEther(await provider.getBalance(wallet.address))} ${sym}\n`);
   for (const r of onchain) {
     const want = ethers.parseEther(r.premiumEth);
     if (r.cur === want && Number(r.lvl) === r.level) { console.log(`  #${r.id} ${r.name} 已是目标值，跳过`); continue; }
     const tx = await wc.setUnderwriting(r.id, r.level, want, reasonHash);
     const rc = await tx.wait();
-    console.log(`  #${r.id} ${r.name}  ${ethers.formatEther(r.cur)} → ${r.premiumEth}  tx ${tx.hash}  区块 ${rc.blockNumber}  gas ${rc.gasUsed}`);
+    // E24：写后必须回读断言 —— 「交易发出去 + 打印了哈希」不等于「链上真是这个价」。
+    //   回读走只读合约 c（同一 provider，交易已确认）；读回来跟写入目标不一致就直接报错退出，
+    //   别让人拿着「看起来成功」的日志去答辩。
+    const back = await readPremium(r.id);
+    const backLvl = Number(await c.riskLevel(r.id));
+    if (back !== want || backLvl !== r.level) {
+      throw new Error(`#${r.id} ${r.name} 写入后回读不一致：链上 ${ethers.formatEther(back)} / level ${backLvl}` +
+        ` ≠ 目标 ${r.premiumEth} / ${r.level}。不要当成功 —— 先查这笔 tx：${tx.hash}`);
+    }
+    console.log(`  #${r.id} ${r.name}  ${ethers.formatEther(r.cur)} → ${ethers.formatEther(back)}` +
+      `  level ${r.lvl} → ${backLvl}  ↩ 回读一致  tx ${tx.hash}  区块 ${rc.blockNumber}  gas ${rc.gasUsed}`);
   }
 
   console.log("\n最终链上状态：");

@@ -294,9 +294,14 @@
     </div>
   </div>
   <p class="subtitle">
-    这一页直接向公开节点提问，把链上的原始数据取回来显示。<b style="color:var(--dim)">它不经过 scan.bohr.life，
+    这一页直接向公开节点提问，把链上的原始数据取回来显示。<b style="color:var(--dim)">它不经过 scan.botchain.ai，
     也不经过任何后端索引服务。</b>请求的是
-    <code id="rpcShown">https://rpc.bohr.life</code><span style="color:var(--dim);font-size:12px"> · asks public nodes directly; raw chain data, no scan.bohr.life, no backend indexer</span>
+    <code id="rpcShown">https://rpc.botchain.ai</code><span style="color:var(--dim);font-size:12px"> · asks a public node directly; raw chain data, no block explorer, no backend indexer</span>
+  </p>
+  <p class="subtitle" style="margin-top:-8px">
+    <b style="color:#f2b33d">本页没有离线快照兜底：链不可达时读不到数据。</b>
+    <span style="color:var(--dim);font-size:12px">这是刻意的 —— 这一页只摆节点直读的实时结果，读不到就说读不到，不拿旧数据顶替（要看断网快照请用 05-演示站点/index.html）。</span>
+    <span style="color:var(--dim);font-size:12px"> · No offline snapshot fallback: no node, no data. Deliberate — this page only ever shows what the node returns right now. For the bundled offline snapshot, use 05-演示站点/index.html.</span>
   </p>
 </header>
 
@@ -349,19 +354,19 @@
 <footer>
   <div class="foot">
     <span><b>汉客松 · BOT Chain 链上核验台</b> · on-chain verifier</span>
-    <span>chainId <b>968</b></span>
+    <span>chainId <b id="chainIdShown">677</b></span>
     <span>合约 contract <b>0x89e7…596a</b></span>
     <span class="sp">不依赖任何区块浏览器 · no block explorer needed</span>
   </div>
   <details>
     <summary>这一页为什么能当证据 / 打不开怎么办<span style="color:var(--dim);font-size:12px"> · why this page counts as evidence / what to do if it will not open</span></summary>
-    <p><b>为什么要有这一页：</b>BOT Chain 自己的浏览器是 <code>scan.bohr.life</code>，但它显示的是「它认为的事实」；
+    <p><b>为什么要有这一页：</b>主网 677 的浏览器是 <code>scan.botchain.ai</code>（测试网 968 是 <code>scan.bohr.life</code>），但它显示的是「它认为的事实」；
   这一页把 <code>eth_getLogs</code> 与 <code>eth_getTransactionByHash</code> 的原始返回直接摆出来，字段一个不改。
-  <b>这一页绕开全部中间商，直接问节点要数据 —— 浏览器打不开也能验。</b><span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">Why this page exists: BOT Chain's own explorer is scan.bohr.life, but it shows what it believes is true. This page puts the raw returns of eth_getLogs and eth_getTransactionByHash side by side, not one field changed. It skips every middleman and asks the node directly, so it still verifies when the explorer will not open.</span></p>
+  <b>这一页绕开全部中间商，直接问节点要数据 —— 浏览器打不开也能验。</b><span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">Why this page exists: the explorer for mainnet 677 is scan.botchain.ai (scan.bohr.life for testnet 968), but it shows what it believes is true. This page puts the raw returns of eth_getLogs and eth_getTransactionByHash side by side, not one field changed. It skips every middleman and asks the node directly, so it still verifies when the explorer will not open.</span></p>
     <p><b>打不开怎么办：</b>双击本文件即可，无需安装任何东西（真正的单文件，不依赖 ethers）。
     若浏览器拦截本地文件发请求，在文件所在目录执行 <code>python -m http.server 8090</code>，然后访问
     <code>http://127.0.0.1:8090/汉客松-链上核验台.html</code> 打开本页。
-    <br><b>但要说清楚：</b>页面本身离线能开，<b>读链必须联网</b>。网络断时只会显示「连不上节点」。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">If it will not open: just double-click this file, nothing to install (a real single file, no ethers). If your browser blocks requests from local files, run <code>python -m http.server 8090</code> in this folder and open <code>http://127.0.0.1:8090/汉客松-链上核验台.html</code>. To be clear: the page itself opens offline, but reading the chain needs a network — with none it only shows "cannot reach the node".</span></p>
+    <br><b>但要说清楚：</b>页面本身离线能开，<b>读链必须联网</b>。网络断时只会显示「连不上节点」。<b>本页没有离线快照兜底：链不可达时读不到数据</b>（05-演示站点/index.html 才带断网快照）。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">If it will not open: just double-click this file, nothing to install (a real single file, no ethers). If your browser blocks requests from local files, run <code>python -m http.server 8090</code> in this folder and open <code>http://127.0.0.1:8090/汉客松-链上核验台.html</code>. To be clear: the page itself opens offline, but reading the chain needs a network — with none it only shows "cannot reach the node". No offline snapshot fallback: when the chain is unreachable this page has nothing to show (index.html is the one that carries the offline snapshot).</span></p>
   </details>
 </footer>
 
@@ -371,10 +376,21 @@
 "use strict";
 
 /* ================= 配置 ================= */
+// ★ 现行演示基线 = 主网 677 上的 v3（README.md「演示基线」一节，2026-10-08 起）。
+//   968 上的 v2 降为「测试网历史留痕」：要看它就在网址后面加 ?rpc=https://rpc.bohr.life。
+//   （2026-10-12 修正：以前这里默认 968，却已经在别处生成 ?rpc= 链接、注释里也写着"支持 ?rpc="，
+//     而本页从来没有真的解析过这个参数 —— 点过去仍然读 bohr.life。现在真读了。）
+const RPC_OVERRIDE = (() => {
+  try {
+    const m = /[?&]rpc=([^&#]+)/i.exec(location.search);
+    return m ? (decodeURIComponent(m[1]).trim() || null) : null;
+  } catch (e) { return null; }
+})();
 const NODES = [
-  "https://rpc.bohr.life"
-  // ★ 诚实的单节点：968 没有可验证的第二个公共 RPC，所以不承诺"自动轮换节点"。
-  //   主网 677 用 https://rpc.botchain.ai；节点抖了就换网络，或加 ?rpc=<你确信可达的节点>。
+  RPC_OVERRIDE || "https://rpc.botchain.ai"
+  // ★ 诚实的单节点：主网 677 与测试网 968 各自只有一个可验证的公共 RPC，所以不承诺"自动轮换节点"。
+  //   这里**故意不**把两条链塞进一个轮换表 —— 那样 677 连不上时会静默读 968，然后拿测试网数据冒充主网证据。
+  //   节点抖了就换网络（改这一行或加 ?rpc=<你确信可达的节点>），读不到就如实说读不到。
 ];
 const DEFAULT_QUERY = "0x89e7C942535930B61cB61631051E8b0bD670596a";
 
@@ -542,15 +558,16 @@ async function chainStatus(silent) {
     $("gas").textContent = fmtGwei(gasHex) + " Gwei";
     $("lat").textContent = S.lat + "ms";
     $("dot").className = "dot on";
+    $("chainIdShown").textContent = String(cid);
     if (bn < MIN_REAL_BLOCK) { $("connText").textContent = "本地假链（非 " + chainName + "）/ local fake chain"; showFakeChainBar(bn); }
-    else { $("connText").textContent = "已连接 " + chainName + " / connected"; }
+    else { $("connText").textContent = "已连接 " + chainName + "（节点直读）/ connected, read straight from the node"; }
     return bn;
   } catch (e) {
     $("dot").className = "dot err";
     $("connText").textContent = "连不上节点 / offline";
     $("lat").textContent = "—";
     if (!silent) showErr("连不上 BOT Chain 节点：" + e.message + " / cannot reach a BOT Chain node",
-      "检查网络。这一页访问的是 <b>rpc.bohr.life</b>，是公共节点，通常能直连。<br>check your network — this page talks to <b>rpc.bohr.life</b>, a public node that usually connects directly.");
+      "检查网络。这一页访问的是 <b>" + esc(S.rpc) + "</b>（公共节点，通常能直连，也可用 ?rpc= 换一个你确信可达的节点）。<b>本页没有离线快照兜底：节点连不上就读不到数据，不会拿旧数据顶替。</b><br>check your network — this page talks to <b>" + esc(S.rpc) + "</b>, a public node that usually connects directly (or add ?rpc= to point at a node you know is reachable). No offline snapshot fallback here: if the node is unreachable you get nothing, never a stale stand-in.");
     throw e;
   }
 }
@@ -606,7 +623,9 @@ async function lookupAddress(addr, isPrimary) {
    不命中 / 超时 / 对方拒跨域，一律静默 —— 绝不改变「查不到」这个结论，也不拖慢渲染（异步补写）。*/
 const OTHER_CHAINS = [
   { url: "https://ethereum-sepolia-rpc.publicnode.com", name: "Sepolia（第一阶段 v1 留痕） / phase-1 v1 trail" },
-  { url: "https://rpc.botchain.ai", name: "BOT Chain 主网 677 / mainnet" }
+  { url: "https://rpc.botchain.ai", name: "BOT Chain 主网 677 / mainnet" },
+  // 2026-10-12：默认链改成主网后，968 上的哈希也要能被指路（968 是测试网历史留痕，不是基线）。
+  { url: "https://rpc.bohr.life", name: "BOT Chain 测试网 968（v2 历史留痕） / testnet 968, historical trail" }
 ];
 async function probeOtherChains(hash) {
   const slot = document.getElementById("probeHint");
@@ -666,7 +685,7 @@ async function lookupTx(hash) {
       <div class="v small" style="margin-top:10px">
         本页只读一条链（<code>${esc(S.rpc)}</code>）。若这条哈希来自<b>第一阶段 Sepolia 留痕</b>
         （<code>08-截图存证/真链留痕-2026-10-06.md</code> 里区块 11,85x,xxx 那几张表）或本机联调链，
-        它在 968（本页读的 v2 演示基线）上本来就不存在 —— <b>哈希和地址必须跟链一起说</b>。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">this page reads one chain only (<code>${esc(S.rpc)}</code>). if this hash came from the phase-1 Sepolia trail or a local dev chain, it does not exist on 968 (the v2 demo baseline this page reads) — a hash or an address must always be quoted together with its chain.</span>
+        它在 ${esc(cn)} 上本来就不存在 —— <b>哈希和地址必须跟链一起说</b>。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">this page reads one chain only (<code>${esc(S.rpc)}</code> = ${esc(cn)}). if this hash came from the phase-1 Sepolia trail or a local dev chain, it does not exist on ${esc(cn)} — a hash or an address must always be quoted together with its chain. 968 上的 v2 只是测试网历史留痕，不是本页的演示基线（要看它加 ?rpc=https://rpc.bohr.life）。</span>
       </div>
       <div class="v small" style="margin-top:12px">
         最常见的原因：<b>哈希复制少了/多了字符</b>（完整哈希是 66 个字符：<code>0x</code> + 64 位）、

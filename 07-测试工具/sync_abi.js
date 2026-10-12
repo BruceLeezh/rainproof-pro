@@ -1,26 +1,33 @@
 /**
- * 把 03-合约/*.abi.json 同步进前端 HTML 的内嵌 ABI。
+ * 把 03-合约/*.abi.json 同步进 05-演示站点/index.html 的内嵌 ABI。
+ *
+ * 【接口（2026-10-12 重写；旧版「自动认源」已废弃）】
+ *   页面按链分派**两份**内嵌 ABI，各占一整行、单行 JSON：
+ *     const ABI_V2 = [...]   ←  03-合约/RainDeliveryInsuranceV2.abi.json   （968 测试网 v2 演示基线）
+ *     const ABI_V3 = [...]   ←  03-合约/RainDeliveryInsuranceV3.abi.json   （677 主网 v3 现行基线）
+ *   本脚本是这两行唯一的生成者：两份数组与两份 abi.json **一对一钉死**，不再「按页面现有签名猜源」。
  *
  * 【为什么需要它】
- *   index.html 为了能单文件离线双击打开，把 ABI 内嵌在 `const ABI = [...]` 里。
- *   合约一改（比如改了事件参数、加了函数），ABI 如果没同步，页面**不会报任何错** ——
- *   它只会静默地查不到任何记录、事件表永远是空的。这是最难在演示现场发现的一类故障。
- *   所以把它做成一条命令，改完合约跑一下，物理上不可能忘。
+ *   页面内嵌 ABI 是手抄的副本：合约一改（改事件参数、加字段），页面**不会报错** ——
+ *   ethers 只会静默解码错位（实测：v3 的 16 字段用 v2 的 15 字段读法解出来整串错移一位，
+ *   区域/保费/时间窗/阈值/赔付额全变成假数字）。这是最难在演示现场发现的一类故障。
  *
- * 【⚠️ 这个脚本原来会把 ABI「降级」】
- *   源文件默认写死 v1（RainDeliveryInsurance.abi.json，54 条），而演示页挂的是
- *   968 上的 **v2 合约**（内嵌 85 条）。跑一次 `npm run build`，页面的 v2 ABI 会被
- *   v1 覆盖 —— 页面不报错，只会静默地少认一批事件与字段。
- *   2026-10-08 的修法：**不再写死源**。默认先看页面里现在内嵌的是哪一版，按签名集合
- *   去 03-合约/ 里认领完全一致的那一份当源；认不出唯一一份就报错退出、一个字节都不写。
- *   要指定就 `--abi=v1|v2|v3|multisig`（或任意 abi.json 的文件名），要强行覆盖加 --force。
+ * 【旧接口为什么必须换】
+ *   旧版只接受「与页面现有签名集合完全一致」的唯一候选。2026-10-12 实测：页面是 v2∪v3 并集
+ *   （99 条，v3 95 ∩ v2 85 = 81），03-合约/ 里没有任何一份能对上 ⇒ `node sync_abi.js --check`
+ *   永远 exit 1、`npm run build`（compile && sync-abi）必然失败（全仓扫描 E3）。
+ *
+ * 【兼容期】页面若还没有这两行（仍是合并的 `const ABI = [...]`），本脚本给出明确错误
+ *   （点名缺哪一行、该对齐哪个 abi.json、怎么修），不抛栈。
  *
  * 用法：
- *   node sync_abi.js                    # 自动认源（页面内嵌的那一版）后写入
- *   node sync_abi.js --check            # 只报告会怎么改，不写盘
- *   node sync_abi.js --abi=v2           # 指定源
- *   node sync_abi.js --force --abi=v1   # 明确要降级/换版（覆盖前请想清楚）
- *   node sync_abi.js --self-check       # 自检（认源逻辑 + 临时文件上的真写盘）
+ *   node sync_abi.js                  # 两份都写回页面（已一致则不写盘，避免无谓 diff）
+ *   node sync_abi.js --check          # 只比对不写盘；不一致 exit 1，分份列出 缺/多/同签名定义不同
+ *   node sync_abi.js --file=<路径>     # 换目标文件（默认 05-演示站点/index.html；测试用）
+ *   node sync_abi.js --self-check     # 自检（纯逻辑 + 临时文件上的真写盘 + 兼容期错误路径）
+ *
+ * 导出（供 check-page-decode.js 复用同一套「页面里哪一行是 ABI_V3」的取法）：
+ *   sigOf / diffAbi / extractAbi / syncOne / PAIRS / TARGET
  */
 const fs = require("fs");
 const os = require("os");
@@ -28,18 +35,18 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const CONTRACT_DIR = path.join(ROOT, "03-合约");
-const TARGETS = [path.join(ROOT, "05-演示站点", "index.html")];
-// 只匹配「整行就是一个 const ABI = [...];」的那种，且保留原文件的行尾（\r\n 或 \n）
-const RE_SRC = "^const ABI = \\[.*?\\];([ \\t]*\\r?)$";
-const RE = new RegExp(RE_SRC, "m");
-const RE_G = new RegExp(RE_SRC, "gm");
-// 简短别名 → 03-合约 下的文件名（不含 .abi.json）
-const ALIAS = {
-  v1: "RainDeliveryInsurance",
-  v2: "RainDeliveryInsuranceV2",
-  v3: "RainDeliveryInsuranceV3",
-  multisig: "OperatorMultisig",
-};
+const TARGET = path.join(ROOT, "05-演示站点", "index.html");
+// 页面里的两份内嵌 ABI ↔ 03-合约/ 里的两份 abi.json（一对一；不猜、不合并）
+const PAIRS = [
+  { constName: "ABI_V2", abiFile: "RainDeliveryInsuranceV2.abi.json" },
+  { constName: "ABI_V3", abiFile: "RainDeliveryInsuranceV3.abi.json" },
+];
+// 只匹配「整行就是一个 const <名字> = [...];」的那种，并保留原文件的行尾与尾随空白
+const srcRe = (name) => new RegExp(`^const ${name} = \\[.*?\\];([ \\t]*\\r?)$`, "m");
+const srcReG = (name) => new RegExp(`^const ${name} = \\[.*?\\];([ \\t]*\\r?)$`, "gm");
+const howToFix = () =>
+  PAIRS.map((p) => `${p.constName} ← 03-合约/${p.abiFile}`).join("；") +
+  "。修法：把合并的那份 ABI 拆成两行（或手抄对应的 .abi.json），一行一个单行数组，其余行不动。";
 
 /* ------------------------------------------------------------------ 纯逻辑 */
 
@@ -51,96 +58,62 @@ function sigOf(e) {
   if (e.type === "error") return `er ${e.name}(${ins})`;
   return `${e.type} ${e.name || ""}(${ins})`;
 }
-const setOf = (abi) => new Set(abi.map(sigOf));
+const bySig = (abi) => { const m = new Map(); for (const e of abi) m.set(sigOf(e), e); return m; };
 
-/** 03-合约 下所有候选源 */
-function loadCandidates() {
-  return fs.readdirSync(CONTRACT_DIR)
-    .filter((f) => f.endsWith(".abi.json"))
-    .map((f) => {
-      const file = path.join(CONTRACT_DIR, f);
-      return {
-        name: f.replace(/\.abi\.json$/, ""),
-        file,
-        abi: JSON.parse(fs.readFileSync(file, "utf8")),
-      };
-    });
+/**
+ * 页面内嵌 ABI 与磁盘 ABI 的差集。
+ * 签名集合的比较与顺序无关（页面把条目重排过不算不一致）；同一签名下**定义**不同
+ * （比如 outputs 少一个字段 —— 正是「v3 payload 按 v2 形状解码」那个 bug）单独列为 different。
+ */
+function diffAbi(pageAbi, diskAbi) {
+  const P = bySig(pageAbi), D = bySig(diskAbi);
+  const missing = [...D.keys()].filter((s) => !P.has(s));
+  const extra = [...P.keys()].filter((s) => !D.has(s));
+  const different = [...D.keys()].filter((s) => P.has(s) && JSON.stringify(P.get(s)) !== JSON.stringify(D.get(s)));
+  return { missing, extra, different };
 }
 
-/** 候选与页面内嵌 ABI 的签名集合差 */
-function score(cand, pageSet) {
-  const A = setOf(cand.abi);
-  const onlyPage = [...pageSet].filter((s) => !A.has(s));
-  const onlyCand = [...A].filter((s) => !pageSet.has(s));
-  return {
-    same: [...pageSet].filter((s) => A.has(s)).length,
-    onlyPage,
-    onlyCand,
-    exact: onlyPage.length === 0 && onlyCand.length === 0,
-  };
+/** 从 HTML 源码里取出内嵌 ABI（找不到 / 不唯一都算致命，且错误信息要说清怎么修） */
+function extractAbi(src, constName, rel = "index.html") {
+  const hits = (src.match(srcReG(constName)) || []).length;
+  if (hits === 0) {
+    throw new Error(
+      `${rel}: 找不到 \`const ${constName} = [...]\`（期望恰好 1 处，实际 0 处）—— 页面还没按链拆成两份 ABI。\n` +
+      `  期望：${howToFix()}`
+    );
+  }
+  if (hits > 1) {
+    throw new Error(`${rel}: 找到 ${hits} 处 \`const ${constName} = [...]\`，不唯一 —— 拒绝写入（期望恰好 1 处）`);
+  }
+  return JSON.parse(src.match(srcRe(constName))[0].replace(`const ${constName} = `, "").replace(/;[ \t\r]*$/, ""));
 }
 
 /**
- * 选源：优先 --abi= 指定；否则按「与页面内嵌完全一致」认领。
- * 认不出唯一一份就抛错（宁可不写，也不静默换版）。
+ * 单个 const 的比对结果（纯函数：只读 src 与磁盘 abi.json，不写盘）。
+ * diskAbi 可注入（自检用；默认读 03-合约/<abiFile>）。
+ * 返回 { constName, pageAbi, diskAbi, diff, bad, line: 写回后的该行, changed }
  */
-function pickSource(pageAbi, { forced = null, candidates = loadCandidates() } = {}) {
-  if (forced) {
-    const want = (ALIAS[forced.toLowerCase()] || forced).toLowerCase();
-    const hit = candidates.find((c) => c.name.toLowerCase() === want || c.name.toLowerCase().includes(want));
-    if (!hit) {
-      throw new Error(`--abi=${forced} 找不到对应的 abi.json；候选：${candidates.map((c) => c.name).join(" / ")}`);
-    }
-    return { cand: hit, why: `--abi=${forced} 指定` };
-  }
-  const pageSet = setOf(pageAbi);
-  const scored = candidates.map((c) => ({ c, s: score(c, pageSet) }));
-  const exact = scored.filter((x) => x.s.exact);
-  if (exact.length === 1) {
-    return { cand: exact[0].c, why: `与页面内嵌 ABI 完全一致（${pageAbi.length} 条签名全对得上）` };
-  }
-  if (exact.length > 1) {
-    throw new Error(`页面内嵌 ABI 同时对上多份候选（${exact.map((x) => x.c.name).join(" / ")}），无法决定用哪份；请显式 --abi=<名称>`);
-  }
-  const lines = scored
-    .sort((a, b) => b.s.same - a.s.same)
-    .map((x) => `    ${x.c.name.padEnd(30)} ${String(x.c.abi.length).padStart(3)} 条  交集 ${String(x.s.same).padStart(3)}` +
-                `  仅页面有 ${String(x.s.onlyPage.length).padStart(3)}  仅候选有 ${String(x.s.onlyCand.length).padStart(3)}`);
-  throw new Error(
-    `页面内嵌 ABI（${pageAbi.length} 条）跟 03-合约/ 里任何一份都不是完全一致 —— 拒绝瞎猜：\n` +
-    lines.join("\n") +
-    `\n  可能的情形：页面挂的合约与 03-合约/ 里的源码不同步（先 npm run compile:v2 之类重编），` +
-    `或页面被手改过。确认后显式 --abi=<名称>，或 --force 强行覆盖。`
-  );
+function syncOne(src, rel, pair, { diskAbi = null } = {}) {
+  const disk = diskAbi || JSON.parse(fs.readFileSync(path.join(CONTRACT_DIR, pair.abiFile), "utf8"));
+  const pageAbi = extractAbi(src, pair.constName, rel);
+  const diff = diffAbi(pageAbi, disk);
+  const bad = diff.missing.length + diff.extra.length + diff.different.length;
+  const line = `const ${pair.constName} = ${JSON.stringify(disk)};$1`;
+  const next = src.replace(srcRe(pair.constName), line);
+  return { constName: pair.constName, abiFile: pair.abiFile, pageAbi, diskAbi: disk, diff, bad, next, changed: next !== src };
 }
 
-/** 从 HTML 源码里取出内嵌 ABI（找不到 / 不唯一都算致命） */
-function extractAbi(src, rel) {
-  const hits = (src.match(RE_G) || []).length;
-  if (hits !== 1) throw new Error(`${rel}: 期望恰好找到 1 处内嵌 ABI，实际 ${hits} 处 —— 拒绝写入`);
-  return JSON.parse(src.match(RE)[0].replace(/^const ABI = /, "").replace(/;[ \t\r]*$/, ""));
-}
-
-/** 单个目标文件的同步。返回 {rel, source, before, after, changed, wrote, guarded} */
-function syncOne(file, { forced = null, force = false, check = false, candidates = loadCandidates() } = {}) {
-  const rel = path.relative(ROOT, file);
-  const src = fs.readFileSync(file, "utf8");
-  const current = extractAbi(src, rel);
-  const { cand, why } = pickSource(current, { forced, candidates });
-  const next = src.replace(RE, `const ABI = ${JSON.stringify(cand.abi)};$1`);
-  const changed = next !== src;
-
-  // ★ 降级守卫：绝不用「条目更少的 ABI」覆盖页面里已有的那份，除非显式 --force。
-  // 自动认源那一支不可能触发它（认到的一定完全一致），所以这道闸门只挡 --abi= / 手改场景。
-  if (cand.abi.length < current.length && !force && JSON.stringify(cand.abi) !== JSON.stringify(current)) {
-    throw new Error(
-      `${rel}: 拒绝把内嵌 ABI 从 ${current.length} 条换成 ${cand.abi.length} 条（${cand.name}）。\n` +
-      `  覆盖之后页面不会报错，只会静默地少认事件与字段（最难在现场发现的一类故障）。\n` +
-      `  确认要换版就加 --force；只是想同步请不加 --abi（自动认源会挑页面正在用的那一版）。`
-    );
+/** 两份 ABI 一起过一遍。check=true 时只比对：out 原样返回（一个字节都不落地） */
+function syncAll(src, rel, { check = false, diskAbis = {} } = {}) {
+  let bad = 0, out = src;
+  const results = [];
+  for (const pair of PAIRS) {
+    const r = syncOne(src, rel, pair, { diskAbi: diskAbis[pair.constName] || null });
+    results.push(r);
+    bad += r.bad;
+    if (!check) out = out.replace(srcRe(pair.constName), `const ${pair.constName} = ${JSON.stringify(r.diskAbi)};$1`);
   }
-  if (changed && !check) fs.writeFileSync(file, next, "utf8");
-  return { rel, source: cand.name, why, before: current.length, after: cand.abi.length, changed, wrote: changed && !check };
+  return { bad, out, changed: out !== src, results };
 }
 
 /* ------------------------------------------------------------------ 命令行 */
@@ -148,21 +121,33 @@ function syncOne(file, { forced = null, force = false, check = false, candidates
 function main() {
   const argv = process.argv.slice(2);
   const arg = (k) => { const h = argv.find((a) => a.startsWith(`${k}=`)); return h ? h.slice(k.length + 1) : null; };
-  const opts = {
-    forced: arg("--abi"),
-    force: argv.includes("--force"),
-    check: argv.includes("--check"),
-  };
-  let total = 0;
-  for (const file of TARGETS) {
-    const r = syncOne(file, opts);
-    const tail = r.changed
-      ? (r.wrote ? `✅ 已写入 ${r.after} 条（原 ${r.before} 条）` : `（--check）会写入 ${r.after} 条，原 ${r.before} 条`)
-      : `= 无需改动（${r.before} 条）`;
-    console.log(`${r.rel}\n    源 ${r.source}.abi.json —— ${r.why}\n    ${tail}`);
-    total++;
+  const check = argv.includes("--check");
+  const file = arg("--file") || TARGET;
+  const rel = path.relative(ROOT, file);
+  const src = fs.readFileSync(file, "utf8");
+
+  console.log(`同步 ${rel} ⇄ 03-合约/*.abi.json${check ? "（--check：只比对，一个字节都不写）" : ""}`);
+  const { bad, out, changed, results } = syncAll(src, rel, { check });
+  for (const r of results) {
+    console.log(`\n  ${r.constName} ⇄ ${r.abiFile}  （页面 ${r.pageAbi.length} 条 / 磁盘 ${r.diskAbi.length} 条）`);
+    console.log(r.bad ? `    ❌ ${r.bad} 处不一致` : "    ✅ 逐条一致");
+    for (const [label, list] of [
+      ["缺（磁盘有、页面没有）", r.diff.missing],
+      ["多（页面有、磁盘没有）", r.diff.extra],
+      ["同签名定义不同", r.diff.different],
+    ]) for (const s of list) console.log(`      - ${label}：${s}`);
   }
-  console.log(`共同步 ${total} 处内嵌 ABI${opts.check ? "（--check：一个字节都没写）" : ""}`);
+
+  if (check) {
+    console.log(`\n${bad ? "❌" : "✅"} --check：${bad} 处不一致（页面一个字节都没写）`);
+    process.exit(bad ? 1 : 0);
+  }
+  if (out === src) {
+    console.log("\n✅ 页面与 03-合约/*.abi.json 已逐条一致，不写盘（避免无谓 diff）");
+    process.exit(0);
+  }
+  fs.writeFileSync(file, out, "utf8");
+  console.log(`\n✅ 已写回 ${rel}（两份数组各一行单行 JSON，行尾与其余行未动；共修正 ${changed ? results.filter((r) => r.changed).length : 0} 处）`);
 }
 
 /* ------------------------------------------------------------------ 自检 */
@@ -171,67 +156,70 @@ function selfCheck() {
   let pass = 0, fail = 0;
   const ok = (m, c, extra = "") => { c ? (pass++, console.log(`  ✅ ${m}${extra ? "  " + extra : ""}`)) : (fail++, console.log(`  ❌ ${m}  ${extra}`)); };
   const throws = (fn) => { try { fn(); return null; } catch (e) { return e.message; } };
-
-  // 构造两份假候选：A=3 条，B=2 条（B 是 A 的子集）
-  const mk = (name, abi) => ({ name, file: `/x/${name}.abi.json`, abi });
-  const F = (n, ins = []) => ({ type: "function", name: n, inputs: ins.map((t) => ({ type: t })) });
+  const F = (n, ins = [], outs = []) => ({ type: "function", name: n, inputs: ins.map((t) => ({ type: t })), outputs: outs.map((t) => ({ type: t })) });
   const E = (n, ins = []) => ({ type: "event", name: n, inputs: ins.map((t) => ({ type: t })) });
-  const A3 = [F("a"), F("b", ["uint256"]), E("e", ["address"])];
-  const B2 = [F("a"), F("b", ["uint256"])];
-  const cands = [mk("Alpha", A3), mk("Beta", B2)];
+
+  // 假磁盘 ABI：policies 分 v3(3 字段) / v2(2 字段) 两种形状，正好对应真实那份的差异
+  const V3 = [F("policies", ["uint256"], ["address", "address", "uint8"]), F("thresholdOf", ["uint256", "uint8"], ["uint256"]), E("FeedRejected", ["uint8"])];
+  const V2 = [F("policies", ["uint256"], ["address", "uint8"]), F("thresholdOf", ["uint256"], ["uint256"]), E("FeedRejected", ["uint8"])];
+  const diskAbis = { ABI_V2: V2, ABI_V3: V3 };
 
   ok("签名串区分类型与参数（fn/ev 前缀 + 参数表）",
     sigOf(F("b", ["uint256"])) === "fn b(uint256)" && sigOf(E("e", ["address"])) === "ev e(address)");
-  ok("完全一致的那一份被认出来（唯一）",
-    pickSource(A3, { candidates: cands }).cand.name === "Alpha");
-  ok("只对上一半 → 拒绝瞎猜（抛错，不写盘）",
-    !!throws(() => pickSource([F("a")], { candidates: cands })));
-  const errMsg = throws(() => pickSource([F("a")], { candidates: cands })) || "";
-  ok("拒绝时把各候选的差集摆出来（好排查）",
-    /Alpha/.test(errMsg) && /仅页面有/.test(errMsg) && /仅候选有/.test(errMsg));
-  ok("--abi 别名解析（v2 → RainDeliveryInsuranceV2）", (() => {
-    const real = loadCandidates().find((c) => c.name === "RainDeliveryInsuranceV2");
-    return !!real && pickSource(real.abi, { forced: "v2" }).cand.name === "RainDeliveryInsuranceV2";
+  ok("顺序打乱不算不一致（按签名集合比）", (() => {
+    const d = diffAbi([V3[2], V3[0], V3[1]], V3);
+    return d.missing.length === 0 && d.extra.length === 0 && d.different.length === 0;
   })());
-  ok("--abi 报不存在的名字时把候选列出来",
-    /候选/.test(throws(() => pickSource(A3, { forced: "nope", candidates: cands })) || ""));
-  ok("页面里没有 / 有多处内嵌 ABI 都拒绝", (() => {
-    const bad1 = "<html>没有 ABI</html>", bad2 = "const ABI = [];\nconst ABI = [];\n";
-    return !!throws(() => extractAbi(bad1, "x")) && !!throws(() => extractAbi(bad2, "x"));
-  })());
+  ok("少一条 → 进 missing", (() => { const d = diffAbi(V3.slice(1), V3); return d.missing.length === 1 && d.missing[0] === sigOf(V3[0]); })());
+  ok("多一条 → 进 extra", diffAbi([...V3, F("extra")], V3).extra.length === 1);
+  ok("同签名但 outputs 形状不同 → 进 different（v3/v2 结构体就是这个差）",
+    (() => { const d = diffAbi(V2, V3); return d.different.some((s) => /policies/.test(s)) && d.missing.length === 1; })());
 
-  // 真写盘：在临时目录上做（不碰仓库）
+  // 兼容期：页面没有 ABI_V2 / 有重复 / 一行都不是 —— 都要给出可读错误而不是崩栈
+  const msgNoV2 = throws(() => extractAbi(`<html>\nconst ABI_V3 = ${JSON.stringify(V3)};\n</html>`, "ABI_V2", "index.html")) || "";
+  ok("页面缺 ABI_V2 → 明确报「找不到 ABI_V2」而不是崩栈",
+    /找不到 `const ABI_V2 = \[\.\.\.\]`/.test(msgNoV2), "");
+  ok("该错误里点名要对齐的文件与修法",
+    /RainDeliveryInsuranceV2\.abi\.json/.test(msgNoV2) && /拆成两行/.test(msgNoV2));
+  ok("同一名字出现两处 → 拒绝（不唯一）",
+    !!throws(() => extractAbi(`const ABI_V3 = [];\nconst ABI_V3 = [];\n`, "ABI_V3", "index.html")));
+
+  // 真写盘：临时文件上做（不碰仓库），CRLF 与前后行必须原样保留
+  const tpl = (v2, v3) => `<!doctype html>\r\n<html><body>\r\nconst ABI_V2 = ${JSON.stringify(v2)};\r\nconst ABI_V3 = ${JSON.stringify(v3)};\r\n</body></html>\r\n`;
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "syncabi-"));
-  const tpl = (abi) => `<!doctype html>\n<html><body>\nconst ABI = ${JSON.stringify(abi)};\n</body></html>\n`;
-  const tmp = path.join(dir, "index.html");
+  const tmpRel = "tmp/index.html";
 
-  fs.writeFileSync(tmp, tpl(A3), "utf8");
-  const r1 = syncOne(tmp, { candidates: cands, check: true });
-  ok("--check 认出源但一个字节都不写",
-    r1.source === "Alpha" && r1.wrote === false && fs.readFileSync(tmp, "utf8") === tpl(A3));
-  fs.writeFileSync(tmp, tpl(B2), "utf8");
-  const r2 = syncOne(tmp, { candidates: cands, forced: "Alpha" });
-  ok("--abi 指定后真的写进去了（B→A，条目变多）",
-    r2.wrote === true && fs.readFileSync(tmp, "utf8") === tpl(A3));
-  fs.writeFileSync(tmp, tpl(A3), "utf8");
-  const r3 = syncOne(tmp, { candidates: cands });
-  ok("已经是那一版 → 识别为无需改动（不产生无谓 diff）",
-    r3.changed === false && r3.wrote === false);
-  fs.writeFileSync(tmp, tpl(A3), "utf8");
-  const guardMsg = throws(() => syncOne(tmp, { candidates: cands, forced: "Beta" })) || "";
-  ok("降级守卫真的抛错、且告诉你怎么覆盖",
-    /拒绝把内嵌 ABI 从 3 条换成 2 条/.test(guardMsg) && /--force/.test(guardMsg));
-  ok("被守卫拦下时文件没被动过", fs.readFileSync(tmp, "utf8") === tpl(A3));
-  const r5 = syncOne(tmp, { candidates: cands, forced: "Beta", force: true });
-  ok("--force 明确要换版时放行",
-    r5.wrote === true && fs.readFileSync(tmp, "utf8") === tpl(B2));
-  try { fs.rmSync(dir, { recursive: true, force: true }); } catch (_) { /* 临时目录，清不掉也不影响结论 */ }
+  const stale = tpl(V2, V2);                                  // ABI_V3 手抄成了 v2 形状 ← 正是要抓的漂移
+  const chk = syncAll(stale, tmpRel, { check: true, diskAbis });
+  ok("--check：有差异 ⇒ bad>0（main 据此 exit 1）且 out 原样返回（一个字节都不落地）",
+    chk.bad > 0 && chk.out === stale);
+  const wr = syncAll(stale, tmpRel, { diskAbis });
+  ok("写模式：两份都按磁盘 abi.json 重写，且报出与原文件的差异",
+    wr.changed === true && wr.out.includes(`const ABI_V3 = ${JSON.stringify(V3)};`) && wr.bad > 0);
+  ok("写回时另一行（ABI_V2）与行尾/前后文逐字节未动", (() => {
+    const lines = wr.out.split("\r\n");
+    return lines.length === stale.split("\r\n").length &&
+      lines[2] === `const ABI_V2 = ${JSON.stringify(V2)};` &&
+      lines[4] === "</body></html>";
+  })());
+  ok("已经一致 ⇒ changed=false（不产生无谓 diff）",
+    syncAll(tpl(V2, V3), tmpRel, { diskAbis }).changed === false);
+  ok("两份都对得上时 bad=0（= --check exit 0）",
+    syncAll(tpl(V2, V3), tmpRel, { check: true, diskAbis }).bad === 0);
+
+  // 真文件 IO：把 wr.out 落盘再读回解析（确认单行 JSON 能被重新抽出）
+  const tmp = path.join(dir, "index.html");
+  fs.writeFileSync(tmp, wr.out, "utf8");
+  const back = fs.readFileSync(tmp, "utf8");
+  ok("落盘后能被自己的 extractAbi 原样读回（单行 JSON 往返）",
+    JSON.stringify(extractAbi(back, "ABI_V3", tmpRel)) === JSON.stringify(V3));
+  try { fs.rmSync(dir, { recursive: true, force: true }); } catch (_) { /* 临时目录，清不掉不影响结论 */ }
 
   console.log(`\n${fail ? "❌" : "✅"} sync_abi 自检：${pass} 项通过 / ${fail} 项失败`);
   process.exit(fail ? 1 : 0);
 }
 
-module.exports = { sigOf, setOf, score, pickSource, extractAbi, syncOne, loadCandidates };
+module.exports = { sigOf, diffAbi, extractAbi, syncOne, syncAll, PAIRS, TARGET, CONTRACT_DIR };
 
 if (require.main === module && process.argv.includes("--self-check")) selfCheck();
 else if (require.main === module) {

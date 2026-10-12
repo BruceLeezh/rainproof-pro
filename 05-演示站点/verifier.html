@@ -80,6 +80,13 @@
   .dot{width:6px;height:6px;border-radius:50%;background:var(--ink-3);flex:none;display:inline-block;transition:.3s}
   .dot.on{background:var(--ok)}
   .dot.err{background:var(--bad)}
+  /* ★ B12：当前数据来自哪一层 —— 直连主网 / 只读代理 / 测试网 968 / 离线快照。
+     降级时必须一眼看出来，绝不能在读代理、读测试网或读快照时显示成「已连主网」。 */
+  .layer{font-weight:700;border-radius:var(--r-xs);padding:1px 8px;border:1px solid transparent;white-space:nowrap}
+  .lay-ok{color:var(--ok);background:rgba(63,217,165,.14);border-color:rgba(63,217,165,.42)}
+  .lay-warn{color:var(--money);background:var(--money-dim);border-color:rgba(255,200,87,.42)}
+  .lay-off{color:#FFA06B;background:rgba(255,160,107,.14);border-color:rgba(255,160,107,.42)}
+  .lay-bad{color:var(--bad);background:rgba(240,131,111,.16);border-color:rgba(240,131,111,.45)}
   .subtitle{margin-top:var(--s3);font-size:var(--t-data);color:var(--ink-3);max-width:76ch}
   .subtitle code{font-family:var(--f-num);color:var(--measure)}
 
@@ -289,6 +296,7 @@
     </div>
     <h1>雨证 · RainProof · BOT Chain 链上核验台 / On-chain verifier<span>不依赖任何区块浏览器 / No block explorer needed</span></h1>
     <div class="chainbar">
+      <span id="layerBadge" class="layer lay-warn">数据来源 / Source: 探测中… / probing…</span>
       <span><span class="dot" id="dot"></span><span id="connText">连接中… / connecting…</span></span>
       <span>区块 Block <b id="blkNum">—</b></span>
       <span>延迟 Latency <b id="lat">—</b></span>
@@ -297,8 +305,13 @@
   </div>
   <p class="subtitle">
     这一页直接向公开节点提问，把链上的原始数据取回来显示。<b style="color:var(--dim)">它不经过 scan.botchain.ai，
-    也不经过任何后端索引服务。</b>请求的是
+    也不经过任何会改写数据的后端索引。</b>请求的是
     <code id="rpcShown">https://rpc.botchain.ai</code>
+    <span style="display:block;margin-top:6px;color:var(--dim)">
+      顶栏徽章写着这一页<b>当前的数据来自哪一层</b>：① 直连主网 677 → ② 仓库自带的只读代理（原样中转，不改数据）→ ③ 测试网 968（历史留痕，非主网）→ ④ 离线快照（非实时）。
+      降级会换颜色，绝不会在读代理、读测试网或读快照时显示成「已连主网」。
+      / The badge states which layer answered: direct mainnet, our read-only relay (verbatim pass-through), testnet 968, or the offline snapshot. A downgrade changes colour and never reads as "connected to mainnet" when it is not.
+    </span>
   </p>
 </header>
 
@@ -383,12 +396,16 @@ const QS = new URLSearchParams(location.search);
 // 演示页的「核验 ↗」链接会把当前 rpc 一起带过来，否则点过去会去查默认节点，
 // 别的链上的交易当然「查不到」。
 const RPC_OVERRIDE = QS.get("rpc");
+// 只读代理（11-节点代理-vercel/api/rpc.js）：经 Vercel 中转读主网 677 —— 就是四层里的第二层。
+// 它只放读方法（白名单 20 个），本页用的全是读方法，能通就当节点用。
+const VERCEL_RELAY = "https://rainproof-juice-68d3.vercel.app/api/rpc";
 // ★ 事实（2026-10-08 实测）：主网 RPC `rpc.botchain.ai` **必须走代理才通**（直连 curl = 000，走 7890 = 200）；
-//   测试网 `rpc.bohr.life` 反过来，直连就通。所以默认按顺序试：先主网 677，连不上再退到测试网 968。
+//   测试网 `rpc.bohr.life` 反过来，直连就通。所以默认按顺序试：先主网 677 → 只读代理 → 测试网 968。
 //   退到 968 只是"还能查"，链名会照实显示（BOT Chain Testnet），不会假装是主网。
 //   想强制指定节点：?rpc=<你确信可达的节点>。
 const NODES = RPC_OVERRIDE ? [RPC_OVERRIDE] : [
   "https://rpc.botchain.ai",
+  VERCEL_RELAY,
   "https://rpc.bohr.life"
 ];
 // ★ 2026-10-06：原来这里是赛前脚手架的 SimpleStore 地址 0x5f7040…82dc（已经不在链上用了）。
@@ -404,6 +421,45 @@ const CHAIN_SYM = { 968: "BOT", 677: "BOT", 11155111: "SepETH" };
 
 const S = { rpc: NODES[0], lat: null, lastAddr: null, chainId: null };
 const SYM = () => CHAIN_SYM[S.chainId] || "BOT";
+
+/* ================= 当前数据来自哪一层（B12） =================
+   四层：① 直连主网 677 ② 只读代理（VERCEL_RELAY，经 Vercel 中转读主网）③ 测试网 968（历史留痕，不是主网）
+        ④ 离线快照（frozen-node.js，非实时）＋ ⑤ 本地假链（chainId 被伪装，一律红色）
+   为什么要有它：以前一旦降级，界面照旧写着「已连接 BOT Chain Mainnet」，读代理 / 读测试网 / 读快照
+   和直连主网长得一模一样 —— 评委没法从界面上判断这条证据是不是实时的。现在来源写进顶栏徽章，
+   降级换颜色，「已连主网」只在真的直连主网时出现。 */
+let LAYER = "probe";
+const LAYER_LABEL = {
+  probe:    ["数据来源 / Source: 探测中… / probing…", "lay-warn"],
+  direct:   ["数据来源 · 直连主网 677 / direct to mainnet 677", "lay-ok"],
+  proxy:    ["数据来源 · 只读代理 → 主网 677（非直连）/ read-only relay, not direct", "lay-warn"],
+  testnet:  ["数据来源 · 测试网 968（历史留痕，非主网）/ testnet 968, not mainnet", "lay-warn"],
+  snapshot: ["数据来源 · 离线快照（非实时）/ offline snapshot, not live", "lay-off"],
+  custom:   ["数据来源 · 指定节点 ?rpc=（非默认主网）/ custom node via ?rpc=", "lay-warn"],
+  fake:     ["数据来源 · 本地假链（不是真链）/ local fake chain", "lay-bad"]
+};
+function layerOf(url) {
+  if (url === FROZEN_LABEL) return "snapshot";
+  if (url === VERCEL_RELAY) return "proxy";
+  if (/botchain\.ai/i.test(url)) return "direct";
+  if (/bohr\.life/i.test(url)) return "testnet";
+  return "custom";
+}
+function paintLayer() {
+  const el = $("layerBadge");
+  if (!el) return;
+  const [txt, cls] = LAYER_LABEL[LAYER] || LAYER_LABEL.probe;
+  el.textContent = txt;
+  el.className = "layer " + cls;
+}
+// 「已连接 …」后面挂一句来源口径：降级时不能读成"直连主网"。直连主网是默认状态，不加后缀。
+function layerSuffix() {
+  if (LAYER === "proxy")    return "（经只读代理，非直连 / via read-only relay）";
+  if (LAYER === "testnet")  return "（测试网 968，非主网 / testnet 968, not mainnet）";
+  if (LAYER === "snapshot") return "（离线快照，非实时 / offline snapshot, not live）";
+  if (LAYER === "custom")   return "（?rpc= 指定的节点 / node given by ?rpc=）";
+  return "";
+}
 
 /* 假链报警：红色横幅 + 顶部状态改为「本地假链」，避免演示时误当真链 */
 function showFakeChainBar(bn) {
@@ -455,7 +511,8 @@ function showFrozenBar() {
   bar.textContent = (FROZEN_WHY === "?snap=1"
     ? "⛓ 链上快照：按网址参数 ?snap=1 强制只看快照（现场不赌网络），这一页用的是页面自带的快照"
     : "⛓ 链上快照：节点都连不上（官方 rpc.botchain.ai 在部分网络不可直连），这一页用的是页面自带的快照") +
-    "（2026-10-08 读到的原始链上回答，块高覆盖到 " + Number(FROZEN.meta.blockNumber).toLocaleString("en-US") + "）—— 不是实时数据；" +
+    "（2026-10-08 读到的原始链上回答：读数高度 " + Number(FROZEN.meta.readingsBlockNumber || FROZEN.meta.blockNumber).toLocaleString("en-US") +
+    "，事件只覆盖到 " + Number(FROZEN.meta.eventsObservedAtBlock || FROZEN.meta.blockNumber).toLocaleString("en-US") + "）—— 不是实时数据；" +
     "交易级核验需要能连主网的网络。 / Bundled on-chain snapshot, not live data.";
   document.body.appendChild(bar);
   syncBarPad();
@@ -467,6 +524,8 @@ function enterFrozen(reason) {
   FROZEN_WHY = reason === "?snap=1" ? "?snap=1" : "auto";
   S.rpc = FROZEN_LABEL;
   S.lat = 0;
+  LAYER = "snapshot";                        // B12：进了快照模式，徽章立刻变成"离线快照"
+  paintLayer();
   if ($("rpcShown")) $("rpcShown").textContent = FROZEN_LABEL;
   showFrozenBar();
 }
@@ -536,6 +595,8 @@ async function rpc(method, params, timeout = 20000, requireNonNull = false) {
       S.rpc = url;
       S.lat = Math.round(performance.now() - t0);
       $("rpcShown").textContent = url;
+      const ly = layerOf(url);                 // B12：这一条是哪个节点答的，徽章照实写
+      if (ly !== LAYER) { LAYER = ly; paintLayer(); }
       if (requireNonNull && (json.result === null || json.result === undefined)) { sawNull = true; continue; }
       return json.result;
     } catch (e) {
@@ -626,16 +687,17 @@ async function chainStatus(silent) {
     $("gas").textContent = fmtGwei(gasHex) + " Gwei";
     $("lat").textContent = S.lat + "ms";
     $("dot").className = "dot on";
-    if (bn < MIN_REAL_BLOCK) { $("connText").textContent = "本地假链（非 " + chainName + "） / local fake chain (not " + chainName + ")"; showFakeChainBar(bn); }
-    else { $("connText").textContent = "已连接 / connected: " + chainName; }
-    if (FROZEN_MODE) { $("connText").textContent = "已连接（页面自带快照，非实时）/ bundled snapshot (not live): " + chainName; showFrozenBar(); }
+    if (bn < MIN_REAL_BLOCK) { LAYER = "fake"; $("connText").textContent = "本地假链（非 " + chainName + "） / local fake chain (not " + chainName + ")"; showFakeChainBar(bn); }
+    else { $("connText").textContent = "已连接 / connected: " + chainName + layerSuffix(); }
+    if (FROZEN_MODE) { LAYER = "snapshot"; $("connText").textContent = "已连接（页面自带快照，非实时）/ bundled snapshot (not live): " + chainName; showFrozenBar(); }
+    paintLayer();   // B12：来源徽章跟着这一轮的真实结果走，降级不许显示成"已连主网"
     return bn;
   } catch (e) {
     $("dot").className = "dot err";
     $("connText").textContent = "连不上节点（当前网络可能无法直连主网 RPC）/ node unreachable";
     $("lat").textContent = "—";
     if (!silent) showErr("连不上 BOT Chain 节点 / cannot reach the BOT Chain node: " + e.message,
-      "检查网络。这一页先试 <b>rpc.botchain.ai</b>（主网，实测必须走代理），再试 <b>rpc.bohr.life</b>（测试网，直连可达）。两个都不通时，改用仓库里的截图存证。");
+      "检查网络。这一页按顺序试 <b>rpc.botchain.ai</b>（主网直连，实测多数网络不通）→ <b>" + VERCEL_RELAY + "</b>（只读代理，中转主网）→ <b>rpc.bohr.life</b>（测试网 968，直连可达）。三个都不通时改用页面自带快照（?snap=1）或仓库里的截图存证。");
     throw e;
   }
 }
@@ -1003,6 +1065,7 @@ function fromUrl() {
 }
 
 /* 一进来就把自己的合约读出来 */
+paintLayer();   // B12：先把徽章画成"探测中"，等第一个 rpc 成功再照实改名
 (async () => {
   await loadBlocks();
   const q0 = fromUrl() || DEFAULT_QUERY;

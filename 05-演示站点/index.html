@@ -87,6 +87,7 @@
   .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);display:inline-block;margin-right:6px}
   .dot.on{background:var(--ok)}
   .dot.err{background:var(--bad)}
+  .dot.snap{background:#e8a33d}   /* 离线快照：不是"已连主网"的绿点 */
   .chainbar b{color:var(--ink);font-weight:600}
   .rail{display:flex;flex-wrap:wrap;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
   .rail-i{padding:12px 26px 12px 0;margin-right:26px;border-right:1px solid var(--hair);min-width:150px}
@@ -600,7 +601,7 @@
    V3 排版层 · 只动「字号 / 版心 / 留白 / 对齐」
    ──────────────────────────────────────────────────────────────────────────────
    三页（index / verifier）的 :root 有 55 个令牌逐字相同 —— 这是「三个页面是同一台仪器」
-   的证据，也正是 check-redesign.js ① 锁定的哈希对象。所以 V3 一行 :root 都没动：
+   的证据，也正是当年 check-redesign.js ①（该一次性脚本未随仓库保留）锁定的哈希对象。所以 V3 一行 :root 都没动：
    新值全部落在 body.v3 这一层。于是「深色没动」不是一句声明，是可以逐字 diff 的事实。
    颜色、数据、动效、事件、文案 —— 一律未改。
    ══════════════════════════════════════════════════════════════════════════════ */
@@ -1092,7 +1093,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   <div class="ro money"><span class="lb">已赔付<span class="eni">Paid out</span></span><span class="vl" id="paidShow">—</span>
     <span class="sub" id="paidSub">正在读链上事件<span class="eni">reading events</span></span></div>
   <div class="ro measure"><span class="lb">已越阈值区域<span class="eni">Over threshold</span></span><span class="vl" id="overShow">—</span>
-    <span class="sub" id="overSub">按 72 小时窗口<span class="eni">72 h window</span></span></div>
+    <span class="sub" id="overSub">按链上读到的窗口<span class="eni">on-chain window</span></span></div>
   <div class="ro"><span class="lb">待 AI 判定<span class="eni">Awaiting AI</span></span><span class="vl" id="pendShow">—</span>
     <span class="sub" id="pendSub">连接钱包后可读<span class="eni">connect to read</span></span></div>
 </div>
@@ -1107,13 +1108,15 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
         <span class="r">同一把尺子：满量程 = 2 × 阈值 · 超出者顶格</span>
       </div>
       <div class="filters" id="rainMode" style="margin-bottom:var(--s3)">
-        <button class="f on" data-mode="chain">演示值 · 链上<span class="eni">Demo (on-chain)</span></button>
-        <button class="f" data-mode="real">真值 · 真实观测<span class="eni">Real rainfall</span></button>
+        <button class="f on" data-mode="chain" aria-pressed="true">演示值 · 链上<span class="eni">Demo (on-chain)</span></button>
+        <button class="f" data-mode="real" aria-pressed="false">真值 · 真实观测<span class="eni">Real rainfall</span></button>
+        <button class="f" data-mode="live" aria-pressed="false">实时 · 现网直连<span class="eni">Live (off-chain)</span></button>
       </div>
       <div class="block" id="rainBoard">
         <div class="loading">正在读取各区域降雨<span class="eni">reading rainfall</span></div>
       </div>
       <div class="block" id="realBoard" hidden></div>
+      <div class="block" id="liveBoard" hidden></div>
     </section>
 
     <section class="sec" data-dom="evi">
@@ -1123,12 +1126,12 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
         <span class="r">事件名与参数都是合约发出的原始内容，本页只做翻译</span>
       </div>
       <div class="filters" id="evFilters">
-        <button class="f on" data-fam="all">全部<span class="eni">All</span></button>
-        <button class="f" data-fam="buy">投保<span class="eni">Buy</span></button>
-        <button class="f" data-fam="feed">喂价<span class="eni">Feed</span></button>
-        <button class="f" data-fam="judge">判定<span class="eni">Judge</span></button>
-        <button class="f" data-fam="pay">赔付<span class="eni">Payout</span></button>
-        <button class="f" data-fam="pool">资金池<span class="eni">Pool</span></button>
+        <button class="f on" data-fam="all" aria-pressed="true">全部<span class="eni">All</span></button>
+        <button class="f" data-fam="buy" aria-pressed="false">投保<span class="eni">Buy</span></button>
+        <button class="f" data-fam="feed" aria-pressed="false">喂价<span class="eni">Feed</span></button>
+        <button class="f" data-fam="judge" aria-pressed="false">判定<span class="eni">Judge</span></button>
+        <button class="f" data-fam="pay" aria-pressed="false">赔付<span class="eni">Payout</span></button>
+        <button class="f" data-fam="pool" aria-pressed="false">资金池<span class="eni">Pool</span></button>
       </div>
       <div class="panel" id="events">
         <div class="loading">正在读取事件日志<span class="eni">reading event logs</span></div>
@@ -1166,25 +1169,33 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
         <div class="k" style="margin-top:var(--s4)">保障时长<span class="eni">Cover window</span></div>
         <div class="chips" id="hoursChips" style="margin-top:8px"></div>
         <label class="vh" for="hoursInput">保障时长</label>
-        <select id="hoursInput" class="vh">
+        <select id="hoursInput" class="vh" disabled>
           <option value="24">24 小时（1 天） / 24 h</option>
           <option value="48">48 小时（2 天） / 48 h</option>
           <option value="72" selected>72 小时（3 天，最长） / 72 h</option>
         </select>
+        <!-- E12：上面三档是"静态脚手架"（v2 口径，07-测试工具/check-ui.js:57-58 钉着它），
+             **不代表链上一定卖这三档**：脚本一启动就把这里换成"读取中…"并保持 disabled，
+             真正可选的是链上 hoursAllowed(h) 的答案（v3 = 12/24、v2 = 24/48/72）。 -->
 
         <div class="quote">
           <div><div class="lb">应付保费<span class="eni">Premium</span></div><div class="amt" id="premiumShow">—</div></div>
-          <div class="side" id="premiumSide">premiumOf(1, 72)<br>链上取值 / on-chain</div>
+          <div class="side" id="premiumSide">premiumOf(regionId, hours)<br>链上取值 / on-chain</div>
         </div>
         <!-- 这一行是「我刚才那一下，链上真的回了一个数」的凭据：点城市/换时长都会跟着变。 -->
         <div class="note dim" id="callProof">正在连链上读取…<span class="en">reading on-chain…</span></div>
 
         <div class="spec">
           <div class="r"><span class="l">触发条件（增量 ≥）<span class="eni">Trigger (increase ≥)</span></span><span class="v2" id="threshShow">—</span></div>
-          <div class="r"><span class="l">赔付档位<span class="eni">Payout tier</span></span><span class="v2" id="tierShow">按国标三级 · 50 / 75 / 100%<span class="eni">per GB standard</span></span></div>
+          <div class="r"><span class="l">赔付档位<span class="eni">Payout tier</span></span><span class="v2" id="tierShow">—</span></div>
           <div class="r"><span class="l">本单赔付上限<span class="eni">Max payout</span></span><span class="v2 money" id="payoutShow">—</span></div>
           <div class="r"><span class="l">生效延迟<span class="eni">Effective delay</span></span><span class="v2" id="coolShow">—<span class="eni">—</span></span></div>
         </div>
+
+        <!-- B13：投保前的前置告警位。677 上末次喂价是 2026-10-09，早就超过 MAX_FEED_AGE（24 小时），
+             现在点投保必然 revert「stale feed」—— 这句话必须在按钮上方先说，而不是等 revert 回来才说。
+             hidden 直到真的读到 lastFeedAt 才显示：读不到就不编时间。 -->
+        <div class="note" id="feedWarn" role="alert" hidden style="margin-top:var(--s4)"></div>
 
         <button class="btn primary block" id="buyBtn" style="margin-top:var(--s4)" disabled>连接钱包后投保<span class="eni">Connect to buy</span></button>
         <div class="note dim" id="buyHint" style="margin-top:var(--s3)">
@@ -1247,7 +1258,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   </div>
   <div class="panel">
     <div class="cfg">
-      <input id="addrInput" spellcheck="false" placeholder="0x… 部署出来的合约地址（42 个字符）">
+      <input id="addrInput" spellcheck="false" aria-label="合约地址（0x 开头的 42 位十六进制地址）" placeholder="0x… 部署出来的合约地址（42 个字符）">
       <button class="btn" id="saveBtn">保存并连接</button>
       <span class="tag" id="modeTag">只读模式</span>
     </div>
@@ -1259,8 +1270,9 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
       <button class="btn sm gold" id="fundBtn" disabled>注资到资金池（按钱包余额自动封顶）<span class="eni">Fund the pool</span></button>
     </div>
     <div class="note">
-      <strong>资金池必须有余额。</strong>收 1 份保费（0.0002–0.002）却要赔最高 10 倍（0.01），
-      池子是空的，第一笔赔付都过不去 —— 链上会直接抛 <code>insurance pool empty</code>。
+      <strong>资金池必须有余额。</strong>收 1 份保费（链上现行 10 档 0.00053–0.00105 BOT，
+      合约下限 <code>MIN_PREMIUM</code> = 0.00002 BOT）却要赔最高 <code>PAYOUT_MAX</code> = 0.01 BOT
+      —— 约 9.5–18.9 倍，池子是空的，第一笔赔付就过不去 —— 链上会直接抛 <code>insurance pool empty</code>。
     </div>
   </div>
 
@@ -1291,9 +1303,11 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
     <p>这一页不依赖任何区块浏览器：合约地址、账户余额、降雨值、事件日志，全部直接向节点提问取得
     （<code>rpc.botchain.ai</code>）。</p>
     <p><b>主网 677 走 <code>rpc.botchain.ai</code>。</b>外网可直连；中国大陆等网络直连不通（实测直连超时、走代理 200）。
-    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968 → 页面自带的链上快照」四层并行探测（每条比前一条晚 1.2 秒出发，
+    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968 → 页面自带的离线快照」四层并行探测（每条比前一条晚 1.2 秒出发，
     哪个先答上就用哪个），并在顶部如实标出<b>当前读的是哪一层</b> —— 退到 968 会写明 <b>BOT Chain Testnet</b>，
-    退到快照会写明「<b>BOT Chain Mainnet · 链上快照</b>」，都不会假装还在读实时主网。
+    退到快照会写明「<b>离线快照（非实时）</b>」，都不会假装还在读实时主网。
+    第四层要说清楚：它不是某次 <code>eth_call</code> 的原始回答，而是<b>本机按 2026-10-08 链上复核读数重建</b>的离线副本
+    （<code>frozen-node.js</code> 里 <code>source = rebuild-from-verified-readings</code>），链徽标、横幅、读数出处都按「离线快照（非实时）」标注。</p>
     连不上任何节点时，页面上仍然能把整套演示看完：数据全部真实来自链上，只是读到的是某一时刻的读数。</p>
   </div>
   </div>
@@ -1314,7 +1328,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   <span>BOT Chain <b>677</b></span>
   <span>合约 <b id="footAddr" title="0x89e7C942535930B61cB61631051E8b0bD670596a">0x89e7…596a</b></span>
   <span>节点 <b id="footNode">rpc.botchain.ai</b></span>
-  <span class="sp">⚠️ 主网节点 <code>rpc.botchain.ai</code> 在部分网络（如中国大陆）<b>无法直连</b>；连不上时页面会依次退到只读中转 → 测试网 968 → 页面自带的链上快照，退到哪一层都会在链名/横幅上如实标出（外网环境正常时读的就是主网实时数据）<span class="eni">Some networks (e.g. mainland China) cannot reach the mainnet RPC; the page then falls back to the read-only relay, then testnet 968, then its bundled on-chain snapshot — always labelled on the chain name / banner. On the open internet it reads mainnet live</span></span>
+  <span class="sp">⚠️ 主网节点 <code>rpc.botchain.ai</code> 在部分网络（如中国大陆）<b>无法直连</b>；连不上时页面会依次退到只读中转 → 测试网 968 → 页面自带的<b>离线快照（非实时）</b>，退到哪一层都会在链名/横幅上如实标出（外网环境正常时读的就是主网实时数据）<span class="eni">Some networks (e.g. mainland China) cannot reach the mainnet RPC; the page then falls back to the read-only relay, then testnet 968, then its bundled offline snapshot — always labelled on the chain name / banner. On the open internet it reads mainnet live</span></span>
   <span class="sp">不依赖任何区块浏览器 · 数据直接向公共节点提问<span class="eni">No block explorer needed — every number is read straight from the public node</span></span>
 </footer>
 </div>
@@ -1325,7 +1339,11 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
 <script src="frozen-node.js"></script>
 <script>
 "use strict";
-const ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"tier","type":"uint8"}],"name":"ClaimPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"CoolingPeriodSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"required","type":"bool"}],"name":"EligibleRequiredSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"who","type":"address"},{"indexed":false,"internalType":"bool","name":"ok","type":"bool"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"EligibleSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"openExposure","type":"uint256"}],"name":"ExposureSettled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"FeedRejected","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"uint8","name":"kind","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"decision","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"JudgementSubmitted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"OperatorChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"paused","type":"bool"}],"name":"PausedSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"}],"name":"PolicyBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newBalance","type":"uint256"}],"name":"PoolFunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PoolWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"windowHours","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"PremiumSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":true,"internalType":"address","name":"reporter","type":"address"}],"name":"RainfallUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReserveSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"level","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"UnderwritingDecision","type":"event"},{"inputs":[],"name":"DECISION_DENY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECISION_PAY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_FEED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_LOSS","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_FEED_AGE","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_OPEN_EXPOSURE_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_POLICIES_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_CONFIDENCE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_PREMIUM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PAYOUT_MAX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PREMIUM_DEFAULT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRODUCT_RAIN","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REGION_COUNT","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_LOADED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_NORMAL","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_SUSPENDED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"THRESHOLD_PER_24H","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER_NONE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"aiPremium","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"buyPolicy","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coolingPeriod","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"currentTier","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"eligible","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"eligibleRequired","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"feedJudgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"fundPool","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"hoursAllowed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"judgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"lastFeedAt","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextPolicyId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"openExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"operator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"payoutOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"pendingExposureOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"policies","outputs":[{"internalType":"address","name":"rider","type":"address"},{"internalType":"uint8","name":"productId","type":"uint8"},{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"windowHours","type":"uint256"},{"internalType":"uint256","name":"thresholdMm","type":"uint256"},{"internalType":"uint256","name":"rainfallAtBuy","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"},{"internalType":"uint256","name":"payout","type":"uint256"},{"internalType":"bool","name":"paid","type":"bool"},{"internalType":"bool","name":"settled","type":"bool"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"policiesOf","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"policyStatus","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"premiumGrid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"premiumOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"rainfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"rainfallDuring","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"}],"name":"regionName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"rejectFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"reserve","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserveOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"riderExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"riskLevel","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"setCoolingPeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"who","type":"address"},{"internalType":"bool","name":"ok","type":"bool"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setEligible","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setEligibleRequired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setPaused","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setPremiumGrid","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setReserve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint8","name":"level","type":"uint8"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setUnderwriting","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"policyIds","type":"uint256[]"}],"name":"settleExpired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"shortfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"submitJudgement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"thresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"tierBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"duringMm","type":"uint256"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"tierOf","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"next","type":"address"}],"name":"transferOperator","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"}],"name":"updateRainfall","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawPool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"uint8","name":"kind","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"decision","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"JudgementSubmitted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"payer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PolicyRefunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"module","type":"address"}],"name":"PricingModuleSet","type":"event"},{"inputs":[],"name":"TIER_COUNT","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"beneficiary","type":"address"},{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyFor","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"entryThresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"openPoliciesOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"premiumOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pricingModule","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"quoteOf","outputs":[{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"bool","name":"sellable","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"refundPolicy","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"module","type":"address"}],"name":"setPricingModule","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"submitJudgement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"thresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"}];
+// 两份 ABI 分开：V2/V3 有同名结构体（policies/judgements/feedJudgements）但字段数不同，
+// 用并集会在 v3 上把整串字段错移一位（16 个字只声明 15 个）。运行期按探测到的链版本二选一。
+// 逐字节副本来自 03-合约/RainDeliveryInsuranceV2.abi.json / RainDeliveryInsuranceV3.abi.json。
+const ABI_V2 = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"tier","type":"uint8"}],"name":"ClaimPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"CoolingPeriodSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"required","type":"bool"}],"name":"EligibleRequiredSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"who","type":"address"},{"indexed":false,"internalType":"bool","name":"ok","type":"bool"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"EligibleSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"openExposure","type":"uint256"}],"name":"ExposureSettled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"FeedRejected","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"uint8","name":"kind","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"decision","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"JudgementSubmitted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"OperatorChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"paused","type":"bool"}],"name":"PausedSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"}],"name":"PolicyBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newBalance","type":"uint256"}],"name":"PoolFunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PoolWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"windowHours","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"PremiumSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":true,"internalType":"address","name":"reporter","type":"address"}],"name":"RainfallUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReserveSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"level","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"UnderwritingDecision","type":"event"},{"inputs":[],"name":"DECISION_DENY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECISION_PAY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_FEED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_LOSS","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_FEED_AGE","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_OPEN_EXPOSURE_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_POLICIES_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_CONFIDENCE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_PREMIUM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PAYOUT_MAX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PREMIUM_DEFAULT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRODUCT_RAIN","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REGION_COUNT","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_LOADED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_NORMAL","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_SUSPENDED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"THRESHOLD_PER_24H","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER_NONE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"aiPremium","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"buyPolicy","outputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coolingPeriod","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"currentTier","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"eligible","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"eligibleRequired","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"feedJudgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"fundPool","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"hoursAllowed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"judgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"lastFeedAt","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextPolicyId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"openExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"operator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"payoutOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"pendingExposureOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"policies","outputs":[{"internalType":"address","name":"rider","type":"address"},{"internalType":"uint8","name":"productId","type":"uint8"},{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"windowHours","type":"uint256"},{"internalType":"uint256","name":"thresholdMm","type":"uint256"},{"internalType":"uint256","name":"rainfallAtBuy","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"},{"internalType":"uint256","name":"payout","type":"uint256"},{"internalType":"bool","name":"paid","type":"bool"},{"internalType":"bool","name":"settled","type":"bool"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"policiesOf","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"policyStatus","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"premiumGrid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"premiumOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"rainfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"rainfallDuring","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"}],"name":"regionName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"rejectFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"reserve","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserveOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"riderExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"riskLevel","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"setCoolingPeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"who","type":"address"},{"internalType":"bool","name":"ok","type":"bool"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setEligible","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setEligibleRequired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setPaused","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setPremiumGrid","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setReserve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint8","name":"level","type":"uint8"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setUnderwriting","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"policyIds","type":"uint256[]"}],"name":"settleExpired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"shortfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"submitJudgement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"thresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"tierBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"duringMm","type":"uint256"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"tierOf","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"next","type":"address"}],"name":"transferOperator","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"}],"name":"updateRainfall","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawPool","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const ABI_V3 = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"tier","type":"uint8"}],"name":"ClaimPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"CoolingPeriodSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"required","type":"bool"}],"name":"EligibleRequiredSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"who","type":"address"},{"indexed":false,"internalType":"bool","name":"ok","type":"bool"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"EligibleSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"openExposure","type":"uint256"}],"name":"ExposureSettled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"FeedRejected","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"uint8","name":"kind","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"decision","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"JudgementSubmitted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"OperatorChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"paused","type":"bool"}],"name":"PausedSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"}],"name":"PolicyBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"payer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PolicyRefunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newBalance","type":"uint256"}],"name":"PoolFunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PoolWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"windowHours","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"PremiumSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"module","type":"address"}],"name":"PricingModuleSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":true,"internalType":"address","name":"reporter","type":"address"}],"name":"RainfallUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReserveSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint8","name":"regionId","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"level","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"UnderwritingDecision","type":"event"},{"inputs":[],"name":"DECISION_DENY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECISION_PAY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_FEED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_LOSS","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_FEED_AGE","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_OPEN_EXPOSURE_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_POLICIES_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_CONFIDENCE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_PREMIUM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PAYOUT_MAX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PREMIUM_DEFAULT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRODUCT_RAIN","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REGION_COUNT","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_LOADED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_NORMAL","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_SUSPENDED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER_COUNT","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER_NONE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"aiPremium","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"beneficiary","type":"address"},{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyFor","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"buyPolicy","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coolingPeriod","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"currentTier","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"eligible","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"eligibleRequired","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"entryThresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"feedJudgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"fundPool","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"hoursAllowed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"judgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"lastFeedAt","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextPolicyId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"openExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"openPoliciesOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"operator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"payoutOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"pendingExposureOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"policies","outputs":[{"internalType":"address","name":"rider","type":"address"},{"internalType":"address","name":"payer","type":"address"},{"internalType":"uint8","name":"productId","type":"uint8"},{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"windowHours","type":"uint256"},{"internalType":"uint256","name":"thresholdMm","type":"uint256"},{"internalType":"uint256","name":"rainfallAtBuy","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"},{"internalType":"uint256","name":"payout","type":"uint256"},{"internalType":"bool","name":"paid","type":"bool"},{"internalType":"bool","name":"settled","type":"bool"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"policiesOf","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"policyStatus","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"premiumGrid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"premiumOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"premiumOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pricingModule","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"quoteOf","outputs":[{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"bool","name":"sellable","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"rainfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"rainfallDuring","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"refundPolicy","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"}],"name":"regionName","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"rejectFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"reserve","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserveOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"riderExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint8","name":"","type":"uint8"}],"name":"riskLevel","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"setCoolingPeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"who","type":"address"},{"internalType":"bool","name":"ok","type":"bool"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setEligible","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setEligibleRequired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setPaused","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setPremiumGrid","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"module","type":"address"}],"name":"setPricingModule","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setReserve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint8","name":"level","type":"uint8"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setUnderwriting","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"policyIds","type":"uint256[]"}],"name":"settleExpired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"shortfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"submitJudgement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"thresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"tierBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"duringMm","type":"uint256"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"tierOf","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"next","type":"address"}],"name":"transferOperator","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint8","name":"regionId","type":"uint8"},{"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"}],"name":"updateRainfall","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawPool","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 const QS = new URLSearchParams(location.search);
 // ?rpc=… 可临时指定节点（本地链联调用，例如 http://127.0.0.1:8545）
@@ -1395,12 +1413,76 @@ const fmtEth = w => Number(ethers.formatEther(w)).toLocaleString("en-US", { maxi
 const SYM = () => (S.chain && CHAIN_META[S.chain.chainId] ? CHAIN_META[S.chain.chainId].symbol : "BOT");
 
 const S = { addr:null, c:null, readC:null, provider:null, signer:null, account:null, chainOk:false, meta:null,
-             rainVals:null, rainSig:"" };
+             rainVals:null, rainSig:"", kind:null, premiumNow:null, buyBlock:null, feedBlock:null, readonly:false };
+
+/* -------- ABI / 形状自检 / 买入按钮可用性（本轮修复集中处） -------- */
+// 运行期按探测到的链版本取 ABI：两份都是 03-合约/*.abi.json 的逐字节副本。
+// 不能再用 v2∪v3 的并集 —— 同名结构体只留 v2 形状时，v3 的返回值会整串错移一位。
+const ABI_FOR = () => (S.kind === "v3" ? ABI_V3 : ABI_V2);
+// 把「这条链没这个 getter」和「解码/网络错误」分开：后者必须报出来，不能静默降级。
+const fnMissing = e => {
+  const c = (e && e.code) || "", m = String((e && (e.shortMessage || e.message)) || "");
+  return c === "CALL_EXCEPTION" && !(e && e.data) && !/revert|invalid|BAD_DATA|decode/i.test(m);
+};
+// 形状自检：字段数与当前链版本不符 ⇒ 停止解析这一栏，一个数字都不渲染（宁可空着，也不给人看错位的假数字）
+const ABI_SHAPE = { v3: { policies:16, judgements:10, feedJudgements:10 },
+                    v2: { policies:15, judgements:9,  feedJudgements:9 } };
+let shapeStop = "";
+function shapeOk(name, res, tag) {
+  const want = ABI_SHAPE[S.kind] ? ABI_SHAPE[S.kind][name] : null;
+  const got = res && typeof res.length === "number" ? res.length : -1;
+  if (want && got === want) return true;
+  shapeStop = "ABI 与链上不匹配，已停止解析";
+  console.error(`ABI 与链上不匹配：${tag} 返回 ${got} 个字段，当前版本 ${S.kind || "未知"} 应为 ${want} 个 —— 已停止解析，本栏不显示任何数字`);
+  return false;
+}
+const shapeStopHTML = name => `<div class="empty" role="alert">⚠ ${esc(shapeStop || "ABI 与链上不匹配，已停止解析")}：<code>${esc(name)}</code> 的结果与当前版本（${esc(S.kind || "未知")}）的 ABI 不一致。这一栏不显示任何数字，请核对合约地址与版本。</div>`;
+// 时间戳统一走这里：new Date(NaN) 会渲染成 "Invalid Date"，读不到就显示「读不到」
+const fmtTs = ts => (Number.isFinite(ts) && ts > 0 ? new Date(ts * 1000).toLocaleString("zh-CN") : "读不到 / unreadable");
+// 当前选中的时长（小时）。读不到就是 null —— 绝不 "|| 72" 兜底成链上不一定卖的档位。
+const curHours = () => { const v = Number($("hoursInput").value); return Number.isFinite(v) && v > 0 ? v : null; };
+// 事件参数一律按 ABI 里的字段名取，绝不写下标：v2/v3 同名事件的字段数与位置不同
+// （JudgementSubmitted 在 v3 的 confidence 与 inputHash 之间多了 rainfallAtJudgement），
+// 写死 args[5..7] 就是本页之前把 v2 顺序钉死的第二处。
+const evArg = (d, name) => {
+  const i = d && d.fragment ? d.fragment.inputs.findIndex(x => x.name === name) : -1;
+  return i >= 0 ? d.args[i] : undefined;
+};
+// 买入按钮可用性的唯一出口：任何"不能买"的原因都写进 S.buyBlock，并直接显示在按钮上。
+function syncBuyBtn() {
+  const b = $("buyBtn");
+  if (!S.addr) { b.disabled = true; b.textContent = "先填合约地址"; return; }
+  if (S.readonly) { b.disabled = true; b.textContent = "只读连接不能投保（投保要钱包签名）"; return; }
+  // 离线快照（非实时）：读数可以看，写操作一律锁死 —— 按钮上就写明原因，不留一个点了才报错的按钮
+  if (S.chain && S.chain.frozen) { b.disabled = true; b.textContent = "离线快照（非实时）：写操作已锁死，投保需连上主网"; return; }
+  if (S.feedBlock) { b.disabled = true; b.textContent = S.feedBlock; return; }   // 喂价过期等前置条件
+  if (S.buyBlock) { b.disabled = true; b.textContent = S.buyBlock; return; }
+  if (!S.signer) { b.disabled = true; b.textContent = "连接钱包后投保"; return; }
+  b.disabled = false; b.textContent = "投保 / Buy policy";
+}
+const buyBlocked = r => { S.buyBlock = r || "链上参数还没读到，先别投保"; syncBuyBtn(); };
+const buyReady = () => { S.buyBlock = null; syncBuyBtn(); };
+/* 链不可用（读节点失败 / 地址上没有合约代码）时必须**显式进入不可用态**：
+   以前这里只是 return false，静态占位数字还留在页面上，看起来像"读到了"。 */
+function setUnavailable(why) {
+  S.meta = null; S.kind = null; S.premiumNow = null; shapeStop = "";
+  buyBlocked(why);
+  for (const id of ["premiumShow", "threshShow", "payoutShow", "tierShow", "coolShow"]) {
+    const el = $(id); if (el) el.textContent = "—";
+  }
+  const side = $("premiumSide"); if (side) side.innerHTML = "链上不可用<br>unavailable";
+  const proof = $("callProof"); if (proof) proof.innerHTML = `✗ 合约不可用：${esc(why)} —— 本页这一栏不显示任何数字（静态占位已清空）`;
+  const hs = $("hoursInput"); if (hs) hs.innerHTML = '<option value="" disabled selected>未读到档位 / no tier read</option>';
+  markHoursChips();
+}
 
 /* ---------------- 提示条 ---------------- */
 let toastTimer;
 function toast(msg, kind) {
   const t = $("toast");
+  // 无障碍：错误用 role="alert"（assertive，立刻打断朗读），普通提示保持 role="status"（polite）。
+  // 以前全是 polite，读屏用户可能等整页读完才听到「交易失败」。
+  t.setAttribute("role", kind === "err" ? "alert" : "status");
   t.textContent = msg;
   t.className = "show" + (kind ? " " + kind : "");
   clearTimeout(toastTimer);
@@ -1412,6 +1494,9 @@ function toast(msg, kind) {
   }, kind === "err" ? 12000 : 5000);
 }
 function setMode(text, cls) { const e = $("modeTag"); e.textContent = text; e.className = "tag " + (cls || ""); }
+/* 无障碍：城市片/时长片/事件筛选/看板筛选都是一组"切换按钮"，选中态只改 .on 类的话
+   屏幕阅读器读不出"当前选中的是哪个" —— 视觉与 aria-pressed 必须一起动。 */
+const press = (el, on) => { el.classList.toggle("on", !!on); el.setAttribute("aria-pressed", on ? "true" : "false"); };
 
 /* ---------------- 只读 provider（永远可用） ---------------- */
 // 单个节点最多等 8 秒。主网节点在"没有代理"的网络里会一直挂着不回（实测直连 rpc.botchain.ai = 000），
@@ -1507,7 +1592,7 @@ async function getReadProvider() {
   // ?snap=1 强制只看快照（演示现场不赌网络）；?snap=0 关掉快照兜底。
   if (QS.get("snap") === "1" && FROZEN) {
     FROZEN_WHY = "?snap=1";
-    S.chain = { url: "frozen-node.js", chainId: Number(FROZEN.meta.chainId), chainName: FROZEN.meta.chainName, blockNumber: FROZEN.meta.blockNumber, isReal: true, frozen: true };
+    S.chain = { url: "frozen-node.js", chainId: Number(FROZEN.meta.chainId), chainName: FROZEN.meta.chainName, blockNumber: FROZEN.meta.blockNumber, isReal: false, frozen: true };
     return await frozenProvider();
   }
   const attempts = RPC_NODES.map((url, i) => new Promise((res, rej) => {
@@ -1523,7 +1608,7 @@ async function getReadProvider() {
     // 三层节点全挂：退到链上快照。它不是实时数据，界面会写明「链上快照」。
     if (snapshotAllowed()) {
       FROZEN_WHY = "auto";
-      S.chain = { url: "frozen-node.js", chainId: Number(FROZEN.meta.chainId), chainName: FROZEN.meta.chainName, blockNumber: FROZEN.meta.blockNumber, isReal: true, frozen: true };
+      S.chain = { url: "frozen-node.js", chainId: Number(FROZEN.meta.chainId), chainName: FROZEN.meta.chainName, blockNumber: FROZEN.meta.blockNumber, isReal: false, frozen: true };
       return await frozenProvider();
     }
     throw new Error("连不上 BOT Chain 节点");
@@ -1550,11 +1635,15 @@ function showFrozenBanner() {
   bar.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:99998;background:#8a6d1f;color:#fff;" +
     "font:700 14px/1.7 system-ui,'Microsoft YaHei',sans-serif;padding:8px 14px;text-align:center;" +
     "box-shadow:0 2px 10px rgba(0,0,0,.35)";
+  // 口径如实：快照不是"某次 eth_call 的原始回答"，而是本机按复核过的读数重建出来的离线副本
+  // （frozen-node.js 里 source = rebuild-from-verified-readings）。
   bar.textContent = (FROZEN_WHY === "?snap=1"
-    ? "⚠ 链上快照：按网址参数 ?snap=1 强制只看快照（现场不赌网络），显示的是 "
-    : "⚠ 链上快照：三层节点都连不上（国内直连 rpc.botchain.ai 需代理），显示的是 ") +
-    (FROZEN.meta.capturedAt || "上一轮") + " 读到的原始链上回答 —— 不是实时数据。" +
-    "要实时读数请在能连主网的网络上刷新（或在网址后加 ?rpc=<可用节点>）。";
+    ? "⚠ 离线快照（非实时）：按网址参数 ?snap=1 强制只看页面自带快照（现场不赌网络）。"
+    : "⚠ 离线快照（非实时）：三层节点都连不上（国内直连 rpc.botchain.ai 需代理）。") +
+    "页面读的是本机按 " + String(FROZEN.meta.capturedAt || "上一轮").split("（")[0] +
+    " 链上复核读数「重建」的离线副本（frozen-node.js，source=" +
+    (FROZEN.meta && FROZEN.meta.source ? FROZEN.meta.source : "—") +
+    "）—— 不是实时数据。要实时读数请在能连主网的网络上刷新（或在网址后加 ?rpc=<可用节点>）。";
   document.body.appendChild(bar);
   syncBarPad();
 }
@@ -1588,26 +1677,29 @@ async function boot() {
     const bn = await S.provider.getBlockNumber();
     $("blk").textContent = bn.toLocaleString("en-US");
     $("dot").className = "dot on";
-    if (S.chain && !S.chain.isReal) {
-      $("netText").textContent = "本地假链（非 " + (S.chain.chainName || "真链") + "）";
-      showFakeChainWarning();
-    } else if (S.chain && S.chain.frozen) {
-      $("netText").textContent = (S.chain.chainName || "—") + " · 链上快照";
+    if (S.chain && S.chain.frozen) {
+      // 快照先判：它以前被标成 isReal:true，于是页面挂着「已连主网」的绿色徽标读离线数据。
+      $("netText").textContent = (S.chain.chainName || "—") + " · 离线快照（非实时）";
+      $("dot").className = "dot snap";
       showFrozenBanner();
       toast((FROZEN_WHY === "?snap=1"
-        ? "按网址参数 ?snap=1 强制只看页面自带快照："
-        : "三层节点都连不上（国内直连主网 rpc.botchain.ai 需代理），已改用链上快照：") +
-        (FROZEN.meta.capturedAt || "") + " 读到的原始链上回答，不是实时数据 / offline snapshot of on-chain answers");
+        ? "按网址参数 ?snap=1 强制只看页面自带的离线快照："
+        : "三层节点都连不上（国内直连主网 rpc.botchain.ai 需代理），已改用页面自带的离线快照：") +
+        (FROZEN.meta.capturedAt || "") + " —— 快照是本机按该日链上复核读数重建的副本，不是实时数据 / offline snapshot rebuilt from verified readings");
+    } else if (S.chain && !S.chain.isReal) {
+      $("netText").textContent = "本地假链（非 " + (S.chain.chainName || "真链") + "）";
+      showFakeChainWarning();
     } else {
       $("netText").textContent = (S.chain && S.chain.chainName) || "—";
     }
+
     // rpc.botchain.ai 在没有代理的网络里连不上（2026-10-08 实测：直连 curl = 000，走 7890 = 200），
     // 这时 getReadProvider 会自动退到测试网 968。必须说出来，别让人以为看的是主网数据。
     if (S.chain && S.chain.chainId === 968 && !RPC_OVERRIDE) {
       toast("主网节点 rpc.botchain.ai 在当前网络不可达（中国大陆需代理才能直连），已自动切到测试网 968（v2 口径）/ mainnet RPC unreachable here — fell back to testnet 968");
     }
     // 页脚写的节点名要跟实际连的一致，否则读着 968、页脚还写着 rpc.botchain.ai。
-    if (S.chain && $("footNode")) $("footNode").textContent = S.chain.frozen ? "链上快照（离线文件 frozen-node.js）" : S.chain.url.replace(/^https?:\/\//, "");
+    if (S.chain && $("footNode")) $("footNode").textContent = S.chain.frozen ? "离线快照（非实时 · 本机重建的 frozen-node.js）" : S.chain.url.replace(/^https?:\/\//, "");
   } catch (e) {
     window.__bootErr = (e && e.message) || String(e);   // 现场排障：这一次到底为什么没连上（快照兜底若也抛错，会记在这里）
     $("dot").className = "dot err";
@@ -1636,7 +1728,7 @@ async function boot() {
       const accts = await window.ethereum.request({ method: "eth_accounts" });
       if (accts && accts.length) await connectWallet(true);
       else $("walletBtn").textContent = "连接钱包";
-    } catch (e) {}
+    } catch (e) { console.warn("钱包探测失败（不影响只读读数）：", e && (e.message || e)); }
   } else {
     // 没有钱包扩展不是死路：本页读链上数据永远走公共节点，不需要签名者。
     // 所以点这个按钮改成展开「粘贴地址只读查看」那一行，而不是把按钮禁用掉。
@@ -1667,22 +1759,31 @@ async function attachContract(addr, quiet) {
   } catch (e) {
     // 节点抖一下就把异常一路冒到 boot()，页面会停在"节点连不上"再也不动 —— 这里只报一句，
     // 剩下的交给文件末尾那个 12 秒轮询自己去重试。
-    if (!quiet) toast("读节点失败（" + (e.shortMessage || e.message || e) + "）—— 12 秒后会自动重试", "err");
+    const why = "读节点失败（" + (e.shortMessage || e.message || e) + "）";
+    if (!quiet) toast(why + " —— 12 秒后会自动重试", "err");
+    setUnavailable(why);
     return false;
   }
   if (!code || code === "0x") {
-    if (!quiet) toast("这个地址在链上没有合约代码。可能是地址抄错了，或者部署失败了 —— 去链上核验台确认一下。", "err");
+    const why = "这个地址在链上没有合约代码（地址抄错，或部署失败）";
+    if (!quiet) toast(why + " —— 去链上核验台确认一下。", "err");
+    setUnavailable(why);
     return false;
   }
-  S.readC = new ethers.Contract(addr, ABI, S.provider);
+  S.meta = null; S.kind = null; S.premiumNow = null; S.buyBlock = null; shapeStop = "";
+  // 探测用 ABI_V3：v3 上 entryThresholdOf(24) 会回数（返回值 50）；v2 上没有这个函数、调用即抛 ⇒ 认成 v2。
+  // 探测归探测：真正用来读结构体/事件的 ABI 由 ABI_FOR() 按版本决定，两者绝不混用。
+  S.readC = new ethers.Contract(addr, ABI_V3, S.provider);
 
   // 元信息
   try {
-    // 版本只能靠「问链」认，不能看 ABI 里有没有这个名字 —— 页面里的 ABI 是 v2∪v3 的并集，
-    // ethers 是按 ABI 建函数表的（不看链上代码），所以对 968 上的 v2 合约同样存在 entryThresholdOf。
+    // 版本只能靠「问链」认，不能看 ABI 里有没有这个名字（ethers 按 ABI 建函数表，不看链上代码）。
     // 2026-10-08：就是这一处让 v2 整页读数变成「—」并弹「读不出参数」，v2 是演示基线，必须认对。
     // 24 小时在 v3 上是合法档位（返回 50）；v2 上没这个函数，调用即抛 ⇒ 认成 v2。
     try { await S.readC.entryThresholdOf(24); S.kind = "v3"; } catch (e) { S.kind = "v2"; }
+    // 版本定了才换成该版本的 ABI：policies/judgements/feedJudgements 在两版里字段数不同
+    // （v3 = 16/10/10、v2 = 15/9/9），只有配对的那份才不会让整串字段错移一位。
+    S.readC = new ethers.Contract(addr, ABI_FOR(), S.provider);
     // 时长档先按合约的 hoursAllowed(h) 白名单收窄（v2 = {24,48,72}、v3 = {12,24}）。
     // 顺序很重要：v3 的 entryThresholdOf() 只对合约允许的档位有定义，拿 72 去问会 revert，
     // 一 revert 就把整块元信息拖垮（整页读数是「—」）—— 2026-10-08 第一次改的时候踩的就是这个坑。
@@ -1693,19 +1794,36 @@ async function attachContract(addr, quiet) {
                          48: "48 小时（2 天） / 48 h", 72: "72 小时（3 天，最长） / 72 h" };
     const hourCands = [12, 24, 48, 72];
     const allowed = [];
+    let hoursErr = null;
     for (const v of hourCands) {
       let ok = false;
-      try { ok = await S.readC.hoursAllowed(v); } catch (e) { ok = false; }
+      try { ok = await S.readC.hoursAllowed(v); }
+      catch (e) {
+        // 区分「这条链没有这个函数」（v1，正常）与「解码/网络错误」（必须说出来，
+        // 不能静默当成"不卖这一档"，那会把 12/24 两档一起变成 0 档）。
+        if (fnMissing(e)) { hoursErr = null; break; }
+        hoursErr = e.shortMessage || e.message || String(e);
+        console.error(`hoursAllowed(${v}) 读取失败：${hoursErr}`, e);
+      }
       if (ok) allowed.push(v);
     }
-    // 一档都问不出来（v1 没这个 getter / 节点抖）⇒ 不当作白名单，四档照旧可选。
-    const hourList = allowed.length ? allowed : hourCands;
+    if (!allowed.length) {
+      // E12：一档都读不出来 ⇒ 不许买。以前这里退回「四档照旧可选」，
+      // 等于把链上根本不卖的档位摆出来卖（v3 只有 12/24，却给出 48/72）。
+      const why = hoursErr ? `读可卖档位失败：${hoursErr}` : "链上没读到任何可卖的时长档位（hoursAllowed 全 false 或没有这个函数）";
+      $("hoursInput").innerHTML = '<option value="" disabled selected>未读到档位 / no tier read</option>';
+      markHoursChips();
+      buyBlocked(why);
+      const err = new Error(why); err.__hours = true; throw err;
+    }
     const sel = $("hoursInput");
     const keep = Number(sel.value);
-    sel.innerHTML = hourList.map(v => `<option value="${v}">${HOUR_LABEL[v] || v + " 小时 / " + v + " h"}</option>`).join("");
-    if (keep && hourList.includes(keep)) sel.value = String(keep);
-    else sel.value = String(hourList[hourList.length - 1]);
-    const hNow = Number($("hoursInput").value) || 72;
+    sel.innerHTML = allowed.map(v => `<option value="${v}">${HOUR_LABEL[v] || v + " 小时 / " + v + " h"}</option>`).join("");
+    sel.disabled = false;              // E12：档位是链上读数重建的，重建完才允许选
+    if (keep && allowed.includes(keep)) sel.value = String(keep);
+    else sel.value = String(allowed[allowed.length - 1]);
+    const hNow = curHours();
+    if (!hNow) { const err = new Error("可卖档位没解析出来"); err.__hours = true; throw err; }
     // 冷却期 / 分档数 / 暂停状态是展示项：老版本合约少一个 getter 不该把整页读数变成「—」。
     const soft = async (fn, dflt) => { try { return await fn(); } catch (e) { return dflt; } };
     S.meta = {
@@ -1743,8 +1861,18 @@ async function attachContract(addr, quiet) {
       + (S.kind === "v3" ? " · <b>v3</b>" : "")
       + (S.meta.paused ? ' <span class="tag red">合约已暂停</span>' : "");
   } catch (e) {
-    toast("地址上有合约，但这个 ABI 读不出它的参数 —— 确认地址上部署的是 RainDeliveryInsuranceV2 / V3 吗？", "err");
-    return false;
+    if (e && e.__hours) {
+      // 合约挂上了，只是「可卖档位」没读出来：按钮上已经写了原因，
+      // 其余区块按"读不到"渲染（不显示任何数字），不能把整页拖回"读不出参数"的死循环。
+      $("cfgHint").innerHTML = `已连上合约 <span class="mono">${esc(addr)}</span>（代码 ${(code.length-2)/2} 字节） · <span class="tag red">可卖档位未读到</span>`;
+    } else {
+      // 解码/网络错误（老代码里这里是空 catch，一路静默成"尚未登记"）—— 必须说出来
+      const why = "地址上有合约，但这个 ABI 读不出它的参数：" + (e && (e.shortMessage || e.message) || e);
+      console.error("[attachContract] 元信息读取失败：", e);
+      toast(why + " 确认地址上部署的是 RainDeliveryInsuranceV2 / V3 吗？", "err");
+      setUnavailable("ABI 读不出这条链上的参数");
+      return false;
+    }
   }
 
   await refreshAll();
@@ -1822,10 +1950,10 @@ async function connectWallet(silent) {
     $("netText").textContent = (S.chain && S.chain.chainName) || KNOWN_CHAINS[want] || "—";
     $("dot").className = "dot on";
     $("walletBtn").textContent = short(S.account);
-    $("buyBtn").disabled = !S.addr;
+    S.readonly = false;
     $("fundBtn").disabled = !S.addr;
-    $("buyBtn").textContent = S.addr ? "投保" : "先填合约地址";
     $("fundBtn").textContent = "注资到资金池（按钱包余额自动封顶）";
+    syncBuyBtn();
     await refreshAll();
     if (!silent) toast("钱包已连接：" + S.account, "ok");
   } catch (e) {
@@ -1848,7 +1976,7 @@ async function connectReadonly() {
   $("dot").className = "dot on";
   setMode("只读连接 · " + short(addr), "");
   // 按钮点不动时按钮自己说明原因：现场不会被误读成「这个功能坏了」
-  $("buyBtn").disabled = true; $("buyBtn").textContent = "只读连接不能投保（投保要钱包签名）";
+  syncBuyBtn();
   $("fundBtn").disabled = true; $("fundBtn").textContent = "只读连接不能注资（注资要钱包签名）";
   toast("只读连接：" + short(addr) + "　只看链上数据，不签名、不发交易", "ok");
   await refreshAll();
@@ -1857,6 +1985,10 @@ async function connectReadonly() {
 /* 写交易的统一封装：等签名 → 等上链 → 报 hash */
 async function send(fn, okMsg) {
   if (!S.signer) { toast(S.readonly ? "当前是只读连接：看数据可以，写交易要点「连接钱包」用插件签名" : "先连接钱包", "err"); return; }
+  if (S.chain && S.chain.frozen) {
+    // 快照里的保费/阈值是"重建的离线读数"：拿它去签真交易，等于按旧价下单。
+    toast("当前读的是页面自带的离线快照（非实时）：写操作已锁死 —— 请在能连主网的网络上刷新，或加 ?rpc=<可用节点>。", "err"); return;
+  }
   if (S.chain && !S.chain.isReal) {
     toast("当前连的是本地假链（块高 " + S.chain.blockNumber + "），不是真链 —— 写操作已锁死。去掉网址里的 ?rpc= 参数后刷新。", "err");
     return;
@@ -1898,7 +2030,65 @@ async function send(fn, okMsg) {
 /* ---------------- 刷新各区块 ---------------- */
 async function refreshAll() {
   if (!S.readC || !S.addr) return;
-  await Promise.allSettled([loadRegions(), loadPool(), loadMyPolicies(), loadEvents()]);
+  await Promise.allSettled([loadRegions(), loadPool(), loadMyPolicies(), loadEvents(), loadFeed()]);
+}
+
+/* ---------------- B13 喂价年龄（投保前的前置告警） ----------------
+   677 上末次喂价 2026-10-09 10:12–10:18，而合约的 MAX_FEED_AGE = 24 小时
+   （V2/V3 同值：uint64 public constant MAX_FEED_AGE = 24 hours），
+   现在现场投保会直接 revert「stale feed: feed before buying」。
+   所以先把话说在按钮上方：读得到就说准确时间，读不到就什么都不说 —— 不编一个时间。 */
+const FEED_AGE_FALLBACK = 86400;   // 离线快照里没有记录 MAX_FEED_AGE() 这次只读调用，退回合约里写死的常量
+async function loadFeed() {
+  const el = $("feedWarn");
+  if (!el) return;
+  if (!S.readC) { el.hidden = true; return; }
+  const region = Number($("regionSel").value) || 1;
+  let last = null, maxAge = null, fj = null, readErr = null;
+  try { last = Number(await S.readC.lastFeedAt(region)); }
+  catch (e) { readErr = e.shortMessage || e.message || String(e); console.error(`lastFeedAt(${region}) 读取失败：${readErr}`, e); }
+  try { maxAge = Number(await S.readC.MAX_FEED_AGE()); }
+  catch (e) { maxAge = FEED_AGE_FALLBACK; }
+  if (!Number.isFinite(maxAge) || maxAge <= 0) maxAge = FEED_AGE_FALLBACK;
+  // feedJudgements 也走一次形状自检（v3 = 10 个字段、v2 = 9 个），不顺带读就永远发现不了错配。
+  // 快照不可能预录每一次只读调用：离线快照里没有 feedJudgements，这不算错，静默跳过即可。
+  try { fj = await S.readC.feedJudgements(region); }
+  catch (e) {
+    const msg = e.shortMessage || e.message || String(e);
+    if (!fnMissing(e) && !/快照里没有这条读法/.test(msg)) console.error(`feedJudgements(${region}) 读取失败：${msg}`, e);
+  }
+  if (fj && !shapeOk("feedJudgements", fj, `feedJudgements(${region})`)) { el.hidden = false; el.innerHTML = shapeStopHTML("feedJudgements(region)"); S.feedBlock = "喂价 ABI 与链上不匹配"; syncBuyBtn(); return; }
+
+  const jmLine = (fj && fj.exists)
+    ? `　·　最近一次喂价验收：${Number(fj.kind) === 1 ? "损失判定" : "喂价验收"} · 置信度 ${fj.confidence} · ${fj.sources} 个源 · ${fmtTs(Number(fj.judgedAt))}`
+    : "";
+  if (!Number.isFinite(last)) {
+    // 读不到时间就不编造：只说明"没读到"，不猜它过期没过期
+    el.hidden = false;
+    el.innerHTML = `⚠ 没读到本区域的最近喂价时间（<code>lastFeedAt(${region})</code> ${readErr ? "调用失败" : "未回数"}）—— 这次无法提前判断喂价是否过期，投保可能会 revert。`;
+    S.feedBlock = null; syncBuyBtn();
+    return;
+  }
+  if (last <= 0) {
+    el.hidden = false;
+    el.innerHTML = `⛔ 链上显示本区域<b>从未喂过价</b>（<code>lastFeedAt(${region})</code> = 0）：现在投保会 revert「stale feed」。先喂价再卖。`;
+    S.feedBlock = "本区域链上从未喂价，投保会 revert";
+    syncBuyBtn();
+    return;
+  }
+  const age = Math.floor(Date.now() / 1000) - last;
+  const ageH = Math.floor(age / 3600);
+  if (age > maxAge) {
+    el.hidden = false;
+    el.innerHTML = `⛔ <b>喂价已过期，投保会 revert「stale feed」</b>：本区域最近一次喂价是 ${fmtTs(last)}（约 ${ageH} 小时前），`
+      + `超过合约上限 MAX_FEED_AGE = ${Math.round(maxAge / 3600)} 小时。${jmLine}<br>先调用喂价接口刷新读数，再卖保单。`;
+    S.feedBlock = `喂价已过期（${ageH} 小时前），投保会 revert`;
+  } else {
+    el.hidden = false;
+    el.innerHTML = `✓ 喂价在有效期内：最近一次 ${fmtTs(last)}（约 ${ageH} 小时前，上限 ${Math.round(maxAge / 3600)} 小时）。${jmLine}`;
+    S.feedBlock = null;
+  }
+  syncBuyBtn();
 }
 
 /* 配送区域表 —— 下拉框、降雨看板、背景雨幕共用这一份。
@@ -1918,12 +2108,19 @@ const TIER_LABEL = ["暴雨档 50%", "大暴雨档 75%", "特大暴雨档 100%"]
    元素不再生成）。柱身按阈值线切成两段：线下=青（已记录），线上那一段=金（会被结算的部分）。 */
 async function loadRegions() {
   const box = $("rainBoard");
+  // S.meta 缺失（可卖档位都没读到时 attachContract 会走到这条路径）⇒ 不拿 undefined 去算刻度
+  if (!S.meta || !Number.isFinite(Number(S.meta.threshold))) {
+    box.innerHTML = `<div class="empty">还没读到链上阈值（时长档位也没读到）—— 这里先不显示任何数字。先确认合约地址与节点。</div>`;
+    return;
+  }
   const thr = Number(S.meta.threshold);
-  const hours = Number($("hoursInput").value) || 72;
+  const hoursRaw = curHours();   // 读不到档位时不再假装"72 小时窗口"
+  const hours = hoursRaw == null ? "—" : hoursRaw;
   const sel = Number($("regionSel").value) || 1;
   const vals = {};
   for (const { id } of REGIONS) {
-    try { vals[id] = Number(await S.readC.rainfall(id)); } catch (e) { /* 单点失败不影响其余 */ }
+    try { vals[id] = Number(await S.readC.rainfall(id)); }
+    catch (e) { console.error(`rainfall(${id}) 读取失败：${e.shortMessage || e.message || e}`, e); }   // 单点失败不影响其余
   }
   const got = Object.keys(vals).length;
   if (got) S.rainVals = vals;                       // 只收下真正读到的值，全失败时不动上一版
@@ -1954,6 +2151,9 @@ async function loadRegions() {
   // 真值看板用的是同一份阈值与选中城市，跟着一起重画（否则切城市、切时长时它还停在上一版）
   const rb = $("realBoard");
   if (rb && !rb.hidden) renderReal();
+  // 实时面板同理：它按「当前时长档」取窗口，切城市/切时长也该跟着重画（10 分钟内直接用缓存，不再打网络）
+  const lb = $("liveBoard");
+  if (lb && !lb.hidden) renderLive();
 }
 
 /* 看板 HTML 的唯一出处：链上读数（#rainBoard）与真值快照（#realBoard）共用同一套柱子、刻度、图例 ——
@@ -1963,7 +2163,11 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
   const cur = meas.find(m => m.id === sel) || meas[0];
   const ticks = [0, 1, 2, 3, 4].map(i =>
     `<span class="tick" style="bottom:${i * 25}%">${Math.round(thr * 2 * i / 4)}</span>`).join("");
-  const legend = opt.real
+  const legend = opt.live
+    ? `<span class="sw"><span class="sq m"></span>阈值线以下：现网实测，未进入结算</span>
+       <span class="sw"><span class="sq y"></span>越过阈值线的那一段：会被结算的部分</span>
+       <span class="sp">这是本页<b>此刻</b>从 Open-Meteo 现网拉来的读数；<b>不是链上读到的数，也不写进链上</b></span>`
+    : opt.real
     ? `<span class="sw"><span class="sq m"></span>阈值线以下：实测累计，未进入结算</span>
        <span class="sw"><span class="sq y"></span>越过阈值线的那一段：会被结算的部分</span>
        <span class="sp">这是 Open-Meteo Archive 自 ${esc(opt.epoch || "")} → ${esc(opt.until || "")} 的实测快照；柱子画淡的那些被喂价闸门拒收，链上不会收下这个数</span>`
@@ -1973,18 +2177,19 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
   return `
         <div class="chips">
           ${meas.map(m => `<button class="chip${m.id === cur.id ? " on" : ""}${m.hit ? " over" : ""}"
-             data-region="${m.id}"${m.bad ? ' style="opacity:.5"' : ""} title="${esc(m.label)} · ${opt.real ? "真值" : "累计"} ${m.v} mm（#${m.id}）"
+             aria-pressed="${m.id === cur.id}"
+             data-region="${m.id}"${m.bad ? ' style="opacity:.5"' : ""} title="${esc(m.label)} · ${opt.live ? "现网" : opt.real ? "真值" : "累计"} ${m.v} mm（#${m.id}）"
              ><span class="dotq"></span>${esc(m.label)}</button>`).join("")}
         </div>
         <div class="readline" style="margin-top:var(--s5)">
           <div>
-            <div class="hero-lb">${esc(cur.label)} · ${opt.real ? "真值累计（写链值）" : "累计降雨"}</div>
+            <div class="hero-lb">${esc(cur.label)} · ${opt.live ? "现网累计（未上链）" : opt.real ? "真值累计（写链值）" : "累计降雨"}</div>
             <div class="hero">${cur.v}<u>mm</u></div>
           </div>
           <div class="kvbox"><span class="k">距阈值线</span><span class="v">${cur.hit ? "已越 " + (cur.v - thr) : thr - cur.v}<small>mm</small></span></div>
           <div class="kvbox"><span class="k">阈值（${hours}h 窗口）</span><span class="v">${thr}<small>mm</small></span></div>
           <div class="kvbox"><span class="k">满量程</span><span class="v">${thr * 2}<small>mm</small></span></div>
-          <div class="kvbox" style="margin-left:auto"><span class="k">${opt.real ? "数据来源" : "背景雨幕"}</span><span class="tag measure">${opt.real ? "Open-Meteo Archive" : "由此行驱动"}</span></div>
+          <div class="kvbox" style="margin-left:auto"><span class="k">${opt.real ? "数据来源" : "背景雨幕"}</span><span class="tag measure">${opt.live ? "Open-Meteo 现网" : opt.real ? "Open-Meteo Archive" : "由此行驱动"}</span></div>
         </div>
         <div class="gauge">
           <div class="axis">${ticks}</div>
@@ -2034,6 +2239,102 @@ function selectRegion(id) {
    也不依赖 FlClash 代理），面板上写明纪元、区间与抓取时刻。 */
 const REAL_RAIN = {"schema":"rainproof/real-rainfall@1","generatedAt":"2026-10-08 10:21:12 +0800","epoch":"2026-09-01","until":"2026-10-08","source":"Open-Meteo Archive API · ECMWF / GFS / ICON","note":"mm = Open-Meteo archive 自 epoch 起的真实累计（与写进链上的那个数同口径）；gateMm 是 feed-verify 闸门在最近 14 天三模型上的核验值，status/confidence/sources 是那份核验的判定 —— 只有不是 diverge 的才写得进链。","regions":[{"id":1,"key":"wuhan","name":"武汉","nameEn":"Wuhan","mm":67,"gateMm":25.9,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":25.9,"toleranceMm":5.2,"spreadMm":20.9,"perModel":[]},{"id":2,"key":"shanghai","name":"上海","nameEn":"Shanghai","mm":128,"gateMm":67.2,"gateDays":14,"status":"agree","confidence":92,"sources":3,"medianMm":67.2,"toleranceMm":13.4,"spreadMm":8.5,"perModel":[]},{"id":3,"key":"beijing","name":"北京","nameEn":"Beijing","mm":39,"gateMm":40,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":40,"toleranceMm":8,"spreadMm":23.9,"perModel":[]},{"id":4,"key":"guangzhou","name":"广州","nameEn":"Guangzhou","mm":162,"gateMm":65.1,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":65.1,"toleranceMm":13,"spreadMm":42.7,"perModel":[]},{"id":5,"key":"chengdu","name":"成都","nameEn":"Chengdu","mm":173,"gateMm":null,"gateDays":14,"status":"diverge","confidence":40,"sources":3,"medianMm":16,"toleranceMm":3.2,"spreadMm":13,"perModel":[]}]};
 
+/* ---------------- 实时面板：现网直连（**未上链**） ----------------
+   和另外两个面板的区别：
+     · 演示值（#rainBoard）—— 链上读到的数；
+     · 真值快照（#realBoard）—— 2026-10-08 烘进本文件的 archive 累计；
+     · 本面板 —— 浏览器**此刻**直接问 Open-Meteo forecast 接口，取五城最近 N 小时（N = 当前时长档）的累计降水。
+   它不写链、也不是链上读数。链上没有定时器：链上数据要变新，必须有人（或定时任务）跑 04-脚本/push-rainfall.js。
+   拉不到就如实说拉不到 —— 绝不拿快照冒充实时。 */
+const LIVE_COORDS = {
+  1: [30.5928, 114.3055],  // 武汉
+  2: [31.2304, 121.4737],  // 上海
+  3: [39.9042, 116.4074],  // 北京
+  4: [23.1291, 113.2644],  // 广州
+  5: [30.5728, 104.0668]   // 成都
+};
+const LIVE_TTL_MS = 10 * 60 * 1000;   // 现网读数 10 分钟内复用，免得每次切城市都打一遍网络
+let LIVE = { at: 0, hours: null, mm: null, err: null };
+
+function liveHours() {
+  const h = curHours();
+  return (Number.isFinite(h) && h > 0) ? h : 24;
+}
+
+/* Open-Meteo 在 timezone=Asia/Shanghai 下返回的就是本地时刻字符串；中国没有夏令时，
+   所以「现在的小时」= UTC+8 再截到小时（不引时区库）。 */
+function shHourKey() {
+  return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 13);
+}
+
+async function fetchLive(hours) {
+  const out = {};
+  await Promise.all(Object.keys(LIVE_COORDS).map(async (id) => {
+    const ll = LIVE_COORDS[id];
+    const days = Math.min(5, Math.ceil(hours / 24) + 1);   // 要覆盖「最近 hours 小时」，多取一天兜底
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${ll[0]}&longitude=${ll[1]}`
+      + `&hourly=precipitation&past_days=${days}&forecast_days=1&timezone=Asia%2FShanghai`;
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error(`Open-Meteo HTTP ${r.status}`);
+    const j = await r.json();
+    const t = (j.hourly && j.hourly.time) || [];
+    const p = (j.hourly && j.hourly.precipitation) || [];
+    if (!t.length) throw new Error("Open-Meteo 没返回 hourly.time");
+    const key = shHourKey();
+    let idx = -1;
+    for (let i = t.length - 1; i >= 0; i--) if (String(t[i]).slice(0, 13) <= key) { idx = i; break; }
+    if (idx < 0) throw new Error("返回的时间轴里没有当前时刻");
+    let sum = 0;
+    for (let i = Math.max(0, idx - hours + 1); i <= idx; i++) sum += Number(p[i]) || 0;
+    out[id] = Math.round(sum * 100) / 100;
+  }));
+  return out;
+}
+
+async function renderLive() {
+  const box = $("liveBoard");
+  if (!box) return;
+  const hours = liveHours();
+  const head = (body) => `<div class="note dim">实时雨量 · 现网直连 <code>api.open-meteo.com</code> · 窗口 = 最近 ${hours} 小时`
+    + `<span class="eni">live rainfall pulled by this browser · off-chain</span></div>` + body;
+  const thr = Number(S.meta && S.meta.threshold);
+  if (!Number.isFinite(thr) || thr <= 0) {
+    box.innerHTML = head('<div class="empty">还没读到链上阈值（时长档位也没读到）—— 实时面板的阈值线不猜，先不画。</div>');
+    return;
+  }
+  if (!LIVE.mm || LIVE.hours !== hours || Date.now() - LIVE.at > LIVE_TTL_MS) {
+    box.innerHTML = head('<div class="loading">正在拉现网雨量（五城）…<span class="eni">fetching live rainfall…</span></div>');
+    try {
+      LIVE.mm = await fetchLive(hours);
+      LIVE.hours = hours; LIVE.at = Date.now(); LIVE.err = null;
+    } catch (e) {
+      LIVE.err = (e && e.message) ? e.message : String(e);
+      box.innerHTML = head(`<div class="note" role="alert"><b>拉取现网雨量失败</b>：<code>${esc(LIVE.err)}</code>`
+        + `<br>多半是这台机器现在连不上 Open-Meteo（现场网络/代理）。<b>链上读数不受影响</b>，旁边那栏照旧。`
+        + `<span class="eni">live fetch failed — the on-chain board is unaffected.</span></div>`);
+      return;
+    }
+  }
+  const meas = Object.keys(LIVE_COORDS).map((id) => {
+    const meta = (((REAL_RAIN || {}).regions) || []).find(x => x.id === Number(id)) || {};
+    const v = LIVE.mm[id];
+    const pct = Math.min(100, Math.round(v / (thr * 2) * 100));
+    const belowPct = Math.min(100, Math.round(thr / Math.min(Math.max(v, thr), thr * 2) * 100));
+    return {
+      id: Number(id), label: meta.name || `#${id}`, v, pct, belowPct,
+      hit: v >= thr, capped: v > thr * 2, bad: false,
+      tag: `现网 ${hours}h 累计`
+    };
+  });
+  box.innerHTML = head('<div class="note dim">柱子 = 各城<b>最近 ' + hours + ' 小时</b>的现网累计降水；阈值线 = 链上为该窗口给出的阈值。'
+    + '它回答的是「如果此刻有人按这个数喂价，链上会看到多少」—— 但本面板<b>不写链</b>：链上没有定时器，链上数据要变新，得有人（或定时任务）去跑喂价脚本。'
+    + '<span class="en">Bars are the last ' + hours + ' h of live rainfall per city; the line is the on-chain threshold for that window. Nothing here is written on-chain: with no on-chain timer, freshness requires someone (or a scheduled job) to run the feeder.</span></div>'
+    + boardHTML(meas, Number($("regionSel").value) || 1, thr, hours, { real: true, live: true })
+    + `<div class="note dim">拉取时刻 ${esc(new Date(LIVE.at).toLocaleString("zh-CN", { hour12: false }))} · 数据源 Open-Meteo forecast API（免 key、跨域开放）· <b>未上链</b>`
+    + ` · 链上排期见 <code>02-作战与答辩/实时雨量-链上排期交给A-2026-10-12.md</code></div>`);
+  bindBoardClicks(box);
+}
+
 function renderReal() {
   const box = $("realBoard");
   if (!box) return;
@@ -2048,9 +2349,14 @@ function renderReal() {
     majority: ["多数模型一致", "majority agree"],
     diverge:  ["离散度超容差 · 闸门拒收", "spread too wide — the gate rejects it"]
   };
-  // 和链上看板用同一个阈值口径（当前选中时长那一档），柱子才是同一把尺子
-  const thr = Number(S.meta && S.meta.threshold) || 50;
-  const hours = Number($("hoursInput").value) || 24;
+  // 和链上看板用同一个阈值口径（当前选中时长那一档），柱子才是同一把尺子。
+  // 读不到阈值就不画这把尺子 —— 以前这里用 "|| 50" 猜一个数，画出来的线是编的。
+  const thr = Number(S.meta && S.meta.threshold);
+  if (!Number.isFinite(thr) || thr <= 0) {
+    $("realBoard").innerHTML = `<div class="empty">还没读到链上阈值（时长档位也没读到）—— 真值面板的阈值线不猜，先不画。</div>`;
+    return;
+  }
+  const hours = curHours() == null ? "—" : curHours();
   const meas = r.regions.filter(x => x.mm != null).map(x => {
     const v = x.mm;
     // 与 loadRegions 里同一条刻度口径：0 → 2×阈值，阈值线落在满量程一半
@@ -2076,22 +2382,25 @@ function renderReal() {
   bindBoardClicks(box);
 }
 
-/* 两个按键：演示值（本页一直连的那条链）与真值（上面那份快照）。只切左栏这块面板，不动别的读数。 */
+/* 三个按键：演示值（本页一直连的那条链）、真值（上面那份快照）、实时（现网直连、未上链）。只切左栏这块面板，不动别的读数。 */
 (function bindRainMode() {
   const bar = $("rainMode");
   if (!bar) return;
   bar.onclick = (e) => {
     const b = e.target.closest && e.target.closest(".f");
     if (!b) return;
-    for (const x of bar.querySelectorAll(".f")) x.classList.toggle("on", x === b);
-    const real = b.dataset.mode === "real";
-    $("rainBoard").hidden = real;
-    $("realBoard").hidden = !real;
-    if (real) renderReal();
+    for (const x of bar.querySelectorAll(".f")) press(x, x === b);
+    const mode = b.dataset.mode;
+    $("rainBoard").hidden = mode !== "chain";
+    $("realBoard").hidden = mode !== "real";
+    $("liveBoard").hidden = mode !== "live";
+    if (mode === "real") renderReal();
+    if (mode === "live") renderLive();
   };
-  // 链接也能钉住这一状态：?rain=real 一进来就切到真值面板（截图、演示、给评委的直达链接都用得上）
-  if (new URLSearchParams(location.search).get("rain") === "real") {
-    const b = bar.querySelector('[data-mode="real"]');
+  // 链接也能钉住这一状态：?rain=real / ?rain=live 一进来就切到那个面板（截图、演示、给评委的直达链接都用得上）
+  const wantRain = new URLSearchParams(location.search).get("rain");
+  if (wantRain === "real" || wantRain === "live") {
+    const b = bar.querySelector(`[data-mode="${wantRain}"]`);
     if (b) b.click();
   }
 })();
@@ -2105,7 +2414,7 @@ function markHoursChips() {
   const h = Number(sel.value);
   $("hoursChips").innerHTML = [...sel.options].map(o => {
     const x = Number(o.value);
-    return `<button class="chip${x === h ? " on" : ""}" data-hours="${x}">${x}h</button>`;
+    return `<button class="chip${x === h ? " on" : ""}" aria-pressed="${x === h}" data-hours="${x}">${x}h</button>`;
   }).join("");
 }
 
@@ -2134,10 +2443,10 @@ function markSelRegion() {
     el.classList.toggle("is-sel", el.dataset.region === sel);
   });
   document.querySelectorAll("#rainBoard .chip, #rainBoard .colwrap, #rainBoard .foot5 .c, #realBoard .chip, #realBoard .colwrap, #realBoard .foot5 .c").forEach(el => {
-    el.classList.toggle("on", el.dataset.region === sel);
+    press(el, el.dataset.region === sel);
   });
   document.querySelectorAll("#regionChips .chip").forEach(el => {
-    el.classList.toggle("on", el.dataset.region === sel);
+    press(el, el.dataset.region === sel);
   });
 }
 
@@ -2156,7 +2465,8 @@ async function loadPool() {
 /* 读数条：四个数分别来自资金池、事件日志、五城读数、保单状态 —— 每个数后面那行小字就是它的出处 */
 function updateReadouts() {
   const thr = S.meta ? Number(S.meta.threshold) : null;
-  const hours = Number($("hoursInput").value) || 72;
+  const hRaw = curHours();
+  const hours = hRaw == null ? "—" : hRaw;   // 读不到档位就不假装 72
   if (S.rainVals && thr) {
     const vals = REGIONS.map(r => S.rainVals[r.id]).filter(v => v != null);
     const over = vals.filter(v => v >= thr).length;
@@ -2194,12 +2504,23 @@ async function loadMyPolicies() {
       const [p, status, short] = await Promise.all([
         S.readC.policies(id), S.readC.policyStatus(id), S.readC.shortfall(id)
       ]);
+      // 形状自检：字段数和当前版本对不上就停止解析 —— 宁可空着，也不显示整串错位的假数字
+      if (!shapeOk("policies", p, `policies(${id})`)) { box.innerHTML = shapeStopHTML("policies(id)"); return; }
       // 判定记录单独 try：这份附加信息读不到时，不该把整张保单列表变成错误页
-      let jm = null;
-      try { jm = await S.readC.judgements(id); } catch (e) { jm = null; }
+      let jm = null, jmErr = null;
+      try { jm = await S.readC.judgements(id); }
+      catch (e) {
+        // 以前这里是空 catch ⇒ 一律显示「尚未登记 AI 判定」，把"读不出来"说成"链上没有"。
+        // v3 返回 10 个字、ABI 只声明 9 个时 ethers 会抛错，正是被这个空 catch 吞掉的。
+        if (!fnMissing(e)) { jmErr = e.shortMessage || e.message || String(e); console.error(`judgements(${id}) 读取失败：${jmErr}`, e); }
+      }
+      if (jm && !shapeOk("judgements", jm, `judgements(${id})`)) { box.innerHTML = shapeStopHTML("judgements(id)"); return; }
       const name = RName(p.regionId);
-      const from = new Date(Number(p.startTime) * 1000), to = new Date(Number(p.endTime) * 1000);
-      const fmt = d => `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+      const fmt = ts => {
+        if (!Number.isFinite(ts) || ts <= 0) return "读不到";
+        const d = new Date(ts * 1000);
+        return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+      };
       const label = { active:"保障中", pending:"等待生效", pending_judgement:"待 AI 判定", claimable:"可申请赔付 ✅",
                       denied:"AI 判定不赔", low_confidence:"AI 置信度不足",
                       paid:"已赔付", expired:"已过期", not_found:"不存在" }[status] || status;
@@ -2223,14 +2544,16 @@ async function loadMyPolicies() {
       // 数据全部来自链上 judgements(id)，不依赖任何离线文件，评委可以自己调 eth_call 对一遍。
       // v2 的 submitJudgement 带 sources（喂价验收记 3 个模型源），所以这一栏把源数也摆出来。
       // 没有判定记录时不留空白单元格 —— 空格子也要说出"为什么空"。
-      const aiLine = (jm && jm.exists) ? `<b>AI 判定</b>
+      const aiLine = jmErr
+        ? `<span class="tag red">judgements 读取失败</span> <span class="none">${esc(jmErr)} —— 这是"这次没读到"，不是"链上没有登记"。</span>`
+        : (jm && jm.exists) ? `<b>AI 判定</b>
               <span class="tag ${Number(jm.decision) === 1 ? "gold" : "warn"}">${Number(jm.decision) === 1 ? "赔付 PAY" : "不赔 DENY"}</span>
               · 置信度 <b>${jm.confidence}</b> · <b>${jm.sources}</b> 个源
               · ${Number(jm.kind) === 1 ? "损失判定" : "喂价验收"}
               · 输入 <span title="${jm.inputHash}">${shortHash(jm.inputHash)}</span>
               · 输出 <span title="${jm.outputHash}">${shortHash(jm.outputHash)}</span>
               · ${esc(jm.modelVersion)}
-              ${Number(jm.judgedAt) ? `　·　${new Date(Number(jm.judgedAt) * 1000).toLocaleString("zh-CN", { hour12:false })}` : ""}`
+              ${Number(jm.judgedAt) ? `　·　${fmtTs(Number(jm.judgedAt))}` : ""}`
         : `<span class="none">— 尚未登记 AI 判定</span>`;
       // 增量条：基线（投保当刻的累计值 p.rainfallAtBuy）与「还差多少 mm」（shortfall(id)）
       // 都是链上读来的，两者相减就是这份保单此刻的增量 —— 不猜、不记在页面里。
@@ -2245,7 +2568,7 @@ async function loadMyPolicies() {
           <span class="stat tag ${claimable ? "gold" : status === "paid" ? "" : "warn"}">${label}</span>
         </div>
         <div class="pmeta">
-          保障 ${fmt(from)} → ${fmt(to)} · 阈值 ${thrMm} mm（${Number(p.windowHours)} 小时窗口）
+          保障 ${fmt(Number(p.startTime))} → ${fmt(Number(p.endTime))} · 阈值 ${thrMm} mm（${Number(p.windowHours)} 小时窗口）
           ${(claimable || status === "paid") ? `<br>国标档位 ${TIER_LABEL[Number(p.tier)] || "—"} · 应赔 <b>${fmtEth(due)}</b> ${SYM()}` : ""}
           ${status === "active" ? `<br>距触发还差 <b>${Number(short)}</b> mm` : ""}
           ${claimable ? `<br>已满足赔付条件` : ""}
@@ -2275,7 +2598,7 @@ async function loadMyPolicies() {
     box.querySelectorAll("[data-claim]").forEach(btn => {
       btn.onclick = () => {
         const id = Number(btn.dataset.claim);
-        send(() => S.readC.connect(S.signer) && new ethers.Contract(S.addr, ABI, S.signer).claim(id), `保单 #${id} 赔付完成`);
+        send(() => S.readC.connect(S.signer) && new ethers.Contract(S.addr, ABI_FOR(), S.signer).claim(id), `保单 #${id} 赔付完成`);
       };
     });
     box.querySelectorAll("[data-copy]").forEach(btn => {
@@ -2311,13 +2634,17 @@ async function loadEvents() {
     if (!logs.length) { box.innerHTML = `<div class="empty">这个合约还没有发出过事件。投保或喂价之后就会出现。</div>`; return; }
     const iface = S.readC.interface;
     // 「已赔付」按全部日志算（下面的纸带只显示最近 20 条）—— 这个数是读数条上那一格的出处
-    let paidN = 0, paidSum = 0n;
+    let paidN = 0, paidSum = 0n, undecodable = 0;
     const all = [];
     for (const l of logs) {
-      let d; try { d = iface.parseLog(l); } catch (e) { continue; }
+      let d; try { d = iface.parseLog(l); } catch (e) { undecodable++; continue; }
+      if (!d) { undecodable++; continue; }   // 主题对不上（链上有当前 ABI 没声明的事件）
       all.push({ l, d });
-      if (d.name === "ClaimPaid") { paidN++; paidSum += BigInt(d.args[2]); }
+      if (d.name === "ClaimPaid") { paidN++; paidSum += BigInt(evArg(d, "amount")); }
     }
+    // 解不出来的日志不能静默消失：全解不出来时说"还没有事件"是假话
+    if (undecodable) console.error(`${undecodable} 条日志用当前 ABI（${S.kind || "?"}）解不出来 —— 大概率是 ABI 与链上不匹配`);
+    if (!all.length && undecodable) { box.innerHTML = shapeStopHTML("logs"); return; }
     S.paid = { n: paidN, sum: paidSum };
     const rows = [];
     const times = {};
@@ -2325,46 +2652,50 @@ async function loadEvents() {
     for (const { l, d } of recent) {
       if (times[l.blockNumber] === undefined) {
         try { times[l.blockNumber] = (await S.provider.getBlock(l.blockNumber)).timestamp; }
-        catch (e) { times[l.blockNumber] = 0; }
+        catch (e) { console.error("读区块时间失败（block " + l.blockNumber + "）：" + (e.message || e)); times[l.blockNumber] = 0; }
       }
       let desc = "";
-      if (d.name === "PolicyBought")      // v2 多一个 effectiveFrom：窗口时长 = endTime − effectiveFrom
-        desc = `保单 #${d.args[0]} · ${short(d.args[1])} 投保 ${RName(d.args[2])} · `
-             + `${Math.round((Number(d.args[4]) - Number(d.args[3])) / 3600)} 小时窗口`;
-      else if (d.name === "RainfallUpdated")  // v2 把置信度与 reporter 也写进事件
-        desc = `${RName(d.args[0])} 累计降雨更新为 ${d.args[1]} mm · 置信度 ${d.args[3]} · 记录者 ${short(d.args[4])}`;
-      else if (d.name === "ClaimPaid")    // v2 多一个 tier：国标分档决定赔多少
-        desc = `保单 #${d.args[0]} 赔付 ${fmtEth(d.args[2])} ${SYM()} 给 ${short(d.args[1])}`
-             + (TIER_LABEL[Number(d.args[3])] ? ` · ${TIER_LABEL[Number(d.args[3])]}` : "");
-      else if (d.name === "PoolFunded")   desc = `${short(d.args[0])} 注资 ${fmtEth(d.args[1])} ${SYM()}，池子 → ${fmtEth(d.args[2])}`;
-      else if (d.name === "PoolWithdrawn")desc = `提取 ${fmtEth(d.args[1])} ${SYM()}`;
-      else if (d.name === "OperatorChanged") desc = `operator ${short(d.args[0])} → ${short(d.args[1])}`;
-      else if (d.name === "PausedSet")    desc = `合约${d.args[0] ? "已暂停" : "已恢复"}`;
+      const A = n => evArg(d, n);   // 按 ABI 字段名取值，两版同名事件都能对上
+      if (d.name === "PolicyBought")
+        desc = `保单 #${A("policyId")} · ${short(A("rider"))} 投保 ${RName(A("regionId"))} · `
+             + `${Math.round((Number(A("endTime")) - Number(A("effectiveFrom"))) / 3600)} 小时窗口`;
+      else if (d.name === "RainfallUpdated")
+        desc = `${RName(A("regionId"))} 累计降雨更新为 ${A("cumulativeMm")} mm · 置信度 ${A("confidence")} · 记录者 ${short(A("reporter"))}`;
+      else if (d.name === "ClaimPaid")
+        desc = `保单 #${A("policyId")} 赔付 ${fmtEth(A("amount"))} ${SYM()} 给 ${short(A("rider"))}`
+             + (TIER_LABEL[Number(A("tier"))] ? ` · ${TIER_LABEL[Number(A("tier"))]}` : "");
+      else if (d.name === "PoolFunded")   desc = `${short(A("from"))} 注资 ${fmtEth(A("amount"))} ${SYM()}，池子 → ${fmtEth(A("newBalance"))}`;
+      else if (d.name === "PoolWithdrawn")desc = `提取 ${fmtEth(A("amount"))} ${SYM()} 给 ${short(A("to"))}`;
+      else if (d.name === "OperatorChanged") desc = `operator ${short(A("from"))} → ${short(A("to"))}`;
+      else if (d.name === "PausedSet")    desc = `合约${A("paused") ? "已暂停" : "已恢复"}`;
       // ↓ 判定层的事件过去只有事件名、没有内容（走 else 兜底），评委看不出 AI 判了什么。
-      else if (d.name === "JudgementSubmitted")   // v2 在置信度后面多了 sources：args[4]
-        desc = `保单 #${d.args[0]} · ${Number(d.args[1]) === 1 ? "损失判定" : "喂价验收"} · `
-             + `${Number(d.args[2]) === 1 ? "赔付 PAY" : "不赔 DENY"} · 置信度 ${d.args[3]} · ${d.args[4]} 个源 · `
-             + `输入 ${shortHash(d.args[5])} 输出 ${shortHash(d.args[6])} · ${d.args[7]}`;
+      else if (d.name === "JudgementSubmitted")
+        desc = `保单 #${A("policyId")} · ${Number(A("kind")) === 1 ? "损失判定" : "喂价验收"} · `
+             + `${Number(A("decision")) === 1 ? "赔付 PAY" : "不赔 DENY"} · 置信度 ${A("confidence")} · ${A("sources")} 个源 · `
+             + (A("rainfallAtJudgement") === undefined ? "" : `判定时雨量 ${A("rainfallAtJudgement")} mm · `)
+             + `输入 ${shortHash(A("inputHash"))} 输出 ${shortHash(A("outputHash"))} · ${A("modelVersion")}`;
       else if (d.name === "UnderwritingDecision")
-        desc = `${RName(d.args[0])} 承保定价：保费 ${fmtEth(d.args[2])} ${SYM()} · `
-             + `${["正常","加价","拒保"][Number(d.args[1])] || "档 " + d.args[1]} · 依据 ${shortHash(d.args[3])}`;
+        desc = `${RName(A("regionId"))} 承保定价：保费 ${fmtEth(A("premium"))} ${SYM()} · `
+             + `${["正常","加价","拒保"][Number(A("level"))] || "档 " + A("level")} · 依据 ${shortHash(A("reasonHash"))}`;
       else if (d.name === "PremiumSet")
-        desc = `${RName(d.args[0])} 保费表更新：${Number(d.args[1])} 小时窗口 → ${fmtEth(d.args[2])} ${SYM()} · 依据 ${shortHash(d.args[3])}`;
+        desc = `${RName(A("regionId"))} 保费表更新：${Number(A("windowHours"))} 小时窗口 → ${fmtEth(A("premium"))} ${SYM()} · 依据 ${shortHash(A("reasonHash"))}`;
       else if (d.name === "FeedRejected")
-        desc = `${RName(d.args[0])} 喂价被拒（置信度 ${d.args[1]} / ${d.args[2]} 个源）· 依据 ${shortHash(d.args[3])}`;
+        desc = `${RName(A("regionId"))} 喂价被拒（置信度 ${A("confidence")} / ${A("sources")} 个源）· 依据 ${shortHash(A("inputHash"))}`;
       else if (d.name === "ReserveSet")
-        desc = `准备金下限设为 ${fmtEth(d.args[0])} ${SYM()}`;
+        desc = `准备金下限设为 ${fmtEth(A("amount"))} ${SYM()}`;
       else if (d.name === "ExposureSettled")
-        desc = `保单 #${d.args[0]} 结清，未了结敞口回到 ${fmtEth(d.args[1])} ${SYM()}`;
+        desc = `保单 #${A("policyId")} 结清，未了结敞口回到 ${fmtEth(A("openExposure"))} ${SYM()}`;
       else if (d.name === "CoolingPeriodSet")
-        desc = `冷静期设为 ${Number(d.args[0]) / 3600} 小时`;
+        desc = `冷静期设为 ${Number(A("seconds_")) / 3600} 小时`;
       else if (d.name === "EligibleSet")
-        desc = `承保白名单 ${Number(d.args[1]) === 1 ? "加入" : "移出"} ${short(d.args[0])}`;
+        desc = `承保白名单 ${Number(A("ok")) === 1 ? "加入" : "移出"} ${short(A("who"))}`;
       else if (d.name === "EligibleRequiredSet")
-        desc = `白名单${d.args[0] ? "已启用（只有白名单地址能投保）" : "已关闭（任何人可投保）"}`;
+        desc = `白名单${A("required") ? "已启用（只有白名单地址能投保）" : "已关闭（任何人可投保）"}`;
+      else if (d.name === "PolicyRefunded")
+        desc = `保单 #${A("policyId")} 退款 ${fmtEth(A("amount"))} ${SYM()} 给 ${short(A("payer"))}`;
       else desc = d.name;
       const ts = times[l.blockNumber];
-      const when = ts ? new Date(Number(ts) * 1000) : null;
+      const when = Number.isFinite(ts) && ts > 0 ? new Date(Number(ts) * 1000) : null;
       const ago = when ? Math.floor((Date.now() - when.getTime()) / 60000) : null;
       rows.push(`<div class="ev${rows.length >= 6 ? " ev-extra" : ""}">
         <span class="ea">#${Number(l.blockNumber).toLocaleString("en-US")}${ago !== null ? `<i>${ago < 1 ? "刚刚" : ago + " 分钟前"}</i>` : ""}</span>
@@ -2417,50 +2748,63 @@ $("addrInput").addEventListener("keydown", e => { if (e.key === "Enter") $("save
    这里如果不跟着变，buyPolicy 会因为 premium mismatch 直接 revert。 */
 async function refreshPremium() {
   const region = Number($("regionSel").value) || 1;
-  const hours = Number($("hoursInput").value) || 72;   // 兜底必须等于下拉框的默认档（72，见 check-ui ②）——写 24 会静默换成另一条档线
+  const hours = curHours();   // 不再 "|| 72" 兜底：读不到档位就不拿一个链上不一定卖的窗口去算钱
   const proofEl = $("callProof");
   if (!S.readC || !S.meta) {
     if (proofEl) proofEl.innerHTML = "还没接上节点：接上后这里会显示这一次只读调用到底回了什么数。<span class=\"en\">Not connected yet — once a node answers, the actual eth_call reply shows up here.</span>";
     return null;
   }
-  let p = S.meta.premium, fromChain = false;
+  if (!hours) {
+    if (proofEl) proofEl.innerHTML = "⚠ 没读到可卖的时长档位，这次保费没得算（按钮上写了原因）。";
+    buyBlocked("没读到可卖时长档位");
+    return null;
+  }
+  let p = null, fromChain = false, errMsg = null;
   try {
     if (S.kind === "v3") {
       // v3 的保费是 premiumOf(regionId, hours_, riderTier, channel, count)：站点卖的是散单零售，
       // 所以 riderTier 0（国标标准档）· channel 0（零售）· count 1（单张）。
+      S.premiumLabel = `premiumOf(${region}, ${hours}, 0, 0, 1)`;
       p = await S.readC["premiumOf(uint8,uint256,uint8,uint8,uint256)"](region, hours, 0, 0, 1);
       S.meta.threshold = Number(await S.readC.entryThresholdOf(hours));
-      S.premiumLabel = `premiumOf(${region}, ${hours}, 0, 0, 1)`;
     } else {
+      S.premiumLabel = `premiumOf(${region}, ${hours})`;
       p = await S.readC["premiumOf(uint8,uint256)"](region, hours);
       S.meta.threshold = Number(await S.readC["thresholdOf(uint256)"](hours));
-      S.premiumLabel = `premiumOf(${region}, ${hours})`;
     }
     fromChain = true;
     $("threshShow").textContent = S.meta.threshold + " mm";
     const os = $("overSub");
     if (os) os.innerHTML = `按 ${hours} 小时窗口<span class="eni">${hours} h window</span>`;
-  } catch (e) {}   // 地址上不是这一套合约时退回兜底值（画面留上一版数字，不给评委看报错）
+  } catch (e) {
+    // 以前这里是个空 catch（"退回兜底值"）：地址上不是这套合约时，画面会留一个与链上无关的数字。
+    // 现在不猜 —— 读不到就显示「—」并锁住买入，避免拿着错价去签名（必然 premium mismatch）。
+    errMsg = e.shortMessage || e.message || String(e);
+    console.error(`premiumOf 读取失败（区域 ${region} · ${hours} 小时）：${errMsg}`, e);
+  }
   S.premiumNow = p;
-  $("premiumShow").textContent = fmtEth(p) + " " + SYM();
+  $("premiumShow").textContent = p == null ? "—" : fmtEth(p) + " " + SYM();
   const side = $("premiumSide");
-  if (side) side.innerHTML = `${esc(S.premiumLabel || ("premiumOf(" + region + ", " + hours + ")"))}<br>链上取值 / on-chain`;
+  const call = S.premiumLabel || ("premiumOf(" + region + ", " + hours + ")");
+  if (side) side.innerHTML = p == null
+    ? `未读到 / not read<br>链上取值失败`
+    : `${esc(call)}<br>链上取值 / on-chain`;
   // 「我刚才点的那一下，链上真的回了一个数」——把这次调用的名字、返回值、块高和「要不要钱包」写在同一行。
   if (proofEl) {
-    const call = esc(S.premiumLabel || ("premiumOf(" + region + ", " + hours + ")"));
     const bn = S.chain && S.chain.blockNumber != null ? Number(S.chain.blockNumber).toLocaleString("en-US") : "—";
-    if (!fromChain) {
-      proofEl.innerHTML = `⚠ 这个地址上没读到 <code>${call}</code>，显示的是兜底价 —— 换个合约地址再看。<span class="en">This call did not answer on the current address; showing a fallback value.</span>`;
+    if (p == null) {
+      proofEl.innerHTML = `⚠ <code>${esc(call)}</code> 这次没回数：${esc(errMsg || "未读到")} —— 不显示任何兜底数字。<span class="en">Call failed; no fallback number is shown.</span>`;
     } else if (S.chain && S.chain.frozen) {
-      proofEl.innerHTML = `✓ 已回数：<code>${call}</code> = <b>${fmtEth(p)} ${SYM()}</b> · 读的是页面自带快照（块高 ${bn} 那次的链上回答）· 只读调用，不需要钱包<span class="en">Bundled snapshot read — still no wallet needed.</span>`;
+      proofEl.innerHTML = `✓ 已回数：<code>${call}</code> = <b>${fmtEth(p)} ${SYM()}</b> · 读的是页面自带的<strong>离线快照</strong>（本机按 2026-10-08 链上复核读数<strong>重建</strong>的副本，不是实时数据）· 只读调用，不需要钱包<span class="en">Bundled offline snapshot — rebuilt on this machine from verified 2026-10-08 readings, not live. Still no wallet needed.</span>`;
     } else {
       proofEl.innerHTML = `✓ 已回数：<code>${call}</code> = <b>${fmtEth(p)} ${SYM()}</b> · 块高 ${bn} · 只读 <code>eth_call</code>，不需要钱包、不花 gas<span class="en">Read-only eth_call — no wallet, no gas.</span>`;
     }
   }
+  if (p == null) buyBlocked(`没读到保费（${errMsg || "未读到"}）`); else buyReady();
   return p;
 }
 
-$("regionSel").onchange = () => { refreshPremium().then(() => loadRegions()); };
+$("regionSel").onchange = () => { refreshPremium().then(() => { loadRegions(); loadFeed(); }); };
 // 时长一变，保费和阈值都要跟着变（v2 两者都是「区域 × 时长」的函数），看板刻度也要跟着重画
 $("hoursInput").onchange = () => { refreshPremium().then(() => { markHoursChips(); loadRegions(); }); };
 
@@ -2469,18 +2813,23 @@ $("evFilters").onclick = (e) => {
   const b = e.target.closest && e.target.closest(".f");
   if (!b) return;
   evFilter = b.dataset.fam || "all";
-  $("evFilters").querySelectorAll(".f").forEach(x => x.classList.toggle("on", x === b));
+  $("evFilters").querySelectorAll(".f").forEach(x => press(x, x === b));
   loadEvents();
 };
 
 $("buyBtn").onclick = async () => {
+  if (S.feedBlock) return toast(S.feedBlock, "err");     // 喂价过期/从未喂价：按钮本就 disabled，这里兜住程序化点击
+  if (S.buyBlock) return toast(S.buyBlock, "err");
+  if (!S.meta) return toast("链上参数还没读到，稍等再试", "err");
   const region = Number($("regionSel").value);
-  const hours = Number($("hoursInput").value);
-  if (!Number.isInteger(hours) || hours < Number(S.meta.minH) || hours > Number(S.meta.maxH)) {
+  const hours = curHours();
+  if (!hours) return toast("没读到可卖的时长档位：刷新页面或换个合约地址", "err");
+  if (hours < Number(S.meta.minH) || hours > Number(S.meta.maxH)) {
     return toast(`时长要在 ${S.meta.minH} ~ ${S.meta.maxH} 小时之间`, "err");
   }
   const value = await refreshPremium();     // ← 以链上 premiumOf(region) 为准
-  send(() => new ethers.Contract(S.addr, ABI, S.signer).buyPolicy(region, hours, { value }),
+  if (value == null) return toast("链上没读到保费，这次不发交易（省一次必然 revert 的 gas）", "err");
+  send(() => new ethers.Contract(S.addr, ABI_FOR(), S.signer).buyPolicy(region, hours, { value }),
        `投保成功（区域 ${region} · ${hours} 小时 · 保费 ${fmtEth(value)} ${SYM()}）`);
 };
 
@@ -2498,7 +2847,7 @@ $("fundBtn").onclick = () => {
     if (value < ethers.parseEther("0.005")) {
       throw new Error(`钱包只剩 ${ethers.formatEther(bal)} ${SYM()}，扣掉 gas 预留后不够注资（至少 0.005）`);
     }
-    return new ethers.Contract(S.addr, ABI, S.signer).fundPool({ value });
+    return new ethers.Contract(S.addr, ABI_FOR(), S.signer).fundPool({ value });
   }, "注资完成");
 };
 
@@ -2520,6 +2869,9 @@ if (window.ethereum) {
     const b = e.target.closest && e.target.closest(".chip");
     if (b) selectRegion(Number(b.dataset.region));
   };
+  // E12：静态 <select id="hoursInput"> 里那三档 24/48/72 是 v2 口径的脚手架（07-测试工具/check-ui.js:57-58 钉着它），
+  // **不代表链上卖这三档**：脚本一跑起来就先换成"读取中…"并保持 disabled，等 hoursAllowed(h) 的回答重建。
+  $("hoursInput").innerHTML = '<option value="" disabled selected>读取中… / reading on-chain…</option>';
   markHoursChips();
   $("hoursChips").onclick = (e) => {
     const b = e.target.closest && e.target.closest(".chip");
@@ -2529,17 +2881,23 @@ if (window.ethereum) {
     $("hoursInput").value = String(h);
     $("hoursInput").dispatchEvent(new Event("change"));
   };
-  try { await boot(); } catch (e) {}
-  try { await refreshPremium(); } catch (e) {}
+  // catch 不许静默吞：boot()/refreshPremium() 内部的"连不上"已经各自说给用户了，
+  // 这里兜的是预期外异常 —— 至少留一条 console.error，现场排障时不用猜。
+  try { await boot(); }
+  catch (e) { console.error("boot() 预期外失败：", e); window.__bootErr = window.__bootErr || (e && e.message) || String(e); }
+  try { await refreshPremium(); }
+  catch (e) { console.error("refreshPremium() 预期外失败：", e); }
   // 轮询永远注册：boot() 失败（节点抖了 / 地址没填）时 12 秒后自己再连一次，
   // 页面不会停在一屏"节点连不上"上等人手动刷新。
   setInterval(async () => {
     if (!S.readC || !S.addr || !S.meta) {
-      try { await boot(); if (S.readC) await refreshPremium(); } catch (e) {}
+      try { await boot(); if (S.readC) await refreshPremium(); }
+      catch (e) { console.error("轮询重连失败：", e); }
       return;
     }
     try { $("blk").textContent = (await S.provider.getBlockNumber()).toLocaleString("en-US"); } catch (e) {}
     loadRegions();   // 喂价脚本写完链上，看板和背景雨幕自己跟上，不用手动刷新页面
+    loadFeed();      // 喂价年龄也跟着轮询：过期告警不该等人刷页面才出现
   }, 12000);
 })();
 </script>

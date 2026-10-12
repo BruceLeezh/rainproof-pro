@@ -54,6 +54,11 @@ const INTERVAL = (() => {
 
 const ts = () => new Date().toTimeString().slice(0, 8);
 
+// BOT Chain（主网 677 / 测试网 968）的原生代币叫 BOT，不是 ETH —— 口径与
+// deploy.js:149 / check-chain.js:42 一致（那里已按 chainId 取符号）。启动时按 chainId 定，
+// scan() 里打印池子/赔付额时跟着它走，别再写死 "ETH"。
+let SYM = "SepETH";
+
 async function scan(c, provider, dry, doSettle) {
   const n = Number(await c.nextPolicyId());
   if (!n) { console.log(`[${ts()}] 链上还没有任何保单`); return 0; }
@@ -69,24 +74,42 @@ async function scan(c, provider, dry, doSettle) {
     const expired = statuses.map((st, id) => (st === "expired" ? id : -1)).filter((id) => id >= 0);
     if (!expired.length) {
       console.log(`[${ts()}] 没有到期未赔的保单，无需结算`);
-    } else if (dry) {
-      console.log(`[${ts()}] [dry-run] 到期未赔 ${expired.length} 张可结算：#${expired.join(" #")}`);
     } else {
-      try {
-        const tx = await c.settleExpired(expired);
-        const rc = await tx.wait();
-        console.log(`[${ts()}] 🧾 结算到期保单 ${expired.length} 张（#${expired.join(" #")}）` +
-                    ` · 未了结敞口回到 ${formatEther(await c.openExposure())} ETH  tx ${tx.hash}  区块 ${rc.blockNumber}`);
-      } catch (e) {
-        // 整批里只要有一张不满足条件就整笔 revert —— 退化成逐张，别让一张坏单挡住其余
-        console.log(`[${ts()}] ⚠ 批量结算失败（${e.shortMessage || e.message}），改为逐张重试`);
-        for (const id of expired) {
-          try {
-            const tx = await c.settleExpired([id]);
-            await tx.wait();
-            console.log(`[${ts()}] 🧾 保单 #${id} 已结算  tx ${tx.hash}`);
-          } catch (e2) {
-            console.log(`[${ts()}] ❌ 保单 #${id} 结算失败：${e2.shortMessage || e2.message}`);
+      // E5：结算前先查「已判定该赔、只是没被领」的单 —— 但**不跳过**它们，只把损失喊出来。
+      //   理由（对着合约核过）：claim() 要求 block.timestamp <= endTime
+      //   （V3.sol:447 "policy expired" / V2.sol:336），settleExpired 要求 block.timestamp > endTime
+      //   （V3.sol:493），而 policyStatus 只在 > endTime 时才回 "expired"（V3.sol:694）——
+      //   两个集合不相交，结算**不可能**销毁一张还能领的保单。反过来「payoutOf > 0 就跳过结算」
+      //   会永久漏掉敞口了结：openExposure 只涨不落、openPoliciesOf[rider] 不减，
+      //   该骑手此后买不了新单（MAX_POLICIES_PER_RIDER）。钱是在过了 endTime 那一刻丢的
+      //   （claim 的到期硬闸），不是被这一步结算掉的 —— 所以这里只报告，让人看得见。
+      const lost = [];
+      for (const id of expired) {
+        const amt = await c.payoutOf(id);
+        if (amt > 0n) lost.push(`#${id}(${formatEther(amt)} ${SYM})`);
+      }
+      if (lost.length) {
+        console.log(`[${ts()}] ⚠️ ${lost.length} 张到期单已判定该赔却没人领，claim 已过期不可用（钱赔不出去了，结算只了结敞口）：${lost.join(" ")}`);
+      }
+      if (dry) {
+        console.log(`[${ts()}] [dry-run] 到期未赔 ${expired.length} 张可结算：#${expired.join(" #")}`);
+      } else {
+        try {
+          const tx = await c.settleExpired(expired);
+          const rc = await tx.wait();
+          console.log(`[${ts()}] 🧾 结算到期保单 ${expired.length} 张（#${expired.join(" #")}）` +
+                      ` · 未了结敞口回到 ${formatEther(await c.openExposure())} ${SYM}  tx ${tx.hash}  区块 ${rc.blockNumber}`);
+        } catch (e) {
+          // 整批里只要有一张不满足条件就整笔 revert —— 退化成逐张，别让一张坏单挡住其余
+          console.log(`[${ts()}] ⚠ 批量结算失败（${e.shortMessage || e.message}），改为逐张重试`);
+          for (const id of expired) {
+            try {
+              const tx = await c.settleExpired([id]);
+              await tx.wait();
+              console.log(`[${ts()}] 🧾 保单 #${id} 已结算  tx ${tx.hash}`);
+            } catch (e2) {
+              console.log(`[${ts()}] ❌ 保单 #${id} 结算失败：${e2.shortMessage || e2.message}`);
+            }
           }
         }
       }
@@ -113,14 +136,14 @@ async function scan(c, provider, dry, doSettle) {
     // 赔掉的钱不会反映到后面几张上，可能把已经赔不起的单子也发出去。
     const pool = await provider.getBalance(await c.getAddress());
     if (pool < amount) {
-      console.log(`[${ts()}] 保单 #${id} 可赔，但池子只剩 ${formatEther(pool)} ETH < ${formatEther(amount)} ETH，停手`);
+      console.log(`[${ts()}] 保单 #${id} 可赔，但池子只剩 ${formatEther(pool)} ${SYM} < ${formatEther(amount)} ${SYM}，停手`);
       break;
     }
-    if (dry) { console.log(`[${ts()}] [dry-run] 保单 #${id} 可赔 ${formatEther(amount)} ETH —— 真跑的话现在就 claim()`); paid++; continue; }
+    if (dry) { console.log(`[${ts()}] [dry-run] 保单 #${id} 可赔 ${formatEther(amount)} ${SYM} —— 真跑的话现在就 claim()`); paid++; continue; }
     try {
       const tx = await c.claim(id);
       const rc = await tx.wait();
-      console.log(`[${ts()}] ✅ 保单 #${id} 已赔付 ${formatEther(amount)} ETH  tx ${tx.hash}  区块 ${rc.blockNumber}  gas ${rc.gasUsed}`);
+      console.log(`[${ts()}] ✅ 保单 #${id} 已赔付 ${formatEther(amount)} ${SYM}  tx ${tx.hash}  区块 ${rc.blockNumber}  gas ${rc.gasUsed}`);
       paid++;
     } catch (e) {
       console.log(`[${ts()}] ❌ 保单 #${id} 赔付失败：${e.shortMessage || e.message}`);
@@ -137,15 +160,19 @@ async function scan(c, provider, dry, doSettle) {
   if (!addr) throw new Error("请先在 .env 里填 CONTRACT_ADDRESS");
   if (!key && !DRY) throw new Error("请先在 .env 里填 PRIVATE_KEY（或 KEEPER_KEY）");
 
-  const provider = new JsonRpcProvider(rpc);
+  // cacheTimeout 0：ethers v6 默认把 eth_getBalance 缓存 250ms，于是「每张保单结算前重读池子」
+  // 在 250ms 内读到的还是同一个旧值 —— 重读就白写了（实测：默认缓存下 --dry-run 会拿开局那个
+  // 池子余额一路放行）。keeper 是低频脚本，多几次 RPC 换「读到的就是当下」值得。
+  const provider = new JsonRpcProvider(rpc, undefined, { cacheTimeout: 0 });
   const net = await provider.getNetwork();
+  SYM = net.chainId === 677n || net.chainId === 968n ? "BOT" : "SepETH";   // 与 deploy.js:149 同一口径
   const wallet = key ? new Wallet(key, provider) : null;
   const c = new Contract(addr, JSON.parse(fs.readFileSync(ABI_FILE, "utf8")), wallet || provider);
 
   console.log(`keeper 启动 · chainId ${net.chainId} · 合约 ${addr}`);
-  if (wallet) console.log(`  签名账户 ${wallet.address}（余额 ${formatEther(await provider.getBalance(wallet.address))}）`);
-  console.log(`  池子 ${formatEther(await provider.getBalance(addr))} ETH · 单笔最高赔付 ${formatEther(await c.PAYOUT_MAX())} ETH`);
-  console.log(`  未了结敞口 ${formatEther(await c.openExposure())} ETH · 准备金下限 ${formatEther(await c.reserveOf())} ETH`);
+  if (wallet) console.log(`  签名账户 ${wallet.address}（余额 ${formatEther(await provider.getBalance(wallet.address))} ${SYM}）`);
+  console.log(`  池子 ${formatEther(await provider.getBalance(addr))} ${SYM} · 单笔最高赔付 ${formatEther(await c.PAYOUT_MAX())} ${SYM}`);
+  console.log(`  未了结敞口 ${formatEther(await c.openExposure())} ${SYM} · 准备金下限 ${formatEther(await c.reserveOf())} ${SYM}`);
   // A26：`settleExpired` 在 v3 里已经去掉了 onlyOperator（结算只把敞口减下来、不产生付款），
   // 只有 v2 才真的要 operator 钥匙。原来不分版本一律拦，会把 v3 上一个完全合法的
   // 「拿任意钥匙结算」直接拒掉。

@@ -3,6 +3,10 @@
 生成现场路演 PPT：提交材料/雨证-路演PPT.pptx
 用法：python 04-脚本/make-ppt.py [输出路径]
 
+注意（2026-10-12）：本脚本产出的是 **26 页对照件**（`提交材料/雨证-路演PPT.pptx`），
+它已于 2026-10-11 移出仓库、只在需要重建时跑；**现行提交母版是另一份手工版
+`提交材料/神麻组-雨证-路演PPT1.pptx`（12 页），不由本脚本生成**。
+
 叙事版：乔布斯式的节奏（一页一个想法、大字、留白、悬念→揭晓）+ 雷军式的对比与参数页。
 每页的演讲者备注 = 6 分钟口播（含停顿提示），PowerPoint 演讲者视图可直接用。
 
@@ -512,14 +516,14 @@ def s18_appendix(prs, n):
     kicker(s, "附录 · 可当场复算")
     big(s, ["你现在就能验的三件事"], Inches(1.3), size=25)
     bullets(s, M, Inches(2.5), Inches(5.9), [
-        ("跑一遍断言。", "九套共 426 项，全绿。"),
+        ("跑一遍断言。", "十七道门禁全绿。"),
         ("重算一份哈希。", "8 份 AI 判定留痕，输入与输出哈希可逐字节重算。"),
         ("自己问节点。", "两个页面都不是区块浏览器，没有缓存，直接向 RPC 要原始记录。"),
     ], size=12.5, gap=10)
     rect(s, Inches(7.15), Inches(2.5), Inches(5.28), Inches(3.3), PANEL, HAIR)
     tf = textbox(s, Inches(7.45), Inches(2.7), Inches(4.7), Inches(3.0))
     run(para(tf, True), "当场可复算", 10.5, FAINT, True, space=1.2)
-    for t in ["cd 07-测试工具 && npm test —— 九套 426 项断言（8 + 29 + 27 + 19 + 9 + 73 + 101 + 73 + 87）",
+    for t in ["cd 07-测试工具 && npm test —— 十七道门禁全绿（步数与断言数在 package.json 的 test 链里）",
               "node check-feed-verify.js —— 喂价闸门 12 项 + 承保复核 7 项",
               "node push-rainfall.js 4 —— 真跑一遍喂价，走闸门、必要时拒收",
               "09-AI判定留痕/ —— 8 份 JSON，哈希可当场重算"]:

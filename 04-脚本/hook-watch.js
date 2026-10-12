@@ -395,7 +395,7 @@ async function main() {
   if (!addr) throw new Error("请先在 .env 里填 CONTRACT_ADDRESS（或用 --addr=）");
   const noModels = has("--no-models");
   const dry = has("--dry-run");
-  const force = has("--force");
+  const force = has("--force") || has("--force-refresh");   // --force-refresh：同义别名（口头/文档里都用过这个说法）
   const watchSec = Number(arg("--watch", 0));
   const once = has("--once") || !watchSec;
 

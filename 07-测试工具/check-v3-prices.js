@@ -28,6 +28,9 @@
  * 为什么不挂进 `npm test`：那一串离线门禁必须**拔网线也全绿**，而这个脚本的价值就在于真读链。
  * **需要 968 可达才跑**（代理设置见上面），所以只给了单独的 script：`npm run check:v3-prices`。
  * 塞进 `npm test` 等于让 CI 红给网络抖动看 —— 别这么做（A40②）。
+ *
+ * 补充（A40② 之后）：上面说的是**在线读链那条**。`--offline` 分支只读 fixture、不碰网络，
+ * 已经挂进 `npm test`（script: `npm run check-v3-prices:offline`），在线那条仍然只在单跑。
  */
 const fs = require('fs');
 const path = require('path');

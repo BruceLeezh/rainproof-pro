@@ -23,11 +23,14 @@
     "check-verify-pack": "node make-verify-pack.js",
     "check-html-syntax": "node check-html-syntax.js",
     "check-event-topics": "node check-event-topics.js",
+    "check-abi": "node sync_abi.js --check",
+    "check-page-decode": "node check-page-decode.js",
     "check:v3-prices": "node check-v3-prices.js",
+    "check-v3-prices:offline": "node check-v3-prices.js --offline",
     "ai:collect": "node ../04-脚本/ai-collect.js",
     "ai:judge": "node ../04-脚本/ai-judge.js",
     "ai:submit": "node ../04-脚本/submit-judgement.js",
-    "test": "npm run check-public-repo && npm run check-frozen-node && npm run check-verify-pack && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-feed-verify && npm run check-pricing-grid && npm run check-event-topics && npm run check-html-syntax && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3"
+    "test": "npm run check-public-repo && npm run check-html-syntax && npm run check-event-topics && npm run check-abi && npm run check-page-decode && npm run check-frozen-node && npm run check-verify-pack && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-feed-verify && npm run check-pricing-grid && npm run check-v3-prices:offline && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3"
   },
   "dependencies": {
     "ethers": "^6.13.0",
