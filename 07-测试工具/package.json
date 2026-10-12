@@ -8,6 +8,7 @@
     "compile:v3": "node compile_sol.js ../03-合约/RainDeliveryInsuranceV3.sol --via-ir",
     "compile:multisig": "node compile_sol.js ../03-合约/OperatorMultisig.sol",
     "sync-abi": "node sync_abi.js",
+    "check-abi": "node sync_abi.js --check",
     "build": "npm run compile && npm run sync-abi",
     "e2e": "node e2e_contract.js",
     "e2e:v2": "node e2e_v2.js",
@@ -27,7 +28,7 @@
     "ai:collect": "node ../04-脚本/ai-collect.js",
     "ai:judge": "node ../04-脚本/ai-judge.js",
     "ai:submit": "node ../04-脚本/submit-judgement.js",
-    "test": "npm run check-public-repo && npm run check-frozen-node && npm run check-verify-pack && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-feed-verify && npm run check-pricing-grid && npm run check-event-topics && npm run check-html-syntax && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3"
+    "test": "npm run check-public-repo && npm run check-frozen-node && npm run check-verify-pack && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-abi && npm run check-feed-verify && npm run check-pricing-grid && npm run check-event-topics && npm run check-html-syntax && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3"
   },
   "dependencies": {
     "ethers": "^6.13.0",

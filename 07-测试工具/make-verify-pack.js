@@ -179,7 +179,12 @@ const manifest = {
   chains: "Sepolia 11155111 = v1 留痕 / BOT Chain 968 = v2 / BOT Chain 677 = v3，三链同址不同合约。",
   contracts,
 };
-fs.writeFileSync(OUT, JSON.stringify(manifest, null, 2) + "\n", "utf8");
+// 只有内容真的变了才写盘：门禁跑一次就改写被跟踪的 verify-manifest.json，会让每一次
+// `npm test` 都留下一个假 diff（2026-10-12 B 复核指出：A34 加的是内容断言，不是「有变化才写」）。
+const next = JSON.stringify(manifest, null, 2) + "\n";
+const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : null;
+if (prev !== next) fs.writeFileSync(OUT, next, "utf8");
 
-console.log(`\n${bad ? "❌" : "✅"} ${bad} 项失败 → ${path.relative(ROOT, OUT)}`);
+console.log(`\n${bad ? "❌" : "✅"} ${bad} 项失败 → ${path.relative(ROOT, OUT)}` +
+  (prev === next ? "（内容无变化，未改写）" : "（已按上面的一致结果重写）"));
 process.exit(bad ? 1 : 0);
