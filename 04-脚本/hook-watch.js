@@ -362,7 +362,15 @@ async function sweep({ c, provider, kind, noModels, dry, force, chainId, addr, f
     const id = Number(log.args.policyId);
     const file = path.join(OUT_DIR, `承保复核-chain${chainId}-policy${id}.json`);   // 带链号：同址两条链是两个合约
     if (fs.existsSync(file) && !force) {
-      console.log(`[${ts()}] 🪝 保单 #${id} 已经复核过（${path.basename(file)}），跳过（要重做加 --force）`);
+      // B6：留痕是「当时」的读数快照 —— 上游离线时写下的 REVIEW_PARTIAL 不自动补
+      // （补写会把当时看到的链上读数换成现在这一刻的，反而失真）。这里至少把「这份是半张」说出来。
+      let verdict = "";
+      try { verdict = JSON.parse(fs.readFileSync(file, "utf8")).observed?.verdict || ""; } catch { /* 读不动就不猜 */ }
+      const partial = verdict === "REVIEW_PARTIAL";
+      console.log(`[${ts()}] 🪝 保单 #${id} 已经复核过（${path.basename(file)}）${partial ? " —— 这份是 REVIEW_PARTIAL（当时三模型没取到数）" : ""}，跳过（要重做加 --force）`);
+      if (partial) {
+        console.log(`           ${" ".repeat(11)}半张留痕不自动补（它记的是「当时」的链上读数）；要完整三模型复核请 --force 重跑，新记录会反映现在的读数`);
+      }
       skipped++;
       continue;
     }
