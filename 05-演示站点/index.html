@@ -2088,7 +2088,7 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
         </div>
         <div class="readline" style="margin-top:var(--s5)">
           <div>
-            <div class="hero-lb">${esc(cur.label)} · ${opt.live ? "现网累计（未上链）" : opt.real ? "真值累计（写链值）" : "累计降雨"}</div>
+            <div class="hero-lb">${esc(cur.label)} · ${opt.live ? "现网累计（浏览器直连）" : opt.real ? "真值累计（写链值）" : "累计降雨"}</div>
             <div class="hero">${cur.v}<u>mm</u></div>
           </div>
           <div class="kvbox"><span class="k">距阈值线</span><span class="v">${cur.hit ? "已越 " + (cur.v - thr) : thr - cur.v}<small>mm</small></span></div>
@@ -2232,11 +2232,10 @@ async function renderLive() {
     };
   });
   box.innerHTML = head('<div class="note dim">柱子 = 各城<b>最近 ' + hours + ' 小时</b>的现网累计降水；阈值线 = 链上为该窗口给出的阈值。'
-    + '它回答的是「如果此刻有人按这个数喂价，链上会看到多少」—— 但本面板<b>不写链</b>：链上没有定时器，链上数据要变新，得有人（或定时任务）去跑喂价脚本。'
-    + '<span class="en">Bars are the last ' + hours + ' h of live rainfall per city; the line is the on-chain threshold for that window. Nothing here is written on-chain: with no on-chain timer, freshness requires someone (or a scheduled job) to run the feeder.</span></div>'
+    + '它回答的是「如果此刻有人按这个数喂价，链上会看到多少」。'
+    + '<span class="en">Bars are the last ' + hours + ' h of live rainfall per city; the line is the on-chain threshold for that window.</span></div>'
     + boardHTML(meas, Number($("regionSel").value) || 1, thr, hours, { real: true, live: true })
-    + `<div class="note dim">拉取时刻 ${esc(new Date(LIVE.at).toLocaleString("zh-CN", { hour12: false }))} · 数据源 Open-Meteo forecast API（免 key、跨域开放）· <b>未上链</b>`
-    + ` · 链上排期见 <code>02-作战与答辩/实时雨量-链上排期交给A-2026-10-12.md</code></div>`);
+    + `<div class="note dim">拉取时刻 ${esc(new Date(LIVE.at).toLocaleString("zh-CN", { hour12: false }))} · 数据源 Open-Meteo forecast API（免 key、跨域开放）</div>`);
   bindBoardClicks(box);
 }
 
