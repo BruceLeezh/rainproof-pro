@@ -812,7 +812,7 @@ body[data-page]:not([data-page="home"]) .navbar{display:block}
 .entry-hd h3{font-size:var(--t-h1);font-weight:640;letter-spacing:-.01em;color:var(--ink)}
 .entry-hd em{font-style:normal;font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.2px}
 .entry-hd .r{margin-left:auto;font-size:var(--t-data);color:var(--ink-3)}
-.entry-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.entry-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .entry-grid > *{min-width:0}
 
 /* 入口卡：hover 只改描边与底色（DESIGN.md：不位移、不加阴影）。
@@ -985,7 +985,6 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
     <a href="#insure"    data-go="p2">投保<span class="idx">02</span></a>
     <a href="#mypolicy"  data-go="p3">我的保单<span class="idx">03</span></a>
     <a href="#ops"       data-go="p4">合约与运营<span class="idx">04</span></a>
-    <a href="#notes"     data-go="p5">只读与说明<span class="idx">05</span></a>
     <a class="home" href="#home" data-go="home">← 回到首页</a>
   </div>
 </nav>
@@ -1084,14 +1083,29 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
       <span class="go">进入 →</span>
     </a>
 
-    <a class="navcard" href="#notes" data-go="p5">
-      <span class="ni">05</span>
-      <span class="nt">只读模式与诚实说明</span>
-      <span class="nd">没连钱包也能看全部数据；喂价是中心化预言机，这是已知边界。</span>
-      <span class="ntag">notes</span>
-      <span class="go">进入 →</span>
-    </a>
+  </div>
+</section>
 
+<!-- ── 只读模式与诚实说明（原 #notes 独立页，2026-10-12 晚并入首页末尾）────── -->
+<section class="sec" data-dom="measure">
+  <div class="hd">
+    <h2>只读模式与诚实说明<span class="en">Read-only mode &amp; notes</span></h2>
+    <span class="n">已知边界 · 不假装</span>
+  </div>
+  <div class="panel plain">
+  <div class="note">
+    <p><b>只读模式：</b>没连钱包也能看全部数据。现场万一 MetaMask 出问题，照样能演示「链上有什么」。</p>
+    <p><b>诚实说明：</b>喂价脚本是<b>中心化预言机</b>，数据可信度取决于运营方；生产环境应改用去中心化预言机网络
+    （AI 层在链下做的三件事见投保页的「AI 层做了什么」）。它<b>不判断「人有没有真的受损」</b>，那需要平台的订单数据，属于路线图。
+    每次判定都把输入快照和输出结论各算一个哈希写上链，第三方拿同一份快照重跑，得到的是逐字节相同的结果。</p>
+    <p>这里的数字不依赖任何区块浏览器：合约地址、账户余额、降雨值、事件日志，全部直接向节点提问取得
+    （<code>rpc.botchain.ai</code>）。</p>
+    <p><b>主网 677 走 <code>rpc.botchain.ai</code>。</b>外网可直连；中国大陆等网络直连不通（实测直连超时、走代理 200）。
+    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968 → 页面自带的链上快照」四层并行探测（每条比前一条晚 1.2 秒出发，
+    哪个先答上就用哪个），并在顶部如实标出<b>当前读的是哪一层</b> —— 退到 968 会写明 <b>BOT Chain Testnet</b>，
+    退到快照会写明「<b>BOT Chain Mainnet · 链上快照</b>」，都不会假装还在读实时主网。
+    连不上任何节点时，整套演示仍然看得完：数据全部真实来自链上，只是读到的是某一时刻的读数。</p>
+  </div>
   </div>
 </section>
 
@@ -1318,48 +1332,17 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   </div>
 
   <nav class="pnav">
-    <span class="hint">配置改完，这一页就没有别的动作了。最后是「这一页没做什么」。</span>
+    <span class="hint">配置改完，这一页就没有别的动作了。诚实说明在首页末尾。</span>
     <span class="btns">
       <a class="btn" href="#dashboard" data-go="p1">← 回到看板</a>
-      <a class="btn primary" href="#notes" data-go="p5">只读与说明 →</a>
+      <a class="btn primary" href="#home" data-go="home">回到首页 →</a>
     </span>
   </nav>
 </section>
 </div><!-- /#p4 -->
 
 
-<!-- ══════════════ 页 5 · 只读模式与诚实说明 ══════════════ -->
-<div class="page" id="p5">
-<section class="sec" data-dom="measure">
-  <div class="hd">
-    <h2>只读模式与诚实说明<span class="en">Read-only mode &amp; notes</span></h2>
-    <span class="n">已知边界 · 不假装</span>
-  </div>
-  <div class="panel plain">
-  <div class="note">
-    <p><b>只读模式：</b>没连钱包也能看全部数据。现场万一 MetaMask 出问题，照样能演示「链上有什么」。</p>
-    <p><b>诚实说明：</b>喂价脚本是<b>中心化预言机</b>，数据可信度取决于运营方；生产环境应改用去中心化预言机网络
-    （AI 层在链下做的三件事见投保页的「AI 层做了什么」）。它<b>不判断「人有没有真的受损」</b>，那需要平台的订单数据，属于路线图。
-    每次判定都把输入快照和输出结论各算一个哈希写上链，第三方拿同一份快照重跑，得到的是逐字节相同的结果。</p>
-    <p>这一页不依赖任何区块浏览器：合约地址、账户余额、降雨值、事件日志，全部直接向节点提问取得
-    （<code>rpc.botchain.ai</code>）。</p>
-    <p><b>主网 677 走 <code>rpc.botchain.ai</code>。</b>外网可直连；中国大陆等网络直连不通（实测直连超时、走代理 200）。
-    页面因此按「主网 677 → Vercel 只读中转 → 测试网 968 → 页面自带的链上快照」四层并行探测（每条比前一条晚 1.2 秒出发，
-    哪个先答上就用哪个），并在顶部如实标出<b>当前读的是哪一层</b> —— 退到 968 会写明 <b>BOT Chain Testnet</b>，
-    退到快照会写明「<b>BOT Chain Mainnet · 链上快照</b>」，都不会假装还在读实时主网。
-    连不上任何节点时，页面上仍然能把整套演示看完：数据全部真实来自链上，只是读到的是某一时刻的读数。</p>
-  </div>
-  </div>
-
-  <nav class="pnav">
-    <span class="hint">这里是路的尽头。还有疑问，回首页重看。</span>
-    <span class="btns">
-      <a class="btn" href="#ops" data-go="p4">← 回到合约配置</a>
-      <a class="btn primary" href="#home" data-go="home">回到首页</a>
-    </span>
-  </nav>
-</section>
-</div><!-- /#p5 -->
+<!-- 页 5「只读模式与诚实说明」已于 2026-10-12 晚并入首页末尾（原 #notes 地址见下方 ROUTES 的别名） -->
 
 <!-- 全局脚注：只在五个内页出现（首页用上面的 #homeFoot） -->
 <footer class="foot">
@@ -3006,15 +2989,14 @@ if (window.ethereum) {
     "#insure":    "p2",     // 投保
     "#mypolicy":  "p3",     // 我的保单
     "#ops":       "p4",     // 合约与运营
-    "#notes":     "p5"      // 只读与说明
+    "#notes":     "home"    // 历史地址：这一页的内容已并进首页末尾（2026-10-12 晚）
   };
   var TITLES = {
     home: "雨证 · RainProof",
     p1:   "降雨量测看板 · 雨证 RainProof",
     p2:   "开一张保单 · 雨证 RainProof",
     p3:   "我的保单 · 雨证 RainProof",
-    p4:   "合约配置与运营 · 雨证 RainProof",
-    p5:   "只读模式与诚实说明 · 雨证 RainProof"
+    p4:   "合约配置与运营 · 雨证 RainProof"
   };
 
   function pageFromHash(){
