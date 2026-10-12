@@ -1145,7 +1145,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
       <div class="filters" id="rainMode" style="margin-bottom:var(--s3)">
         <button class="f on" data-mode="chain" aria-pressed="true">演示值 · 链上<span class="eni">Demo (on-chain)</span></button>
         <button class="f" data-mode="real" aria-pressed="false">真值 · 真实观测<span class="eni">Real rainfall</span></button>
-        <button class="f" data-mode="live" aria-pressed="false">实时 · 现网直连<span class="eni">Live (off-chain)</span></button>
+        <button class="f" data-mode="live" aria-pressed="false">实时 · 现网直连<span class="eni">Live (browser-direct)</span></button>
       </div>
       <div class="block" id="rainBoard">
         <div class="loading">正在读取各区域降雨<span class="eni">reading rainfall</span></div>
@@ -2201,7 +2201,7 @@ async function renderLive() {
   if (!box) return;
   const hours = liveHours();
   const head = (body) => `<div class="note dim">实时雨量 · 现网直连 <code>api.open-meteo.com</code> · 窗口 = 最近 ${hours} 小时`
-    + `<span class="eni">live rainfall pulled by this browser · off-chain</span></div>` + body;
+    + `<span class="eni">live rainfall pulled by this browser</span></div>` + body;
   const thr = Number(S.meta && S.meta.threshold);
   if (!Number.isFinite(thr) || thr <= 0) {
     box.innerHTML = head('<div class="empty">还没读到链上阈值（时长档位也没读到）—— 实时面板的阈值线不猜，先不画。</div>');
