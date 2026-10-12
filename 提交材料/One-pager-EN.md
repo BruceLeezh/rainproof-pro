@@ -39,6 +39,7 @@ Contract address on all three: `0x89e7C942535930B61cB61631051E8b0bD670596a` — 
 ### Honest boundaries
 
 1. **One data source.** Rainfall comes from Open-Meteo public data. The three models give us a consistency check, not three independent vendors.
+   *Attribution (CC BY 4.0):* the rainfall series is the **Open-Meteo Historical Weather API (Archive API / ERA5 reanalysis)** dataset, retrieved with `timezone=Asia/Shanghai` for 2015-10-01 → 2026-09-30. Source: Open-Meteo (open-meteo.com), by **Open-Meteo** (Patrick Zippenfenig) — licensed **CC BY 4.0** (https://creativecommons.org/licenses/by/4.0/). The three forecast models used for the live consistency check are **ECMWF IFS, NOAA GFS and DWD ICON**, also served via Open-Meteo under the same licence.
 2. **The AI never decides the payout.** It verifies data trustworthiness and writes the explanation; the decision itself is deterministic rules, and the explanation is deliberately excluded from the hash.
 3. **Two loss ratios, both true.** Under the earlier flat 0.001 ETH price, an equal-weight five-city portfolio shows a 53.8% loss ratio while Guangzhou alone shows 115.7%. That difference is exactly why pricing is now per city rather than flat.
 4. **Feed freshness is bounded.** Feeds older than 24 hours are rejected at purchase, and the interval between two feeds is still a window we do not price.

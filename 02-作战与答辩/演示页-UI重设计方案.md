@@ -222,7 +222,7 @@ JS 引用的 **23 个 id**：`toast` `modeTag` `addrInput` `blk` `dot` `netText`
 | 浏览器表面 | `::selection`、caret、滚动条、`:focus-visible` 焦点环、`::placeholder`、`overflow-wrap` | 「被搭建过」最便宜的信号 |
 | 口径 | 触发线仍是 1px 琥珀线且严格落在 50%（与 `pct = v/(阈值×2)` 对齐）—— **广州 50mm 的填充正好终止在线上** | ① 的视觉证据 |
 
-**验证**：`npm test` 五道 **232/0**（8/29/21/73/101）；`check_html_syntax.js` 三段页面脚本语法全过；
+**验证**：`npm test` 五道 **232/0**（8/29/21/73/101）；`07-测试工具/check-html-syntax.js` 三段页面脚本语法全过；
 headless Edge 采三张图逐项核对：桌面 1440px、插桩实测 414px（`iframe` 内 `scrollWidth == clientWidth == 414`、越界元素 0）、2× 放大局部。
 
 **已知遗留**：`05-演示站点/verifier.html` 与 `06-核验台单文件/汉客松-链上核验台.html` 未同步这套 token（本轮只改主演示页），

@@ -20,43 +20,43 @@
 | 文件（相对路径） | 字节 | SHA256 | 纳入版本库 |
 |---|---:|---|---|
 | `.gitignore` | 288 | `67de97ad2770f1ac77b9a5e8aeb96b273ecdd48d568df7e54b5252d28db0e2f7` | 是 |
-| `01-赛事资料\handbook_full.txt` | 22284 | `92046a5b8e64ea07c3f977a3116891c2c7d813e413ee538593cfecb9cdf062e1` | 是 |
-| `01-赛事资料\汉客松S1报名-三题回答与评估.md` | 23311 | `7cca433c290b43b203fec5a7ea83ea5de449d95c898e3ff789c242262a1db805` | 是 |
-| `01-赛事资料\汉客松选题-金融×区块链方向地图.md` | 13404 | `aac6b43ab8e5082b40fc0da089d2705f542bab39b9a068361115e151d0904e93` | 是 |
-| `02-作战与答辩\汉客松-40小时作战计划.md` | 15310 | `5caceafeb6399a08ed2990e5ef657e78b7dd48067e73edf2a9645f9bbba2aab2` | 是 |
-| `02-作战与答辩\汉客松-答辩速查卡.md` | 16835 | `e9dac7c834cf9f99cb869b32c0d92ce0e81a152d5dcba8410f7c099f94da5187` | 是 |
+| `01-赛事资料\handbook_full.txt` | 22284 | `92046a5b8e64ea07c3f977a3116891c2c7d813e413ee538593cfecb9cdf062e1` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `01-赛事资料\汉客松S1报名-三题回答与评估.md` | 23311 | `7cca433c290b43b203fec5a7ea83ea5de449d95c898e3ff789c242262a1db805` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `01-赛事资料\汉客松选题-金融×区块链方向地图.md` | 13404 | `aac6b43ab8e5082b40fc0da089d2705f542bab39b9a068361115e151d0904e93` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `02-作战与答辩\汉客松-40小时作战计划.md` | 15310 | `5caceafeb6399a08ed2990e5ef657e78b7dd48067e73edf2a9645f9bbba2aab2` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `02-作战与答辩\汉客松-答辩速查卡.md` | 16835 | `e9dac7c834cf9f99cb869b32c0d92ce0e81a152d5dcba8410f7c099f94da5187` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `02-作战与答辩\汉客松-交易哈希清单.md` | 7720 | `2b2d1c031de482e49bb398c00291d5ec5f0bf637d699caeb25b7dc853e9e4907` | 是 |
-| `02-作战与答辩\汉客松-区块链3天上手路径.md` | 62735 | `3f2e7bf2766bebae7a518d293c96092a79bc9cb840289ef813ba0c8253827cde` | 是 |
+| `02-作战与答辩\汉客松-区块链3天上手路径.md` | 62735 | `3f2e7bf2766bebae7a518d293c96092a79bc9cb840289ef813ba0c8253827cde` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `03-合约\RainDeliveryInsurance.abi.json` | 10229 | `a1ff0c9ca8ceb85990f81102fca3f28b182bab48838a47a32b377a638dfa842e` | 是 |
 | `03-合约\RainDeliveryInsurance.bytecode.txt` | 10596 | `7e5f666d7838f51627129e18172ad7b3b87a0ab02b68e5d9a8543ffe93114c43` | 是 |
 | `03-合约\RainDeliveryInsurance.sol` | 9113 | `e2066bfa7117d953c2486c65dca287ae9089cdf8a4abb2132e8eab289cbe553a` | 是 |
 | `04-脚本\.env.example` | 792 | `e1d331a771092510cc8f4161b82d48967f962301c4f232464fae0696e296a12a` | 是 |
 | `04-脚本\.gitignore` | 37 | `cfcb181bc552d9af35b0c808cf39236c2fdc3a779cbe889fee33b0d62a390615` | 是 |
-| `04-脚本\abi.json` | 10229 | `a1ff0c9ca8ceb85990f81102fca3f28b182bab48838a47a32b377a638dfa842e` | 是 |
-| `04-脚本\bytecode.txt` | 10596 | `7e5f666d7838f51627129e18172ad7b3b87a0ab02b68e5d9a8543ffe93114c43` | 是 |
+| `04-脚本\abi.json` | 10229 | `a1ff0c9ca8ceb85990f81102fca3f28b182bab48838a47a32b377a638dfa842e` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `04-脚本\bytecode.txt` | 10596 | `7e5f666d7838f51627129e18172ad7b3b87a0ab02b68e5d9a8543ffe93114c43` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `04-脚本\check-chain.js` | 3033 | `193a79df0d5c0e15de1a063d370ec8117bc96c5a5bda09f42f9a83423156a880` | 是 |
 | `04-脚本\deploy.js` | 5030 | `87c1924790342c36d34a00e15e49e3687478e8ee09d12f2ce9a22f0525758570` | 是 |
 | `04-脚本\package.json` | 466 | `5d65f681b4f71157f6417e2caf8110393ad46d40fad446294fd47e74e12a175b` | 是 |
 | `04-脚本\push-rainfall.js` | 15326 | `4d76ac5f980edf0b684dbaf52d4b67af596c3a97563e48a7843a2816bde02b36` | 是 |
-| `05-演示站点\contract.abi.json` | 10229 | `a1ff0c9ca8ceb85990f81102fca3f28b182bab48838a47a32b377a638dfa842e` | 是 |
+| `05-演示站点\contract.abi.json` | 10229 | `a1ff0c9ca8ceb85990f81102fca3f28b182bab48838a47a32b377a638dfa842e` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `05-演示站点\ethers.umd.min.js` | 526551 | `532950515fd29ae9f7a21ceb2b68100815024d7944c3d5a92246d5b900bd703b` | 是 |
 | `05-演示站点\index.html` | 39466 | `d1b3371242b12727e7c08d6505a08f643f1a0e0b3e08c6a53a1255bc400d0895` | 是 |
 | `05-演示站点\verifier.html` | 28962 | `8033262b5ca3ed8450f6365e4f4558ed4d103a0f2c8f1fefaffef33d52634888` | 是 |
 | `06-核验台单文件\汉客松-链上核验台.html` | 28589 | `72b12a640ab04b555fe635d2fee0849eab3254f6398445516b69756b2c6f7306` | 是 |
-| `07-测试工具\_local_chain.json` | 502 | `8a5aef5b7064e7d95ea66fb4d5d66555fc57349dec239c3837f4a291fc022643` | 是 |
-| `07-测试工具\check_html.py` | 1779 | `9cf98b1f796efaf4378480d1c9f392525b58da8e355dfd4a48d8fe25018a947e` | 是 |
+| `07-测试工具\_local_chain.json` | 502 | `8a5aef5b7064e7d95ea66fb4d5d66555fc57349dec239c3837f4a291fc022643` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `07-测试工具\check_html.py` | 1779 | `9cf98b1f796efaf4378480d1c9f392525b58da8e355dfd4a48d8fe25018a947e` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `07-测试工具\compile_sol.js` | 2515 | `81a2bee2acb8ca1e39791f72895e4ad7f147d4bcc00bb4de2defbdb4a5a9074c` | 是 |
-| `07-测试工具\crop_log.py` | 1311 | `8c20a837e7bcdd3c00e0fb299ff5ba624032983bea18d13e65c0c28e92cb1101` | 是 |
+| `07-测试工具\crop_log.py` | 1311 | `8c20a837e7bcdd3c00e0fb299ff5ba624032983bea18d13e65c0c28e92cb1101` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `07-测试工具\dbg_state.js` | 3749 | `81220bacba9ce041b3152cc057d44256e05345251b9a3b9b7d60d96b52a3e9aa` | 是 |
-| `07-测试工具\dump_ganache_keys.js` | 503 | `62ca94feb0ae57c5f2f7a74992c20b7b7eab4e55d5033714defdc87fabe67232` | 是 |
-| `07-测试工具\dump_txlist.js` | 1999 | `e7651a8a98076cdb8e685a801f419f5bf41e3a28b95a354f8d3d9d595ff849ff` | 是 |
+| `07-测试工具\dump_ganache_keys.js` | 503 | `62ca94feb0ae57c5f2f7a74992c20b7b7eab4e55d5033714defdc87fabe67232` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `07-测试工具\dump_txlist.js` | 1999 | `e7651a8a98076cdb8e685a801f419f5bf41e3a28b95a354f8d3d9d595ff849ff` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `07-测试工具\e2e_contract.js` | 11358 | `77bc5f67848a8141fd42991f48a4f50861820a9375065be4af8b2461629c48d1` | 是 |
-| `07-测试工具\make_e2e_page.py` | 6128 | `4eb83dc4ab021e0c9f544ea00b87b88aa9e6ed7e39233110a66a8247ed69b5c5` | 是 |
-| `07-测试工具\parse_dump.py` | 2345 | `26d316402361606ba1d122db88a82feb7ee512daa850c20d53d51d47655d9358` | 是 |
+| `07-测试工具\make_e2e_page.py` | 6128 | `4eb83dc4ab021e0c9f544ea00b87b88aa9e6ed7e39233110a66a8247ed69b5c5` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `07-测试工具\parse_dump.py` | 2345 | `26d316402361606ba1d122db88a82feb7ee512daa850c20d53d51d47655d9358` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `07-测试工具\prep_local_chain.js` | 5055 | `d7135fcb29af00911949699ea82424382c1187fbb9dec53ba2106fbd7035ce4c` | 是 |
-| `07-测试工具\probe_cors.py` | 3596 | `d19bba37f69c3b675acd51baabdf5eecd123626eab110fa6f449237e9dccd43f` | 是 |
-| `07-测试工具\probe_weather_api.py` | 2332 | `84a5ffeba0a4647f35f379314f5a585169b61922da0f8473b7f109681b19535a` | 是 |
-| `07-测试工具\verify_day1_onchain.py` | 2666 | `0835b5def060641ac5048470c8855ea537777f3b3fb2b185d04a1b651f70d8e3` | 是 |
+| `07-测试工具\probe_cors.py` | 3596 | `d19bba37f69c3b675acd51baabdf5eecd123626eab110fa6f449237e9dccd43f` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `07-测试工具\probe_weather_api.py` | 2332 | `84a5ffeba0a4647f35f379314f5a585169b61922da0f8473b7f109681b19535a` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
+| `07-测试工具\verify_day1_onchain.py` | 2666 | `0835b5def060641ac5048470c8855ea537777f3b3fb2b185d04a1b651f70d8e3` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 | `08-截图存证\核验台-查合约.png` | 372793 | `422b8e35334fc08df2a14c1fc1d0fb2e2f890c9eac37d0330246d118451b802a` | 是 |
 | `08-截图存证\核验台-查交易.png` | 472447 | `f945c6a5a283f9f2e8f1224485d6fa73720ddbf28cc3101bcaaf8ae203de417c` | 是 |
 | `08-截图存证\核验台-查账户.png` | 366272 | `d463f1d0838e4eba8f2e57c8758b4e0df0a195c05e435d5586cf6dfb12aef46f` | 是 |
@@ -65,6 +65,6 @@
 | `08-截图存证\演示页-链上动态与核验链接.png` | 133662 | `c9c979b090d7b2bf8af93b548fa9b1b3f612c6a843d597cb6ea24be8dcc80295` | 是 |
 | `08-截图存证\演示页-完整.png` | 530442 | `b5d7717028a13eac2a56d395a9c3d12096f0a9fe2da3f1baf5e955fb51f0e48f` | 是 |
 | `08-截图存证\演示页-长图.png` | 616404 | `f830390a540474a0beeada9892dbe556f25ab19891441bfc3f1c62ae4d8d733e` | 是 |
-| `请先读我.md` | 16493 | `d7999bf3bb427640a8b1b241164812a4947279f2e973291108a35273047538e4` | 是 |
+| `请先读我.md` | 16493 | `d7999bf3bb427640a8b1b241164812a4947279f2e973291108a35273047538e4` | 是 ⚠️ **已不在仓库**（2026-10-12 核实） |
 
 **合计：47 个文件，4091977 字节（不含本 MANIFEST 自身）。**
