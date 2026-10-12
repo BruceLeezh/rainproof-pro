@@ -1699,7 +1699,7 @@ async function boot() {
     // 这时 getReadProvider 会自动退到测试网 968。必须说出来，别让人以为看的是主网数据。
     if (S.chain && S.chain.chainId === 968 && !RPC_OVERRIDE) {
       toast("主网节点 rpc.botchain.ai 在当前网络不可达（中国大陆需代理才能直连），已自动切到测试网 968（v2 口径）/ mainnet RPC unreachable here — fell back to testnet 968");
-      setWarn("testnet", "⚠ 现在读到的是测试网 968 的 v2 数据，不是主网 677 的现行产品（主网节点 rpc.botchain.ai 在此网络不可达）。这一层是 v2 留痕合约（链上卖 24/48/72 三档、三级分档），本页只列 677 现行的 12/24 两级口径 —— 这一层能卖的只有 24 小时，页内数字都取自这一层。");
+      setWarn("testnet", "⚠ 主网 677 要搭 VPN / 代理才连得上（大陆网络直连不通）；现在读到的是测试网 968 的 v2 留痕数据 —— 这一层只卖 24 小时，页内数字都取自这一层。");
     }
     // 页脚写的节点名要跟实际连的一致，否则读着 968、页脚还写着 rpc.botchain.ai。
     if (S.chain && $("footNode")) $("footNode").textContent = S.chain.frozen ? "链上快照（离线文件 frozen-node.js）" : S.chain.url.replace(/^https?:\/\//, "");
