@@ -48,11 +48,15 @@ function median(arr) {
   return Math.round(v * 1e6) / 1e6;
 }
 
+/** 只有真取到数的来源才算来源：缺 inWindowMm 的那一项既不能进中位数，也不该算进 sources
+ *  （正常路径下三家都在；这条防的是「快照里混进取数失败的项」把中位数/离散度算成 NaN）。 */
+const usableModels = (snap) => (snap.weather.models || []).filter((m) => Number.isFinite(m.inWindowMm));
+
 /** 确定性判定 —— 输入相同必然输出相同，这是它能上链的前提 */
 function decide(snap) {
   const threshold = snap.thresholds.thresholdMm;
   const minConf = snap.thresholds.minConfidence;
-  const models = snap.weather.models;
+  const models = usableModels(snap);
   const incs = models.map((m) => m.inWindowMm);
   const med = median(incs);
   const spread = Math.round((Math.max(...incs) - Math.min(...incs)) * 1e6) / 1e6;
@@ -78,8 +82,10 @@ function decide(snap) {
     decision = DECISION.DENY;
     confidence = 95;
     reasons.push(`链上官方增量 ${official}mm < 阈值 ${threshold}mm，雨量未达标。`);
-  } else if (!snap.simulated && divergencePct > 60) {
+  } else if (divergencePct > 60) {
     // R2 —— 独立复核发现预言机与模型严重不符
+    // 原来这里带 `!snap.simulated` 旁路：快照只要打上 simulated=true，R2 就整条免检。
+    // 合成数据该在 reasons 里被写明（上面那条），但不该让「链上数与模型严重不符」免检。
     decision = DECISION.DENY;
     confidence = 92;
     reasons.push(`预言机写入 ${official}mm，三模型中位数仅 ${med}mm，背离 ${divergencePct}% > 60%：`
@@ -111,7 +117,7 @@ function decide(snap) {
 
 /** 规则拼一段人话解释 —— 没有大模型也要能自圆其说 */
 function rulesRationale(snap, r) {
-  const name = snap.weather.models.map((m) => m.label).join("、");
+  const name = usableModels(snap).map((m) => m.label).join("、");
   return `保单 #${snap.policyId}（${snap.region.name}，窗口自 ${snap.policy.startDate} 起）：`
     + `链上官方累计增量 ${r.metrics.officialIncrementMm}mm，阈值 ${r.metrics.thresholdMm}mm；`
     + `独立复核取了 ${name} 三家模型，窗口增量分别为 ${r.metrics.modelIncrementsMm.join(" / ")} mm。`
@@ -162,7 +168,7 @@ function buildRecord({ policyId, snapshot, r, inputHash, rationale, rationaleSou
     decision: r.decision,
     decisionLabel: LABEL[r.decision],
     confidence: r.confidence,
-    sources: snapshot.weather.models.length,   // 采信的独立数据源个数
+    sources: usableModels(snapshot).length,     // 采信的独立数据源个数（不含取数失败的项）
     simulated: !!snapshot.simulated,
     metrics: r.metrics,
     reasons: r.reasons,

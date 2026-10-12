@@ -1015,26 +1015,25 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
         <a class="btn primary" href="#dashboard" data-go="p1">进入看板 ↓</a>
         <a class="btn" href="verifier.html">链上核验台</a>
       </div>
-      <p class="cover-meta">BOT Chain 677 · v3 合约 · 0x89e7…596a · 不依赖任何区块浏览器<br>数据直接向公共节点提问取得；连不上时按四层降级，并在页首如实标出读的是哪一层</p>
+      <p class="cover-meta" id="coverMeta">链上读数 · 不依赖任何区块浏览器<br>数据直接向公共节点提问取得；连不上时按四层降级，并在页首如实标出读的是哪一层</p>
     </div>
 
     <aside class="cover-r" aria-hidden="true">
       <div class="scale">
         <p class="scale-cap">雨幕刻度<em>rain scale</em></p>
         <div class="scale-body">
-          <div class="scale-rail">
-            <span class="tk" style="bottom:100%">162</span>
-            <span class="tk" style="bottom:61.728%">100</span>
-            <span class="tk m" style="bottom:30.864%">50</span>
+          <div class="scale-rail" id="scaleRail">
+            <span class="tk" id="tkTop" style="bottom:100%">—</span>
+            <span class="tk m" id="tkThr" style="bottom:50%">—</span>
             <span class="tk" style="bottom:0">0</span>
-            <span class="cty" style="bottom:100%">广州<i>162</i><em>满量程</em></span>
-            <span class="cty" style="bottom:79.012%">上海<i>128</i></span>
-            <span class="cty" style="bottom:41.358%">武汉<i>67</i></span>
-            <span class="cty" style="bottom:24.074%">北京<i>39</i></span>
-            <span class="cty rj" style="bottom:0">成都<i>0</i><em>闸门拒收</em></span>
+            <span class="cty" data-region="4" style="bottom:0%">广州<i>—</i></span>
+            <span class="cty" data-region="2" style="bottom:0%">上海<i>—</i></span>
+            <span class="cty" data-region="1" style="bottom:0%">武汉<i>—</i></span>
+            <span class="cty" data-region="3" style="bottom:0%">北京<i>—</i></span>
+            <span class="cty" data-region="5" style="bottom:0%">成都<i>—</i></span>
           </div>
         </div>
-        <p class="scale-note">刻度 = max(阈值 × 2, 五城最大值) = 162 mm<br>左侧为分度，右侧为链上现值；成都真值 173 mm 但被喂价闸门拒收，链上就是 0</p>
+        <p class="scale-note" id="scaleNote">读数层：—<br>刻度 = max(阈值 × 2, 五城最大值)，随当前这一层自动缩放</p>
       </div>
     </aside>
   </div>
@@ -1094,7 +1093,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
   </div>
   <div class="panel plain">
   <div class="note">
-    <p><b>只读模式：</b>没连钱包也能看全部数据。现场万一 MetaMask 出问题，照样能演示「链上有什么」。</p>
+    <p><b>只读模式：</b>没连钱包也能看全部数据 —— 链上有什么，这里就显示什么。</p>
     <p><b>诚实说明：</b>喂价脚本是<b>中心化预言机</b>，数据可信度取决于运营方；生产环境应改用去中心化预言机网络
     （AI 层在链下做的三件事见投保页的「AI 层做了什么」）。它<b>不判断「人有没有真的受损」</b>，那需要平台的订单数据，属于路线图。
     每次判定都把输入快照和输出结论各算一个哈希写上链，第三方拿同一份快照重跑，得到的是逐字节相同的结果。</p>
@@ -1241,7 +1240,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
 
         <div class="quote">
           <div><div class="lb">应付保费<span class="eni">Premium</span></div><div class="amt" id="premiumShow">—</div></div>
-          <div class="side" id="premiumSide">premiumOf(1, 72)<br>链上取值 / on-chain</div>
+          <div class="side" id="premiumSide">premiumOf(区域, 时长)<br>链上取值 / on-chain</div>
         </div>
         <!-- 这一行是「我刚才那一下，链上真的回了一个数」的凭据：点城市/换时长都会跟着变。 -->
         <div class="note dim" id="callProof">正在连链上读取…<span class="en">reading on-chain…</span></div>
@@ -1309,7 +1308,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
 <section class="sec" data-dom="evi">
   <div class="hd">
     <h2>合约配置与运营操作<span class="en">Contract config &amp; ops</span></h2>
-    <span class="n">setContract / fundPool · 低频配置</span>
+    <span class="n">fundPool · 低频配置</span>
     <span class="r">地址只存在你自己的浏览器里（localStorage），不上传任何地方</span>
   </div>
   <div class="panel">
@@ -1323,7 +1322,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
       地址只存在你自己的浏览器里（localStorage），不上传任何地方。<br><span class="en">No contract address yet? Confirm the deployment in the on-chain verifier first, then paste it here. It is stored in your browser only.</span>
     </div>
     <div class="row" style="margin-top:16px">
-      <button class="btn sm gold" id="fundBtn" disabled>注资到资金池（按钱包余额自动封顶）<span class="eni">Fund the pool</span></button>
+      <button class="btn sm gold" id="fundBtn" disabled>注资到资金池（按钱包余额自动封顶：上限 0.05 BOT、至少 0.005）<span class="eni">Fund the pool</span></button>
     </div>
     <div class="note">
       <strong>资金池必须有余额。</strong>最低一档保费 0.00053 BOT 却要赔最高 0.01 BOT（链上 10 格实值 0.00053–0.00105；<code>MIN_PREMIUM</code> = 0.00002 BOT），单格 9.5–18.9×，
@@ -1626,7 +1625,7 @@ function showFrozenBanner() {
     "font:700 14px/1.7 system-ui,'Microsoft YaHei',sans-serif;padding:8px 14px;text-align:center;" +
     "box-shadow:0 2px 10px rgba(0,0,0,.35)";
   bar.textContent = (FROZEN_WHY === "?snap=1"
-    ? "⚠ 链上快照：按网址参数 ?snap=1 强制只看快照（现场不赌网络），显示的是 "
+    ? "⚠ 链上快照：按网址参数 ?snap=1 强制只看快照（不依赖当时网络），显示的是 "
     : "⚠ 链上快照：三层节点都连不上（国内直连 rpc.botchain.ai 需代理），显示的是 ") +
     (FROZEN.meta.capturedAt || "上一轮") + " 读到的原始链上回答 —— 不是实时数据。" +
     "要实时读数请在能连主网的网络上刷新（或在网址后加 ?rpc=<可用节点>）。";
@@ -1818,6 +1817,8 @@ async function attachContract(addr, quiet) {
       minH:     await S.readC.MIN_HOURS(),
       maxH:     await S.readC.MAX_HOURS(),
       cooling:  Number(await soft(() => S.readC.coolingPeriod(), 0n)),
+      // v2 没有 TIER_COUNT()（只有 tierBps/tierOf），分档数只能按国标三级写死；
+      // v3 有 TIER_COUNT()，一律问链。删掉这个 3n 会让 968 的档位说明变成 "undefined 档"。
       tiers:    Number(S.kind === "v3" ? await soft(() => S.readC.TIER_COUNT(), 2n) : 3n),
       paused:   await soft(() => S.readC.paused(), false)
     };
@@ -1892,6 +1893,9 @@ async function connectWallet(silent) {
         try {
           await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: hex }] });
         } catch (e) {
+          // 4001 = 用户在钱包弹窗里点了「拒绝/取消」。这和「钱包里没有这条链」（4902）是两回事：
+          // 前者什么都不用做，后者才需要帮它把链路加进去。
+          if (e && e.code === 4001) { toast("你取消了切换网络 —— 要不要重试在钱包里切到 " + (KNOWN_CHAINS[want] || want) + "？", "err"); return; }
           // 4902 = 钱包里没有这条链。用 CHAIN_META 帮它加进去，加完 MetaMask 会自动切过去。
           const meta = CHAIN_META[want];
           if (!meta) {
@@ -1925,10 +1929,10 @@ async function connectWallet(silent) {
     $("netText").textContent = (S.chain && S.chain.chainName) || KNOWN_CHAINS[want] || "—";
     $("dot").className = "dot on";
     $("walletBtn").textContent = short(S.account);
-    $("buyBtn").disabled = !S.addr;
+    $("buyBtn").disabled = !(S.addr && S.meta);
     $("fundBtn").disabled = !S.addr;
-    $("buyBtn").textContent = S.addr ? "投保" : "先填合约地址";
-    $("fundBtn").textContent = "注资到资金池（按钱包余额自动封顶）";
+    $("buyBtn").textContent = !S.addr ? "先填合约地址" : (S.meta ? "投保" : "合约元信息还没读到");
+    $("fundBtn").textContent = "注资到资金池（按钱包余额自动封顶：上限 0.05 BOT、至少 0.005）";
     await refreshAll();
     if (!silent) toast("钱包已连接：" + S.account, "ok");
   } catch (e) {
@@ -1964,6 +1968,12 @@ async function send(fn, okMsg) {
     toast("当前连的是本地假链（块高 " + S.chain.blockNumber + "），不是真链 —— 写操作已锁死。去掉网址里的 ?rpc= 参数后刷新。", "err");
     return;
   }
+  if (S.chain && S.chain.frozen) {
+    toast("当前读的是离线快照（只读）：能看链上留痕，不能发交易。去掉网址里的 ?snap=1 后刷新再试。", "err");
+    return;
+  }
+  if (S.busy) { toast("上一笔交易还在处理中，等它出结果再点。", "err"); return; }
+  S.busy = true;
   try {
     toast("请在钱包里确认这笔交易…");
     const tx = await fn();
@@ -1995,7 +2005,7 @@ async function send(fn, okMsg) {
     else if (/contract paused/.test(m))   hint = "：合约已暂停";
     else if (/user rejected|denied/i.test(m)) hint = "：你取消了签名";
     toast("交易失败：" + m + hint, "err");
-  }
+  } finally { S.busy = false; }
 }
 
 /* ---------------- 刷新各区块 ---------------- */
@@ -2053,7 +2063,9 @@ async function loadRegions() {
   }
   markSelRegion();
   applyRain();
+  renderScale();
   updateReadouts();
+  renderCoverMeta();
   // 真值看板用的是同一份阈值与选中城市，跟着一起重画（否则切城市、切时长时它还停在上一版）
   const rb = $("realBoard");
   if (rb && !rb.hidden) renderReal();
@@ -2140,7 +2152,7 @@ function selectRegion(id) {
    链上那组也可能是模拟暴雨（968 演示链上就是：五城 101/287/109/303/227 mm，快照与链上事件都标 simulated = true）；677 主网这组是真值。
    这一栏显示同一时刻的**真实观测**：Open-Meteo Archive 的三个数值模型各自算一遍「epoch → 今天」的累计，
    再由 04-脚本/feed-verify.js 那把闸门判定「三模型是否一致、能不能上链」。
-   数据不在运行时联网取：快照由 07-测试工具/snapshot-real-rainfall.js 生成后内嵌进本文件（现场不依赖网络、
+   数据不在运行时联网取：快照由本地生成脚本产出后内嵌进本文件（不依赖当时网络、
    也不依赖 FlClash 代理），面板上写明纪元、区间与抓取时刻。 */
 const REAL_RAIN = {"schema":"rainproof/real-rainfall@1","generatedAt":"2026-10-08 10:21:12 +0800","epoch":"2026-09-01","until":"2026-10-08","source":"Open-Meteo Archive API · ECMWF / GFS / ICON","note":"mm = Open-Meteo archive 自 epoch 起的真实累计（与写进链上的那个数同口径）；gateMm 是 feed-verify 闸门在最近 14 天三模型上的核验值，status/confidence/sources 是那份核验的判定 —— 只有不是 diverge 的才写得进链。","regions":[{"id":1,"key":"wuhan","name":"武汉","nameEn":"Wuhan","mm":67,"gateMm":25.9,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":25.9,"toleranceMm":5.2,"spreadMm":20.9,"perModel":[]},{"id":2,"key":"shanghai","name":"上海","nameEn":"Shanghai","mm":128,"gateMm":67.2,"gateDays":14,"status":"agree","confidence":92,"sources":3,"medianMm":67.2,"toleranceMm":13.4,"spreadMm":8.5,"perModel":[]},{"id":3,"key":"beijing","name":"北京","nameEn":"Beijing","mm":39,"gateMm":40,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":40,"toleranceMm":8,"spreadMm":23.9,"perModel":[]},{"id":4,"key":"guangzhou","name":"广州","nameEn":"Guangzhou","mm":162,"gateMm":65.1,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":65.1,"toleranceMm":13,"spreadMm":42.7,"perModel":[]},{"id":5,"key":"chengdu","name":"成都","nameEn":"Chengdu","mm":173,"gateMm":null,"gateDays":14,"status":"diverge","confidence":40,"sources":3,"medianMm":16,"toleranceMm":3.2,"spreadMm":13,"perModel":[]}]};
 
@@ -2159,7 +2171,7 @@ const LIVE_COORDS = {
   5: [30.5728, 104.0668]   // 成都
 };
 const LIVE_TTL_MS = 10 * 60 * 1000;   // 现网读数 10 分钟内复用，免得每次切城市都打一遍网络
-let LIVE = { at: 0, hours: null, mm: null, err: null };
+let LIVE = { at: 0, hours: null, mm: null, err: null, errAt: 0 };
 
 function liveHours() {
   const h = curHours();
@@ -2207,16 +2219,23 @@ async function renderLive() {
     box.innerHTML = head('<div class="empty">还没读到链上阈值（时长档位也没读到）—— 实时面板的阈值线不猜，先不画。</div>');
     return;
   }
+  const errHTML = () => head(`<div class="note" role="alert"><b>拉取现网雨量失败</b>：<code>${esc(LIVE.err)}</code>`
+    + `<br>多半是这台机器现在连不上 Open-Meteo（本机网络或代理）。<b>链上读数不受影响</b>，旁边那栏照旧。`
+    + `<span class="eni">live fetch failed — the on-chain board is unaffected.</span></div>`);
   if (!LIVE.mm || LIVE.hours !== hours || Date.now() - LIVE.at > LIVE_TTL_MS) {
+    // 失败退避：失败后 10 分钟内不再重复打网（12 秒轮询会调到这里），只重画错误态
+    if (LIVE.err && Date.now() - LIVE.errAt < LIVE_TTL_MS) {
+      box.innerHTML = errHTML();
+      return;
+    }
     box.innerHTML = head('<div class="loading">正在拉现网雨量（五城）…<span class="eni">fetching live rainfall…</span></div>');
     try {
       LIVE.mm = await fetchLive(hours);
       LIVE.hours = hours; LIVE.at = Date.now(); LIVE.err = null;
     } catch (e) {
       LIVE.err = (e && e.message) ? e.message : String(e);
-      box.innerHTML = head(`<div class="note" role="alert"><b>拉取现网雨量失败</b>：<code>${esc(LIVE.err)}</code>`
-        + `<br>多半是这台机器现在连不上 Open-Meteo（现场网络/代理）。<b>链上读数不受影响</b>，旁边那栏照旧。`
-        + `<span class="eni">live fetch failed — the on-chain board is unaffected.</span></div>`);
+      LIVE.errAt = Date.now();
+      box.innerHTML = errHTML();
       return;
     }
   }
@@ -2243,8 +2262,8 @@ function renderReal() {
   const box = $("realBoard");
   if (!box) return;
   if (!REAL_RAIN || !REAL_RAIN.regions || !REAL_RAIN.regions.length) {
-    box.innerHTML = '<div class="note dim">真值快照还没生成 —— 跑 <code>07-测试工具/snapshot-real-rainfall.js</code>'
-      + '<span class="eni">no snapshot yet — run the generator script</span></div>';
+    box.innerHTML = '<div class="note dim">真值快照还没有（本页没有内嵌这一段）—— 其它读数不受影响。'
+      + '<span class="eni">no snapshot baked into this file — other readings are unaffected</span></div>';
     return;
   }
   const r = REAL_RAIN;
@@ -2254,7 +2273,13 @@ function renderReal() {
     diverge:  ["离散度超容差 · 闸门拒收", "spread too wide — the gate rejects it"]
   };
   // 和链上看板用同一个阈值口径（当前选中时长那一档），柱子才是同一把尺子
-  const thr = Number(S.meta && S.meta.threshold) || 50;
+  // 读不到链上阈值就不猜（与实时面板同一条口径）：宁可说「阈值未知」，也不画一条假的 50mm 线
+  const thr = Number(S.meta && S.meta.threshold);
+  if (!Number.isFinite(thr) || thr <= 0) {
+    box.innerHTML = '<div class="note dim">还没读到链上阈值（合约元信息未就绪）—— 阈值线不猜，先不画。'
+      + '<span class="eni">on-chain threshold not read yet — the line is not guessed</span></div>';
+    return;
+  }
   const hours = Number($("hoursInput").value) || 24;
   const meas = r.regions.filter(x => x.mm != null).map(x => {
     const v = x.mm;
@@ -2315,7 +2340,7 @@ function markHoursChips() {
   const h = Number(sel.value);
   $("hoursChips").innerHTML = [...sel.options].map(o => {
     const x = Number(o.value);
-    return `<button class="chip${x === h ? " on" : ""}" data-hours="${x}">${x}h</button>`;
+    return `<button class="chip${x === h ? " on" : ""}" data-hours="${x}" aria-pressed="${x === h}">${x}h</button>`;
   }).join("");
 }
 
@@ -2337,21 +2362,64 @@ function applyRain() {
   document.documentElement.style.setProperty("--rain", Math.pow(t, 0.6).toFixed(3));
 }
 
+/* 首页「雨幕刻度」：原先是写死 2026-10-08 那一版的读数（广州 162 / 上海 128 / …），
+   一旦退到 968、切到快照或阈值变了，它就变成假话。改成用当前这一层读到的
+   S.rainVals + 阈值重画（aside 是 aria-hidden 的装饰件；要读真数请看板与五城一览）。 */
+function renderScale() {
+  const rail = $("scaleRail");
+  if (!rail || !S.meta || !S.rainVals) return;
+  const thr = Number(S.meta.threshold);
+  const vals = Object.keys(S.rainVals).map(k => Number(S.rainVals[k])).filter(Number.isFinite);
+  if (!Number.isFinite(thr) || thr <= 0 || !vals.length) return;
+  const max = Math.max(thr * 2, ...vals);
+  const top = $("tkTop"), tkThr = $("tkThr");
+  if (top) top.textContent = String(Math.round(max));
+  if (tkThr) {
+    tkThr.textContent = String(Math.round(thr));
+    tkThr.style.bottom = Math.round(thr / max * 100) + "%";
+  }
+  rail.querySelectorAll(".cty").forEach(el => {
+    const v = S.rainVals[Number(el.dataset.region)];
+    const i = el.querySelector("i");
+    if (v == null) { if (i) i.textContent = "—"; return; }
+    if (i) i.textContent = String(v);
+    el.style.bottom = Math.min(100, Math.round(v / max * 100)) + "%";
+  });
+  const note = $("scaleNote");
+  if (note) {
+    const layer = S.chain ? (S.chain.frozen ? "链上快照（离线文件）" : (S.chain.chainName || "—")) : "未连接";
+    note.innerHTML = "读数层：" + esc(layer) + "<br>刻度 = max(阈值 × 2, 五城最大值) = " + Math.round(max) + " mm";
+  }
+}
+
 /* 标出哪一行在驱动背景雨幕：城市片、柱子、柱脚三处同步高亮（链上看板与真值看板都是同一套 DOM） */
 function markSelRegion() {
   const sel = String(Number($("regionSel").value) || 1);
-  document.querySelectorAll("#rainBoard .region, #realBoard .region").forEach(el => {
-    el.classList.toggle("is-sel", el.dataset.region === sel);
-  });
-  document.querySelectorAll("#rainBoard .chip, #rainBoard .colwrap, #rainBoard .foot5 .c, #realBoard .chip, #realBoard .colwrap, #realBoard .foot5 .c").forEach(el => {
+  document.querySelectorAll("#rainBoard .chip, #rainBoard .colwrap, #rainBoard .foot5 .c, #realBoard .chip, #realBoard .colwrap, #realBoard .foot5 .c, #liveBoard .chip, #liveBoard .colwrap, #liveBoard .foot5 .c").forEach(el => {
     el.classList.toggle("on", el.dataset.region === sel);
   });
   document.querySelectorAll("#regionChips .chip").forEach(el => {
-    el.classList.toggle("on", el.dataset.region === sel);
+    const on = el.dataset.region === sel;
+    el.classList.toggle("on", on);
+    el.setAttribute("aria-pressed", String(on));
   });
   document.querySelectorAll("#cityTable .crow").forEach(el => {   // 右栏五城一览跟着一起高亮
     el.classList.toggle("on", el.dataset.region === sel);
   });
+}
+
+/* 页首那行小字必须跟着实际读数层级走：静态写死「677 · v3 · 0x89e7…」在退到 968 / 快照 / ?rpc= 之后就是假话 */
+function renderCoverMeta() {
+  const el = $("coverMeta");
+  if (!el) return;
+  const layer = S.chain
+    ? (S.chain.frozen ? "链上快照（离线文件）"
+                      : (S.chain.chainName || "—") + (S.chain.chainId ? " · chainId " + S.chain.chainId : ""))
+    : "未连接";
+  const ver = S.kind ? " · " + S.kind + " 合约" : "";
+  const addr = S.addr ? " · " + short(S.addr) : "";
+  el.innerHTML = esc(layer) + esc(ver) + esc(addr) + " · 不依赖任何区块浏览器<br>"
+    + "数据直接向公共节点提问取得；连不上时按四层降级，并在页首如实标出读的是哪一层";
 }
 
 /* 资金池 */
@@ -2420,14 +2488,14 @@ function renderSourceCard(bn, failed) {
     return;
   }
   const frozen = !!c.frozen;
-  set("srcLayer", (c.chainName || "—") + (frozen ? " · 链上快照" : (c.isReal ? " · 实时读数" : " · 本地假链")));
+  set("srcLayer", (c.chainName || "—") + (frozen ? " · 链上快照" : (c.isReal ? " · 直连主网读数" : " · 本地假链")));
   set("srcNode", frozen ? "离线文件 frozen-node.js" : String(c.url || "—").replace(/^https?:\/\//, ""));
   set("srcBlock", bn != null ? Number(bn).toLocaleString("en-US") : (c.blockNumber != null ? Number(c.blockNumber).toLocaleString("en-US") : "—"));
   set("srcWhen", frozen ? (FROZEN.meta.capturedAt || "上一轮") + " 抓的" : new Date().toLocaleTimeString("zh-CN", { hour12: false }));
   const note = $("srcNote");
   if (!note) return;
   note.innerHTML = frozen
-    ? `快照不是实时数据：上面这些数是 <b>${esc(FROZEN.meta.capturedAt || "上一轮")}</b> 读到的原始链上回答。要看实时读数，请在能连主网的网络上刷新（或在网址后加 <code>?rpc=&lt;可用节点&gt;</code>）。`
+    ? `快照不是实时数据：上面这些数是 <b>${esc(FROZEN.meta.capturedAt || "上一轮")}</b> 读到的原始链上回答。要看直连主网的最新读数，请在能连主网的网络上刷新（或在网址后加 <code>?rpc=&lt;可用节点&gt;</code>）。`
     : (c.chainId === 968 && !RPC_OVERRIDE
       ? `主网节点在当前网络不可达，这一屏读的是测试网 968（v2 口径）—— 页首横幅、页脚与这里说的是同一件事。`
       : `读数由浏览器直接向公共节点 <code>eth_call</code> 取得，不经过任何后端，也不依赖区块浏览器。`);
@@ -2512,9 +2580,12 @@ async function loadMyPolicies() {
       // 数据全部来自链上 judgements(id)，不依赖任何离线文件，评委可以自己调 eth_call 对一遍。
       // v2 的 submitJudgement 带 sources（喂价验收记 3 个模型源），所以这一栏把源数也摆出来。
       // 没有判定记录时不留空白单元格 —— 空格子也要说出"为什么空"。
+      // 「这是真模型判定，还是演练脚本写进去的」必须一眼看出来：同族记录里有的 modelVersion 是
+      // bot-rehearsal-v1（演练），有的才是真模型跑出来的。标签不同，别让读的人以为是同一种东西。
+      const rehearsal = !!(jm && jm.exists && /rehearsal/i.test(String(jm.modelVersion)));
       const aiLine = jmErr
         ? `<span class="tag red">judgements 读取失败</span> <span class="none">${esc(jmErr)} —— 这是"这次没读到"，不是"链上没有登记"。</span>`
-        : (jm && jm.exists) ? `<b>AI 判定</b>
+        : (jm && jm.exists) ? `<b>${rehearsal ? "演练判定" : "AI 判定"}</b>${rehearsal ? ' <span class="tag warn">由演练脚本登记 · 不是模型判定</span>' : ""}
               <span class="tag ${Number(jm.decision) === 1 ? "gold" : "warn"}">${Number(jm.decision) === 1 ? "赔付 PAY" : "不赔 DENY"}</span>
               · 置信度 <b>${jm.confidence}</b> · <b>${jm.sources}</b> 个源
               · ${Number(jm.kind) === 1 ? "损失判定" : "喂价验收"}
@@ -2540,7 +2611,7 @@ async function loadMyPolicies() {
           ${(claimable || status === "paid") ? `<br>国标档位 ${TIER_LABEL[Number(p.tier)] || "—"} · 应赔 <b>${fmtEth(due)}</b> ${SYM()}` : ""}
           ${status === "active" ? `<br>距触发还差 <b>${Number(short)}</b> mm` : ""}
           ${claimable ? `<br>已满足赔付条件` : ""}
-          ${belowSnap ? `<br>⛔ 当前读数已过阈值，但判定快照未达档 —— claim() 会 revert「below threshold」（合约 policyStatus 与 claim 的读数口径不同，见 02-作战与答辩/决策记录.md 2026-10-12 条）` : ""}
+          ${belowSnap ? `<br>⛔ 当前读数已过阈值，但判定快照未达档 —— claim() 会 revert「below threshold」（合约的 policyStatus 与 claim 读数口径不同；赔不赔以 payoutOf 为准）` : ""}
           ${status === "pending_judgement" ? `<br>雨量已达标，等 AI 判定登记上链` : ""}
           ${status === "denied" ? `<br>AI 判定为不赔（结论与两个证据哈希都已上链，可查）` : ""}
           ${status === "low_confidence" ? `<br>AI 置信度低于合约验收门槛，按规则不予赔付` : ""}
@@ -2607,7 +2678,8 @@ async function loadEvents() {
     for (const l of logs) {
       let d; try { d = iface.parseLog(l); } catch (e) { continue; }
       all.push({ l, d });
-      if (d.name === "ClaimPaid") { paidN++; paidSum += BigInt(d.args[2]); }
+      // 按字段名取值：v2/v3 的 ClaimPaid 参数顺序不同，写死下标会静默算错「已赔付」
+      if (d.name === "ClaimPaid") { paidN++; paidSum += BigInt(evArg(d, "amount") || 0n); }
     }
     S.paid = { n: paidN, sum: paidSum };
     const rows = [];
@@ -2732,10 +2804,15 @@ async function refreshPremium() {
       S.premiumLabel = `premiumOf(${region}, ${hours})`;
     }
     fromChain = true;
+    S.premiumErr = null;
     $("threshShow").textContent = S.meta.threshold + " mm";
     const os = $("overSub");
     if (os) os.innerHTML = `按 ${hours} 小时窗口<span class="eni">${hours} h window</span>`;
-  } catch (e) {}   // 地址上不是这一套合约时退回兜底值（画面留上一版数字，不给评委看报错）
+  } catch (e) {
+    // 读价失败：兜底值仍写进画面（不留空），但记下「这个数不是链上回的」——
+    // 下面 buyBtn 会据此拦下投保（按旧价发交易必然 premium mismatch，只会白烧 gas）
+    S.premiumErr = (e && (e.shortMessage || e.message)) || String(e);
+  }
   S.premiumNow = p;
   $("premiumShow").textContent = fmtEth(p) + " " + SYM();
   const side = $("premiumSide");
@@ -2764,17 +2841,25 @@ $("evFilters").onclick = (e) => {
   const b = e.target.closest && e.target.closest(".f");
   if (!b) return;
   evFilter = b.dataset.fam || "all";
-  $("evFilters").querySelectorAll(".f").forEach(x => x.classList.toggle("on", x === b));
+  $("evFilters").querySelectorAll(".f").forEach(x => {
+    const on = x === b;
+    x.classList.toggle("on", on);
+    x.setAttribute("aria-pressed", String(on));
+  });
   loadEvents();
 };
 
 $("buyBtn").onclick = async () => {
   const region = Number($("regionSel").value);
   const hours = Number($("hoursInput").value);
+  if (!S.meta) { return toast("还没读到合约元信息（节点没连上或地址不对）—— 等页面读到合约再投保", "err"); }
   if (!Number.isInteger(hours) || hours < Number(S.meta.minH) || hours > Number(S.meta.maxH)) {
     return toast(`时长要在 ${S.meta.minH} ~ ${S.meta.maxH} 小时之间`, "err");
   }
   const value = await refreshPremium();     // ← 以链上 premiumOf(region) 为准
+  if (S.premiumErr) {
+    return toast("这次没从链上读到保费（" + S.premiumErr + "）—— 显示的只是兜底值，别按它发交易；刷新或换合约地址再试", "err");
+  }
   send(() => new ethers.Contract(S.addr, abiFor(), S.signer).buyPolicy(region, hours, { value }),
        `投保成功（区域 ${region} · ${hours} 小时 · 保费 ${fmtEth(value)} ${SYM()}）`);
 };
@@ -2828,6 +2913,7 @@ if (window.ethereum) {
   try { await refreshPremium(); } catch (e) {}
   // 轮询永远注册：boot() 失败（节点抖了 / 地址没填）时 12 秒后自己再连一次，
   // 页面不会停在一屏"节点连不上"上等人手动刷新。
+  let pollTick = 0;
   setInterval(async () => {
     if (!S.readC || !S.addr || !S.meta) {
       try { await boot(); if (S.readC) await refreshPremium(); } catch (e) {}
@@ -2835,6 +2921,9 @@ if (window.ethereum) {
     }
     try { $("blk").textContent = (await S.provider.getBlockNumber()).toLocaleString("en-US"); } catch (e) {}
     loadRegions();   // 喂价脚本写完链上，看板和背景雨幕自己跟上，不用手动刷新页面
+    loadPool();      // 别人注资 / 赔付之后，池子余额与可承保份数也得跟着变
+    loadMyPolicies();   // 保单状态（判定、赔付）会变
+    if ((++pollTick % 5) === 0) loadEvents();   // 事件纸带读的是日志（较重），5 跳一刷 ≈ 60 秒
   }, 12000);
 })();
 </script>

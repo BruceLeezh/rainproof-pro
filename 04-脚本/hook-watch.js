@@ -26,7 +26,9 @@
  *
  *   ★ 只有「投保那一刻就固定」的字段进 review（保单结构体 / 喂价事件 / 三模型快照）。
  *     链上实时读数（`rainfall[region]`、`policyStatus()`）**会随时间变**，放进哈希就等于
- *     让 reviewHash 过一会儿换个值 —— 它们放在 review 之外的 `observed` 里（schema @2）。
+ *     让 reviewHash 过一会儿换个值 —— 它们放在 review 之外的 `observed` 里（schema @2）；
+ *     @3 起 `payoutWei` 也挪到那里：未赔付的保单链上 `payout` 恒 0，「能赔多少」得问
+ *     现算的 `payoutOf()`（与 claim() 同源，口径见 keeper.js:125-133）。
  *
  * 用法（必须在 04-脚本 目录下跑，否则读不到 .env）：
  *   node hook-watch.js --once              扫最近 N 个区块里的 PolicyBought，逐个复核后退出
@@ -55,10 +57,10 @@ const V3_ABI_FILE = path.join(__dirname, "..", "03-合约", "RainDeliveryInsuran
 const ABI_BY_KIND = { v1: V1_ABI_FILE, v2: V2_ABI_FILE, v3: V3_ABI_FILE };
 const OUT_DIR = process.env.AI_OUT_DIR || path.join(__dirname, "..", "09-AI判定留痕");
 
-const REVIEW_VERSION = "hook-watch@2";   // @2：可变量移出 review（进 observed），见文件头
-const RECORD_SCHEMA = "rainproof/underwrite-review@2";
+const REVIEW_VERSION = "hook-watch@3";   // @3：payoutWei 也进 observed（@2：可变量移出 review），见文件头
+const RECORD_SCHEMA = "rainproof/underwrite-review@3";
 // ★ 这些字段会随链上状态变化，**不许进 review**（进了哈希就会自己漂）。自检钉住这条白名单。
-const MUTABLE_KEYS = ["policyStatus", "onchainCumulativeMm", "incrementMm", "baselineDeviationPct", "checks", "flagged", "verdict"];
+const MUTABLE_KEYS = ["policyStatus", "onchainCumulativeMm", "incrementMm", "payoutWei", "baselineDeviationPct", "checks", "flagged", "verdict"];
 const STALE_FEED_SEC = 24 * 3600;   // 超过这个年纪的喂价 = 基线不可信（v2 合约里是硬闸门）
 const DEVIATION_LIMIT_PCT = 60;     // 链上累计值与三模型中位数的允许背离（与判定层 R2 同口径）
 // 各版本合约允许的窗口档位。这张表是 reviewPolicy 的输入之一 ——
@@ -70,6 +72,16 @@ const FEED_LOOKBACK_BLOCKS = 10000; // ★ 喂价新鲜度的查询窗口必须�
 const ARGV = process.argv.slice(2);
 const has = (f) => ARGV.includes(f);
 const arg = (f, d) => { const a = ARGV.find((x) => x.startsWith(f + "=")); return a ? a.split("=")[1] : d; };
+/** 数值参数先校验（与 keeper.js 的 --interval 同一类病）：`--watch=abc` ⇒ watchSec=NaN ⇒ `!NaN` 为 false
+ *  ⇒ 常驻，而 `setTimeout(fn, Math.max(2, NaN) * 1000)` 立刻返回 ⇒ 零延迟死循环；`--blocks=abc` ⇒
+ *  cursor=NaN ⇒ `to >= cursor` 恒假 ⇒ 一次都不扫还退 0（看起来像「跑过了，没有新保单」）。 */
+const numArg = (f, d) => {
+  const raw = arg(f, null);
+  if (raw === null) return d;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 0) throw new Error(`${f}= 需要一个非负整数，收到：${JSON.stringify(raw)}`);
+  return n;
+};
 const ts = () => new Date().toTimeString().slice(0, 8);
 const iso = (sec) => new Date(Number(sec) * 1000).toISOString();
 /** ★ 取模型预报的窗口末日。原来是 UTC 切法（`toISOString().slice(0,10)`），与同一批喂价/判定
@@ -182,7 +194,9 @@ async function surfaceOf(c, id, kind) {
     : kind === "v2" ? Number(await c.thresholdOf(windowHours))
       : Number(await c.THRESHOLD());
   const premiumWei = kind === "v1" ? await c.premiumOf(regionId) : p.premium;
-  const payoutWei = kind === "v1" ? await c.PAYOUT() : p.payout;
+  // 未赔付的保单链上 `payout` 字段就是 0（只有 claim() 里那句 `p.payout = amount` 会写它），
+  // 所以「该赔多少」必须问链上现算的 payoutOf()。v1 没有 payoutOf，仍用全局 PAYOUT()。
+  const payoutWei = kind === "v1" ? await c.PAYOUT() : await c.payoutOf(id);
   return {
     p, regionId, region, startTime, endTime, windowHours, thresholdMm,
     premiumWei: String(premiumWei), payoutWei: String(payoutWei),
@@ -238,7 +252,6 @@ function splitRecord({ id, chainId, addr, kind, txHash, blockNumber, asOfSec, s,
     windowHours: s.windowHours,
     thresholdMm: s.thresholdMm,
     premiumWei: s.premiumWei,
-    payoutWei: s.payoutWei,
     rainfallAtBuyMm: s.rainfallAtBuyMm,
     feed: feed.known
       ? { source: feed.source, lastFeedTime: iso(feed.time), ageSeconds: feed.ageSeconds, blockNumber: feed.block, txHash: feed.txHash, confidence: feed.confidence }
@@ -263,6 +276,7 @@ function splitRecord({ id, chainId, addr, kind, txHash, blockNumber, asOfSec, s,
     policyStatus: s.status,
     onchainCumulativeMm: s.onchainMm,
     incrementMm: s.onchainMm - s.rainfallAtBuyMm,
+    payoutWei: s.payoutWei,                      // 现算的可赔额，不进哈希（会随判定/累计雨量漂）
     baselineDeviationPct: v.deviationPct,
     checks: v.checks,
     flagged: v.flagged,
@@ -396,7 +410,7 @@ async function main() {
   const noModels = has("--no-models");
   const dry = has("--dry-run");
   const force = has("--force") || has("--force-refresh");   // --force-refresh：同义别名（口头/文档里都用过这个说法）
-  const watchSec = Number(arg("--watch", 0));
+  const watchSec = numArg("--watch", 0);
   const once = has("--once") || !watchSec;
 
   const provider = new JsonRpcProvider(process.env.SEPOLIA_RPC || process.env.RPC_URL);
@@ -404,8 +418,8 @@ async function main() {
   const { kind, c } = await detectKind(addr, provider, forced);
   const head = await provider.getBlockNumber();
   let cursor = arg("--from", null) !== null
-    ? Number(arg("--from"))
-    : Math.max(0, head - Number(arg("--blocks", DEFAULT_BLOCKS)));
+    ? numArg("--from", 0)
+    : Math.max(0, head - numArg("--blocks", DEFAULT_BLOCKS));
 
   console.log(`hook-watch 启动 · chainId ${net.chainId} · ${kind} ABI（${forced ? "手工指定" : "指纹自动识别"}）· 合约 ${addr}`);
   console.log(`  监听 PolicyBought · 从区块 ${cursor} 起${once ? "（扫一遍就退）" : ` · 每 ${watchSec} 秒扫一次`}\n`);

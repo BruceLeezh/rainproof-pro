@@ -71,8 +71,15 @@ async function fetchModelSeries(region, endDate, epoch = RAIN_EPOCH) {
     const head = { id: m.id, label: m.label, org: m.org, url };
     if (!raw) return Object.assign(head, { error: "接口没有返回这个模型的序列" });
 
+    // F17：`raw[i] == null ? null : Number(raw[i])` 拦不住 NaN —— 接口返回空串/非数值串时
+    // `Number("") === 0`（伪造出 0mm 的假观测）、`Number("abc") === NaN` 会一路混进
+    // median/spread，整区被判 diverge 并写 FeedRejected 上链。口径对齐 push-rainfall.js 的
+    // dailyRows()：null / 空串 / 非数值 / 非有限值一律算缺测，不进序列。
+    const num = (v) =>
+      (v === null || v === undefined || String(v).trim() === "" || !Number.isFinite(Number(v))
+        ? null : Number(v));
     const keep = allDates
-      .map((d, i) => [d, raw[i] == null ? null : Number(raw[i])])
+      .map((d, i) => [d, num(raw[i])])
       .filter(([d, v]) => d >= epoch && v !== null);
     if (!keep.length) return Object.assign(head, { error: `自 ${epoch} 起没有有效数据` });
 
@@ -203,10 +210,12 @@ if (require.main === module) {
   (async () => {
     const targets = ONLY ? REGIONS.filter((r) => r.id === ONLY) : REGIONS;
     console.log(`\n三模型交叉核验  ·  窗口 ${epoch} ~ ${UNTIL || shDate(Date.now() / 1000)}\n`);
+    let passed = 0;
     for (const r of targets) {
       try {
         const series = await fetchModelSeries(r, UNTIL, epoch);
         const v = gradeModels(series);
+        if (v.agree) passed++;
         const line = v.agree
           ? `✅ ${v.status.padEnd(9)} 采信 ${String(v.mm).padStart(6)}mm  置信 ${v.confidence}  源 ${v.sources}`
           : `⛔ ${v.status.padEnd(9)} 拒收               置信 ${v.confidence}  源 ${v.sources}`;
@@ -215,6 +224,11 @@ if (require.main === module) {
       } catch (e) {
         console.log(`#${r.id} ${r.name.padEnd(4)} ❌ ${e.message}`);
       }
+    }
+    // 一个区都没通过（全拒收 / 全取数失败）时不能还退 0：调用方（CI、批处理）只看退出码。
+    if (!passed) {
+      console.log(`\n⛔ ${targets.length} 个区没有一个通过交叉核验 ⇒ 退出码置 1`);
+      process.exitCode = 1;
     }
     console.log("");
   })();

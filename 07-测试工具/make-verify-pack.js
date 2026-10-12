@@ -1,10 +1,13 @@
 /**
  * A5 源码验证包：把「03-合约 里这些部署件，就是链上跑的那份字节码」做成可复跑的清单。
  *
- * 用法：cd 07-测试工具 && node make-verify-pack.js
+ * 用法：cd 07-测试工具 && node make-verify-pack.js            # 生成/刷新清单
+ *       cd 07-测试工具 && node make-verify-pack.js --check    # 门禁语义（对齐 sync_abi.js --check）：
+ *                                                             盘上清单与本次重编不一致 ⇒ 只打印差异、不写盘、exit 1
  * 产出：03-合约/verify-manifest.json   （源码 sha256 + 创建/运行时字节码 sha256 & keccak256 + 编译参数）
  * 退出码：任一处对不上即非零退出（编译失败、产物与盘上的 .bytecode.txt 不一致、
- *         运行时长度与链上实测长度不一致、源文件含 import 以致「单文件即 flatten」不成立）。
+ *         运行时长度与链上实测长度不一致、源文件含 import 以致「单文件即 flatten」不成立、
+ *         --check 下清单过期）。
  *
  * 覆盖范围（2026-10-12 起，全仓扫描 A40③/B1）：v1 `RainDeliveryInsurance.sol`、v2 `RainDeliveryInsuranceV2.sol`、
  * v3 `RainDeliveryInsuranceV3.sol`、`OperatorMultisig.sol` 四个都进。v1/v2 是后加的 —— 加它俩的理由很直接：
@@ -27,6 +30,28 @@ const abiCoder = new AbiCoder();
 const ROOT = path.join(__dirname, "..");
 const CDIR = path.join(ROOT, "03-合约");
 const OUT = path.join(CDIR, "verify-manifest.json");
+// --check：门禁只读语义。默认（无 --check）保持「填清单」的旧行为。
+const CHECK = process.argv.includes("--check");
+
+/** --check 下的差异摘要：逐条目比关键字段，不打印整份 JSON */
+function manifestDiff(prevText, nextText) {
+  if (prevText === null) return ["盘上没有 verify-manifest.json（首次生成请去掉 --check 跑一次）"];
+  let a, b;
+  try { a = JSON.parse(prevText); b = JSON.parse(nextText); } catch { return ["盘上文件不是合法 JSON，无法逐条目比较"]; }
+  const out = [];
+  const old = new Map((a.contracts || []).map((c) => [c.name, c]));
+  for (const c of b.contracts || []) {
+    const p = old.get(c.name);
+    if (!p) { out.push(`新增条目 ${c.name}`); continue; }
+    old.delete(c.name);
+    for (const k of ["sourceSha256", "creationBytecode", "runtimeBytecode", "compiler", "settings"]) {
+      if (JSON.stringify(p[k]) !== JSON.stringify(c[k])) out.push(`${c.name}.${k} 变了`);
+    }
+  }
+  for (const n of old.keys()) out.push(`少了条目 ${n}`);
+  if (!out.length) out.push("逐条目字段一致（只有外层说明文字变了）");
+  return out.length > 8 ? out.slice(0, 8).concat([`…共 ${out.length} 处`]) : out;
+}
 
 // runtimeBytes = 10-08 经代理在主网 677 上 eth_getCode 实测的长度；不一致就说明源码与部署件不是同一份。
 const TARGETS = [
@@ -184,8 +209,21 @@ const manifest = {
 const next = JSON.stringify(manifest, null, 2) + "\n";
 const prev = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : null;
 // 失败时一个字节都不写：把「能复现的旧清单」留在盘上当证据，而不是用有问题的构建覆盖它。
-if (!bad && prev !== next) fs.writeFileSync(OUT, next, "utf8");
+// --check（门禁语义，对齐 sync_abi.js --check）：内容不一致 ⇒ **不写盘** + exit 1。旧行为是先重写
+// 被断言物再只看 bad ⇒「verify 包过期」永远不会红，而且跑一次门禁就改一次被跟踪文件（假 diff）。
+let drift = 0;
+if (!bad && prev !== next) {
+  if (CHECK) {
+    drift = 1;
+    console.log("\n  ❌ 盘上的 verify-manifest.json 与本次重编结果不一致（--check：只读，不写盘）");
+    for (const l of manifestDiff(prev, next)) console.log("     · " + l);
+    console.log("     跑 node make-verify-pack.js（去掉 --check）刷新清单后重跑门禁。");
+  } else {
+    fs.writeFileSync(OUT, next, "utf8");
+  }
+}
 
-console.log(`\n${bad ? "❌" : "✅"} ${bad} 项失败 → ${path.relative(ROOT, OUT)}` +
-  (bad ? "（校验失败，未写盘：原文件保留作证据）" : prev === next ? "（内容无变化，未改写）" : "（已按上面的一致结果重写）"));
-process.exit(bad ? 1 : 0);
+const failed = bad || drift;
+console.log(`\n${failed ? "❌" : "✅"} ${bad} 项失败${drift ? " + 清单过期（--check 未写盘）" : ""} → ${path.relative(ROOT, OUT)}` +
+  (failed ? "（校验失败，未写盘：原文件保留作证据）" : prev === next ? "（内容无变化，未改写）" : "（已按上面的一致结果重写）"));
+process.exit(failed ? 1 : 0);

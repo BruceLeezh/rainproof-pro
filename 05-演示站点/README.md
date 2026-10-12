@@ -12,7 +12,7 @@
 
 ## 页面 V4 的 hash 路由
 
-路由表在 `05-演示站点/index.html:2986-3000`，只做一件事：把 hash 变成 `body[data-page]`：
+路由表在 `05-演示站点/index.html` 的 `apply()`（在文件里搜 `function apply`；本 README 不再写行号，行号会随编辑漂移），只做一件事：把 hash 变成 `body[data-page]`：
 
 | hash | 页面 |
 |---|---|
@@ -23,18 +23,18 @@
 | `#ops` | 合约配置与运营 |
 | `#notes` | 历史别名：原「只读模式与诚实说明」页 2026-10-12 晚已并进首页末尾，这个地址落回 `#home` |
 
-- 导航高亮、`document.title` 都跟着 hash 走；`#dashboard#anchor` 这类写法只取第一段；浏览器前进 / 后退即 hashchange（`index.html:3015-3052`）。
+- 导航高亮、`document.title` 都跟着 hash 走；`#dashboard#anchor` 这类写法只取第一段；浏览器前进 / 后退即 hashchange（同一个 `apply()`，监听那行搜 `hashchange`）。
 
 ## 它读哪条链：四层回退
 
-候选节点按优先级排（`05-演示站点/index.html:1340-1345`）：
+候选节点按优先级排（`05-演示站点/index.html` 里搜 `RPC_NODES`）：
 
 1. `https://rpc.botchain.ai` —— **BOT Chain 主网 677**，v3 是现行演示基线；
 2. `https://rainproof-juice-68d3.vercel.app/api/rpc` —— Vercel 上的只读中转（机房直连主网）；
 3. `https://rpc.bohr.life` —— **测试网 968**，v2 那 6 张已赔保单的留痕；
 4. `05-演示站点/frozen-node.js` —— 页面自带的 **677 离线快照**。
 
-- 前三条是**并行阶梯**：第 1 条先出发，其余每条晚 1.2 秒，`Promise.any` 取最先应答的那条 —— 既保留优先级，又不会为一个连不上的节点白等 8 秒（`index.html:1513-1531`）。
+- 前三条是**并行阶梯**：第 1 条先出发，其余每条晚 1.2 秒，`Promise.any` 取最先应答的那条 —— 既保留优先级，又不会为一个连不上的节点白等 8 秒（搜 `probeNode`；合并结果在 `getReadProvider`）。
 - **三层节点全挂**才会落到第 4 层快照；`?snap=0` 关掉兜底，`?snap=1` 强制只看快照（现场不赌网络）。
 - `?rpc=<你确信可达的节点>` 可临时指定节点（本地假链联调也用它）。
 
@@ -47,11 +47,11 @@
 | 顶部右侧链名（`#netText`） | `BOT Chain Mainnet` | 真链（直连或中转，看页脚 URL） |
 | | `… · 链上快照` | 第 4 层，离线快照 |
 | | `本地假链（非 …）` | chainId 被伪装，见红色横幅 |
-| 顶部**金色横幅** `frozenBar` | `⚠ 链上快照：按网址参数 ?snap=1 强制…` 或 `…三层节点都连不上…`，并带 `capturedAt` 时间 | 是快照，且属于两种原因中的哪一种（`index.html:1546-1559`） |
-| 顶部**红色横幅** `fakeChainBar` | `⚠ 当前连的是本地假链（块高 …，chainId 被伪装成 …）` | 判据是「chainId 对得上、块高却太小」：真链已 2500 万+，本地假链从 0 开始（`MIN_REAL_BLOCK`，`index.html:1347-1349`）；此时投保 / 注资锁死 |
+| 顶部**金色横幅** `frozenBar` | `⚠ 链上快照：按网址参数 ?snap=1 强制…` 或 `…三层节点都连不上…`，并带 `capturedAt` 时间 | 是快照，且属于两种原因中的哪一种（搜 `showFrozenBanner`） |
+| 顶部**红色横幅** `fakeChainBar` | `⚠ 当前连的是本地假链（块高 …，chainId 被伪装成 …）` | 判据是「chainId 对得上、块高却太小」：真链已 2500 万+，本地假链从 0 开始（搜 `MIN_REAL_BLOCK`；判据与横幅在 `showFakeChainWarning`）；此时投保 / 注资锁死 |
 | 页脚节点名（`#footNode`） | 实际连上的 URL；快照时写「链上快照（离线文件 frozen-node.js）」 | 一眼看出走的是直连、中转还是 968 |
 
-退到 968 时页面会**单独 toast 一句**「主网节点在当前网络不可达…已自动切到测试网 968（v2 口径）」（`index.html:1606-1608`），不会让人以为看的是主网数据。
+退到 968 时页面会**单独 toast 一句**「主网节点在当前网络不可达…已自动切到测试网 968（v2 口径）」（搜 `已自动切到测试网 968`），不会让人以为看的是主网数据。
 
 ## 677 与 968 的差别（别把两套数字混着讲）
 

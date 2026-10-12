@@ -60,6 +60,9 @@ const ts = () => new Date().toTimeString().slice(0, 8);
 let SYM = "SepETH";
 
 async function scan(c, provider, dry, doSettle) {
+  // 本轮失败的操作数（结算 / 赔付）。>0 就在函数尾把退出码置 1：
+  // 原来「一笔都没赔成」也退 0，--once / CI 里和「本无事发生」长得一模一样。
+  let failed = 0;
   const n = Number(await c.nextPolicyId());
   if (!n) { console.log(`[${ts()}] 链上还没有任何保单`); return 0; }
 
@@ -108,6 +111,7 @@ async function scan(c, provider, dry, doSettle) {
               await tx.wait();
               console.log(`[${ts()}] 🧾 保单 #${id} 已结算  tx ${tx.hash}`);
             } catch (e2) {
+              failed++;
               console.log(`[${ts()}] ❌ 保单 #${id} 结算失败：${e2.shortMessage || e2.message}`);
             }
           }
@@ -146,10 +150,15 @@ async function scan(c, provider, dry, doSettle) {
       console.log(`[${ts()}] ✅ 保单 #${id} 已赔付 ${formatEther(amount)} ${SYM}  tx ${tx.hash}  区块 ${rc.blockNumber}  gas ${rc.gasUsed}`);
       paid++;
     } catch (e) {
+      failed++;
       console.log(`[${ts()}] ❌ 保单 #${id} 赔付失败：${e.shortMessage || e.message}`);
     }
   }
-  console.log(`[${ts()}] 扫了 ${n} 张保单，本轮赔付 ${paid} 张${pending.length ? `；未可赔：${pending.join(" ")}` : ""}`);
+  console.log(`[${ts()}] 扫了 ${n} 张保单，本轮赔付 ${paid} 张${failed ? `，失败 ${failed} 笔` : ""}${pending.length ? `；未可赔：${pending.join(" ")}` : ""}`);
+  if (failed) {
+    console.log(`[${ts()}] ⚠ ${failed} 笔操作失败 ⇒ 退出码置 1（成功路径不变）`);
+    process.exitCode = 1;
+  }
   return paid;
 }
 

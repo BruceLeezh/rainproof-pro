@@ -21,11 +21,11 @@
     "code": "node check-chain.js code",
     "keeper": "node keeper.js",
     "keeper:once": "node keeper.js --once",
-    "keeper:settle": "node keeper.js --once --settle",
+    "keeper:settle": "node keeper.js --once --settle --v3",
     "collect": "node ai-collect.js",
     "judge": "node ai-judge.js",
     "submit": "node submit-judgement.js",
-    "hook": "node hook-watch.js --once --v2",
+    "hook": "node hook-watch.js --once",
     "rehearse": "node rehearse-v2.js",
     "premium": "node set-premium.js",
     "self-check": "node shardate.js --self-check && node hook-watch.js --self-check && node ai-collect.js --self-check && node push-rainfall.js --self-check"

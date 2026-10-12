@@ -11,6 +11,7 @@
  *
  *   # 真发（需要 --send；主网 677 还要额外 --yes-mainnet）
  *   $env:SEPOLIA_RPC='https://rpc.botchain.ai'; node deploy-multisig.js --owners 0xA,0xB,0xC --threshold 2 --send --yes-mainnet
+ *   ⚠️ 估 gas 失败（构造器会 revert）时默认**拒绝广播** —— 确认要试才加 --force
  *
  * ★ 与演示的关系（2026-10-07 审计 A6）：**演示前不要 transferOperator**。
  *   `04-脚本/push-rainfall.js` 与演示期所有写交易都走 .env 里的单私钥；
@@ -39,6 +40,7 @@ const argOf = (name) => {
 };
 const SEND = process.argv.includes("--send");
 const YES_MAINNET = process.argv.includes("--yes-mainnet");
+const FORCE = process.argv.includes("--force");   // 估 gas 失败也照发（默认不发，见 :150）
 
 function readProducts() {
   if (!fs.existsSync(ABI_FILE)) throw new Error("找不到编译产物：" + ABI_FILE + "\n  " + COMPILE_HINT);
@@ -145,6 +147,11 @@ async function main() {
   }
   if (!isRealChain) throw new Error("块高 < 1000000：这是本地假链，拒绝发交易");
   if (chainId === 677 && !YES_MAINNET) throw new Error("主网 677 需要 --yes-mainnet 才发（防止误发）");
+  // 估 gas 失败几乎只有一个原因：构造器会 revert（owners / threshold 不合法）。
+  // 演练时告警无妨，真发则是烧掉一笔注定失败的交易（CREATE 里 revert 连原因都传不回来）。
+  if (gas === null && !FORCE) {
+    throw new Error("估 gas 失败 ⇒ 构造器多半会 revert，拒绝广播这笔注定失败的主网交易（确认要试再加 --force）");
+  }
 
   console.log("\n正在部署，请稍候...");
   const contract = await factory.deploy(owners, threshold);

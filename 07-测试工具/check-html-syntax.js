@@ -52,7 +52,59 @@ for (const f of FILES) {
   }
 }
 bad += holes;
-if (!holes) console.log("OK   注入面：" + strFields.size + " 个链上 string 字段（" + [...strFields].join(", ") + "）进模板时全部过 esc()");
+if (!strFields.size) {
+  // 硬断言：从 ABI 收集到 0 个 string 字段 ⇒ B15 一条都没跑（字段改名 / ABI 缺失都会这样），
+  // 这时原来那句「0 个链上 string 字段」看着像通过，其实是零覆盖。
+  bad++;
+  console.log("FAIL 注入面：从 03-合约/*.abi.json 收集到 0 个链上 string 字段 —— B15 注入检查等于零覆盖，不算通过");
+} else if (!holes) {
+  console.log("OK   注入面：" + strFields.size + " 个链上 string 字段（" + [...strFields].join(", ") + "）进模板时全部过 esc()");
+}
+
+/* ---- esc() 本身的断言（2026-10-12）：B15 只证明「模板里调了 esc()」，不证明 esc() 真的转义。
+   把 esc 改成恒等函数（s => String(s)）时 B15 照样全绿 ⇒ 这里直接抽页面里的 esc 定义跑一遍。 */
+{
+  const CASES = [["<", "&lt;"], [">", "&gt;"], ["&", "&amp;"], ['"', "&quot;"]];
+  const SAMPLE = 'a<b>c&d"e';
+  const WANT = "a&lt;b&gt;c&amp;d&quot;e";
+  let escBad = 0;
+  for (const f of FILES) {
+    if (!fs.existsSync(f)) continue;
+    const m = fs.readFileSync(f, "utf8").match(/const\s+esc\s*=\s*([^\n]*?);\s*$/m);
+    if (!m) { escBad++; console.log("FAIL " + path.basename(f) + " 找不到 `const esc = …;` 定义（B15 依赖它）"); continue; }
+    let esc;
+    try { esc = new vm.Script("(" + m[1] + ")").runInThisContext(); }
+    catch (e) { escBad++; console.log("FAIL " + path.basename(f) + " 的 esc 定义无法求值 -> " + e.message); continue; }
+    const wrong = CASES.filter(([i, o]) => esc(i) !== o);
+    if (wrong.length || esc(SAMPLE) !== WANT) {
+      escBad++;
+      console.log("FAIL " + path.basename(f) + " 的 esc() 没转义 " +
+        (wrong.length ? wrong.map(([i]) => JSON.stringify(i)).join(" ") : "整串") + " -> " + JSON.stringify(esc(SAMPLE)));
+    } else {
+      console.log("OK   " + path.basename(f) + " 的 esc() 对 < > & \" 都做了转义");
+    }
+  }
+  bad += escBad;
+}
+
+/* ---- 页面不许外取脚本 + 本地脚本必须真存在（2026-10-12）：离线自证的前提是页面不向第三方取脚本；
+   顺带断言被引的本地文件在同目录（文件名写错时页面会静默少一半功能，这里直接红）。 */
+{
+  let srcBad = 0, srcN = 0;
+  for (const f of FILES) {
+    if (!fs.existsSync(f)) continue;
+    for (const m of fs.readFileSync(f, "utf8").matchAll(/<script[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi)) {
+      const s = m[1]; srcN++;
+      if (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(s) || /^(?:data|blob):/i.test(s)) {
+        srcBad++; console.log("FAIL " + path.basename(f) + " 引了外部脚本 " + s + "（离线自证要求页面不外取脚本）");
+      } else if (!fs.existsSync(path.join(path.dirname(f), s.split(/[?#]/)[0]))) {
+        srcBad++; console.log("FAIL " + path.basename(f) + " 引的本地脚本 " + s + " 在同目录下不存在");
+      }
+    }
+  }
+  if (!srcBad) console.log("OK   三个页面的 <script src> 全是同目录本地文件（" + srcN + " 处）");
+  bad += srcBad;
+}
 
 console.log(bad ? "\n❌ " + bad + " 处问题（内联脚本语法错误，或链上 string 字段没转义就进模板）" : "\n✅ 三个页面的内联脚本语法全部通过");
 process.exit(bad ? 1 : 0);

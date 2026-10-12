@@ -53,8 +53,22 @@ console.log("\n[R2] ★ 独立复核发现预言机和模型严重不符 —— 
     r.decision === DECISION.DENY, `decision=${r.decision} divergence=${r.metrics.divergencePct}%`);
   ok("背离时给高置信度 92（对『链上数据不可信』这件事很确定）", r.confidence === 92);
   ok("理由里写明了背离百分比", r.reasons.some((s) => s.includes("背离")));
-  ok("反向验证：同样的数字若只是模拟数据，就不适用 R2",
-    decide(snap({ official: 80, incs: [20, 22, 21], simulated: true })).reasons.every((s) => !s.includes("背离")));
+  ok("反向验证：同样的数字打了 simulated=true，R2 的背离复核照样跑（模拟标记只写进理由，不再整条免检）",
+    decide(snap({ official: 80, incs: [20, 22, 21], simulated: true })).decision === DECISION.DENY &&
+    decide(snap({ official: 80, incs: [20, 22, 21], simulated: true })).reasons.some((s) => s.includes("背离")));
+  ok("simulated=true 仍会在理由里如实写出「这是合成数据」",
+    decide(snap({ official: 80, incs: [20, 22, 21], simulated: true })).reasons.some((s) => s.includes("simulated")));
+  {
+    // 取数失败的项目（inWindowMm 非有限）不得进中位数、也不得算进 sources，否则中位数/离散度变 NaN
+    const s = snap({ official: 80, incs: [80, 84, 78] });
+    s.weather.models.push({ id: "bad", label: "M-bad", org: "x", sinceEpochMm: null, inWindowMm: null, days: [] });
+    const r = decide(s);
+    ok("混进一个取数失败的模型：中位数仍是 80、判定仍是 PAY", r.metrics && r.decision === DECISION.PAY,
+      `decision=${r.decision} metrics=${JSON.stringify(r.metrics)}`);
+    ok("取数失败的模型不算来源（sources = 3，不是 4）",
+      buildRecord({ policyId: 1, snapshot: s, r, inputHash: evidenceHashOf({ any: "thing" }),
+        rationale: "规则文案", rationaleSource: "deterministic", decidedAt: "2026-10-06T13:35:00.259Z" }).judgement.sources === 3);
+  }
 }
 
 console.log("\n[R3] 三家里只有 ≤1 家支持赔付");

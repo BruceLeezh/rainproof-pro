@@ -110,6 +110,10 @@ t("V3 合约常量与定价引擎口径一致（MIN_PREMIUM / 两档 / 时长）
   const sol = fs.readFileSync(V3_SOL, "utf8");
   const grab = (re) => { const m = sol.match(re); assert.ok(m, `合约里找不到 ${re}`); return m[1].replace(/[\s_]/g, ""); };
   const mp = grab(/MIN_PREMIUM\s*=\s*([0-9.]+)\s*ether/);
+  // 先把「本文件常量 V3.minPremiumEth」与定价引擎产物绑死：否则下面那句报错会引用
+  // 引擎字段，实际比对的却是本文件常量（文案与判据不是一回事，2026-10-12 第三轮 §1 F12）。
+  assert.strictEqual(V3.minPremiumEth, Number(E.meta.economics.minPremiumAbsEth),
+    `本文件常量 ${V3.minPremiumEth} ≠ 定价引擎 meta.economics.minPremiumAbsEth=${E.meta.economics.minPremiumAbsEth}`);
   assert.strictEqual(Number(mp), V3.minPremiumEth, `MIN_PREMIUM=${mp} 与定价引擎 ${E.meta.economics.minPremiumAbsEth} 不一致`);
   assert.strictEqual(Number(grab(/MIN_HOURS\s*=\s*(\d+)/)), 12);
   assert.strictEqual(Number(grab(/MAX_HOURS\s*=\s*(\d+)/)), 24);

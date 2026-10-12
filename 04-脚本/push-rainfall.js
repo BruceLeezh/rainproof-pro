@@ -37,7 +37,9 @@
 
 // dotenv 是可选依赖：装了就从 .env 读，没装也能直接用环境变量跑
 try { require("dotenv").config(); } catch (_) { /* 忽略 */ }
-const { JsonRpcProvider, Wallet, Contract, formatEther, parseEther } = require("ethers");
+const { JsonRpcProvider, Wallet, Contract, Interface, formatEther, parseEther } = require("ethers");
+const fs = require("fs");
+const path = require("path");
 // AI 喂价验收的第二层：三个独立数值预报模型的交叉核验（实现见同目录 feed-verify.js）
 const { MODELS, fetchModelSeries, gradeModels } = require("./feed-verify");
 
@@ -74,11 +76,13 @@ const ABI = [
   "function riskLevel(uint8 regionId) external view returns (uint8)",
   "function regionName(uint8 regionId) external pure returns (string)",
   "function REGION_COUNT() external view returns (uint8)",
-  "function feedJudgements(uint8 regionId) external view returns (uint8 kind, uint8 decision, uint8 confidence, uint8 sources, uint64 judgedAt, bool exists, bytes32 inputHash, bytes32 outputHash, string modelVersion)",
-  // ⚠️ 手抄的「读结构体」签名一律不留 —— 本文件已删四条，统一说明：
+  // ⚠️ 手抄的「读结构体」签名一律不留 —— 本文件已删五条，统一说明：
   //      "policies(uint256)"     v1 的 7 字段老结构体；v2 是 15 个返回值、v3 是 16 个
   //      "judgements(uint256)"   9 个返回值；v3 是 10 个（多了 rainfallAtJudgement，
   //                              见 03-合约/RainDeliveryInsuranceV3.sol:113-124）
+  //      "feedJudgements(uint8)" v1/v2 也是 9 个返回值，v3 是 10 个（同样多 rainfallAtJudgement）。
+  //                              这条**两版同名、返回值个数不同**，没法在探针表上共存 ⇒
+  //                              交给下面的 JUDGEMENT_ABIS / feedJudgementsOf() 拿真 ABI 依次试。
   //      "policiesOf(address)" / "policyStatus(uint256)"   本文件不读保单状态
   //    理由：`readEither` 是按签名名去探的（探针表 = 本数组）。表上摆一版字段错位的元组，
   //    谁照着它写一句 `c.policies(id)` 就静默解错，而且不会在这里报错，要等现场投保才炸。
@@ -86,6 +90,20 @@ const ABI = [
   "function nextPolicyId() external view returns (uint256)",
   "event RainfallUpdated(uint8 indexed regionId, uint256 cumulativeMm, bytes32 evidenceHash, uint8 confidence, address indexed reporter)",
 ];
+
+/* 判定记录（feedJudgements）的返回值 v1/v2 是 9 个、v3 是 10 个（多一个 rainfallAtJudgement），
+   同一条签名解不出两版 —— 而且**不能靠「试解，谁不报错就用谁」**。实测拿两版真 ABI 互相解：
+   v3 的返回值用 9 输出签名解，一半用例不报错（outputHash=0 的 rejectFeed 记录正好是这一半），
+   解出来的 exists / inputHash / modelVersion 全错位 —— 正是 F15 那个「链上明明有拒收留痕，
+   状态页却打印『还没有喂过价』」；反过来 10 输出签名解 v2 的返回值 100% 静默成功。
+   ⇒ 只能先认版本：v3 独有 entryThresholdOf(uint256)（v2 的阈值是 THRESHOLD_PER_24H()，
+     v1 两个都没有），而 v1/v2 的 feedJudgements 结构相同（都是 9 个）
+     ⇒ 认到 v3 用 V3.abi.json，否则用 V2.abi.json。两版都从 03-合约/*.abi.json 读（不手抄）。 */
+const ABI_DIR = path.join(__dirname, "..", "03-合约");
+const JUDGEMENT_ABIS = ["V3", "V2"].map((v) => ({
+  v,
+  abi: JSON.parse(fs.readFileSync(path.join(ABI_DIR, `RainDeliveryInsurance${v}.abi.json`), "utf8")),
+}));
 
 // 区域表：regionId 与坐标，两边必须和合约里的 regionName 对得上（脚本会自检）
 const REGIONS = [
@@ -120,7 +138,7 @@ function flagValue(f, def) {
 const DEMO = has("--demo");
 const REFRESH = has("--refresh");
 const STATUS_ONLY = has("--status");
-const WATCH_MIN = flagValue("--watch", null);
+const WATCH_MIN = flagValue("--watch", null);   // 原始串；校验与转数在 watchMinutes()（main 里）
 // --until=YYYY-MM-DD：把"今天"钉到指定日期。默认真是今天；历史回放必须用它，
 // 否则跑一场两年前的暴雨会取回"自 epoch 到真正今天"的累计值，回放就不是回放。
 const UNTIL = (ARGV.find((a) => a.startsWith("--until=")) || "").split("=")[1] || null;
@@ -381,7 +399,39 @@ function whyNotRead(sigs) {
   return C.dim(` 原因：${uniq.join("；")}`);
 }
 
+/* 判定记录：先认版本再选 ABI（为什么不能试解，见上面 JUDGEMENT_ABIS 那段）。版本认一次就够。
+   读不出来时返回 null 并记进 readFailures —— 显示层会说出原因，不许静默少一列。 */
+const FEED_JUDGE_SIGS = [["feedJudgements(uint8)"]];
+let judgementAbi = null;
+async function feedJudgementsOf(readC, id) {
+  if (judgementAbi === null) {
+    const isV3 = (await readEither(readC, [["entryThresholdOf(uint256)", [24]]])) !== null;
+    judgementAbi = JUDGEMENT_ABIS.find((a) => a.v === (isV3 ? "V3" : "V2"));
+  }
+  try {
+    return await new Contract(readC.target, judgementAbi.abi, readC.runner).feedJudgements(id);
+  } catch (e) {
+    readFailures.push({ key: FEED_JUDGE_SIGS[0][0], reasons:
+      [`${judgementAbi.v} → ${String(e.shortMessage || e.message || e).split("\n")[0].slice(0, 100)}`] });
+    return null;
+  }
+}
+
+/* `--watch` 的分钟数：NaN / 0 / 负数会让 sleep(NaN) 立刻返回 ⇒ 零延迟递归、
+   每轮真发一笔交易（--watch 10min / abc 就是这条路径）。所以在发第一笔之前先挡掉。
+   同类输入的处理风格见 keeper.js 的 --interval=。 */
+function watchMinutes(raw) {
+  if (raw === null) return null;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) {
+    throw new Error(`--watch 需要一个正数分钟，收到：${JSON.stringify(raw)}`);
+  }
+  return n;
+}
+
 async function main() {
+  // --watch 先验参数再碰网络：NaN / 0 会让 sleep(NaN) 立刻返回 ⇒ 零延迟递归 + 每轮真发交易
+  const watchMin = watchMinutes(WATCH_MIN);
   const rpc = process.env.SEPOLIA_RPC || "https://ethereum-sepolia-rpc.publicnode.com";
   const address = (process.env.CONTRACT_ADDRESS || "").trim();
 
@@ -651,10 +701,9 @@ async function main() {
   }
 
   /* ---- watch 模式 ---- */
-  if (WATCH_MIN) {
-    const min = Math.max(1, Number(WATCH_MIN));
-    console.log(`\n${C.c(`⏱  watch 模式：${min} 分钟后自动再推一次。Ctrl+C 停止。`)}`);
-    await sleep(min * 60 * 1000);
+  if (watchMin !== null) {
+    console.log(`\n${C.c(`⏱  watch 模式：${watchMin} 分钟后自动再推一次。Ctrl+C 停止。`)}`);
+    await sleep(watchMin * 60 * 1000);
     return main();
   }
 }
@@ -751,7 +800,7 @@ async function printStatus(readC, chainInfo) {
     const [mmRaw, prem, risk, fj, feedAtRaw] = await Promise.all([
       readC.rainfall(id),
       readEither(readC, [["premiumOf(uint8,uint256)", [id, 24]], ["premiumOf(uint8)", [id]]]),
-      readC.riskLevel(id), readC.feedJudgements(id),
+      readC.riskLevel(id), feedJudgementsOf(readC, id),
       maxFeedAge ? readEither(readC, [["lastFeedAt(uint8)", [id]]]) : Promise.resolve(null),
     ]);
     const mm = Number(mmRaw);   // ★ 链上返回 bigint，bar() 里要做除法，必须先转 Number
@@ -763,7 +812,9 @@ async function printStatus(readC, chainInfo) {
           ? "❌ 已过期（buyPolicy 会 revert：stale feed）"
           : `剩 ${((maxFeedAge - (nowSec - feedAt)) / 3600).toFixed(1)}h`) : "—（还没有喂过价）"}`)
       : "";
-    const fjStr = fj.exists
+    const fjStr = fj === null
+      ? C.dim(`—（判定记录读不出来）${whyNotRead(FEED_JUDGE_SIGS)}`)
+      : fj.exists
       ? `${FEED_KIND[Number(fj.kind)] || fj.kind} 置信 ${fj.confidence}/源 ${fj.sources}` +
         C.dim(`  ${new Date(Number(fj.judgedAt) * 1000).toISOString().slice(0, 16).replace("T", " ")}`)
       : C.dim("—（还没有喂过价）");
@@ -817,6 +868,28 @@ if (process.argv.includes("--self-check")) (async () => {
   readFailures.length = 0;
   const okC = { getFunction: () => () => 42n };
   ok("读得到时不记失败", (await readEither(okC, [["THRESHOLD()"]])) === 42n && readFailures.length === 0);
+
+  // F15：手抄的 feedJudgements 少了一个返回值 ⇒ v3 链上 exists 会被解成 rainfallAtJudgement，
+  // 「有拒收留痕」显示成「还没有喂过价」。钉住真 ABI 的输出个数 + 选版本用的那个探针。
+  const fjIface = (v) => new Interface(JUDGEMENT_ABIS.find((a) => a.v === v).abi);
+  const fjOutputs = (v) => fjIface(v).getFunction("feedJudgements(uint8)").outputs.length;
+  const hasFn = (v, n) => JUDGEMENT_ABIS.find((a) => a.v === v).abi.some((f) => f.type === "function" && f.name === n);
+  ok("v3 的 feedJudgements 是 10 个返回值（不是手抄的 9 个）", fjOutputs("V3") === 10, `实测 ${fjOutputs("V3")}`);
+  ok("v2 的 feedJudgements 是 9 个返回值（两版确实不同，不能共用一条签名）", fjOutputs("V2") === 9, `实测 ${fjOutputs("V2")}`);
+  ok("选版本的探针成立：entryThresholdOf 只在 v3 有（v2 认不出来时会退到 9 输出那版）",
+    hasFn("V3", "entryThresholdOf") && !hasFn("V2", "entryThresholdOf"));
+  // 钉住「不能靠试探解码选 ABI」这条结论：v3 的返回值用 9 输出签名能**静默**解出一堆错位字段。
+  const v3Payload = fjIface("V3").encodeFunctionResult("feedJudgements(uint8)",
+    [1, 0, 80, 3, 1760000000n, 12345n, true, "0x" + "00".repeat(32), "0x" + "00".repeat(32), "rain-oracle-v1"]);
+  let silent = false;
+  try { fjIface("V2").decodeFunctionResult("feedJudgements", v3Payload); silent = true; } catch (_) { /* 报错才是好事 */ }
+  ok("反证：v3 的返回值拿 9 输出签名解不报错（所以才必须先认版本，不能试解）", silent);
+
+  // F16：--watch 的参数校验（NaN 会让 sleep(NaN) 立即返回 ⇒ 零延迟递归 + 每轮真发交易）
+  ok("--watch 5 认作 5 分钟", watchMinutes("5") === 5);
+  ok("--watch 10min / abc / 0 / -1 一律报错，不落进 NaN 死循环",
+    ["10min", "abc", "0", "-1", "  "].every((x) => { try { watchMinutes(x); return false; } catch (_) { return true; } }));
+  ok("不给 --watch 时是 null（照常单次推送）", watchMinutes(null) === null);
 
   console.log(`\n${fail ? "❌" : "✅"} push-rainfall 自检：${pass} 项通过 / ${fail} 项失败`);
   process.exit(fail ? 1 : 0);

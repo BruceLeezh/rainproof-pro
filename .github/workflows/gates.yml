@@ -1,6 +1,6 @@
 # 门禁：每次推 main（或提 PR）都在干净机器上重跑一遍全部自动化断言。
 #
-# 为什么需要它：赛期那套「五道 232 项」是**在我们自己电脑上**跑的 —— 依赖本机 node_modules、
+# 为什么需要它：在此之前的门禁都是**在我们自己电脑上**跑的 —— 依赖本机 node_modules、
 # 本机路径、本机 .env。评委（或我们自己换台机器）没有任何办法确认这些话是真的。
 # 这个 workflow 把「README 说的全绿」变成任何人都能点开看的公开记录。
 #
@@ -61,3 +61,18 @@ jobs:
       - name: 全部门禁（07-测试工具/package.json 的 test 链）
         working-directory: 07-测试工具
         run: npm test
+
+      # 门禁必须只读：任何一步改写了被跟踪文件都要在这里红掉。
+      # 背景（2026-10-12 F7）：make-verify-pack.js 曾在默认路径下先重写 03-合约/verify-manifest.json
+      # 再判绿 ⇒「verify 包过期」永远不会红，而且跑一次门禁就在工作区留下 ` M`。
+      # 现在 check-verify-pack 走 --check（不一致即 exit 1、不写盘），这步是第二道保险：
+      # 万一将来有别的脚本偷偷写盘，也不会有假绿。
+      # 说明：本 job 固定 ubuntu-latest，checkout 后工作区干净（git diff 只反映门禁自己写的改动）。
+      # 若哪天换到 Windows runner，core.autocrlf=true 会让换行差异也进 diff ⇒ 先看是不是 CRLF 假红。
+      - name: 门禁不许改动仓库文件（git diff --exit-code）
+        run: |
+          git diff --exit-code -- . || {
+            echo "::error::门禁改动了被跟踪文件（见上面的 diff）—— 门禁必须只读，请修脚本而不是提交这份 diff。"
+            git diff --stat -- .
+            exit 1
+          }

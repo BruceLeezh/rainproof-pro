@@ -43,6 +43,9 @@ const ROOT = path.join(__dirname, '..');
 // 对照表在 main() 里解析：默认 = 冻结在链上那份规格的 fixture（见文件头），--spec / V3_SPEC_JSON 可覆盖。
 const SOL_PATH = path.join(ROOT, '10-金融与定价', 'ref', 'PricingV3.sol');
 const MIN_PREMIUM = 20000000000000n; // 0.00002 ether
+// 冻结在链上那份 fixture（见文件头）的行数。--offline 挂进 npm test，fixture 空 / 字段改名会让
+// 整条「定价网格离线自证」变成零覆盖还全绿，所以行数是硬断言。
+const EXPECTED_ROWS = 60;
 
 // 2026-10-07 部署到 BOT Chain 测试网 968 的 v3 定价模块（部署 tx 见
 // 02-作战与答辩/汉客松-交易哈希清单.md §6）。--addr 或 PRICING_V3_ADDR 可覆盖。
@@ -111,6 +114,13 @@ async function main() {
   const rows = buildRows(JSON.parse(fs.readFileSync(specPath, 'utf8')));
   console.log(`对照表：${path.relative(ROOT, specPath).replace(/\\/g, '/')}`);
   console.log(`payload：${rows.length} 行（${rows.filter((r) => r.sellable).length} 可售 / ${rows.filter((r) => !r.sellable).length} 不卖）`);
+  // 硬断言：0 行（或行数少了）说明 fixture 空 / 字段改名 ⇒ 下面那些「逐行不变量」一个都没跑。
+  // --spec / V3_SPEC_JSON 显式换表时不比行数（指向设计层那份对不上是预期的，见文件头）。
+  const specOverridden = process.argv.some((a) => a.startsWith('--spec=')) || !!process.env.V3_SPEC_JSON;
+  if (!rows.length || (!specOverridden && rows.length !== EXPECTED_ROWS)) {
+    console.error(`❌ 对照表行数 = ${rows.length}，期望 ${EXPECTED_ROWS} 行 —— 零覆盖不算通过（fixture 空或字段改名会让自证静默全绿）`);
+    process.exit(1);
+  }
   const offlineBad = offlineCheck(rows);
   console.log(`payload 自身不变量：${offlineBad ? `❌ ${offlineBad} 处不成立` : '✅ 通过'}`);
   if (offlineBad) process.exit(1);

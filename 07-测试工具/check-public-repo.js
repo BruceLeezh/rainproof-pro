@@ -6,8 +6,9 @@
 //   ③ 被跟踪的文本文件里没有中国大陆手机号 / 身份证号
 //      —— 「不能是更长 token 的一部分」：前后紧邻数字或字母的一律排除。
 //      没有这条就会把 0.051239317305124842 这种 18 位小数当成身份证号（真踩过）。
-//   ④ 若本地存在 04-脚本/.env，把其中**形状像密钥的值**（0x+64 hex / 12 词助记词 / 其它长且非 URL、非地址的串）
-//      拿去反查全部被跟踪文件，必须 0 命中（拿不到 .env 时打印「跳过」，不算失败 —— CI 里本来就没有 .env）
+//   ④ 若本地存在 04-脚本/.env*（.env.example 除外），把其中**形状像密钥的值**（0x+64 hex / 12 词助记词 /
+//      其它长且非 URL、非地址的串）拿去反查全部被跟踪文件，必须 0 命中（拿不到 .env* 时打印「跳过」并单独
+//      计数 —— CI 里本来就没有 .env，SKIP 不算失败，但也不再混进「通过」里假装跑过）
 //
 // 背景：2026-10-11 实测发现 01-赛事资料/handbook_v0.8.txt:255 里有主办方联系人姓名+手机号+微信，
 // 而仓库是公开的。这条检查就是为了让同类问题不可能再悄悄进仓库一次。
@@ -18,7 +19,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
-let pass = 0, fail = 0;
+let pass = 0, fail = 0, skip = 0;
 const ok = (t, c, x = "") => { if (c) { pass++; console.log("  [OK] " + t); } else { fail++; console.log("  [FAIL] " + t + (x ? "  -> " + x : "")); } };
 
 // 本机 git 不一定在 PATH 上（开发机用的是 D:\Claude\Git\cmd\git.exe），逐个候选试
@@ -81,9 +82,15 @@ console.log("\n[③ 个人信息]");
 // ④ 用 .env 里的真值反查（最硬的一条）
 console.log("\n[④ 真实密钥反查]");
 {
-  const envPath = path.join(ROOT, "04-脚本", ".env");
-  if (!fs.existsSync(envPath)) {
-    console.log("  [SKIP] 本地没有 04-脚本/.env（CI 环境正常如此），跳过反查");
+  // 覆盖 04-脚本/ 下所有 .env*（.env.local / .env.v3 之类同样是真密钥），但排除 .env.example
+  const envDir = path.join(ROOT, "04-脚本");
+  const envFiles = (fs.existsSync(envDir) ? fs.readdirSync(envDir) : [])
+    .filter(f => /^\.env/.test(f) && !/\.example$/.test(f))
+    .map(f => path.join(envDir, f))
+    .filter(f => { try { return fs.statSync(f).isFile(); } catch { return false; } });
+  if (envFiles.length === 0) {
+    skip++;   // SKIP 单列，不混进 pass：这条从未真正执行过，不能打印成「通过」
+    console.log("  [SKIP] 04-脚本/ 下没有 .env*（CI 环境正常如此），本项未执行 —— 不算失败，也不算通过");
   } else {
     // 只挑「形状像密钥」的值：URL 和 40 位地址本来就要出现在文档里，不算秘密
     const isSecret = (v) =>
@@ -91,22 +98,24 @@ console.log("\n[④ 真实密钥反查]");
       /^(?:[a-z]{3,}\s+){11,}[a-z]{3,}$/.test(v) ||
       (v.length >= 32 && !/^https?:\/\//i.test(v) && !/^0x[0-9a-fA-F]{40}$/.test(v));
     const secrets = [];
-    for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
-      const t = line.trim();
-      if (!t || t.startsWith("#") || !t.includes("=")) continue;
-      const name = t.slice(0, t.indexOf("=")).trim();
-      const val = t.slice(t.indexOf("=") + 1).trim();
-      if (isSecret(val)) secrets.push({ name, val });
+    for (const envFile of envFiles) {
+      for (const line of fs.readFileSync(envFile, "utf8").split("\n")) {
+        const t = line.trim();
+        if (!t || t.startsWith("#") || !t.includes("=")) continue;
+        const name = t.slice(0, t.indexOf("=")).trim();
+        const val = t.slice(t.indexOf("=") + 1).trim();
+        if (isSecret(val)) secrets.push({ name: `${path.basename(envFile)}:${name}`, val });
+      }
     }
     let leaked = [];
     for (const s of secrets) {
       const out = gitGrep(["-I", "-l", "-F", "-e", s.val]);
       if (out.trim()) leaked.push(`[${s.name}] → ` + out.trim().split("\n").slice(0, 3).join(", "));
     }
-    console.log(`  （.env 里被判为「密钥形状」的变量：${secrets.map(s => s.name).join(", ") || "无"}）`);
-    ok(`.env 里 ${secrets.length} 个密钥形状的值在被跟踪文件里 0 命中`, leaked.length === 0, leaked.join("\n            "));
+    console.log(`  （${envFiles.map(f => path.basename(f)).join(", ")} 里被判为「密钥形状」的变量：${secrets.map(s => s.name).join(", ") || "无"}）`);
+    ok(`${envFiles.length} 个 .env* 里 ${secrets.length} 个密钥形状的值在被跟踪文件里 0 命中`, leaked.length === 0, leaked.join("\n            "));
   }
 }
 
-console.log(`\n通过 ${pass} 项 · 失败 ${fail} 项`);
+console.log(`\n通过 ${pass} 项 · 跳过 ${skip} 项 · 失败 ${fail} 项`);
 process.exit(fail ? 1 : 0);

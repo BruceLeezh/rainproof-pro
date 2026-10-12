@@ -4,9 +4,9 @@
  * 用法：node 07-测试工具/check-feed-verify.js          只跑判定规则的离线用例
  *       node 07-测试工具/check-feed-verify.js --live   额外真拉一次三个模型（需代理）
  *
- * 2026-10-07 晚已接进 `npm test`（**第六道**，19 项）。此前它不在门禁里 —— 而它守的正是
- * 喂价闸门与承保复核这两块判定规则，改坏了没人知道。接进去后断言总数 232 → 251，
- * 引用该数字的材料已同步（B 报的 P0-8，裁定见 `02-作战与答辩/决策记录.md`）。
+ * 2026-10-07 晚已接进 `npm test`（**第六道**）。此前它不在门禁里 —— 而它守的正是
+ * 喂价闸门与承保复核这两块判定规则，改坏了没人知道。断言总数不在这里写死（会随脚本改动而过期），
+ * 以实际输出为准（B 报的 P0-8，裁定见 `02-作战与答辩/决策记录.md`）。
  * 纯离线、0 秒：只读 JSON 与纯函数，不打网络（要真拉模型加 --live）。
  */
 const path = require("path");
@@ -195,7 +195,11 @@ if (process.argv.includes("--live")) {
     console.log(`  ${okShape ? "✅" : "❌"} ${r.name} 判定 = ${v.status}  ${v.agree ? v.mm + "mm" : "拒收"}`);
     console.log("     " + v.note);
     process.exit(okShape ? 0 : 1);
-  })();
+  })().catch((e) => {
+    // 网络/代理错误走失败路径：原来的裸 IIFE 会让 rejection 变成 unhandled（Node 只警告，退出码可能还是 0）
+    console.error("\n❌ --live 拉取失败：" + (e && e.message ? e.message : e));
+    process.exit(1);
+  });
 } else {
   process.exit(fail ? 1 : 0);
 }
