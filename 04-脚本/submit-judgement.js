@@ -43,6 +43,25 @@ const ABI_V1 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsura
 const ABI_V2 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsuranceV2.abi.json"), "utf8"));
 const ABI_V3 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsuranceV3.abi.json"), "utf8"));
 
+/* 指纹探测失败的两种原因必须分开：
+   CALL_EXCEPTION / BAD_DATA = 这把 ABI 的函数在合约上真不存在 → 可以退回旧版；
+   其它（超时 / ECONNREFUSED / 限流 / 节点 5xx）= 不知道链上是什么版本 → 必须抛出重试。
+   原来一律 catch 成「不是 v3/v2」，等于把网络故障当成版本信号，接着用错版 ABI 去调
+   submitJudgement —— 打到不存在的 selector，回执只有 "execution reverted: 0x"（10-07 在 968 上踩过）。 */
+function isMissingFunction(e) {
+  const code = (e && e.code) || (e && e.info && e.info.error && e.info.error.code);
+  return code === "CALL_EXCEPTION" || code === "BAD_DATA";
+}
+function throwIfNetErr(kind, e) {
+  if (isMissingFunction(e)) return;
+  const err = new Error(
+    `合约版本指纹探测失败（试 ${kind} 的只读函数时出错）：${(e && (e.shortMessage || e.message)) || e}\n` +
+    `  这不是「链上没有这个函数」，是 RPC / 网络层面的问题 —— 不敢猜版本，请确认 RPC 可达后重跑。`
+  );
+  err.cause = e;
+  throw err;
+}
+
 (async () => {
   const policyId = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)));
   if (!Number.isInteger(policyId)) { console.error("用法：node submit-judgement.js <policyId>"); process.exit(2); }
@@ -74,11 +93,12 @@ const ABI_V3 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsura
   let c = new Contract(ADDR, ABI_V3, wallet);
   let kind = "v3";
   try { await c.entryThresholdOf(24); }
-  catch {
+  catch (e) {
+    throwIfNetErr("v3", e);
     kind = "v2";
     c = new Contract(ADDR, ABI_V2, wallet);
     try { await c.thresholdOf(24); }
-    catch { kind = "v1"; c = new Contract(ADDR, ABI_V1, wallet); }
+    catch (e2) { throwIfNetErr("v2", e2); kind = "v1"; c = new Contract(ADDR, ABI_V1, wallet); }
   }
   const isV2 = kind === "v2";
 

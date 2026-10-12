@@ -288,7 +288,7 @@ cd ../04-脚本   && npm install
 
 ```bash
 cd 07-测试工具
-npm test          # 一条命令跑完 12 道门禁、共 458 项断言（2026-10-11 实测全绿；CI 每次推送都会重跑一遍，见上面的徽章）
+npm test          # 一条命令跑完 14 道门禁、共 473 项断言（2026-10-12 实测全绿；CI 每次推送都会重跑一遍，见上面的徽章）
 ```
 
 - `check-public-repo.js`：公开仓库自检（不该进公开仓库的路径/二进制/PII 一律拒收；本机 7 项、CI 6 项 —— 差的第 7 项是「拿本地 `.env` 的真密钥去反查全部被跟踪文件」，CI 上没有 `.env`，脚本按设计打印 `[SKIP]`）
@@ -324,15 +324,17 @@ node set-premium.js               # 承保价网格读/写（默认只读，--ap
 
 ```bash
 cd 04-脚本
-npm run deploy        # v1（RainDeliveryInsurance.sol，Sepolia 上正在跑的那份）
-npm run deploy:v2     # v2（RainDeliveryInsuranceV2.sol，九项改动版；先跑 npm run compile:v2）
+npm run deploy        # v3（RainDeliveryInsuranceV3.sol，现行产品；968 与主网 677 上跑的就是它）
+npm run deploy:v2     # v2（RainDeliveryInsuranceV2.sol，968 上的测试网留痕那版；先跑 npm run compile:v2）
+npm run deploy:v1     # v1（RainDeliveryInsurance.sol，2026-10-06 第一阶段留在 Sepolia 的那版）
+# 版本旗标必须显式给（不带旗标的 `node deploy.js` 直接报错退出，防止默认部署错版本）；主网 677 另需 --yes-mainnet
 ```
 
 换链只改 RPC 环境变量（脚本用 chainId + 块高双重确认身份，认不出的链会直接拒绝）：
 
 ```bash
-# BOT Chain 主网（chainId 677，RPC https://rpc.botchain.ai）
-$env:SEPOLIA_RPC='https://rpc.botchain.ai'; npm run deploy:v2
+# BOT Chain 主网（chainId 677，RPC https://rpc.botchain.ai）—— 主网要显式加 --yes-mainnet 才发交易
+$env:SEPOLIA_RPC='https://rpc.botchain.ai'; npm run deploy -- --yes-mainnet
 
 # BOT Chain 测试网（chainId 968，RPC https://rpc.bohr.life，水龙头 https://faucet.botchain.ai 免费领 BOT）
 $env:SEPOLIA_RPC='https://rpc.bohr.life'; npm run deploy:v2

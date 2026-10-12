@@ -128,6 +128,28 @@ function reviewPolicy(x) {
 /* ------------------------------------------------------------------ 读链 */
 
 /**
+ * 指纹探测的失败只有两种，混在一起就是上面注释里那个「静默读错」的根。
+ *   · CALL_EXCEPTION / BAD_DATA = 这个合约上真没有这个函数（selector 打空 / 返回空）
+ *     → 可以安全地退回旧版 ABI；
+ *   · 其它（超时、ECONNREFUSED、限流、节点 5xx…）= **我们不知道**链上是什么版本
+ *     → 必须抛出去让人重试。原来一律 catch 成「不是 v3/v2」，等于把「连不上」
+ *       当成「链上没有」，接着拿 v1 ABI 去解 v2/v3 的 policies()，元组整体错位。
+ */
+function isMissingFunction(e) {
+  const code = (e && e.code) || (e && e.info && e.info.error && e.info.error.code);
+  return code === "CALL_EXCEPTION" || code === "BAD_DATA";
+}
+function throwIfNetErr(kind, e) {
+  if (isMissingFunction(e)) return;
+  const err = new Error(
+    `合约版本指纹探测失败（试 ${kind} 的只读函数时出错）：${(e && (e.shortMessage || e.message)) || e}\n` +
+    `  这不是「链上没有这个函数」，是 RPC / 网络层面的问题 —— 不敢猜版本，请确认 RPC 可达后重跑。`
+  );
+  err.cause = e;
+  throw err;
+}
+
+/**
  * 合约版本指纹：v3 `entryThresholdOf(uint256)` ｜ v2 `thresholdOf(uint256)` ｜ v1 `THRESHOLD()`。
  * 探测顺序必须从新到旧 —— v3 的 `thresholdOf` 是 2 参，拿 v2 的 1 参签名去问必然失败；
  * 而「失败就退回 v1」更糟：v1 的 Policy 结构体少两个字段，解 v2/v3 的 policies()
@@ -138,9 +160,9 @@ async function detectKind(addr, provider, forced) {
   const mk = (kind) => new Contract(addr, JSON.parse(fs.readFileSync(ABI_BY_KIND[kind], "utf8")), provider);
   if (forced && ABI_BY_KIND[forced]) return { kind: forced, c: mk(forced) };
   const c3 = mk("v3");
-  try { await c3.entryThresholdOf(24); return { kind: "v3", c: c3 }; } catch (e) { /* 不是 v3 */ }
+  try { await c3.entryThresholdOf(24); return { kind: "v3", c: c3 }; } catch (e) { throwIfNetErr("v3", e); }
   const c2 = mk("v2");
-  try { await c2.thresholdOf(24); return { kind: "v2", c: c2 }; } catch (e) { /* 不是 v2 */ }
+  try { await c2.thresholdOf(24); return { kind: "v2", c: c2 }; } catch (e) { throwIfNetErr("v2", e); }
   return { kind: "v1", c: mk("v1") };
 }
 
@@ -397,7 +419,11 @@ async function main() {
  * 顺便钉住「缺省不带 kind 时按 v1/v2」这条向后兼容约定。
  *   node hook-watch.js --self-check
  */
-if (process.argv.includes("--self-check")) {
+// require.main 守卫：check-feed-verify.js 会 require 本文件拿 reviewPolicy。
+// 少了这道守卫，只要 argv 里带 --self-check（例如有人把 --self-check 透传给整个门禁），
+// 自检就会在**别人**的进程里跑完并 process.exit —— 门禁提前结束、后面的断言全不执行，
+// 拿到一个漂亮的假绿。直接 `node hook-watch.js --self-check` 时 self 仍是 main，自检照跑。
+if (require.main === module && process.argv.includes("--self-check")) {
   let pass = 0, fail = 0;
   const ok = (n, c, extra = "") => { c ? pass++ : fail++; console.log(`${c ? "✅" : "❌"} ${n}${extra ? "  " + extra : ""}`); };
   const base = { rainfallAtBuyMm: 0, onchainMm: 5, feedAgeSec: 600, models: { status: "agree", medianMm: 5, agree: true } };

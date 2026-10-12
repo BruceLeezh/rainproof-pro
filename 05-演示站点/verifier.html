@@ -321,6 +321,10 @@
     <button class="chip" data-q="0x25148f13742d89dce755cee28f72366ed89a6ef577ab7d13ebb36d893fcc2211">判定交易 Judgement tx <b>0x25148f…2211</b>（保单 #3 · 赔付 PAY / policy #3 · payout）</button>
     <button class="chip" data-q="0x07f7eff6d4daad8c1859c0a79e6496ed8f18c6709b5fc344dd693e7d7793286b">赔付交易 Payout tx <b>0x07f7ef…3286b</b></button>
   </div>
+  <p style="color:var(--dim);font-size:12px;margin:10px 0 0;max-width:72ch">
+    ⚠️ 上面那笔「判定交易」是<b>保单 #3</b>：链上事实读得出来，但它那一笔的 <b>AI 判定留痕 JSON 没有保留</b>（同族六笔里缺 #3），所以这条链上事件不能与 AI 留痕互证；有留痕的是 #0/#1/#2/#4/#5，见仓库 <code>09-AI判定留痕/README.md</code>。
+    <span style="display:block;margin-top:4px">The judgement tx above is policy #3: the on-chain fact is readable, but its AI-judgement trace JSON was not retained (policy #3 is the one gap among the six), so this event cannot be cross-checked against an AI trace. Traces exist for #0/#1/#2/#4/#5.</span>
+  </p>
 
   <div class="panel hidden" id="errPanel"></div>
 </section>

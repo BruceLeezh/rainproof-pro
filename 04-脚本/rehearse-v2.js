@@ -186,7 +186,16 @@ function planGrid(act) {
   console.log("\n[0] 只读体检");
   const code = code0;
   code.length > 2 ? ok(`链上有字节码 ${(code.length - 2) / 2} 字节`) : bad("这个地址没有合约代码");
-  eq("operator", await ro.operator(), process.env.V2_OPERATOR || (await ro.operator()));
+  // operator 是「谁能改承保参数」，只有拿到期望值才谈得上断言。
+  // 原来是 `eq("operator", await ro.operator(), process.env.V2_OPERATOR || (await ro.operator()))`：
+  // 右边没设环境变量时又读了一次同一个链上值，左右必然相等 —— 一条永远绿的假断言，
+  // 正好盖住「operator 被转给了别人」这种最该报警的事。
+  const wantOperator = process.env.V2_OPERATOR;
+  if (wantOperator) {
+    eq("operator", String(await ro.operator()).toLowerCase(), wantOperator.toLowerCase());
+  } else {
+    console.log(`  ◻️ [SKIP] operator = ${await ro.operator()}（未设 V2_OPERATOR，没有可比对的目标，不计入通过数）`);
+  }
   eq("PAYOUT_MAX", eth(await ro.PAYOUT_MAX()), "0.01");
   eq("MIN_PREMIUM", eth(await ro.MIN_PREMIUM()), "0.0002");
   // 真读链：这一行原来两边都是脚本自拼的 —— `[24,48,72].map(h => String((50*h)/24)).join("/")`

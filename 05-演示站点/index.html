@@ -1684,10 +1684,18 @@ async function loadMyPolicies() {
       const label = { active:"保障中", pending:"等待生效", pending_judgement:"待 AI 判定", claimable:"可申请赔付 ✅",
                       denied:"AI 判定不赔", low_confidence:"AI 置信度不足",
                       paid:"已赔付", expired:"已过期", not_found:"不存在" }[status] || status;
-      const claimable = status === "claimable";
+      // A16：`policyStatus()` 里「够不够阈值」那一半用的是**当前**读数，而 `claim()` 用的是
+      // **判定当时**钉在链上的快照（合约里的 _readingFor）—— 判定之后又推过雨量时，链上状态说
+      // claimable、`claim()` 却 revert「below threshold」。所以按钮能不能点，以 `payoutOf() > 0`
+      // 为准（它与 claim() 同源）；读不到（地址上是老 ABI）就退回只看状态。
+      let dueChain = null;
+      try { dueChain = await S.readC.payoutOf(id); } catch (e) { dueChain = null; }
+      const claimable = status === "claimable" && (dueChain === null || dueChain > 0n);
+      const belowSnap = status === "claimable" && !claimable;
       // v2 按国标分档：应赔额存在保单里（payout 字段），不是每张单子都赔满额。
+      // 未赔付的保单链上 `payout` 还是 0，所以「能赔多少」要问链上现算的 payoutOf()。
       // 地址上是老 ABI（没有 payout 字段）时退回 PAYOUT_MAX，不至于显示成 undefined。
-      const due = p.payout != null ? p.payout : S.meta.payout;
+      const due = (claimable && dueChain !== null) ? dueChain : (p.payout != null ? p.payout : S.meta.payout);
       // 按钮点不动的时候，按钮自己必须说出「为什么点不动」。
       // 否则现场只能把它解释成「这个功能坏了」—— 而这恰恰是判定层存在的最好证明。
       const NOBTN = { paid:"已赔付", pending:"等待生效", pending_judgement:"待 AI 判定", denied:"AI 判定不赔",
@@ -1722,6 +1730,7 @@ async function loadMyPolicies() {
           ${(claimable || status === "paid") ? `<br>国标档位 ${TIER_LABEL[Number(p.tier)] || "—"} · 应赔 <b>${fmtEth(due)}</b> ${SYM()}` : ""}
           ${status === "active" ? `<br>距触发还差 <b>${Number(short)}</b> mm` : ""}
           ${claimable ? `<br>已满足赔付条件` : ""}
+          ${belowSnap ? `<br>⛔ 当前读数已过阈值，但判定快照未达档 —— claim() 会 revert「below threshold」（合约 policyStatus 与 claim 的读数口径不同，见 02-作战与答辩/决策记录.md 2026-10-12 条）` : ""}
           ${status === "pending_judgement" ? `<br>雨量已达标，等 AI 判定登记上链` : ""}
           ${status === "denied" ? `<br>AI 判定为不赔（结论与两个证据哈希都已上链，可查）` : ""}
           ${status === "low_confidence" ? `<br>AI 置信度低于合约验收门槛，按规则不予赔付` : ""}
@@ -1735,7 +1744,7 @@ async function loadMyPolicies() {
         <div class="pai">${aiLine}</div>
         <div class="polbtns">
           <button class="btn sm ${claimable ? "gold" : ""}" data-claim="${id}"
-            ${claimable ? "" : "disabled"}>${claimable ? "申请赔付 " + fmtEth(due) + " " + SYM() : (NOBTN[status] || "未达条件")}</button>
+            ${claimable ? "" : "disabled"}>${claimable ? "申请赔付 " + fmtEth(due) + " " + SYM() : (NOBTN[status] || (belowSnap ? "判定快照未达档" : "未达条件"))}</button>
           <a class="btn sm" target="_blank" rel="noopener" title="在核验台里直接查这个合约的链上原始数据"
              href="verifier.html?q=${esc(S.addr)}${QS.get("rpc") ? "&rpc=" + encodeURIComponent(QS.get("rpc")) : ""}">核验台查合约</a>
           ${(jm && jm.exists) ? `<button class="btn sm" data-copy="${esc(jm.outputHash)}" title="输出结论哈希 ${esc(jm.outputHash)}">复制结论哈希</button>` : ""}

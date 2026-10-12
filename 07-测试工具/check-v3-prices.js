@@ -25,8 +25,9 @@
  *
  * 968 需要代理（FlClash）：$env:NODE_USE_ENV_PROXY='1'; $env:HTTPS_PROXY='http://127.0.0.1:7890'
  *
- * 为什么不挂进 `npm test`：那一串 251 项门禁必须**离线**可跑（拔网线也要全绿），
- * 而这个脚本的价值就在于真读链。要读链就单独跑它，别把它塞进离线门禁。
+ * 为什么不挂进 `npm test`：那一串离线门禁必须**拔网线也全绿**，而这个脚本的价值就在于真读链。
+ * **需要 968 可达才跑**（代理设置见上面），所以只给了单独的 script：`npm run check:v3-prices`。
+ * 塞进 `npm test` 等于让 CI 红给网络抖动看 —— 别这么做（A40②）。
  */
 const fs = require('fs');
 const path = require('path');

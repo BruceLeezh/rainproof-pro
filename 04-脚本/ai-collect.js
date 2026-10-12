@@ -216,6 +216,25 @@ if (require.main === module && process.argv.includes("--self-check")) {
 }
 
 // 只有「直接运行」才走主流程。被 require 时必须保持静默 ——
+/* 指纹探测失败的两种原因必须分开（只动错误处理，不动取数字段与哈希口径）：
+   CALL_EXCEPTION / BAD_DATA = 这把 ABI 的函数在合约上真不存在 → 可以退回旧版；
+   其它（超时 / ECONNREFUSED / 限流 / 节点 5xx）= 我们不知道链上是什么版本
+   → 必须抛出重试。原来一律 catch 成「不是 v3/v2」，等于把网络故障当成版本信号，
+     接着拿 v1 ABI 去解 v2/v3 的 policies()，元组整体错位、静默算错哈希。 */
+function isMissingFunction(e) {
+  const code = (e && e.code) || (e && e.info && e.info.error && e.info.error.code);
+  return code === "CALL_EXCEPTION" || code === "BAD_DATA";
+}
+function throwIfNetErr(kind, e) {
+  if (isMissingFunction(e)) return;
+  const err = new Error(
+    `合约版本指纹探测失败（试 ${kind} 的只读函数时出错）：${(e && (e.shortMessage || e.message)) || e}\n` +
+    `  这不是「链上没有这个函数」，是 RPC / 网络层面的问题 —— 不敢猜版本，请确认 RPC 可达后重跑。`
+  );
+  err.cause = e;
+  throw err;
+}
+
 // 07-测试工具/check-ai.js 要断言 sliceModelSeries（窗口上界/缺测口径），
 // 一 require 就发网络请求的话，门禁会变成一条依赖外网的测试。
 if (require.main === module) (async () => {
@@ -233,11 +252,12 @@ if (require.main === module) (async () => {
   let c = new Contract(ADDR, ABI_V3, provider);
   let kind = "v3";
   try { await c.entryThresholdOf(24); }
-  catch {
+  catch (e) {
+    throwIfNetErr("v3", e);
     kind = "v2";
     c = new Contract(ADDR, ABI_V2, provider);
     try { await c.thresholdOf(24); }
-    catch { kind = "v1"; c = new Contract(ADDR, ABI_V1, provider); }
+    catch (e2) { throwIfNetErr("v2", e2); kind = "v1"; c = new Contract(ADDR, ABI_V1, provider); }
   }
   await assertRegionsMatchContract(c);   // 区域表对不上就别往下走
 

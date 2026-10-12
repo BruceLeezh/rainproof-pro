@@ -28,7 +28,14 @@ const ABI = JSON.parse(fs.readFileSync(path.join(SOL_DIR, `${NAME}.abi.json`), "
 const BIN = fs.readFileSync(path.join(SOL_DIR, `${NAME}.bytecode.txt`), "utf8").trim();
 
 const pass = [], fail = [];
-const ok = (n, x = "") => { pass.push(n); console.log(`  ✅ ${n}${x ? "  " + x : ""}`); };
+// ★ A36：ok() 必须收到**真条件**（第 2 参）。老写法 ok("标签") / ok("标签","说明") 只推标签、恒绿。
+//   条件为假一律计入 fail；第 3 参只负责打印说明；漏传条件直接抛错。
+//   ★ 实测（离线静态扫描 ok( 调用点，含定义处）：改前 51 个调用点 / 其中 43 个只推标签，改后 51 / 0。
+const ok = (n, cond, txt = "") => {
+  if (cond === undefined) throw new Error(`ok() 漏传条件（A36）：${n}`);
+  if (cond) { pass.push(n); console.log(`  ✅ ${n}${txt ? "  " + txt : ""}`); }
+  else { fail.push(`${n} (条件不成立)`); console.log(`  ❌ ${n}${txt ? "  " + txt : ""}  ← 条件不成立`); }
+};
 const bad = (n, why) => { fail.push(`${n} (${why})`); console.log(`  ❌ ${n}  ← ${why}`); };
 
 async function expectRevert(name, callable, keyword) {
@@ -40,9 +47,9 @@ async function expectRevert(name, callable, keyword) {
     const msg = [e.shortMessage, e.reason, e.message,
                  e.info && e.info.error && e.info.error.message, e.data]
                 .filter(Boolean).join(" | ");
-    if (!keyword) return ok(name, `已拒绝（${msg.slice(0, 70)}）`);
-    if (msg.includes(keyword)) ok(name, `已拒绝（${keyword}）`);
-    else bad(name, `期望含「${keyword}」，实际：${msg.slice(0, 140)}`);
+    const hit = !keyword || msg.includes(keyword);
+    if (hit) ok(name, true, `已拒绝（${keyword || msg.slice(0, 70)}）`);
+    else ok(name, false, `期望含「${keyword}」，实际：${msg.slice(0, 140)}`);
   }
 }
 
@@ -98,32 +105,30 @@ const eth = (w) => ethers.formatEther(w);
   const c = await new ethers.ContractFactory(ABI, BIN, operator).deploy();
   await c.waitForDeployment();
   const addr = await c.getAddress();
-  ok("部署成功", addr);
+  ok("部署成功", addr.length === 42 && (await provider.getCode(addr)) !== "0x", addr);
   const code = await provider.getCode(addr);
   const wantRuntime = Number(fs.readFileSync(path.join(SOL_DIR, `${NAME}.runtime-size.txt`), "utf8").trim());
-  if ((code.length - 2) / 2 === wantRuntime) ok("部署后链上代码长度与编译报告一致", `${wantRuntime} 字节`);
-  else bad("链上代码长度", `${(code.length - 2) / 2} ≠ ${wantRuntime}`);
+  ok("部署后链上代码长度与编译报告一致", (code.length - 2) / 2 === wantRuntime, `${wantRuntime} 字节`);
 
   const MIN_PREMIUM = await c.MIN_PREMIUM();
   const PAYOUT_MAX = await c.PAYOUT_MAX();
   const MAX_EXP = await c.MAX_OPEN_EXPOSURE_PER_RIDER();
-  if (MIN_PREMIUM === ethers.parseEther("0.00002")) ok("A-5① MIN_PREMIUM = 0.00002（v2 的 0.0002 降了 10 倍）", eth(MIN_PREMIUM));
-  else bad("MIN_PREMIUM", `${eth(MIN_PREMIUM)} ≠ 0.00002`);
-  if (await c.MIN_HOURS() === 12n && await c.MAX_HOURS() === 24n) ok("A-5③ 时长区间 = 12~24 小时");
-  else bad("MIN/MAX_HOURS", `${await c.MIN_HOURS()}/${await c.MAX_HOURS()}`);
-  if (await c.TIER_COUNT() === 2n) ok("A-5③ 档位数 = 2（国标只有暴雨/大暴雨两档）");
-  else bad("TIER_COUNT", `${await c.TIER_COUNT()}`);
-  if (PAYOUT_MAX === ethers.parseEther("0.01")) ok("PAYOUT_MAX 仍是 0.01（赔付上限口径未动）");
-  else bad("PAYOUT_MAX", eth(PAYOUT_MAX));
-  if (await c.MAX_FEED_AGE() === 86400n) ok("MAX_FEED_AGE = 24 小时（喂价保鲜规则未动）");
-  else bad("MAX_FEED_AGE", `${await c.MAX_FEED_AGE()}`);
-  if (await c.MAX_POLICIES_PER_RIDER() === 3n && MAX_EXP === ethers.parseEther("0.02"))
-    ok("限购常量：3 笔 / 0.02 ETH 在保敞口（B 的地盘，本轮未动）");
-  else bad("限购常量", `${await c.MAX_POLICIES_PER_RIDER()} / ${eth(MAX_EXP)}`);
-  if (await c.pricingModule() === ethers.ZeroAddress) ok("A-5② pricingModule 默认未配置（回退 v2 本地网格口径）");
-  else bad("pricingModule 默认值", await c.pricingModule());
+  ok("A-5① MIN_PREMIUM = 0.00002（v2 的 0.0002 降了 10 倍）", MIN_PREMIUM === ethers.parseEther("0.00002"), eth(MIN_PREMIUM));
+  const minH = await c.MIN_HOURS(), maxH = await c.MAX_HOURS();
+  ok("A-5③ 时长区间 = 12~24 小时", minH === 12n && maxH === 24n, `${minH}/${maxH}`);
+  const tierCount = await c.TIER_COUNT();
+  ok("A-5③ 档位数 = 2（国标只有暴雨/大暴雨两档）", tierCount === 2n, String(tierCount));
+  ok("PAYOUT_MAX 仍是 0.01（赔付上限口径未动）", PAYOUT_MAX === ethers.parseEther("0.01"), eth(PAYOUT_MAX));
+  const maxFeedAge = await c.MAX_FEED_AGE();
+  ok("MAX_FEED_AGE = 24 小时（喂价保鲜规则未动）", maxFeedAge === 86400n, `${maxFeedAge}`);
+  const maxPol = await c.MAX_POLICIES_PER_RIDER();
+  ok("限购常量：3 笔 / 0.02 ETH 在保敞口（B 的地盘，本轮未动）",
+     maxPol === 3n && MAX_EXP === ethers.parseEther("0.02"), `${maxPol} 笔 / ${eth(MAX_EXP)} ETH`);
+  const pm0 = await c.pricingModule();
+  ok("A-5② pricingModule 默认未配置（回退 v2 本地网格口径）", pm0 === ethers.ZeroAddress, pm0);
   await (await c.connect(operator).fundPool({ value: ethers.parseEther("0.05") })).wait();
-  ok("准备金注入 0.05 ETH（后续 claim 才有钱可赔）", eth(await c.poolBalance()));
+  const pool0 = await c.poolBalance();
+  ok("准备金注入 0.05 ETH（后续 claim 才有钱可赔）", pool0 === ethers.parseEther("0.05"), `${eth(pool0)} ETH`);
 
   // 喂价辅助：cumulative 单调不减，自己记着每个区的水位
   const water = {};
@@ -156,19 +161,19 @@ const eth = (w) => ethers.formatEther(w);
     ["999mm/24h 顶在最高档（没有第三档）", await c.tierOf(999, 24), T.t1],
   ];
   for (const [name, got, want] of cases) {
-    if (BigInt(got) === BigInt(want)) ok(name);
-    else bad(name, `${got} ≠ ${want}`);
+    ok(name, BigInt(got) === BigInt(want), `got=${got} / want=${want}`);
   }
   await expectRevert("48 小时的阈值要拒绝（旧窗口已停售）",
     async () => c.thresholdOf.staticCall(48, 0), "hours must be 12/24");
   await expectRevert("不存在的大暴雨档以上档位要拒绝",
     async () => c.thresholdOf.staticCall(24, 2), "bad tier");
-  if (await c.tierBps(0) === 5000n && await c.tierBps(1) === 7500n) ok("两档赔付比例 = 50% / 75%");
-  else bad("tierBps", `${await c.tierBps(0)}/${await c.tierBps(1)}`);
+  const bps0 = await c.tierBps(0), bps1 = await c.tierBps(1);
+  ok("两档赔付比例 = 50% / 75%", bps0 === 5000n && bps1 === 7500n, `${bps0}/${bps1}`);
   await expectRevert("已删除的 100% 档要拒绝", async () => c.tierBps.staticCall(2), "bad tier");
-  if (await c.hoursAllowed(12) && await c.hoursAllowed(24) && !(await c.hoursAllowed(48)) && !(await c.hoursAllowed(36)))
-    ok("hoursAllowed：只放 12/24");
-  else bad("hoursAllowed", "放行了 48/36 或拦住了 12/24");
+  const h12 = await c.hoursAllowed(12), h24 = await c.hoursAllowed(24),
+        h36 = await c.hoursAllowed(36), h48 = await c.hoursAllowed(48);
+  ok("hoursAllowed：只放 12/24（v3 口径，24/48/72 那套已作废）", h12 && h24 && !h36 && !h48,
+     `12=${h12} 24=${h24} 36=${h36} 48=${h48}`);
 
   // ---------- 2 A4b 喂价新鲜度 ----------
   console.log("\n[2] A4b 喂价新鲜度（v2 保留项，确认没被 v3 改动碰坏）");
@@ -177,14 +182,16 @@ const eth = (w) => ethers.formatEther(w);
     "stale feed");
   await (await feed(1, 0, "baseline")).wait();
   await (await c.connect(a).buyPolicy(1, 24, { value: await c["premiumOf(uint8,uint256)"](1, 24) })).wait();
-  ok("喂价后投保成功", `policy #${(await c.nextPolicyId()) - 1n}`);
+  const idV = (await c.nextPolicyId()) - 1n;
+  ok("喂价后投保成功", (await c.policies(idV)).windowHours === 24n, `policy #${idV}`);
   await advance(25 * 3600);
   await expectRevert("喂价超过 24h 后投保要拒绝",
     async () => c.connect(b).buyPolicy.staticCall(1, 24, { value: await c["premiumOf(uint8,uint256)"](1, 24) }),
     "stale feed");
   await (await feed(1, 0, "refresh")).wait();
   await (await c.connect(b).buyPolicy(1, 24, { value: await c["premiumOf(uint8,uint256)"](1, 24) })).wait();
-  ok("重新喂价后又可以投保", `policy #${(await c.nextPolicyId()) - 1n}`);
+  const idW = (await c.nextPolicyId()) - 1n;
+  ok("重新喂价后又可以投保", (await c.policies(idW)).windowHours === 24n, `policy #${idW}`);
 
   // ---------- 3 A-6 代付 + 路线图⑥ 退保 ----------
   console.log("\n[3] A-6 投保人/受益人分离 + 路线图⑥ 冷静期内退保");
@@ -196,16 +203,13 @@ const eth = (w) => ethers.formatEther(w);
   await txBuy.wait();
   const idFor = (await c.nextPolicyId()) - 1n;
   const pf = await c.policies(idFor);
-  if (pf.rider.toLowerCase() === rE.toLowerCase()) ok("buyFor：受益人 = 被保骑手（保单挂在骑手名下）", pf.rider);
-  else bad("buyFor 受益人", `${pf.rider} ≠ ${rE}`);
-  if (pf.payer.toLowerCase() === opAddr.toLowerCase()) ok("buyFor：付款人 = 出钱的平台账户（A-6 的关键字段）", pf.payer);
-  else bad("buyFor 付款人", `${pf.payer} ≠ ${opAddr}`);
-  if (pf.premium === p5) ok("buyFor：保费 = 五维报价（不是写死的默认价）", eth(pf.premium));
-  else bad("buyFor 保费", `${eth(pf.premium)} ≠ ${eth(p5)}`);
-  if (pf.thresholdMm === 30n && pf.windowHours === 12n) ok("保单入口闸线 = 国标 12h 暴雨线 30mm", `${pf.thresholdMm}mm`);
-  else bad("保单 thresholdMm", `${pf.thresholdMm}/${pf.windowHours}`);
-  if (await c.openPoliciesOf(rE) === 1n) ok("路线图③ openPoliciesOf[受益人] = 1");
-  else bad("openPoliciesOf", `${await c.openPoliciesOf(rE)}`);
+  ok("buyFor：受益人 = 被保骑手（保单挂在骑手名下）", pf.rider.toLowerCase() === rE.toLowerCase(), pf.rider);
+  ok("buyFor：付款人 = 出钱的平台账户（A-6 的关键字段）", pf.payer.toLowerCase() === opAddr.toLowerCase(), pf.payer);
+  ok("buyFor：保费 = 五维报价（不是写死的默认价）", pf.premium === p5, eth(pf.premium));
+  ok("保单入口闸线 = 国标 12h 暴雨线 30mm", pf.thresholdMm === 30n && pf.windowHours === 12n,
+     `${pf.thresholdMm}mm/${pf.windowHours}h`);
+  const openE = await c.openPoliciesOf(rE);
+  ok("路线图③ openPoliciesOf[受益人] = 1", openE === 1n, String(openE));
 
   await expectRevert("不是付款人也不是 operator 的退保要拒绝",
     async () => c.connect(e).refundPolicy.staticCall(idFor), "only payer or operator");
@@ -216,18 +220,17 @@ const eth = (w) => ethers.formatEther(w);
   const gasCost = rcRefund.gasUsed * rcRefund.gasPrice;    // operator 自己付的 gas，必须从余额差里剔掉
   const after = await rawBal(opAddr);
   const refunded = await c.policies(idFor);
-  if (await c.poolBalance() === poolBefore - p5) ok("退保从池子支出正好一份保费", `-${eth(p5)} ETH`);
-  else bad("池子支出", `${eth(poolBefore - await c.poolBalance())} ≠ ${eth(p5)}`);
-  if (after - opBefore2 + gasCost === p5)
-    ok("退保把保费退给**付款人**（扣掉他自付 gas 后净 +一份保费）", `+${eth(after - opBefore2 + gasCost)} ETH`);
-  else bad("退保到账金额", `${eth(after - opBefore2 + gasCost)} ≠ ${eth(p5)}`);
-  if (await rawBal(rE) === riderBeforeRefund) ok("受益骑手一分钱没动（退款不经过他）");
-  else bad("受益骑手余额变了", `${await rawBal(rE)} ≠ ${riderBeforeRefund}`);
-  if (refunded.settled && !refunded.paid) ok("退保后保单已了结、未赔付");
-  else bad("退保后保单状态", `settled=${refunded.settled} paid=${refunded.paid}`);
-  if (await c.openPoliciesOf(rE) === 0n && await c.riderExposure(rE) === 0n)
-    ok("退保后该骑手的未结清计数与在保敞口都归零");
-  else bad("退保后账本", `open=${await c.openPoliciesOf(rE)} exp=${eth(await c.riderExposure(rE))}`);
+  const poolAfterRefund = await c.poolBalance();
+  ok("退保从池子支出正好一份保费", poolAfterRefund === poolBefore - p5, `-${eth(poolBefore - poolAfterRefund)} ETH`);
+  ok("退保把保费退给**付款人**（扣掉他自付 gas 后净 +一份保费）",
+     after - opBefore2 + gasCost === p5, `+${eth(after - opBefore2 + gasCost)} ETH`);
+  const riderAfterRefund = await rawBal(rE);
+  ok("受益骑手一分钱没动（退款不经过他）", riderAfterRefund === riderBeforeRefund,
+     `${eth(riderAfterRefund - riderBeforeRefund)} ETH`);
+  ok("退保后保单已了结、未赔付", refunded.settled && !refunded.paid, `settled=${refunded.settled} paid=${refunded.paid}`);
+  const openAfterRefund = await c.openPoliciesOf(rE), expAfterRefund = await c.riderExposure(rE);
+  ok("退保后该骑手的未结清计数与在保敞口都归零", openAfterRefund === 0n && expAfterRefund === 0n,
+     `open=${openAfterRefund} exp=${eth(expAfterRefund)}`);
   await expectRevert("同一份保单不能退两次",
     async () => c.connect(operator).refundPolicy.staticCall(idFor), "already settled");
   await expectRevert("退掉的保单不能索赔（这条挡的就是「退保 + 索赔」双拿）",
@@ -236,12 +239,16 @@ const eth = (w) => ethers.formatEther(w);
   // ---------- 4 演示口径：冷静期关掉 ----------
   console.log("\n[4] 演示口径：把冷静期改成 0（v2 的既有做法，v3 保留）");
   await (await c.connect(operator).setCoolingPeriod(0)).wait();
-  ok("coolingPeriod = 0", `${await c.coolingPeriod()}`);
+  const coolNow = await c.coolingPeriod();
+  ok("coolingPeriod = 0", coolNow === 0n, String(coolNow));
   await expectRevert("非 operator 改冷静期要拒绝",
     async () => c.connect(a).setCoolingPeriod.staticCall(0), "not operator");
   await (await c.connect(cc).buyPolicy(1, 12, { value: p5 })).wait();
   const idNow = (await c.nextPolicyId()) - 1n;
-  ok("冷静期 0 时新保单立刻可赔", await c.policyStatus(idNow));
+  // policyStatus 的取值见 RainDeliveryInsuranceV3.sol:689-705：冷却期 0 时新保单不经过 pending，
+  // 因 during(=0) < thresholdMm(=30) ⇒ 只能是 active。
+  const stNow = await c.policyStatus(idNow);
+  ok("冷静期 0 时新保单立刻生效（不经过 pending）", stNow === "active", stNow);
   await expectRevert("冷静期 0 时退保窗口已经关闭（已是生效态）",
     async () => c.connect(cc).refundPolicy.staticCall(idNow), "already effective");
 
@@ -249,13 +256,10 @@ const eth = (w) => ethers.formatEther(w);
   console.log("\n[5] A-5② 五维报价 + v2 兼容重载");
   const pCompat = await c["premiumOf(uint8,uint256)"](1, 24);
   const pFive = await c["premiumOf(uint8,uint256,uint8,uint8,uint256)"](1, 24, 0, 0, 1);
-  if (pCompat === pFive) ok("2 参兼容重载 == 5 参默认段（前端不用改）", `${eth(pCompat)} ETH`);
-  else bad("兼容重载", `${eth(pCompat)} ≠ ${eth(pFive)}`);
-  if (pCompat >= MIN_PREMIUM && pCompat < PAYOUT_MAX) ok("报价落在 [MIN_PREMIUM, PAYOUT_MAX) 区间内");
-  else bad("报价区间", eth(pCompat));
+  ok("2 参兼容重载 == 5 参默认段（前端不用改）", pCompat === pFive, `${eth(pCompat)} ETH`);
+  ok("报价落在 [MIN_PREMIUM, PAYOUT_MAX) 区间内", pCompat >= MIN_PREMIUM && pCompat < PAYOUT_MAX, eth(pCompat));
   const q = await c.quoteOf(1, 12, 0, 0, 1);
-  if (q[1] === true) ok("quoteOf 返回可售标记（sellable）", `${eth(q[0])} ETH`);
-  else bad("quoteOf sellable", `${q[1]}`);
+  ok("quoteOf 返回可售标记（sellable）", q[1] === true, `${eth(q[0])} ETH`);
   await expectRevert("不在售的时长报价要拒绝",
     async () => c["premiumOf(uint8,uint256,uint8,uint8,uint256)"].staticCall(1, 48, 0, 0, 1), "hours must be 12/24");
   await expectRevert("链上不支持一次买多份（count 必须 1）",
@@ -273,31 +277,35 @@ const eth = (w) => ethers.formatEther(w);
   await (await feed(1, 0, "b-baseline")).wait();
   await (await c.connect(cc).buyPolicy(1, 12, { value: p5 })).wait();
   const idC2 = (await c.nextPolicyId()) - 1n;
-  ok("同一骑手第 2 份：在保敞口正好顶到 0.02", `${eth(await c.riderExposure(rC))}`);
+  const expC2 = await c.riderExposure(rC);
+  ok("同一骑手第 2 份：在保敞口正好顶到 0.02", expC2 === ethers.parseEther("0.02"), `${eth(expC2)} ETH`);
   await expectRevert("同一骑手第 3 份要拒绝（敞口闸先于笔数闸生效）",
     async () => c.connect(cc).buyPolicy.staticCall(1, 12, { value: p5 }), "open exposure cap exceeded");
   // 说明：MAX_OPEN_EXPOSURE_PER_RIDER = 0.02、每份占 0.01 ⇒ 同一骑手最多 2 份在保，
   //       MAX_POLICIES_PER_RIDER = 3 的笔数闸被敞口闸盖住（v2 就是这样，不是 v3 引入的）。
-  if (await c.openPoliciesOf(rC) === 2n) ok("未结清计数 = 2", `${await c.openPoliciesOf(rC)}`);
-  else bad("未结清计数", `${await c.openPoliciesOf(rC)}`);
+  const openC = await c.openPoliciesOf(rC);
+  ok("未结清计数 = 2", openC === 2n, String(openC));
 
   // 先买一份**还没到期**的保单（rider d），用来验证「未到期不许结算」
   await (await c.connect(d).buyPolicy(1, 12, { value: p5 })).wait();
   const idFresh = (await c.nextPolicyId()) - 1n;
-  ok("新买一份还没到期的保单（试结算闸门用）", `policy #${idFresh}`);
+  ok("新买一份还没到期的保单（试结算闸门用）",
+     (await c.policies(idFresh)).windowHours === 12n && (await c.policies(idFresh)).settled === false, `policy #${idFresh}`);
   await expectRevert("还没到期的保单不能被结算",
     async () => c.connect(f).settleExpired.staticCall([idFresh]), "policy not expired yet");
   await advance(12 * 3600 + 60);
   const cBefore = await rawBal(rC);
-  await (await c.connect(f).settleExpired([idC2])).wait();     // f 不是 operator
-  ok("非 operator 也能结算到期保单（路线图④：只减敞口、不付款）");
-  if (await c.openPoliciesOf(rC) === 1n) ok("结算后未结清计数 2 → 1");
-  else bad("结算后未结清计数", `${await c.openPoliciesOf(rC)}`);
-  if (await rawBal(rC) === cBefore) ok("结算不产生任何转账（只是账本归零）");
-  else bad("结算动到了余额", `${await rawBal(rC)} ≠ ${cBefore}`);
+  const rcSettle = await (await c.connect(f).settleExpired([idC2])).wait();     // f 不是 operator
+  ok("非 operator 也能结算到期保单（路线图④：只减敞口、不付款）", rcSettle.status === 1, `gasUsed=${rcSettle.gasUsed}`);
+  const openCAfter = await c.openPoliciesOf(rC);
+  ok("结算后未结清计数 2 → 1", openCAfter === 1n, String(openCAfter));
+  const balCAfter = await rawBal(rC);
+  ok("结算不产生任何转账（只是账本归零）", balCAfter === cBefore, `${eth(balCAfter - cBefore)} ETH`);
   await (await feed(1, 0, "after-settle")).wait();
   await (await c.connect(cc).buyPolicy(1, 12, { value: p5 })).wait();
-  ok("结算后同一骑手可以再买（v2 的终身计数已改成只计未结清）", `policy #${(await c.nextPolicyId()) - 1n}`);
+  const idAfterSettle = (await c.nextPolicyId()) - 1n;
+  ok("结算后同一骑手可以再买（v2 的终身计数已改成只计未结清）",
+     (await c.policies(idAfterSettle)).windowHours === 12n && idAfterSettle === idFresh + 1n, `policy #${idAfterSettle}`);
 
   // ---------- 7 A-5④ 判定快照 ----------
   console.log("\n[7] A-5④ 判定快照：claim 用 AI 判定当时的读数，不用申请那一刻的读数");
@@ -305,9 +313,10 @@ const eth = (w) => ethers.formatEther(w);
   await (await c.connect(e).buyPolicy(1, 12, { value: p5 })).wait();
   const idSnap = (await c.nextPolicyId()) - 1n;
   const base = (await c.policies(idSnap)).rainfallAtBuy;
-  ok("快照测试用新保单：投保基线 = 链上此刻读数", `${base}mm`);
+  ok("快照测试用新保单：投保基线 = 链上此刻读数", base === (await c.rainfall(1)), `${base}mm`);
   await (await feed(1, 500, "storm500")).wait();
-  ok("链上累计降雨已推到 500mm（此刻相对基线 = 200mm，够大暴雨档）", `${await c.rainfall(1)}mm`);
+  const rain1Now = await c.rainfall(1);
+  ok("链上累计降雨已推到 500mm（此刻相对基线 = 200mm，够大暴雨档）", rain1Now === 500n, `${rain1Now}mm`);
   await expectRevert("判定读数低于投保基线要拒绝",
     async () => c.connect(operator).submitJudgement.staticCall(idSnap, await c.DECISION_PAY(), 90, 3,
       base - 1n, H("in-bad"), H("out-bad"), "ai-judge-v1"),
@@ -323,29 +332,31 @@ const eth = (w) => ethers.formatEther(w);
   // 判定只认 30mm（暴雨档）——比链上 200mm 小得多
   await (await c.connect(operator).submitJudgement(idSnap, await c.DECISION_PAY(), 90, 3,
     base + 30n, H("in-ok"), H("out-ok"), "ai-judge-v1")).wait();
-  ok("判定写入成功（快照 = 基线 + 30mm）", `rainfallAtJudgement = ${(await c.judgements(idSnap)).rainfallAtJudgement}mm`);
-  if (await c.rainfallDuring(idSnap) === 30n) ok("rainfallDuring 用快照（30mm），而不是链上此刻的 200mm");
-  else bad("rainfallDuring", `${await c.rainfallDuring(idSnap)} ≠ 30`);
-  if (await c.currentTier(idSnap) === 0n) ok("档位按快照算 = 暴雨档 0（若按 200mm 会是 1）");
-  else bad("currentTier", `${await c.currentTier(idSnap)}`);
-  if (await c.payoutOf(idSnap) === ethers.parseEther("0.005"))
-    ok("可赔金额 = 0.005 ETH（50% 档，不是 200mm 对应的 0.0075）");
-  else bad("payoutOf", eth(await c.payoutOf(idSnap)));
-  if (await c.shortfall(idSnap) === 0n) ok("shortfall = 0（快照已达标）");
-  else bad("shortfall", `${await c.shortfall(idSnap)}`);
+  const jSnap = await c.judgements(idSnap);
+  ok("判定写入成功（快照 = 基线 + 30mm）", jSnap.rainfallAtJudgement === base + 30n,
+     `rainfallAtJudgement = ${jSnap.rainfallAtJudgement}mm`);
+  const duringSnap = await c.rainfallDuring(idSnap);
+  ok("rainfallDuring 用快照（30mm），而不是链上此刻的 200mm", duringSnap === 30n, `${duringSnap}mm`);
+  const tierSnap = await c.currentTier(idSnap);
+  ok("档位按快照算 = 暴雨档 0（若按 200mm 会是 1）", tierSnap === 0n, String(tierSnap));
+  const payoutSnap = await c.payoutOf(idSnap);
+  ok("可赔金额 = 0.005 ETH（50% 档，不是 200mm 对应的 0.0075）",
+     payoutSnap === ethers.parseEther("0.005"), eth(payoutSnap));
+  const shortSnap = await c.shortfall(idSnap);
+  ok("shortfall = 0（快照已达标）", shortSnap === 0n, String(shortSnap));
 
   const riderBefore = await rawBal(rE);
   await (await c.connect(f).claim(idSnap)).wait();             // f 触发，钱只去保单里的受益人
   const jr = await c.policies(idSnap);
-  if (jr.paid && jr.settled && jr.payout === ethers.parseEther("0.005"))
-    ok("索赔按快照赔付 0.005 ETH 并了结", `${eth(jr.payout)} ETH`);
-  else bad("索赔结果", `paid=${jr.paid} settled=${jr.settled} payout=${eth(jr.payout)}`);
-  if (await rawBal(rE) - riderBefore === ethers.parseEther("0.005"))
-    ok("赔款到账 = 受益骑手（gas 由触发者付，受益人净得全款）", `+${eth(await rawBal(rE) - riderBefore)} ETH`);
-  else bad("赔款到账", `${eth(await rawBal(rE) - riderBefore)} ≠ 0.005`);
-  if (await c.openPoliciesOf(rE) === 0n && await c.riderExposure(rE) === 0n)
-    ok("赔付后未结清计数与在保敞口归零（路线图③在 claim 里也生效）");
-  else bad("赔付后账本", `open=${await c.openPoliciesOf(rE)} exp=${eth(await c.riderExposure(rE))}`);
+  ok("索赔按快照赔付 0.005 ETH 并了结",
+     jr.paid && jr.settled && jr.payout === ethers.parseEther("0.005"),
+     `paid=${jr.paid} settled=${jr.settled} payout=${eth(jr.payout)} ETH`);
+  const riderGain = await rawBal(rE) - riderBefore;
+  ok("赔款到账 = 受益骑手（gas 由触发者付，受益人净得全款）",
+     riderGain === ethers.parseEther("0.005"), `+${eth(riderGain)} ETH`);
+  const openEAfterClaim = await c.openPoliciesOf(rE), expEAfterClaim = await c.riderExposure(rE);
+  ok("赔付后未结清计数与在保敞口归零（路线图③在 claim 里也生效）",
+     openEAfterClaim === 0n && expEAfterClaim === 0n, `open=${openEAfterClaim} exp=${eth(expEAfterClaim)}`);
   await expectRevert("同一份保单不能判两次",
     async () => c.connect(operator).submitJudgement.staticCall(idSnap, await c.DECISION_PAY(), 90, 3,
       base + 30n, H("in-y"), H("out-y"), "ai-judge-v1"),
@@ -360,14 +371,13 @@ const eth = (w) => ethers.formatEther(w);
   await expectRevert("非 operator 接定价模块要拒绝",
     async () => c.connect(a).setPricingModule.staticCall(rF), "not operator");
   await (await c.connect(operator).setPricingModule(rF)).wait();
-  if ((await c.pricingModule()).toLowerCase() === rF.toLowerCase()) ok("pricingModule 已指向新地址", rF);
-  else bad("pricingModule", await c.pricingModule());
+  const pmNow = await c.pricingModule();
+  ok("pricingModule 已指向新地址", pmNow.toLowerCase() === rF.toLowerCase(), pmNow);
   await expectRevert("指向一个非合约地址时报价会失败（证明模块真的被调用，不是摆设）",
     async () => c.quoteOf.staticCall(1, 24, 0, 0, 1));
   await (await c.connect(operator).setPricingModule(ethers.ZeroAddress)).wait();
   const qBack = await c.quoteOf(1, 24, 0, 0, 1);
-  if (qBack[1] === true) ok("摘掉模块后回退本地网格口径", `${eth(qBack[0])} ETH`);
-  else bad("回退口径", `${qBack[1]}`);
+  ok("摘掉模块后回退本地网格口径", qBack[1] === true, `${eth(qBack[0])} ETH`);
 
   console.log("\n" + "=".repeat(78));
   console.log(`通过 ${pass.length} 项 / 失败 ${fail.length} 项`);

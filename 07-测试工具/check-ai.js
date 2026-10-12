@@ -156,7 +156,10 @@ console.log("\n[可复算·实证据] 仓库里每一条留痕，哈希都要能
     for (const e of fs.readdirSync(d, { withFileTypes: true })) {
       const f = path.join(d, e.name);
       if (e.isDirectory()) walk(f);
-      else if (/^(snapshot|judgement)-policy\d+\.json$/.test(e.name)) files.push(f);
+      // 承保复核留痕（09-AI判定留痕/承保复核-chain*.json）也必须进复算：它们哈希的是 review 子树
+      // （reviewHash = keccak256(canonical(review))，口径见 04-脚本/hook-watch.js:312）。
+      else if (/^(snapshot|judgement)-policy\d+\.json$/.test(e.name)
+               || /^承保复核-chain\d+-policy\d+\.json$/.test(e.name)) files.push(f);
     }
   })(root);
   ok(`找到 ${files.length} 个留痕文件`, files.length > 0);
@@ -164,11 +167,24 @@ console.log("\n[可复算·实证据] 仓库里每一条留痕，哈希都要能
   let bad = 0;
   for (const f of files) {
     const j = JSON.parse(fs.readFileSync(f, "utf8"));
-    const [obj, key] = j.snapshot ? [j.snapshot, "inputHash"] : [j.judgement, "outputHash"];
+    const [obj, key] = j.snapshot ? [j.snapshot, "inputHash"]
+      : j.judgement ? [j.judgement, "outputHash"]
+      : [j.review, "reviewHash"];   // 承保复核留痕：哈希的是 review 子树（不含 reviewedAt / observed）
     const again = evidenceHashOf(obj);
     if (again !== j[key]) { bad++; console.log(`     　 ${path.relative(root, f)}：文件写 ${j[key]}，重算 ${again}`); }
   }
-  ok("所有留痕的哈希都能重算出来（含真链 #0/#1 的修复前留档）", bad === 0, bad ? `${bad} 个对不上` : `${files.length} 个全对`);
+  ok("所有留痕的哈希都能重算出来（含真链 #0/#1 的修复前留档、含承保复核的 reviewHash）", bad === 0, bad ? `${bad} 个对不上` : `${files.length} 个全对`);
+
+  // 覆盖度自检：光「进了集合的都算对了」不够 —— 漏收文件同样会全绿。这里直接跟盘上对：
+  // 09-AI判定留痕 根目录里每一个带 reviewHash 的留痕（= 承保复核那一批），都必须出现在复算集合里。
+  const reviewOnDisk = fs.readdirSync(root, { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.endsWith(".json")
+      && "reviewHash" in JSON.parse(fs.readFileSync(path.join(root, e.name), "utf8")))
+    .map((e) => e.name);
+  const missed = reviewOnDisk.filter((n) => !files.includes(path.join(root, n)));
+  ok(`带 reviewHash 的承保复核留痕（${reviewOnDisk.length} 个）一个都没漏进复算`,
+     reviewOnDisk.length > 0 && missed.length === 0,
+     missed.length ? `漏了 ${missed.join(",")}` : `${reviewOnDisk.length} 个全在`);
 
   // 布局契约：易变字段必须在被哈希对象【之外】。根目录下的 policy0/1 是修复前的
   // 真链留档，动了就跟链上对不上，所以只对它们查哈希自洽、不查布局。

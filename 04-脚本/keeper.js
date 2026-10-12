@@ -14,12 +14,14 @@
  *   node keeper.js               常驻，默认每 15 秒扫一遍
  *   node keeper.js --dry-run     只看不动手（扫一遍后退出）
  *   node keeper.js --settle      额外把「已到期未赔」的保单结算掉，回收在保敞口
- *                                （`settleExpired` 是 onlyOperator，必须用 operator 私钥）
+ *                                （v2 的 `settleExpired` 是 onlyOperator，要 operator 私钥；
+ *                                  v3 已经把这个修饰符去掉 —— 结算只减少敞口、不产生付款，
+ *                                  谁调都安全，所以 v3 上任何钥匙都能跑）
  *   node keeper.js --interval=5  改轮询间隔（秒）
  *
  * 环境变量（.env）：SEPOLIA_RPC / CONTRACT_ADDRESS / PRIVATE_KEY；
  * 可选 KEEPER_KEY —— 单独给 keeper 一把钥匙。不给就用 PRIVATE_KEY。
- * keeper 领赔款不需要任何权限，用哪把钥匙都一样；**只有 --settle 需要 operator 那把**。
+ * keeper 领赔款不需要任何权限，用哪把钥匙都一样；**v2 上 --settle 才需要 operator 那把，v3 不需要**。
  *
  * 合约版本：v2（03-合约/RainDeliveryInsuranceV2.abi.json）。
  *   v1 的 payout 是全局常量 `PAYOUT`，v2 按国标档位算，逐单读 `payoutOf(id)`。
@@ -31,15 +33,24 @@ const fs = require("fs");
 const path = require("path");
 const { JsonRpcProvider, Wallet, Contract, formatEther } = require("ethers");
 
-// 默认 v2（968 演示基线与 677 用的是 v2）；加 --v3 时读 v3 的 ABI（v3 把阈值/赔付档改成国标两档，
-// 但 keeper 只用 nextPolicyId / policyStatus / payoutOf / claim / settleExpired，两版都有）。
+// 默认 v2 —— 那是 968 上留下的演示基线。**主网 677 现在跑的是 v3**（2026-10-08 部署），
+// 对 677 要加 --v3 读 v3 的 ABI（v3 把阈值/赔付档改成国标两档，keeper 只用
+// nextPolicyId / policyStatus / payoutOf / claim / settleExpired，两版都有）。
 const VARIANT = process.argv.includes("--v3") ? "V3" : "V2";
 const ABI_FILE = path.join(__dirname, "..", "03-合约", `RainDeliveryInsurance${VARIANT}.abi.json`);
 const ARGV = process.argv.slice(2);
 const ONCE = ARGV.includes("--once");
 const DRY = ARGV.includes("--dry-run");
 const SETTLE = ARGV.includes("--settle");
-const INTERVAL = Number((ARGV.find((a) => a.startsWith("--interval=")) || "").split("=")[1] || 15);
+const INTERVAL = (() => {
+  const raw = (ARGV.find((a) => a.startsWith("--interval=")) || "").split("=")[1];
+  if (raw === undefined) return 15;
+  const n = Number(raw);
+  // A20：`Number("abc")` 是 NaN，`setTimeout(fn, NaN*1000)` 等于「立刻再来一次」——
+  // 一个手滑的 --interval=abc 会把常驻模式变成对 RPC 的死循环扫射。非法值直接报错。
+  if (!Number.isFinite(n) || n <= 0) throw new Error(`--interval= 需要一个正数秒，收到：${JSON.stringify(raw)}`);
+  return n;
+})();
 
 const ts = () => new Date().toTimeString().slice(0, 8);
 
@@ -47,7 +58,6 @@ async function scan(c, provider, dry, doSettle) {
   const n = Number(await c.nextPolicyId());
   if (!n) { console.log(`[${ts()}] 链上还没有任何保单`); return 0; }
 
-  const pool = await provider.getBalance(await c.getAddress());
   const paused = await c.paused();
   if (paused) { console.log(`[${ts()}] ⏸ 合约已暂停，跳过`); return 0; }
 
@@ -90,6 +100,18 @@ async function scan(c, provider, dry, doSettle) {
     const st = statuses[id];
     if (st !== "claimable") { if (st !== "paid") pending.push(`#${id}:${st}`); continue; }
     const amount = await c.payoutOf(id);
+    // A16：`policyStatus()` 的「够不够阈值」那一半用的是**当前**读数，而 `claim()` 用的是
+    // **判定当时**钉在链上的快照（合约里的 _readingFor）—— 判定之后又推过雨量时，状态会说
+    // claimable、`payoutOf()` 却是 0、`claim()` 必 revert below threshold。
+    // 所以以 payoutOf() > 0 为准（它与 claim() 同源），别让 keeper 每轮都去撞一次 revert。
+    if (amount === 0n) {
+      console.log(`[${ts()}] 保单 #${id} 状态说 claimable，但按判定快照未达档（payoutOf = 0）—— 合约 policyStatus 的读数口径差异，跳过`);
+      pending.push(`#${id}:judgement-below-threshold`);
+      continue;
+    }
+    // A19：池子余额必须在每次真赔之前重读 —— 原来在循环外只读一次，同一轮里前面几张单子
+    // 赔掉的钱不会反映到后面几张上，可能把已经赔不起的单子也发出去。
+    const pool = await provider.getBalance(await c.getAddress());
     if (pool < amount) {
       console.log(`[${ts()}] 保单 #${id} 可赔，但池子只剩 ${formatEther(pool)} ETH < ${formatEther(amount)} ETH，停手`);
       break;
@@ -124,10 +146,14 @@ async function scan(c, provider, dry, doSettle) {
   if (wallet) console.log(`  签名账户 ${wallet.address}（余额 ${formatEther(await provider.getBalance(wallet.address))}）`);
   console.log(`  池子 ${formatEther(await provider.getBalance(addr))} ETH · 单笔最高赔付 ${formatEther(await c.PAYOUT_MAX())} ETH`);
   console.log(`  未了结敞口 ${formatEther(await c.openExposure())} ETH · 准备金下限 ${formatEther(await c.reserveOf())} ETH`);
-  if (SETTLE) {
+  // A26：`settleExpired` 在 v3 里已经去掉了 onlyOperator（结算只把敞口减下来、不产生付款），
+  // 只有 v2 才真的要 operator 钥匙。原来不分版本一律拦，会把 v3 上一个完全合法的
+  // 「拿任意钥匙结算」直接拒掉。
+  if (SETTLE && VARIANT !== "V3") {
     const op = await c.operator();
     if (!wallet || wallet.address.toLowerCase() !== op.toLowerCase()) {
-      throw new Error(`--settle 需要 operator 私钥：合约的 operator 是 ${op}，当前签名账户是 ${wallet ? wallet.address : "(只读)"}`);
+      throw new Error(`--settle 在 v2 上需要 operator 私钥：合约的 operator 是 ${op}，当前签名账户是 ${wallet ? wallet.address : "(只读)"}。` +
+        `（v3 已去掉 onlyOperator，加 --v3 就能用任意钥匙结算）`);
     }
   }
   console.log("");

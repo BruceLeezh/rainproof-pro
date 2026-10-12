@@ -1,6 +1,6 @@
 // 三个演示页面的内联脚本语法检查（用 vm.Script 只编译不执行）。
 // 用法：node 07-测试工具/check-html-syntax.js
-// 它不在 `npm test` 的五道门禁里，是页面改动后的附加检查。
+// 它已挂进 `npm test`（2026-10-12 注册，A40①）：纯离线，不碰网络。
 const fs = require("fs"), vm = require("vm"), path = require("path");
 
 const ROOT = path.join(__dirname, "..");

@@ -14,10 +14,13 @@
 
 const { JsonRpcProvider } = require("ethers");
 
-const RPC = "https://ethereum-sepolia-rpc.publicnode.com";
+// RPC 优先读环境变量（04-脚本/.env 的 SEPOLIA_RPC，与 ai-collect / hook-watch 一致），
+// 回退到 Sepolia 公共节点 —— 原来写死在这里，换 BOT 链查交易就得改源码，等于让「兜底工具」没法兜底。
+const RPC = process.env.SEPOLIA_RPC || process.env.RPC_URL || "https://ethereum-sepolia-rpc.publicnode.com";
 // 备用节点：publicnode 对「较旧的交易」会返回 null 回执（2026-10-06 实测：
 // 对区块 11,833,556 的部署交易返回 null，tenderly 正常返回 status=1）。
 // 注意 ankr 已失效——现在要求 API key，匿名调用报 -32000 Unauthorized，不要加回来。
+// 备用节点只有 Sepolia 口径，SEPOLIA_RPC 指向别的链时它不适用（拿不到回执就只报「不确定」）。
 const FALLBACK_RPCS = ["https://sepolia.gateway.tenderly.co"];
 
 async function main() {
@@ -33,7 +36,11 @@ async function main() {
 
   const provider = new JsonRpcProvider(RPC);
   const net = await provider.getNetwork();
-  console.log("网络 :", net.name, "chainId =", net.chainId.toString());
+  const chainId = Number(net.chainId);
+  // 单位按 chainId 走，与 04-脚本/deploy.js:123 同一口径（写死 "SepETH" 时，
+  // 在 BOT 主网 677 / BOT 测试网 968 上余额那一行是错的）。
+  const sym = chainId === 677 || chainId === 968 ? "BOT" : "SepETH";
+  console.log("网络 :", net.name, "chainId =", chainId);
   console.log("RPC  :", RPC);
   console.log("-".repeat(60));
 
@@ -57,10 +64,11 @@ async function main() {
     console.log("from     :", tx.from);
     console.log("to       :", tx.to ?? "(空 —— 这是部署合约的交易)");
     if (!rc) {
-      console.log("执行状态 : ⚠️ 两个节点都没返回交易回执（receipt 为 null）");
-      console.log("           交易本身已经上链（在区块里），但拿不到 status / gasUsed / 部署地址。");
-      console.log("           过几分钟再跑一次通常就好。");
-      process.exit(0);
+      console.log("执行状态 : ❌ 拿不到交易回执（receipt 为 null），**无法确认这笔交易成没成**");
+      console.log("           两个节点都没返回回执，可能是节点对旧交易的问题，也可能是查询出错。");
+      console.log("           过几分钟再跑一次；仍然拿不到就别当成成功 —— 换节点或到浏览器核对。");
+      // 原来这里 exit 0：脚本自己都没拿到 status，却对外报「成功」，最适合骗过 CI 与定时任务。
+      process.exit(1);
     }
     console.log("执行状态 :", rc.status === 1 ? "✅ 成功" : "❌ 失败");
     console.log("Gas 用了 :", rc.gasUsed.toString());
@@ -72,7 +80,7 @@ async function main() {
     const bal = await provider.getBalance(value);
     const nonce = await provider.getTransactionCount(value);
     console.log("地址  :", value);
-    console.log("余额  :", (Number(bal) / 1e18).toFixed(6), "SepETH");
+    console.log("余额  :", (Number(bal) / 1e18).toFixed(6), sym);
     console.log("发过  :", nonce, "笔交易（nonce）");
   } else if (mode === "code") {
     const code = await provider.getCode(value);

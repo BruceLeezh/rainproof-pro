@@ -97,7 +97,9 @@ const REGIONS = [
 ];
 
 // 累计起点：累计降雨从这个日期开始算。2026-10-01 = 赛事周的第一天。
-const RAIN_EPOCH = process.env.RAIN_EPOCH || "2026-10-01";
+// C11：与 04-脚本/regions.js:30 共用同一个常量 —— 原来本文件也各写了一份
+// `process.env.RAIN_EPOCH || "2026-10-01"`，改 epoch 时漏掉一处就口径分裂。
+const { RAIN_EPOCH } = require("./regions");
 
 // 写进链上判定记录的模型/口径版本号。口径一改就改这个字符串 ——
 // 否则链上的历史判定没法区分「哪一版算出来的」。
@@ -550,7 +552,9 @@ async function main() {
         `${C.y("跳过")} #${r.id} ${r.name.padEnd(4)} 链上现值 ${current}mm > 新值 ${mm}mm` +
         `\n      ${C.dim("累计值回退会让已投保的保单「增量」失真，已拒绝写入（要强制写加 --force）。")}`
       );
-      results.push({ r, ok: false, reason: "非单调" });
+      // skipped: 这是**设计好的守卫**（链上值更高时拒绝写回退值），不是喂价失败。
+      // 少了这个标记，「一天喂两次」这种正常操作会被下面的失败汇总当成硬错误、常年亮红灯。
+      results.push({ r, ok: false, reason: "非单调（链上现值更高，按守卫跳过）", skipped: true });
       continue;
     }
 
@@ -600,6 +604,26 @@ async function main() {
     console.log("   双击桌面  汉客松-链上核验台.html");
     for (const x of ok) console.log(`   ${x.r.name}：${x.hash}`);
     console.log(C.dim("   （不要用 sepolia.otterscan.io —— 它的后端节点 10/4 起挂了，页面永远转圈）"));
+  }
+
+  /* ---- 失败区域汇总 + 退出码（A21）
+     为什么必须有：原来哪怕 5 个区域全军覆没，脚本也 exit 0 —— 挂在定时任务里、
+     或答辩当场手动跑，外面只看得到「跑完了」，看不见「其实一个都没喂上去」。
+     口径：被拒收（FeedRejected）/ updateRainfall 抛错 / 多源分歧未过闸 = 硬失败；
+     非单调跳过 = 允许的软跳过（见上面 skipped 标记），不计入。 */
+  const failed = results.filter((x) => !x.ok && !x.skipped);
+  const skipped = results.filter((x) => x.skipped);
+  if (skipped.length) {
+    console.log("\n" + C.dim(`按单调性守卫跳过 ${skipped.length} 个区域：${skipped.map((x) => x.r.name).join("、")}（链上现值更高，非失败）`));
+  }
+  if (failed.length) {
+    console.log("\n" + C.r(`❌ 有 ${failed.length}/${results.length} 个区域喂价失败，进程将以非零码退出：`));
+    for (const x of failed) {
+      console.log(`   #${x.r.id} ${x.r.name.padEnd(4)} ${x.reason}${x.rejected ? "（异常数据已 rejectFeed 上链留证）" : ""}`);
+    }
+    // 用 exitCode 而不是 process.exit()：watch 模式下这次 main() 还在递归外层，
+    // 立刻 exit 会把「汇总打印」截断；等栈退干净由 Node 自然带码退出。
+    process.exitCode = 1;
   }
 
   /* ---- watch 模式 ---- */

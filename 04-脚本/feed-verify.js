@@ -188,7 +188,16 @@ if (require.main === module) {
   const { REGIONS } = require("./regions");
   const ARGV = process.argv.slice(2);
   const UNTIL = (ARGV.find((a) => a.startsWith("--until=")) || "").split("=")[1] || null;
-  const ONLY = Number((ARGV.find((a) => a.startsWith("--region=")) || "").split("=")[1]) || null;
+  // 原来写 `Number(..) || null`：0 和 NaN 都是 falsy，于是 `--region=0`、`--region=abc`
+  // 静默退化成「验全部区域」，输出的 ✓ 看着像这一区通过，其实是别区在报数。
+  // regions.js 的 REGION id 从 1 起（1..5，没有 0），所以 0 是非法输入，不是「全部」。
+  const regionArg = ARGV.find((a) => a.startsWith("--region="));
+  const onlyArg = regionArg ? regionArg.split("=")[1] : null;
+  if (onlyArg !== null && !REGIONS.some((r) => r.id === Number(onlyArg))) {
+    console.error(`❌ --region=${onlyArg} 不是合法区域号。合法值：${REGIONS.map((r) => `${r.id}=${r.name}`).join("  ")}`);
+    process.exit(2);
+  }
+  const ONLY = onlyArg === null ? null : Number(onlyArg);
   const epoch = RAIN_EPOCH;
 
   (async () => {

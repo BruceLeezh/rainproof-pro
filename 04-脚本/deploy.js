@@ -8,11 +8,16 @@
  *        node compile_sol.js ../03-合约/RainDeliveryInsurance.sol      （v1）
  *        npm run compile:v2                                             （v2）
  *      （产物直接落在 03-合约/，这个脚本就从那里读，不需要手工复制粘贴）
- *   4) npm run deploy              ← 部署 v1
- *      node deploy.js --v2         ← 部署 v2
+ *   4) node deploy.js --v3         ← 部署 v3（现行产品合约：968 与主网 677 上跑的就是它）
+ *      node deploy.js --v2         ← 部署 v2（968 上的演示留痕那版）
+ *      node deploy.js --v1         ← 部署 v1（2026-10-06 第一阶段留在 Sepolia 的那版）
+ *
+ * ★ 版本必须显式给（A18）：以前不给旗标就默认部署 v1 —— 一条 `node deploy.js` 会在主网上
+ *   把已经过时的 v1 部署出去、还花真 gas（撤不回来）。现在不给旗标直接报错。
  *
  * 部署到 BOT Chain 主网（chainId 677，原生代币 BOT）：
- *      $env:SEPOLIA_RPC='https://rpc.botchain.ai'; node deploy.js --v2
+ *      $env:SEPOLIA_RPC='https://rpc.botchain.ai'; node deploy.js --v3 --yes-mainnet
+ *      （主网要额外一次显式确认，与 04-脚本/deploy-multisig.js:147 是同一道闸）
  *   （变量名叫 SEPOLIA_RPC 是历史包袱：它只是一条"RPC 地址"，是哪条链由节点自己答，
  *     脚本会用 chainId + 块高双重确认身份，认不出来就拒绝部署。）
  *
@@ -32,7 +37,15 @@ const { JsonRpcProvider, Wallet, ContractFactory } = require("ethers");
 // ★ 部署哪一版：默认 v1（RainDeliveryInsurance），加 --v2 部署 v2（RainDeliveryInsuranceV2）。
 //   v2 必须先编译：cd 07-测试工具 && npm run compile:v2
 const SOL_DIR = path.join(__dirname, "..", "03-合约");
-const VARIANT = process.argv.includes("--v3") ? "V3" : process.argv.includes("--v2") ? "V2" : "";
+const ARGV = process.argv.slice(2);
+const YES_MAINNET = ARGV.includes("--yes-mainnet");
+// A18：不给旗标就默认 v1 是个陷阱 —— 主网上一发就是真 gas + 一个过时合约。
+// 现在三版都要显式点名（--v1 的 VARIANT 是空串：v1 的文件名没有后缀）。
+const VARIANT = ARGV.includes("--v3") ? "V3" : ARGV.includes("--v2") ? "V2" : ARGV.includes("--v1") ? "" : null;
+if (VARIANT === null) {
+  console.error("❌ 必须显式指定要部署哪一版：--v3（现行产品）/ --v2（968 演示留痕）/ --v1（第一阶段留痕，别用于新链）");
+  process.exit(2);
+}
 const CONTRACT_NAME = "RainDeliveryInsurance" + VARIANT;
 const ABI_FILE = path.join(SOL_DIR, `${CONTRACT_NAME}.abi.json`);
 const BYTECODE_FILE = path.join(SOL_DIR, `${CONTRACT_NAME}.bytecode.txt`);
@@ -116,10 +129,23 @@ async function main() {
     throw new Error(`⚠️ 当前 RPC 不是已知的真链（chainId=${chainId}）。已知：` +
       Object.entries(KNOWN_CHAINS).map(([k, v]) => `${v}(${k})`).join(" / "));
   }
+  // A18：主网必须显式确认一次（deploy-multisig.js:147 已经有同一道闸）——
+  // 误部署 = 一笔真 gas + 一个多出来的合约，发出去撤不回来。
+  if (chainId === 677 && !YES_MAINNET) {
+    throw new Error("主网 677 要加 --yes-mainnet 才发交易（防误发）");
+  }
   // chainId 能被本地假链伪装（07-测试工具/prep_local_chain.js 就设成 11155111），块高不能：
   // 2026-10-06 实测 Sepolia 块高 1185 万+、BOT Chain 主网 2573 万+，本地假链从 0 开始。这里只把身份说清楚，本地联调照样能跑。
   const blockNumber = await retry("读块高", () => provider.getBlockNumber());
   const isRealChain = blockNumber >= 1000000;
+  // A18：块高认不出真链时，原来只打印一句 ⚠️ 就照样往下部署 —— RPC 被指到一个伪装的链
+  // （或配错成某个高度为 0 的链）上时，脚本会把合约"部署"到一个假地方还报成功。
+  // 唯一的例外是本机回放（历史回放/分镜里的 http://127.0.0.1:8545|8546），按 RPC 是否本机放行。
+  const isLocalRpc = /^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:|\/|$)/.test(rpc);
+  if (!isRealChain && !isLocalRpc) {
+    throw new Error(`块高只有 ${blockNumber}（< 1000000）且 RPC 不是本机地址：这不是真链，拒绝部署。` +
+      `本机回放请把 SEPOLIA_RPC 指向 http://127.0.0.1:8545`);
+  }
   const sym = chainId === 677 || chainId === 968 ? "BOT" : "SepETH";   // BOT Chain（主网 677 / 测试网 968）的原生代币叫 BOT，不是 SepETH
   console.log("网络       : " + (isRealChain
     ? `${chainName} (${chainId})`

@@ -16,6 +16,13 @@
  *   取整网格**拼成稳定串再哈希。任何第三方照着复算，必然得到同一个 hash；
  *   一旦精算数据更新，hash 自己就会变 —— 链上留痕能证明"价格随精算走"。
  *
+ *   ⚠️ 哈希口径别混（C12）：这里的 reasonHash 用 **SHA256**（`04-脚本/rehearse-v2.js:114`
+ *   同一套，第三方照抄依据串就能复算）；`04-脚本/canonical.js:51` 的 `evidenceHashOf` 用
+ *   **keccak256** —— 那是 AI 判定证据（快照/判定 JSON）的哈希，另有 `07-测试工具/check-ai.js`
+ *   逐个复算。两套哈希各有各的验证方，别互换、也别合并成一套。
+ *   下面的 fileHash（精算文件的 SHA256）只打印、不写链也不落盘：链上承诺的是依据串 reasonHash，
+ *   它已经把 p / 窗口 / 阈值 / 赔付 / 目标赔付率 / 网格全钉进去了，再存一份文件哈希只是多个没人读的产物。
+ *
  * 【口径】
  *   窗口固定 72 小时（与合约 MAX_HOURS 一致，也是提交材料统一引用的口径）；
  *   概率越过 10% 保本线的城市标 RISK_LOADED，其余 RISK_NORMAL。
@@ -34,12 +41,22 @@ const { ethers } = require("ethers");
 const { REGIONS } = require("./regions");
 
 const ROOT = path.join(__dirname, "..");
-const ABI_FILE = path.join(ROOT, "03-合约", "RainDeliveryInsurance.abi.json");
+// 三版 ABI 都从 03-合约 读，不手抄。
+// 原来这里只挂 v1：v1 是 premiumOf(regionId)（一参），v2/v3 是 premiumOf(regionId, hours)（两参）。
+// 拿 v1 的签名去问 v2/v3 合约，selector 打空 → 读不到真实现值（或直接抛 CALL_EXCEPTION），
+// 而 setUnderwriting 三版签名完全相同，于是「比对过了、写进去了」全程不报错 —— 静默用错口径定价。
+const ABI_BY_KIND = {
+  v1: path.join(ROOT, "03-合约", "RainDeliveryInsurance.abi.json"),
+  v2: path.join(ROOT, "03-合约", "RainDeliveryInsuranceV2.abi.json"),
+  v3: path.join(ROOT, "03-合约", "RainDeliveryInsuranceV3.abi.json"),
+};
 const ACTUARY_FILE = path.join(ROOT, "10-金融与定价", "actuary-output.json");
 
 const ARGV = process.argv.slice(2);
 const APPLY = ARGV.includes("--apply");
 const HOURS = (ARGV.find((a) => a.startsWith("--hours=")) || "").split("=")[1] || "72";
+// --v1/--v2/--v3 显式钉版本；不给就问链（见 pickKind）。留在 ARGV 里不参与 plan()，只影响读链。
+const FORCED_KIND = (ARGV.find((a) => /^--v[123]$/.test(a)) || "").slice(2) || null;
 
 const TARGET_LOSS_RATIO = 0.6;   // 目标赔付率：收 100 元赔 60 元，留 40 元做费用与风险附加
 const TICK = 0.0001;             // 保费取整网格（上整，定价只许往上不许往下）
@@ -91,6 +108,34 @@ function plan() {
   return { rows, reason, act };
 }
 
+/* 指纹探测的失败只有两种，混在一起就会退回错版 ABI 静默读错：
+   CALL_EXCEPTION / BAD_DATA = 这个合约上真没有这个函数 → 可以安全降级；
+   其它（超时 / ECONNREFUSED / 限流 / 节点 5xx）= 不知道链上是什么版本 → 抛出去重试。 */
+function isMissingFunction(e) {
+  const code = (e && e.code) || (e && e.info && e.info.error && e.info.error.code);
+  return code === "CALL_EXCEPTION" || code === "BAD_DATA";
+}
+function netErr(kind, e) {
+  const err = new Error(
+    `合约版本指纹探测失败（试 ${kind} 的只读函数时出错）：${(e && (e.shortMessage || e.message)) || e}\n` +
+    `  这不是「链上没有这个函数」，是 RPC / 网络层面的问题 —— 不敢猜版本，请确认 RPC 可达后重跑（或显式 --v1/--v2/--v3）。`
+  );
+  err.cause = e;
+  return err;
+}
+
+/** 选版本：给了 --v1/--v2/--v3 就用它，否则从新到旧问链（v3 entryThresholdOf / v2 thresholdOf / v1 兜底） */
+async function pickKind(provider) {
+  if (FORCED_KIND) return FORCED_KIND;
+  const probe = (kind, fn) => {
+    const c = new ethers.Contract(process.env.CONTRACT_ADDRESS, JSON.parse(fs.readFileSync(ABI_BY_KIND[kind], "utf8")), provider);
+    return c[fn](24);
+  };
+  try { await probe("v3", "entryThresholdOf"); return "v3"; } catch (e) { if (!isMissingFunction(e)) throw netErr("v3", e); }
+  try { await probe("v2", "thresholdOf"); return "v2"; } catch (e) { if (!isMissingFunction(e)) throw netErr("v2", e); }
+  return "v1";
+}
+
 (async () => {
   const { rows, reason, act } = plan();
   const reasonHash = ethers.sha256(ethers.toUtf8Bytes(reason));
@@ -115,12 +160,27 @@ function plan() {
 
   const provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC || "https://ethereum-sepolia-rpc.publicnode.com");
   const net = await provider.getNetwork();
-  const c = new ethers.Contract(process.env.CONTRACT_ADDRESS, JSON.parse(fs.readFileSync(ABI_FILE, "utf8")), provider);
-  console.log(`\n链 chainId=${net.chainId}  合约 ${process.env.CONTRACT_ADDRESS}`);
+  const kind = await pickKind(provider);
+  const abi = JSON.parse(fs.readFileSync(ABI_BY_KIND[kind], "utf8"));
+  const c = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, provider);
+  console.log(`\n链 chainId=${net.chainId}  合约 ${process.env.CONTRACT_ADDRESS}  ABI ${kind}`);
+
+  // v2/v3 的保费按 (regionId, hours) 二维定价：hours 传错不会报错，只会读到**另一个窗口的价**，
+  // 然后被当成「已经是目标值」跳过，或把错价写成目标价。所以先照链上的 hoursAllowed 校验一遍。
+  if (abi.some((x) => x.name === "hoursAllowed")) {
+    if (!(await c.hoursAllowed(Number(HOURS)))) {
+      const allowed = [];
+      for (const h of [12, 24, 48, 72]) if (await c.hoursAllowed(h)) allowed.push(h);
+      throw new Error(`--hours=${HOURS} 这个合约版本不接受（hoursAllowed(${HOURS}) = false）。链上合法值：${allowed.join(" / ") || "（一个都读不到，检查 RPC / 地址）"}`);
+    }
+  }
+
+  // v1: premiumOf(regionId) ｜ v2/v3: premiumOf(regionId, hours)
+  const readPremium = (id) => (kind === "v1" ? c.premiumOf(id) : c.premiumOf(id, Number(HOURS)));
 
   const onchain = [];
   for (const r of rows) {
-    const cur = await c.premiumOf(r.id);
+    const cur = await readPremium(r.id);
     const lvl = await c.riskLevel(r.id);
     onchain.push({ ...r, cur, lvl });
     const same = cur === ethers.parseEther(r.premiumEth) && Number(lvl) === r.level;
@@ -130,7 +190,7 @@ function plan() {
   if (!APPLY) { console.log("\n[默认] 只算不算。确认无误后加 --apply 真的发交易。"); return; }
 
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-  const wc = new ethers.Contract(process.env.CONTRACT_ADDRESS, JSON.parse(fs.readFileSync(ABI_FILE, "utf8")), wallet);
+  const wc = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, wallet);
   console.log(`\n签名账户 ${wallet.address}  余额 ${ethers.formatEther(await provider.getBalance(wallet.address))} ETH\n`);
   for (const r of onchain) {
     const want = ethers.parseEther(r.premiumEth);
@@ -142,6 +202,6 @@ function plan() {
 
   console.log("\n最终链上状态：");
   for (let id = 1; id <= 5; id++) {
-    console.log(`  #${id} premiumOf=${ethers.formatEther(await c.premiumOf(id))}  riskLevel=${await c.riskLevel(id)}`);
+    console.log(`  #${id} premiumOf=${ethers.formatEther(await readPremium(id))}  riskLevel=${await c.riskLevel(id)}`);
   }
 })().catch((e) => { console.error("💥", e.shortMessage || e.message); process.exit(1); });

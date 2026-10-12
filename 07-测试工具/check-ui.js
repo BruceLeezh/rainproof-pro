@@ -3,9 +3,11 @@
 // ① 降雨看板的「刻度」与「触发线」必须指同一个地方
 //    真实修过的 bug：条子按 0→阈值 画（阈值落在条尾），触发线却写死在 left:50%（=25mm），
 //    于是页面上「50 在块的最后、触发线却在中间」—— 视觉上自相矛盾。结论：错的是公式不是线。
-// ② 保障时长只能是三档下拉（24/48/72）
-//    产品设计上短窗口档的公平保费比一次交易的手续费还便宜 51 倍，所以只卖 24/48/72
+// ② 保障时长只能是几档下拉（静态脚手架 = 24/48/72，v3 现行 = 12/24）
+//    产品设计上短窗口档的公平保费比一次交易的手续费还便宜 51 倍，所以只卖有限几档
 //    （见 02-作战与答辩/定价-时长差异化设计.md）。自由输入会让人选出 1~72 的任意值。
+//    口径分两层，两层都对：静态 <select> 记的是 v2 的三档（那套设计的痕迹，本文件钉它不被改成自由输入），
+//    真正能卖哪几档由链上 hoursAllowed(h) 收窄 —— v3 只放 12/24，见同目录 e2e_v3.js 与 check-frozen-node.js ④。
 // ③ 页面 JS 里引用的 DOM id / class 必须真实存在
 //    UI 改版最常见的坏法是改了 id 或 class，JS 就静默失效 —— 现场表现是"按钮点了没反应"。
 //
@@ -21,15 +23,21 @@ const index = fs.readFileSync(path.join(DEMO, "index.html"), "utf8");
 
 console.log("\n[① 降雨看板] 刻度与触发线必须指同一个地方");
 {
-  const m = index.match(/const pct = Math\.min\(100, Math\.round\(v \/ \(thr \* 2\) \* 100\)\);/);
+  const m = index.match(/const pct = (Math\.min\(100, Math\.round\(v \/ \(thr \* 2\) \* 100\)\));/);
   ok("填充公式是 v / (阈值 × 2) × 100", !!m, m ? "" : "没找到，公式可能又被改回 v/thr（那会让触发线落到中间）");
   ok("触发线 .bar::after 在 left:50%", /\.bar::after\{[^}]*left:50%/.test(index));
   ok("触发线标签 .bar::before 在 calc(50% + 6px)", /\.bar::before\{[^}]*left:calc\(50% \+ 6px\)/.test(index));
 
-  // 拿真实链上五个区域的雨量算一遍：50mm 必须正好压在触发线上
+  // ⚠️ 下面是**固定样本**，不是链上读回来的雨量：它只验公式本身（50mm 必须正好压在触发线上）。
+  //    thr = 50 也不是链上读的，是为了让这段算得出来的人工基准；页面上的阈值由合约
+  //    entryThresholdOf(小时档) 给。真实链上的五城累计雨量在 05-演示站点/frozen-node.js 快照里
+  //    （67 / 128 / 39 / 162 / 0 mm），这里不引网络、不去读它，只钉公式。
   const thr = 50;
   const vals = [["武汉", 24], ["上海", 34], ["北京", 0], ["广州", 50], ["成都", 120]];
-  const pct = v => Math.min(100, Math.round(v / (thr * 2) * 100));
+  const pctFn = m ? new Function("v", "thr", `return ${m[1]};`) : null;
+  const pct = (v) => (pctFn ? pctFn(v, thr) : NaN);
+  // A31：这段不再另写一份公式 —— 算的就是上面从 index.html 抠出来的那一条（单一来源）。
+  //   原来检查文件里又抄了一份 pct()，页面改了也不影响它，那 4 条断言等于自己跟自己比。
   console.log("\n  阈值 50mm，条子满格 = 100mm，触发线在 50%：");
   for (const [n, v] of vals) {
     const p = pct(v);
@@ -41,7 +49,7 @@ console.log("\n[① 降雨看板] 刻度与触发线必须指同一个地方");
   ok("没有区域被算成负数", vals.every(([, v]) => pct(v) >= 0));
 }
 
-console.log("\n[② 保障时长] 只能是三档下拉 24/48/72");
+console.log("\n[② 保障时长] 只能是固定的几档下拉（静态脚手架 24/48/72 = v2 口径；v3 运行时收窄成 12/24）");
 {
   ok("hoursInput 是 <select> 不是自由输入框", /<select id="hoursInput"/.test(index) && !/<input id="hoursInput"/.test(index));
   const blk = index.match(/<select id="hoursInput"[\s\S]*?<\/select>/);
@@ -50,6 +58,13 @@ console.log("\n[② 保障时长] 只能是三档下拉 24/48/72");
   ok("默认选中 72 小时", blk ? /value="72"[^>]*selected/.test(blk[0]) : false);
   ok("JS 用 .value 读它（select 没有 valueAsNumber）", !/hoursInput"\)\.valueAsNumber/.test(index) && /Number\(\$\("hoursInput"\)\.value\)/.test(index));
   ok("档位说明与设计页一致（上限 72）", /72 小时/.test(index));
+
+  // A38：上面几条钉的是**静态脚手架**（v2 口径 24/48/72），而 v3 现行只卖 12/24 —— 两套口径不是矛盾，
+  // 是「静态标记 + 链上白名单收窄」两层。这条断言要求第二层存在：候选四档表 + 逐档问链上 hoursAllowed。
+  // 少了第二层，页面就会把 v3 不卖的 48/72 摆出来卖（点了链上必 revert），这才是不一致的坏法。
+  ok("静态候选由链上 hoursAllowed(h) 收窄（v3 只放 12/24，不是照静态三档直接卖）",
+     /const hourCands = \[12, 24, 48, 72\]/.test(index) && /hoursAllowed\(/.test(index),
+     "index.html 里没找到「候选四档 + hoursAllowed」的收窄代码");
 }
 
 console.log("\n[③ DOM 契约] 页面 JS 引用的 id / class 必须真实存在");

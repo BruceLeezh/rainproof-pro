@@ -5,8 +5,12 @@
   "license": "MIT",
   "type": "commonjs",
   "scripts": {
-    "deploy": "node deploy.js",
+    "deploy": "node deploy.js --v3",
+    "deploy:v3": "node deploy.js --v3",
+    "deploy:v1": "node deploy.js --v1",
     "deploy:v2": "node deploy.js --v2",
+    "deploy-multisig": "node deploy-multisig.js",
+    "feed-verify": "node feed-verify.js",
     "push": "node push-rainfall.js",
     "status": "node push-rainfall.js --status",
     "demo": "node push-rainfall.js --demo",
