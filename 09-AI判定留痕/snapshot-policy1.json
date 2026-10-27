@@ -1,0 +1,83 @@
+{
+  "snapshot": {
+    "schema": "rainproof/judge-input@1",
+    "collectVersion": "ai-collect-v1",
+    "policyId": 1,
+    "collectedAt": "2026-10-06T13:02:08.787Z",
+    "simulated": true,
+    "simulationNote": "模型序列由链上注入值合成，用于演示；真实模式下会向 ECMWF/GFS/ICON 实取。",
+    "epoch": "2026-10-01",
+    "region": {
+      "id": 5,
+      "key": "chengdu",
+      "name": "成都",
+      "lat": 30.5728,
+      "lon": 104.0668
+    },
+    "policy": {
+      "rider": "0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28",
+      "regionId": 5,
+      "startTime": 1791291588,
+      "endTime": 1791550788,
+      "startDate": "2026-10-06",
+      "rainfallAtBuy": 6,
+      "paid": false
+    },
+    "oracle": {
+      "cumulativeMm": 120,
+      "officialIncrementMm": 114,
+      "contract": "0x89e7C942535930B61cB61631051E8b0bD670596a",
+      "chainId": 11155111
+    },
+    "weather": {
+      "source": "synthetic",
+      "windowFrom": "2026-10-06",
+      "models": [
+        {
+          "id": "ecmwf_ifs025",
+          "label": "ECMWF IFS025",
+          "org": "欧洲中期天气预报中心",
+          "sinceEpochMm": 120,
+          "inWindowMm": 114,
+          "days": [
+            {
+              "date": "2026-10-06",
+              "mm": 68.4
+            }
+          ]
+        },
+        {
+          "id": "gfs_seamless",
+          "label": "GFS",
+          "org": "美国 NOAA/NCEP",
+          "sinceEpochMm": 120,
+          "inWindowMm": 107.16,
+          "days": [
+            {
+              "date": "2026-10-06",
+              "mm": 64.296
+            }
+          ]
+        },
+        {
+          "id": "icon_seamless",
+          "label": "ICON",
+          "org": "德国气象局 DWD",
+          "sinceEpochMm": 120,
+          "inWindowMm": 118.56,
+          "days": [
+            {
+              "date": "2026-10-06",
+              "mm": 71.136
+            }
+          ]
+        }
+      ]
+    },
+    "thresholds": {
+      "thresholdMm": 50,
+      "minConfidence": 60
+    }
+  },
+  "inputHash": "0xb4b00fa335e120433ca5bcc9c1eacbb71a48617724a0376ac35a9858a849de3e"
+}

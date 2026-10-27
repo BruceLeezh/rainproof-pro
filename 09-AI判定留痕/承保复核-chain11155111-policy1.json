@@ -1,0 +1,91 @@
+{
+  "schema": "rainproof/underwrite-review@1",
+  "review": {
+    "hook": "PolicyBought",
+    "policyId": 1,
+    "chainId": 11155111,
+    "contract": "0x89e7C942535930B61cB61631051E8b0bD670596a",
+    "abi": "v1",
+    "txHash": "0x264729a67c9ea22546e04d36e452d69cac972b84fb00eb7d8b9f04a5c792136c",
+    "blockNumber": 11856069,
+    "asOf": "2026-10-06T12:59:48.000Z",
+    "rider": "0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28",
+    "regionId": 5,
+    "regionKey": "chengdu",
+    "regionName": "成都",
+    "policyStatus": "paid",
+    "startTime": 1791291588,
+    "endTime": 1791550788,
+    "windowHours": 72,
+    "thresholdMm": 50,
+    "premiumWei": "700000000000000",
+    "payoutWei": "10000000000000000",
+    "rainfallAtBuyMm": 6,
+    "onchainCumulativeMm": 120,
+    "incrementMm": 114,
+    "feed": {
+      "source": "投保时刻最近的 RainfallUpdated(链上)",
+      "lastFeedTime": "2026-10-06T12:42:24.000Z",
+      "ageSeconds": 1044,
+      "blockNumber": 11855982,
+      "txHash": "0xa8fd295752a00e6384cf2892dbe71c8466cfaf931786e16494536a5d895e6f9d",
+      "confidence": 88
+    },
+    "models": {
+      "status": "majority",
+      "agree": true,
+      "medianMm": 6.5,
+      "spreadMm": 1.5,
+      "toleranceMm": 1.3,
+      "perModelMm": [
+        {
+          "id": "ecmwf_ifs025",
+          "label": "ECMWF IFS025",
+          "org": "欧洲中期天气预报中心",
+          "mm": 7.9,
+          "days": 6
+        },
+        {
+          "id": "gfs_seamless",
+          "label": "GFS",
+          "org": "美国 NOAA/NCEP",
+          "mm": 6.4,
+          "days": 6
+        },
+        {
+          "id": "icon_seamless",
+          "label": "ICON",
+          "org": "德国气象局 DWD",
+          "mm": 6.5,
+          "days": 6
+        }
+      ],
+      "usable": [
+        "ecmwf_ifs025",
+        "gfs_seamless",
+        "icon_seamless"
+      ],
+      "missing": [],
+      "outlierModels": [
+        "ecmwf_ifs025"
+      ],
+      "window": "2026-10-01 ~ 2026-10-06"
+    },
+    "baselineDeviationPct": 1746.15,
+    "checks": {
+      "windowOk": true,
+      "baselineMonotonic": true,
+      "feedFresh": true,
+      "modelsAgree": true,
+      "baselineWithinModels": false
+    },
+    "flagged": [
+      "baseline-deviates-from-models"
+    ],
+    "verdict": "REVIEW_FLAG",
+    "reviewVersion": "hook-watch@1"
+  },
+  "reviewHash": "0x4b9462bc73ea508bccbc69c50e10208820f806378796db2d8470f4a321d83017",
+  "reviewedAt": "2026-10-07T05:58:37.634Z",
+  "file": "D:\\workbuddy-use\\汉客松-参赛包\\09-AI判定留痕\\承保复核-chain11155111-policy1.json"
+}

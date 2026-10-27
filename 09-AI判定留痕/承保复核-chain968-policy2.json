@@ -1,0 +1,93 @@
+{
+  "schema": "rainproof/underwrite-review@1",
+  "review": {
+    "hook": "PolicyBought",
+    "policyId": 2,
+    "chainId": 968,
+    "contract": "0x89e7C942535930B61cB61631051E8b0bD670596a",
+    "abi": "v2",
+    "txHash": "0xb426ae47ff0adc0a98306813aa58fa4fba3a3021ae472866f2e911e9cefaf375",
+    "blockNumber": 25979450,
+    "asOf": "2026-10-07T03:34:31.000Z",
+    "rider": "0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28",
+    "regionId": 4,
+    "regionKey": "guangzhou",
+    "regionName": "广州",
+    "policyStatus": "pending_judgement",
+    "startTime": 1791344071,
+    "endTime": 1791430471,
+    "windowHours": 24,
+    "thresholdMm": 50,
+    "premiumWei": "300000000000000",
+    "payoutWei": "0",
+    "rainfallAtBuyMm": 150,
+    "onchainCumulativeMm": 200,
+    "incrementMm": 50,
+    "feed": {
+      "source": "投保时刻最近的 RainfallUpdated(链上)",
+      "lastFeedTime": "2026-10-07T03:34:15.000Z",
+      "ageSeconds": 16,
+      "blockNumber": 25979429,
+      "txHash": "0xf0e6ad37a8e7820b8dc1bb35bdaab0e855d3076df9cc2900108b52aafb9857d5",
+      "confidence": 90
+    },
+    "models": {
+      "status": "diverge",
+      "agree": false,
+      "medianMm": 56.5,
+      "spreadMm": 45.8,
+      "toleranceMm": 11.3,
+      "perModelMm": [
+        {
+          "id": "ecmwf_ifs025",
+          "label": "ECMWF IFS025",
+          "org": "欧洲中期天气预报中心",
+          "mm": 42.4,
+          "days": 6
+        },
+        {
+          "id": "gfs_seamless",
+          "label": "GFS",
+          "org": "美国 NOAA/NCEP",
+          "mm": 56.5,
+          "days": 6
+        },
+        {
+          "id": "icon_seamless",
+          "label": "ICON",
+          "org": "德国气象局 DWD",
+          "mm": 88.2,
+          "days": 6
+        }
+      ],
+      "usable": [
+        "ecmwf_ifs025",
+        "gfs_seamless",
+        "icon_seamless"
+      ],
+      "missing": [],
+      "outlierModels": [
+        "ecmwf_ifs025",
+        "icon_seamless"
+      ],
+      "window": "2026-10-01 ~ 2026-10-06"
+    },
+    "baselineDeviationPct": 253.98,
+    "checks": {
+      "windowOk": true,
+      "baselineMonotonic": true,
+      "feedFresh": true,
+      "modelsAgree": false,
+      "baselineWithinModels": false
+    },
+    "flagged": [
+      "models-not-agreeing",
+      "baseline-deviates-from-models"
+    ],
+    "verdict": "REVIEW_FLAG",
+    "reviewVersion": "hook-watch@1"
+  },
+  "reviewHash": "0x088cf86d499f3eadcd0a5040da6837df0a47ccec6003ec1895e04a6c80a07c6b",
+  "reviewedAt": "2026-10-07T05:58:51.071Z",
+  "file": "D:\\workbuddy-use\\汉客松-参赛包\\09-AI判定留痕\\承保复核-chain968-policy2.json"
+}

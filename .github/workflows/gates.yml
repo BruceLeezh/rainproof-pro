@@ -1,0 +1,78 @@
+# 门禁：每次推 main（或提 PR）都在干净机器上重跑一遍全部自动化断言。
+#
+# 为什么需要它：在此之前的门禁都是**在我们自己电脑上**跑的 —— 依赖本机 node_modules、
+# 本机路径、本机 .env。评委（或我们自己换台机器）没有任何办法确认这些话是真的。
+# 这个 workflow 把「README 说的全绿」变成任何人都能点开看的公开记录。
+#
+# 它跑的就是本仓库唯一的入口：`cd 07-测试工具 && npm test` —— 参与的门禁、顺序与步数只在
+# `07-测试工具/package.json` 的 "test" 里定义（本文件不写死数字，避免注释与链脱节）。
+# 两个目录各装一次依赖：07-测试工具 需要 ethers/ganache/solc；04-脚本 的 canonical.js / hook-watch.js
+# 被 check-canonical / check-ai / check-feed-verify 直接 require（hook-watch 还 require 了 dotenv）。
+name: Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gates-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            04-脚本/package-lock.json
+            07-测试工具/package-lock.json
+
+      # 04-脚本 在前：07-测试工具 的 check 脚本会 require 它下面的模块
+      #
+      # 注意（2026-10-11 踩过）：07-测试工具/package-lock.json 里
+      # node_modules/ganache/node_modules/fsevents 必须带 "optional": true。
+      # chokidar 把它声明成 optionalDependencies（只在 macOS 装），但 npm 写 lockfile 时漏了这个标记，
+      # `npm ci` 就会按必需依赖校验平台，在 Linux 上报 EBADPLATFORM 直接红。
+      # 若哪天有人重跑 `npm install` 把 lockfile 重写掉了，CI 会以这个报错复现，补回这一行即可。
+      - name: 装依赖（04-脚本）
+        working-directory: 04-脚本
+        run: npm ci
+
+      - name: 装依赖（07-测试工具）
+        working-directory: 07-测试工具
+        run: npm ci
+
+      # 一次跑完 07-测试工具/package.json 的 "test" 链（顺序即那里的定义）：静态检查
+      # （公开仓库自检 · HTML 内联脚本语法 · 事件 topic · 页面 ABI 与 .abi.json 同步 ·
+      # 页面 ABI 解码形状）→ 快照与字节码 · A5 verify 包 · 哈希口径 · AI 判定 · 前端契约 ·
+      # 喂价闸门 · 定价网格 · 定价 fixture 离线自证 → 四套端到端（v1 / v2 / 多签 / v3）。
+      # 步数与断言数不在此处写死：以 package.json 的 "test" 与实际输出为准。
+      - name: 全部门禁（07-测试工具/package.json 的 test 链）
+        working-directory: 07-测试工具
+        run: npm test
+
+      # 门禁必须只读：任何一步改写了被跟踪文件都要在这里红掉。
+      # 背景（2026-10-12 F7）：make-verify-pack.js 曾在默认路径下先重写 03-合约/verify-manifest.json
+      # 再判绿 ⇒「verify 包过期」永远不会红，而且跑一次门禁就在工作区留下 ` M`。
+      # 现在 check-verify-pack 走 --check（不一致即 exit 1、不写盘），这步是第二道保险：
+      # 万一将来有别的脚本偷偷写盘，也不会有假绿。
+      # 说明：本 job 固定 ubuntu-latest，checkout 后工作区干净（git diff 只反映门禁自己写的改动）。
+      # 若哪天换到 Windows runner，core.autocrlf=true 会让换行差异也进 diff ⇒ 先看是不是 CRLF 假红。
+      - name: 门禁不许改动仓库文件（git diff --exit-code）
+        run: |
+          git diff --exit-code -- . || {
+            echo "::error::门禁改动了被跟踪文件（见上面的 diff）—— 门禁必须只读，请修脚本而不是提交这份 diff。"
+            git diff --stat -- .
+            exit 1
+          }

@@ -1,0 +1,40 @@
+# 把 05-演示站点/ 发布成可公开访问的演示链接（GitHub Pages）。
+#
+# 为什么需要它：手册 5.2 的演示材料要求「演示视频 **或** 可运行链接」，5.3 的提交前检查要求
+# 「链接可访问」。演示页依赖 MetaMask 注入，file:// 打不开；localhost 只有我们自己的机器能开。
+# 所以用 Pages 给评委一个真的能点开的地址：https://juice-butterfly.github.io/rainproof/
+#
+# 只有一个来源：05-演示站点/ —— 不要往这里手动搬副本，否则会和仓库里的真页面对不上。
+name: Deploy demo site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '05-演示站点/**'
+      - '.github/workflows/deploy-demo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: 05-演示站点
+      - id: deployment
+        uses: actions/deploy-pages@v4

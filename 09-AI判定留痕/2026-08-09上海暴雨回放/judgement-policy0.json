@@ -1,0 +1,35 @@
+{
+  "judgement": {
+    "schema": "rainproof/judgement@1",
+    "judgeVersion": "ai-judge-v1",
+    "policyId": 0,
+    "decision": 1,
+    "decisionLabel": "PAY",
+    "confidence": 91,
+    "sources": 3,
+    "simulated": false,
+    "metrics": {
+      "thresholdMm": 50,
+      "minConfidence": 60,
+      "officialIncrementMm": 105,
+      "modelIncrementsMm": [
+        93.5,
+        78,
+        88.7
+      ],
+      "medianMm": 88.7,
+      "spreadMm": 15.5,
+      "agreeCount": 3,
+      "divergencePct": 15.5
+    },
+    "reasons": [
+      "链上官方增量 105mm ≥ 阈值 50mm，且 3/3 个独立模型一致支持。",
+      "模型窗口增量 93.5 / 78 / 88.7 mm（中位数 88.7mm，离散度 15.5mm），与链上数字相符。"
+    ],
+    "inputHash": "0xcff1b55920de6c04ea6e5c9840fda83d9442a91e4750ffbec65f59d467d5d4b7"
+  },
+  "decidedAt": "2026-10-07T15:53:10.815Z",
+  "rationale": "保单 #0（上海，窗口自 2026-08-06 起）：链上官方累计增量 105mm，阈值 50mm；独立复核取了 ECMWF IFS025、GFS、ICON 三家模型，窗口增量分别为 93.5 / 78 / 88.7 mm。结论：PAY，置信度 91。",
+  "rationaleSource": "deterministic",
+  "outputHash": "0x4bde1aab4abe14d84f7f9497d8f57cce130a3a9f7dcca6ead9aa50cf5371c59e"
+}

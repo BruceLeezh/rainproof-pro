@@ -1,0 +1,49 @@
+﻿链 http://127.0.0.1:8546 · chainId 11155111 · 块高 0..8
+合约 0x89e7C942535930B61cB61631051E8b0bD670596a · 余额 0.041 ETH
+
+区块 1  0xd624022cfcc6397594da53a633c0ccef4dd136acedf92fc7d002eec28d0a9276
+   合约部署  value 0.0 ETH  gas 用 2400938
+     · OperatorChanged(from=0x0000000000000000000000000000000000000000, to=0xb466B1D1fA19026e08C3311C555d220AE2E1Ba3a)
+区块 2  0xaf51905042e294372ff4fd3256087fe10b1f8d20933a1557637eef010c095b68
+   →0x70f37d27  value 0.05 ETH  gas 用 23030
+     · PoolFunded(from=0xb466B1D1fA19026e08C3311C555d220AE2E1Ba3a, amount=50000000000000000, newBalance=50000000000000000)
+区块 3  0xf3e7f66ceca142048dfe7a333f55a99e306d4f08acd4e4ff6709a5a15e342891
+   →0x3f243de2  value 0.0 ETH  gas 用 120859
+     · RainfallUpdated(regionId=1, cumulativeMm=166, evidenceHash=0x9a548bb26ecb72aedb5228fe2bc2774b5a2beb7fdbc424d59d379bf4618e3bad, confidence=88, reporter=0xb466B1D1fA19026e08C3311C555d220AE2E1Ba3a)
+区块 4  0x873ef356f5643256c11b42ae9feaca577d077d841bc8db695953cc214d1b6261
+   →0x0a035efa  value 0.001 ETH  gas 用 190879
+     · PolicyBought(policyId=0, rider=0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28, regionId=1, endTime=1719676820)
+区块 6  0x03564563179a4184caa02e97322a02e883b67e6ab139b8fbbcb51bc5bfda520c
+   →0x3f243de2  value 0.0 ETH  gas 用 52471
+     · RainfallUpdated(regionId=1, cumulativeMm=396, evidenceHash=0xa3a0570a1958c6d280fa5732040b0729cffed4b7d17637050f9b37ed064356e1, confidence=88, reporter=0xb466B1D1fA19026e08C3311C555d220AE2E1Ba3a)
+区块 7  0x38abe2382905182c55bbf93261cac7ec5ec828dac6238ddb2d845e9997b307d0
+   →0xbf3a646f  value 0.0 ETH  gas 用 121833
+     · JudgementSubmitted(policyId=0, kind=1, decision=1, confidence=76, inputHash=0xa5e9d28156e7423acaf9412e33b8e699788ba196f75b5ba940389301ce703158, outputHash=0xc132c7731cfcd5706dcba9b4e62b86addf4df10df74c309ad304a28acb454225, modelVersion=ai-judge-v1)
+区块 8  0xf1d4d21fa9e3ca976ade6058725ffaa1f2e41d6a68a7daa9aea754068b057c6b
+   →0x379607f5  value 0.0 ETH  gas 用 51785
+     · ClaimPaid(policyId=0, rider=0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28, amount=10000000000000000)
+
+【证据文件】
+  snapshot-policy0.json  sha256 0x336a24347f560caeed4a45ba82e28ce9bb04ae56f26d2114ad4916dcfbd6c4ff
+    inputHash  0xa5e9d28156e7423acaf9412e33b8e699788ba196f75b5ba940389301ce703158
+  judgement-policy0.json  sha256 0x7ed5f6abf6e9bcd3b31d023eed8a6b8d734184a31c031121ea6570725b200db9
+    inputHash  -
+    outputHash 0xc132c7731cfcd5706dcba9b4e62b86addf4df10df74c309ad304a28acb454225
+
+--------------------------------------------------------------------
+这份文件是什么 / 为什么存在
+--------------------------------------------------------------------
+来源：本地回放链（07-测试工具/replay_chain.js serve "2024-06-27T00:00:00+08:00" 8546）
+     停链前用 D:\DSH\_tmp\dump_replay_logs.js 直接向节点扫区块 0..8 导出，未经人工改动。
+场景：武汉 2024-06-27~29 真实暴雨回放（三天累计 230mm，阈值 50mm，PAY 置信 76%，赔付 0.01 ETH）。
+     数据源与判定依据见同目录《历史回放-2024武汉暴雨.md》。
+
+⚠️ 为何要导出：这条链是 ganache 内存链，进程一停，以下交易哈希就不可再生 ——
+   交易的 gas/基准费随墙钟变动，重建一条链会得到另一批哈希（本轮重建时实测过）。
+   但"判定"本身是可复算的：同一份快照重跑 04-脚本/ai-judge.js 得到逐字节相同的
+   inputHash 0xa5e9d28156e7423acaf9412e33b8e699788ba196f75b5ba940389301ce703158
+   与 outputHash 0xc132c7731cfcd5706dcba9b4e62b86addf4df10df74c309ad304a28acb454225。
+   磁盘留痕：09-AI判定留痕/2024武汉暴雨回放/{snapshot,judgement}-policy0.json
+   门禁：node 07-测试工具/check-ai.js（29 项，含对每条留痕重算哈希）
+
+注：本地回放链不是有效部署（手册 L175），它只作 AI 判定层的证据；有效部署只看 Sepolia / BOT Chain 主网。

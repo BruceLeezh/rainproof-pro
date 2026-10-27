@@ -1,0 +1,787 @@
+{
+  "meta": {
+    "generatedAt": "2026-10-07T12:39:47.817Z",
+    "sourceMtime": "2026-10-06T13:35:13.789Z",
+    "thresholdMm": 50,
+    "durations": [
+      6,
+      12,
+      24,
+      48,
+      72,
+      168
+    ],
+    "dataStart": "2015-10-01",
+    "dataEnd": "2026-09-30",
+    "method": "integer decimillimetre sliding window",
+    "bootstrapReps": 4000,
+    "bootstrapSeed": 20261007,
+    "cacheDir": "cache",
+    "source": "Open-Meteo Archive (ERA5) hourly precipitation_sum, timezone Asia/Shanghai",
+    "a7Tiers": [
+      {
+        "tier": 0,
+        "mult": 1,
+        "bps": 5000,
+        "note": "暴雨（= 国标 50mm/24h）→ 赔 50%"
+      },
+      {
+        "tier": 1,
+        "mult": 2,
+        "bps": 7500,
+        "note": "大暴雨（= 国标 100mm/24h）→ 赔 75%"
+      },
+      {
+        "tier": 2,
+        "mult": 5,
+        "bps": 10000,
+        "note": "特大暴雨（= 国标 250mm/24h）→ 赔 100%"
+      }
+    ],
+    "a7Source": "03-合约/RainDeliveryInsuranceV2.sol:172-192 (thresholdOf / tierOf / tierBps)",
+    "payoutMaxEth": 0.01,
+    "targetLossRatio": 0.6
+  },
+  "cities": {
+    "wuhan": {
+      "hours": 96432,
+      "grid": {
+        "latitude": 30.615112,
+        "longitude": 114.27562,
+        "elevation": 15
+      },
+      "windows": {
+        "6": {
+          "windows": 96427,
+          "hits": 51,
+          "pPct": 0.0529,
+          "boundariesAtThreshold": 1,
+          "jsonPct": 0.0519,
+          "diffPp": 0.001,
+          "ci95": null
+        },
+        "12": {
+          "windows": 96421,
+          "hits": 212,
+          "pPct": 0.2199,
+          "boundariesAtThreshold": 0,
+          "jsonPct": 0.2199,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "24": {
+          "windows": 96409,
+          "hits": 735,
+          "pPct": 0.7624,
+          "boundariesAtThreshold": 8,
+          "jsonPct": 0.7541,
+          "diffPp": 0.0083,
+          "ci95": null
+        },
+        "48": {
+          "windows": 96385,
+          "hits": 2626,
+          "pPct": 2.7245,
+          "boundariesAtThreshold": 15,
+          "jsonPct": 2.7089,
+          "diffPp": 0.0156,
+          "ci95": null
+        },
+        "72": {
+          "windows": 96361,
+          "hits": 4596,
+          "pPct": 4.7696,
+          "boundariesAtThreshold": 14,
+          "jsonPct": 4.7561,
+          "diffPp": 0.0135,
+          "ci95": {
+            "lo": 3.421,
+            "hi": 6.332,
+            "clusters": 132
+          }
+        },
+        "168": {
+          "windows": 96265,
+          "hits": 15055,
+          "pPct": 15.6391,
+          "boundariesAtThreshold": 35,
+          "jsonPct": 15.6287,
+          "diffPp": 0.0104,
+          "ci95": null
+        }
+      },
+      "perYear72h": {},
+      "firstHour": "2015-10-01T00:00",
+      "lastHour": "2026-09-30T23:00",
+      "tiers": {
+        "24": {
+          "windowHours": 24,
+          "thresholdMm": 50,
+          "thresholdsMm": [
+            50,
+            100,
+            250
+          ],
+          "counts": [
+            622,
+            113,
+            0,
+            95674
+          ],
+          "pctByTier": [
+            0.645168,
+            0.117209,
+            0,
+            99.237623
+          ],
+          "pctNotTriggered": 99.237623,
+          "expectedPayoutFraction": 0.00410491,
+          "expectedLossEth": 0.00004105,
+          "premiumAt60pct": 0.00006842
+        },
+        "48": {
+          "windowHours": 48,
+          "thresholdMm": 100,
+          "thresholdsMm": [
+            100,
+            200,
+            500
+          ],
+          "counts": [
+            226,
+            72,
+            0,
+            96087
+          ],
+          "pctByTier": [
+            0.234476,
+            0.0747,
+            0,
+            99.690823
+          ],
+          "pctNotTriggered": 99.690823,
+          "expectedPayoutFraction": 0.00173263,
+          "expectedLossEth": 0.00001733,
+          "premiumAt60pct": 0.00002888
+        },
+        "72": {
+          "windowHours": 72,
+          "thresholdMm": 150,
+          "thresholdsMm": [
+            150,
+            300,
+            750
+          ],
+          "counts": [
+            154,
+            50,
+            0,
+            96157
+          ],
+          "pctByTier": [
+            0.159816,
+            0.051888,
+            0,
+            99.788296
+          ],
+          "pctNotTriggered": 99.788296,
+          "expectedPayoutFraction": 0.00118824,
+          "expectedLossEth": 0.00001188,
+          "premiumAt60pct": 0.0000198
+        }
+      }
+    },
+    "shanghai": {
+      "hours": 96432,
+      "grid": {
+        "latitude": 31.247803,
+        "longitude": 121.5,
+        "elevation": 5
+      },
+      "windows": {
+        "6": {
+          "windows": 96427,
+          "hits": 29,
+          "pPct": 0.0301,
+          "boundariesAtThreshold": 1,
+          "jsonPct": 0.0301,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "12": {
+          "windows": 96421,
+          "hits": 191,
+          "pPct": 0.1981,
+          "boundariesAtThreshold": 1,
+          "jsonPct": 0.1981,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "24": {
+          "windows": 96409,
+          "hits": 727,
+          "pPct": 0.7541,
+          "boundariesAtThreshold": 2,
+          "jsonPct": 0.7541,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "48": {
+          "windows": 96385,
+          "hits": 2248,
+          "pPct": 2.3323,
+          "boundariesAtThreshold": 7,
+          "jsonPct": 2.3323,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "72": {
+          "windows": 96361,
+          "hits": 4391,
+          "pPct": 4.5568,
+          "boundariesAtThreshold": 18,
+          "jsonPct": 4.5568,
+          "diffPp": 0,
+          "ci95": {
+            "lo": 3.303,
+            "hi": 5.971,
+            "clusters": 132
+          }
+        },
+        "168": {
+          "windows": 96265,
+          "hits": 14838,
+          "pPct": 15.4137,
+          "boundariesAtThreshold": 101,
+          "jsonPct": 15.4064,
+          "diffPp": 0.0073,
+          "ci95": null
+        }
+      },
+      "perYear72h": {},
+      "firstHour": "2015-10-01T00:00",
+      "lastHour": "2026-09-30T23:00",
+      "tiers": {
+        "24": {
+          "windowHours": 24,
+          "thresholdMm": 50,
+          "thresholdsMm": [
+            50,
+            100,
+            250
+          ],
+          "counts": [
+            642,
+            85,
+            0,
+            95682
+          ],
+          "pctByTier": [
+            0.665913,
+            0.088166,
+            0,
+            99.245921
+          ],
+          "pctNotTriggered": 99.245921,
+          "expectedPayoutFraction": 0.00399081,
+          "expectedLossEth": 0.00003991,
+          "premiumAt60pct": 0.00006651
+        },
+        "48": {
+          "windowHours": 48,
+          "thresholdMm": 100,
+          "thresholdsMm": [
+            100,
+            200,
+            500
+          ],
+          "counts": [
+            425,
+            6,
+            0,
+            95954
+          ],
+          "pctByTier": [
+            0.44094,
+            0.006225,
+            0,
+            99.552835
+          ],
+          "pctNotTriggered": 99.552835,
+          "expectedPayoutFraction": 0.00225139,
+          "expectedLossEth": 0.00002251,
+          "premiumAt60pct": 0.00003752
+        },
+        "72": {
+          "windowHours": 72,
+          "thresholdMm": 150,
+          "thresholdsMm": [
+            150,
+            300,
+            750
+          ],
+          "counts": [
+            207,
+            0,
+            0,
+            96154
+          ],
+          "pctByTier": [
+            0.214817,
+            0,
+            0,
+            99.785183
+          ],
+          "pctNotTriggered": 99.785183,
+          "expectedPayoutFraction": 0.00107409,
+          "expectedLossEth": 0.00001074,
+          "premiumAt60pct": 0.0000179
+        }
+      }
+    },
+    "beijing": {
+      "hours": 96432,
+      "grid": {
+        "latitude": 39.89455,
+        "longitude": 116.35983,
+        "elevation": 47
+      },
+      "windows": {
+        "6": {
+          "windows": 96427,
+          "hits": 30,
+          "pPct": 0.0311,
+          "boundariesAtThreshold": 0,
+          "jsonPct": 0.0311,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "12": {
+          "windows": 96421,
+          "hits": 113,
+          "pPct": 0.1172,
+          "boundariesAtThreshold": 0,
+          "jsonPct": 0.1172,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "24": {
+          "windows": 96409,
+          "hits": 422,
+          "pPct": 0.4377,
+          "boundariesAtThreshold": 3,
+          "jsonPct": 0.4377,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "48": {
+          "windows": 96385,
+          "hits": 1240,
+          "pPct": 1.2865,
+          "boundariesAtThreshold": 14,
+          "jsonPct": 1.272,
+          "diffPp": 0.0145,
+          "ci95": null
+        },
+        "72": {
+          "windows": 96361,
+          "hits": 2198,
+          "pPct": 2.281,
+          "boundariesAtThreshold": 15,
+          "jsonPct": 2.2654,
+          "diffPp": 0.0156,
+          "ci95": {
+            "lo": 1.33,
+            "hi": 3.403,
+            "clusters": 132
+          }
+        },
+        "168": {
+          "windows": 96265,
+          "hits": 7167,
+          "pPct": 7.4451,
+          "boundariesAtThreshold": 20,
+          "jsonPct": 7.4243,
+          "diffPp": 0.0208,
+          "ci95": null
+        }
+      },
+      "perYear72h": {},
+      "firstHour": "2015-10-01T00:00",
+      "lastHour": "2026-09-30T23:00",
+      "tiers": {
+        "24": {
+          "windowHours": 24,
+          "thresholdMm": 50,
+          "thresholdsMm": [
+            50,
+            100,
+            250
+          ],
+          "counts": [
+            380,
+            42,
+            0,
+            95987
+          ],
+          "pctByTier": [
+            0.394154,
+            0.043564,
+            0,
+            99.562282
+          ],
+          "pctNotTriggered": 99.562282,
+          "expectedPayoutFraction": 0.0022975,
+          "expectedLossEth": 0.00002298,
+          "premiumAt60pct": 0.00003829
+        },
+        "48": {
+          "windowHours": 48,
+          "thresholdMm": 100,
+          "thresholdsMm": [
+            100,
+            200,
+            500
+          ],
+          "counts": [
+            175,
+            8,
+            0,
+            96202
+          ],
+          "pctByTier": [
+            0.181564,
+            0.0083,
+            0,
+            99.810136
+          ],
+          "pctNotTriggered": 99.810136,
+          "expectedPayoutFraction": 0.00097007,
+          "expectedLossEth": 0.0000097,
+          "premiumAt60pct": 0.00001617
+        },
+        "72": {
+          "windowHours": 72,
+          "thresholdMm": 150,
+          "thresholdsMm": [
+            150,
+            300,
+            750
+          ],
+          "counts": [
+            105,
+            0,
+            0,
+            96256
+          ],
+          "pctByTier": [
+            0.108965,
+            0,
+            0,
+            99.891035
+          ],
+          "pctNotTriggered": 99.891035,
+          "expectedPayoutFraction": 0.00054483,
+          "expectedLossEth": 0.00000545,
+          "premiumAt60pct": 0.00000908
+        }
+      }
+    },
+    "guangzhou": {
+      "hours": 96432,
+      "grid": {
+        "latitude": 23.163443,
+        "longitude": 113.27749,
+        "elevation": 17
+      },
+      "windows": {
+        "6": {
+          "windows": 96427,
+          "hits": 58,
+          "pPct": 0.0601,
+          "boundariesAtThreshold": 1,
+          "jsonPct": 0.0591,
+          "diffPp": 0.001,
+          "ci95": null
+        },
+        "12": {
+          "windows": 96421,
+          "hits": 315,
+          "pPct": 0.3267,
+          "boundariesAtThreshold": 2,
+          "jsonPct": 0.3257,
+          "diffPp": 0.001,
+          "ci95": null
+        },
+        "24": {
+          "windows": 96409,
+          "hits": 1369,
+          "pPct": 1.42,
+          "boundariesAtThreshold": 6,
+          "jsonPct": 1.42,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "48": {
+          "windows": 96385,
+          "hits": 5738,
+          "pPct": 5.9532,
+          "boundariesAtThreshold": 25,
+          "jsonPct": 5.9428,
+          "diffPp": 0.0104,
+          "ci95": null
+        },
+        "72": {
+          "windows": 96361,
+          "hits": 11153,
+          "pPct": 11.5742,
+          "boundariesAtThreshold": 49,
+          "jsonPct": 11.5244,
+          "diffPp": 0.0498,
+          "ci95": {
+            "lo": 9.354,
+            "hi": 13.88,
+            "clusters": 132
+          }
+        },
+        "168": {
+          "windows": 96265,
+          "hits": 31278,
+          "pPct": 32.4916,
+          "boundariesAtThreshold": 52,
+          "jsonPct": 32.4375,
+          "diffPp": 0.0541,
+          "ci95": null
+        }
+      },
+      "perYear72h": {},
+      "firstHour": "2015-10-01T00:00",
+      "lastHour": "2026-09-30T23:00",
+      "tiers": {
+        "24": {
+          "windowHours": 24,
+          "thresholdMm": 50,
+          "thresholdsMm": [
+            50,
+            100,
+            250
+          ],
+          "counts": [
+            1247,
+            122,
+            0,
+            95040
+          ],
+          "pctByTier": [
+            1.293448,
+            0.126544,
+            0,
+            98.580008
+          ],
+          "pctNotTriggered": 98.580008,
+          "expectedPayoutFraction": 0.00741632,
+          "expectedLossEth": 0.00007416,
+          "premiumAt60pct": 0.00012361
+        },
+        "48": {
+          "windowHours": 48,
+          "thresholdMm": 100,
+          "thresholdsMm": [
+            100,
+            200,
+            500
+          ],
+          "counts": [
+            717,
+            30,
+            0,
+            95638
+          ],
+          "pctByTier": [
+            0.743892,
+            0.031125,
+            0,
+            99.224983
+          ],
+          "pctNotTriggered": 99.224983,
+          "expectedPayoutFraction": 0.0039529,
+          "expectedLossEth": 0.00003953,
+          "premiumAt60pct": 0.00006588
+        },
+        "72": {
+          "windowHours": 72,
+          "thresholdMm": 150,
+          "thresholdsMm": [
+            150,
+            300,
+            750
+          ],
+          "counts": [
+            542,
+            0,
+            0,
+            95819
+          ],
+          "pctByTier": [
+            0.562468,
+            0,
+            0,
+            99.437532
+          ],
+          "pctNotTriggered": 99.437532,
+          "expectedPayoutFraction": 0.00281234,
+          "expectedLossEth": 0.00002812,
+          "premiumAt60pct": 0.00004687
+        }
+      }
+    },
+    "chengdu": {
+      "hours": 96432,
+      "grid": {
+        "latitude": 30.544815,
+        "longitude": 104.08235,
+        "elevation": 485
+      },
+      "windows": {
+        "6": {
+          "windows": 96427,
+          "hits": 38,
+          "pPct": 0.0394,
+          "boundariesAtThreshold": 0,
+          "jsonPct": 0.0394,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "12": {
+          "windows": 96421,
+          "hits": 165,
+          "pPct": 0.1711,
+          "boundariesAtThreshold": 0,
+          "jsonPct": 0.1711,
+          "diffPp": 0,
+          "ci95": null
+        },
+        "24": {
+          "windows": 96409,
+          "hits": 573,
+          "pPct": 0.5943,
+          "boundariesAtThreshold": 2,
+          "jsonPct": 0.5923,
+          "diffPp": 0.002,
+          "ci95": null
+        },
+        "48": {
+          "windows": 96385,
+          "hits": 1983,
+          "pPct": 2.0574,
+          "boundariesAtThreshold": 5,
+          "jsonPct": 2.0543,
+          "diffPp": 0.0031,
+          "ci95": null
+        },
+        "72": {
+          "windows": 96361,
+          "hits": 3588,
+          "pPct": 3.7235,
+          "boundariesAtThreshold": 8,
+          "jsonPct": 3.7193,
+          "diffPp": 0.0042,
+          "ci95": {
+            "lo": 2.492,
+            "hi": 5.111,
+            "clusters": 132
+          }
+        },
+        "168": {
+          "windows": 96265,
+          "hits": 11350,
+          "pPct": 11.7904,
+          "boundariesAtThreshold": 61,
+          "jsonPct": 11.7395,
+          "diffPp": 0.0509,
+          "ci95": null
+        }
+      },
+      "perYear72h": {},
+      "firstHour": "2015-10-01T00:00",
+      "lastHour": "2026-09-30T23:00",
+      "tiers": {
+        "24": {
+          "windowHours": 24,
+          "thresholdMm": 50,
+          "thresholdsMm": [
+            50,
+            100,
+            250
+          ],
+          "counts": [
+            490,
+            83,
+            0,
+            95836
+          ],
+          "pctByTier": [
+            0.508251,
+            0.086092,
+            0,
+            99.405657
+          ],
+          "pctNotTriggered": 99.405657,
+          "expectedPayoutFraction": 0.00318694,
+          "expectedLossEth": 0.00003187,
+          "premiumAt60pct": 0.00005312
+        },
+        "48": {
+          "windowHours": 48,
+          "thresholdMm": 100,
+          "thresholdsMm": [
+            100,
+            200,
+            500
+          ],
+          "counts": [
+            247,
+            45,
+            0,
+            96093
+          ],
+          "pctByTier": [
+            0.256264,
+            0.046688,
+            0,
+            99.697048
+          ],
+          "pctNotTriggered": 99.697048,
+          "expectedPayoutFraction": 0.00163148,
+          "expectedLossEth": 0.00001631,
+          "premiumAt60pct": 0.00002719
+        },
+        "72": {
+          "windowHours": 72,
+          "thresholdMm": 150,
+          "thresholdsMm": [
+            150,
+            300,
+            750
+          ],
+          "counts": [
+            219,
+            0,
+            0,
+            96142
+          ],
+          "pctByTier": [
+            0.22727,
+            0,
+            0,
+            99.77273
+          ],
+          "pctNotTriggered": 99.77273,
+          "expectedPayoutFraction": 0.00113635,
+          "expectedLossEth": 0.00001136,
+          "premiumAt60pct": 0.00001894
+        }
+      }
+    }
+  }
+}

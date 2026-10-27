@@ -1,0 +1,85 @@
+{
+  "snapshot": {
+    "schema": "rainproof/judge-input@1",
+    "collectVersion": "ai-collect-v1",
+    "policyId": 5,
+    "simulated": true,
+    "simulationNote": "模型序列由链上注入值合成，用于演示；真实模式下会向 ECMWF/GFS/ICON 实取。",
+    "epoch": "2026-10-01",
+    "region": {
+      "id": 4,
+      "key": "guangzhou",
+      "name": "广州",
+      "lat": 23.1291,
+      "lon": 113.2644
+    },
+    "policy": {
+      "rider": "0x8F6B45fEDeC348c735945d89300807Ba186e19D8",
+      "regionId": 4,
+      "startTime": 1791344673,
+      "endTime": 1791431073,
+      "startDate": "2026-10-07",
+      "rainfallAtBuy": 200,
+      "paid": false
+    },
+    "oracle": {
+      "cumulativeMm": 303,
+      "officialIncrementMm": 103,
+      "contract": "0x89e7C942535930B61cB61631051E8b0bD670596a",
+      "chainId": 968
+    },
+    "weather": {
+      "source": "synthetic",
+      "api": "synthetic",
+      "windowFrom": "2026-10-07",
+      "windowTo": "2026-10-08",
+      "models": [
+        {
+          "id": "ecmwf_ifs025",
+          "label": "ECMWF IFS025",
+          "org": "欧洲中期天气预报中心",
+          "sinceEpochMm": 303,
+          "inWindowMm": 103,
+          "days": [
+            {
+              "date": "2026-10-07",
+              "mm": 61.8
+            }
+          ]
+        },
+        {
+          "id": "gfs_seamless",
+          "label": "GFS",
+          "org": "美国 NOAA/NCEP",
+          "sinceEpochMm": 303,
+          "inWindowMm": 96.82,
+          "days": [
+            {
+              "date": "2026-10-07",
+              "mm": 58.092
+            }
+          ]
+        },
+        {
+          "id": "icon_seamless",
+          "label": "ICON",
+          "org": "德国气象局 DWD",
+          "sinceEpochMm": 303,
+          "inWindowMm": 107.12,
+          "days": [
+            {
+              "date": "2026-10-07",
+              "mm": 64.272
+            }
+          ]
+        }
+      ]
+    },
+    "thresholds": {
+      "thresholdMm": 50,
+      "minConfidence": 60
+    }
+  },
+  "collectedAt": "2026-10-07T08:05:00.782Z",
+  "inputHash": "0x69bf6eccf6a1e3168f3432b93b4eb95460863c051f010f9d957504f988ee01f9"
+}

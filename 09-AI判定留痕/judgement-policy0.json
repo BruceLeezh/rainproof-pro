@@ -1,0 +1,34 @@
+{
+  "judgement": {
+    "schema": "rainproof/judgement@1",
+    "judgeVersion": "ai-judge-v1",
+    "policyId": 0,
+    "decision": 0,
+    "decisionLabel": "DENY",
+    "confidence": 95,
+    "sources": 3,
+    "simulated": false,
+    "metrics": {
+      "thresholdMm": 30,
+      "minConfidence": 60,
+      "officialIncrementMm": 0,
+      "modelIncrementsMm": [
+        0,
+        0,
+        0
+      ],
+      "medianMm": 0,
+      "spreadMm": 0,
+      "agreeCount": 0,
+      "divergencePct": 0
+    },
+    "reasons": [
+      "链上官方增量 0mm < 阈值 30mm，雨量未达标。"
+    ],
+    "inputHash": "0x9b7e32f6dc4e07247df7177b5d34f74083ea8fa617117aae471ec6a5fd85d1ad"
+  },
+  "decidedAt": "2026-10-26T12:02:07.953Z",
+  "rationale": "保单 #0（上海，窗口自 2026-10-26 起）：链上官方累计增量 0mm，阈值 30mm；独立复核取了 ECMWF IFS025、GFS、ICON 三家模型，窗口增量分别为 0 / 0 / 0 mm。结论：DENY，置信度 95。",
+  "rationaleSource": "deterministic",
+  "outputHash": "0x253cc3c398ccf589b3f7bac09df7e1626f477c55bf48d0ebb352d85f5106ec3e"
+}

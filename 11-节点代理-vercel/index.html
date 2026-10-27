@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>雨证 · 节点代理 / RainProof RPC proxy</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; min-height:100vh; background:#0b0f14; color:#e6edf3;
+         font:15px/1.7 system-ui,"Microsoft YaHei",sans-serif; display:flex; align-items:center; justify-content:center; padding:32px; }
+  .card { max-width:720px; border:1px solid #1f2a37; border-radius:14px; padding:28px 30px; background:#0e141b; }
+  h1 { font-size:20px; margin:0 0 6px; }
+  .sub { color:#8b98a5; font-size:13px; margin-bottom:20px; }
+  code { background:#161d26; border:1px solid #22303f; border-radius:6px; padding:1px 6px; font-size:13px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  a.btn, button { border:1px solid #22303f; background:#161d26; color:#e6edf3; border-radius:9px;
+                  padding:9px 14px; font-size:14px; text-decoration:none; cursor:pointer; }
+  a.btn:hover, button:hover { border-color:#3b82f6; }
+  pre { background:#161d26; border:1px solid #22303f; border-radius:9px; padding:12px 14px; overflow:auto; font-size:12.5px; margin:16px 0 0; }
+  .ok { color:#3fb950; } .bad { color:#f85149; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>雨证 · 只读节点代理 <span class="sub">/ RainProof read-only RPC proxy</span></h1>
+  <div class="sub">
+    这是一个 Vercel Serverless Function，不是演示页面。它把只读的 BOT Chain JSON-RPC 转发到主网节点，
+    好让「没有代理」的网络也能读主网 677。<br>
+    A serverless JSON-RPC relay, not the demo. Endpoint: <code>POST /api/rpc</code>
+  </div>
+
+  <div>演示页 / Demo：<a class="btn" href="https://juice-butterfly.github.io/rainproof/">juice-butterfly.github.io/rainproof</a></div>
+
+  <div class="row">
+    <button id="btn">测一下 / Test eth_chainId</button>
+  </div>
+  <pre id="out">点上面的按钮，或自己打一条：
+curl -s &lt;本域名&gt;/api/rpc -H "content-type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}'
+期望结果：{"jsonrpc":"2.0","id":1,"result":"0x2a5"}   # 0x2a5 = 677 = BOT Chain 主网</pre>
+
+  <script>
+    const out = document.getElementById("out");
+    document.getElementById("btn").onclick = async () => {
+      out.textContent = "请求中…";
+      try {
+        const r = await fetch("/api/rpc", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_chainId", params: [] })
+        });
+        const j = await r.json();
+        const ok = j && j.result === "0x2a5";
+        out.textContent = "HTTP " + r.status + " · " + JSON.stringify(j) +
+          (ok ? "\n✅ 通了：0x2a5 = 677 主网（这个地址可以当节点用）" : "\n⚠️ 返回的不是 0x2a5，检查上游节点。");
+      } catch (e) { out.textContent = "❌ " + e.message; }
+    };
+  </script>
+</div>
+</body>
+</html>

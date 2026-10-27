@@ -1,0 +1,288 @@
+{
+  "snapshot": {
+    "schema": "rainproof/judge-input@1",
+    "collectVersion": "ai-collect-v1",
+    "policyId": 0,
+    "simulated": false,
+    "epoch": "2026-06-01",
+    "region": {
+      "id": 2,
+      "key": "shanghai",
+      "name": "上海",
+      "lat": 31.2304,
+      "lon": 121.4737
+    },
+    "policy": {
+      "rider": "0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28",
+      "regionId": 2,
+      "startTime": 1785945615,
+      "endTime": 1786291215,
+      "startDate": "2026-08-06",
+      "rainfallAtBuy": 448,
+      "paid": false
+    },
+    "oracle": {
+      "cumulativeMm": 553,
+      "officialIncrementMm": 105,
+      "contract": "0x89e7C942535930B61cB61631051E8b0bD670596a",
+      "chainId": 11155111
+    },
+    "weather": {
+      "source": "open-meteo:ecmwf_ifs025+gfs_seamless+icon_seamless",
+      "api": "open-meteo:historical-forecast-api",
+      "windowFrom": "2026-08-06",
+      "windowTo": "2026-08-09",
+      "models": [
+        {
+          "id": "ecmwf_ifs025",
+          "label": "ECMWF IFS025",
+          "org": "欧洲中期天气预报中心",
+          "sinceEpochMm": 115.3,
+          "inWindowMm": 93.5,
+          "days": [
+            {
+              "date": "2026-07-23",
+              "mm": 4
+            },
+            {
+              "date": "2026-07-24",
+              "mm": 0.3
+            },
+            {
+              "date": "2026-07-25",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-26",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-27",
+              "mm": 0.5
+            },
+            {
+              "date": "2026-07-28",
+              "mm": 0.3
+            },
+            {
+              "date": "2026-07-29",
+              "mm": 0.4
+            },
+            {
+              "date": "2026-07-30",
+              "mm": 1.4
+            },
+            {
+              "date": "2026-07-31",
+              "mm": 1.4
+            },
+            {
+              "date": "2026-08-01",
+              "mm": 2.6
+            },
+            {
+              "date": "2026-08-02",
+              "mm": 0.8
+            },
+            {
+              "date": "2026-08-03",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-04",
+              "mm": 2.5
+            },
+            {
+              "date": "2026-08-05",
+              "mm": 7.6
+            },
+            {
+              "date": "2026-08-06",
+              "mm": 2.3
+            },
+            {
+              "date": "2026-08-07",
+              "mm": 1.1
+            },
+            {
+              "date": "2026-08-08",
+              "mm": 5.1
+            },
+            {
+              "date": "2026-08-09",
+              "mm": 85
+            }
+          ]
+        },
+        {
+          "id": "gfs_seamless",
+          "label": "GFS",
+          "org": "美国 NOAA/NCEP",
+          "sinceEpochMm": 79.8,
+          "inWindowMm": 78,
+          "days": [
+            {
+              "date": "2026-07-23",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-24",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-25",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-26",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-27",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-28",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-29",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-30",
+              "mm": 1.1
+            },
+            {
+              "date": "2026-07-31",
+              "mm": 0.6
+            },
+            {
+              "date": "2026-08-01",
+              "mm": 0.1
+            },
+            {
+              "date": "2026-08-02",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-03",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-04",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-05",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-06",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-07",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-08",
+              "mm": 6.7
+            },
+            {
+              "date": "2026-08-09",
+              "mm": 71.3
+            }
+          ]
+        },
+        {
+          "id": "icon_seamless",
+          "label": "ICON",
+          "org": "德国气象局 DWD",
+          "sinceEpochMm": 95,
+          "inWindowMm": 88.7,
+          "days": [
+            {
+              "date": "2026-07-23",
+              "mm": 0.6
+            },
+            {
+              "date": "2026-07-24",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-25",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-26",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-27",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-28",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-29",
+              "mm": 0.1
+            },
+            {
+              "date": "2026-07-30",
+              "mm": 0
+            },
+            {
+              "date": "2026-07-31",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-01",
+              "mm": 1.6
+            },
+            {
+              "date": "2026-08-02",
+              "mm": 0.6
+            },
+            {
+              "date": "2026-08-03",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-04",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-05",
+              "mm": 3.4
+            },
+            {
+              "date": "2026-08-06",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-07",
+              "mm": 0
+            },
+            {
+              "date": "2026-08-08",
+              "mm": 4.8
+            },
+            {
+              "date": "2026-08-09",
+              "mm": 83.9
+            }
+          ]
+        }
+      ]
+    },
+    "thresholds": {
+      "thresholdMm": 50,
+      "minConfidence": 60
+    }
+  },
+  "collectedAt": "2026-10-07T15:53:06.851Z",
+  "inputHash": "0xcff1b55920de6c04ea6e5c9840fda83d9442a91e4750ffbec65f59d467d5d4b7"
+}

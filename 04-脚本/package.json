@@ -1,0 +1,39 @@
+{
+  "name": "hanhesong-deploy",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "commonjs",
+  "scripts": {
+    "deploy": "node deploy.js --v3",
+    "deploy:v3": "node deploy.js --v3",
+    "deploy:v1": "node deploy.js --v1",
+    "deploy:v2": "node deploy.js --v2",
+    "deploy-multisig": "node deploy-multisig.js",
+    "deploy-pricing-v3": "node deploy-pricing-v3.js",
+    "feed-verify": "node feed-verify.js",
+    "push": "node push-rainfall.js",
+    "status": "node push-rainfall.js --status",
+    "demo": "node push-rainfall.js --demo",
+    "refresh": "node push-rainfall.js --refresh",
+    "tx": "node check-chain.js tx",
+    "addr": "node check-chain.js addr",
+    "code": "node check-chain.js code",
+    "keeper": "node keeper.js",
+    "keeper:once": "node keeper.js --once",
+    "keeper:settle": "node keeper.js --once --settle --v3",
+    "collect": "node ai-collect.js",
+    "judge": "node ai-judge.js",
+    "submit": "node submit-judgement.js",
+    "hook": "node hook-watch.js --once",
+    "rehearse": "node rehearse-v2.js",
+    "premium": "node set-premium.js",
+    "self-check": "node shardate.js --self-check && node hook-watch.js --self-check && node ai-collect.js --self-check && node push-rainfall.js --self-check && node push-rainfall-hourly.js --self-check",
+    "push:hourly": "node push-rainfall-hourly.js",
+    "push:v5": "node push-rainfall-v5.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0"
+  }
+}

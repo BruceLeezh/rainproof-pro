@@ -1,0 +1,5684 @@
+{
+  "meta": {
+    "generatedBy": "10-金融与定价/pricing_engine.js",
+    "generatedAt": "2026-10-07T16:12:45.299Z",
+    "version": "v3",
+    "sourceMtime": "2026-10-06T13:35:13.789Z",
+    "source": "Open-Meteo Archive (ERA5) 逐小时，五城各 96,432 小时",
+    "dataStart": "2015-10-01",
+    "dataEnd": "2026-09-30",
+    "bootstrap": {
+      "unit": "calendar month",
+      "reps": 4000,
+      "seed": 20261007,
+      "quantile": 0.975
+    },
+    "contract": "03-合约/RainDeliveryInsuranceV3.sol（待 A 落地；参照 v2 的 premiumGrid 扩展）",
+    "imminentMm": 25,
+    "dimensions": {
+      "region": [
+        "1=wuhan",
+        "2=shanghai",
+        "3=beijing",
+        "4=guangzhou",
+        "5=chengdu"
+      ],
+      "hours": [
+        12,
+        24
+      ],
+      "riderTier": [
+        "0=open",
+        "1=attested",
+        "2=group"
+      ],
+      "channel": [
+        "0=self",
+        "1=platform",
+        "2=alert"
+      ],
+      "batch": [
+        1,
+        10,
+        50,
+        100,
+        500,
+        1000
+      ]
+    },
+    "segments": [
+      {
+        "id": 0,
+        "key": "t2c1",
+        "riderTier": 2,
+        "channel": 1,
+        "selectivity": 0,
+        "sellable": true,
+        "sellableByPolicy": true,
+        "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+        "riderName": "平台团体",
+        "channelName": "平台代付",
+        "name": "平台团体·平台代付"
+      },
+      {
+        "id": 1,
+        "key": "t1c1",
+        "riderTier": 1,
+        "channel": 1,
+        "selectivity": 0.15,
+        "sellable": true,
+        "sellableByPolicy": true,
+        "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+        "riderName": "认证骑手",
+        "channelName": "平台代付",
+        "name": "认证骑手·平台代付"
+      },
+      {
+        "id": 2,
+        "key": "t1c0",
+        "riderTier": 1,
+        "channel": 0,
+        "selectivity": 0.55,
+        "sellable": true,
+        "sellableByPolicy": true,
+        "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+        "riderName": "认证骑手",
+        "channelName": "自助投保",
+        "name": "认证骑手·自助投保"
+      },
+      {
+        "id": 3,
+        "key": "t0c0",
+        "riderTier": 0,
+        "channel": 0,
+        "selectivity": 1,
+        "sellable": true,
+        "sellableByPolicy": true,
+        "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+        "riderName": "众包自助",
+        "channelName": "自助投保",
+        "name": "众包自助·自助投保"
+      }
+    ],
+    "economics": {
+      "payoutMaxEth": 0.01,
+      "targetLossRatio": 0.6,
+      "minCostMarkup": 0.25,
+      "minPremiumAbsEth": 0.00002,
+      "premiumCapEth": 0.002,
+      "judgeGasEth": 0.00013,
+      "payoutGasEth": 0.00012,
+      "gasUnits": {
+        "buyPolicy": 176579,
+        "judge": 121845,
+        "payout": 49297
+      },
+      "gasGwei": {
+        "buyPolicy": 2.616,
+        "judge": 1.08,
+        "payout": 2.5
+      },
+      "gasCaliber": "gas 用量取真链实测（与网络无关）；单价取 Sepolia 2026-10-06（判定 1.080 / 赔付 2.500 gwei）。同两笔在 BOT Chain 968（20 gwei）≈ 0.0024369 / 0.00098594 BOT —— 换链必须用 node margin_check.js 重算",
+      "ceilTickEth": 0.00001,
+      "maxBatchDiscountBps": 8000
+    },
+    "thresholdsMm": {
+      "12": [
+        30,
+        70
+      ],
+      "24": [
+        50,
+        100
+      ]
+    },
+    "tierBps": [
+      5000,
+      7500
+    ],
+    "caveat": [
+      "κ 与临灾条件率都是**历史频率**，不含预报技能；真实投保时点能拿到的信息比这更多，是最保守的一侧。",
+      "月聚类块自举的块长固定为 1 个日历月；真实风险记忆尺度与月长不同，本表只做参数不确定性的一阶修正。",
+      "批量折扣只覆盖 AI 判定 gas 的摊薄；赔付 gas 仍按期望出险次数计费。",
+      "sellable=false 的格不是\"价格算错了\"，而是**产品政策**：无身份绑定 + 雨季城市 + 最长时长，报出来的价已经高于尊严上限，宁愿不卖。⚠️ **本批（12h/24h）0 格触发** —— 原来那 3 格全是 72h 众包自助，随 72h 一起消失。",
+      "临灾条件率（imminentRatePct / t2c1 行）是**诊断量**，不进入任何报价；见文件头\"为什么删掉临灾档\"。",
+      "本表未含冷静期(coolingPeriod)造成的生效延迟 —— 合约**默认** 3 天 ≥ 最长保障期 24h，意味着任何\"临时追保\"都盖不住当次天气，方向上是本表的进一步保守。⚠️ 但 **968 演示链上该值被设成 0**（演示动线需要），别把\"生产默认\"说成\"链上现状\"。"
+    ]
+  },
+  "cells": [
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96421,
+      "nHit": 820,
+      "nHitByTier": [
+        820,
+        76
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.444924,
+      "imminentRatePct": 4.483772,
+      "pointRatePct": 0.443745,
+      "upperRatePct": 0.634934,
+      "var99RatePct": 0.67109,
+      "vsUncond": 0.9974,
+      "loadFactor": 1.431,
+      "premiumRetailEth": 0.00033,
+      "fairRetailEth": 0.00033,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013053,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00033,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00006349,
+      "expectedPayoutEth": 0.00004437,
+      "marginPerPolicyEth": 0.00013597,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00033,
+          "costPerPolicyEth": 0.00013053,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "330000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00013,
+          "costPerPolicyEth": 0.00001353,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6061,
+          "unitWei": "130000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00012,
+          "costPerPolicyEth": 0.00000313,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6364,
+          "unitWei": "120000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 0.00000183,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6667,
+          "unitWei": "110000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 7.9e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6667,
+          "unitWei": "110000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 6.6e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6667,
+          "unitWei": "110000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96421,
+      "nHit": 820,
+      "nHitByTier": [
+        820,
+        76
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.444924,
+      "imminentRatePct": 4.483772,
+      "pointRatePct": 0.78628,
+      "upperRatePct": 1.067319,
+      "var99RatePct": 1.121667,
+      "vsUncond": 1.7672,
+      "loadFactor": 1.357,
+      "premiumRetailEth": 0.0004,
+      "fairRetailEth": 0.0004,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013094,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.0004,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00010673,
+      "expectedPayoutEth": 0.00007863,
+      "marginPerPolicyEth": 0.00016232,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.0004,
+          "costPerPolicyEth": 0.00013094,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "400000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00021,
+          "costPerPolicyEth": 0.00001394,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4750,
+          "unitWei": "210000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00019,
+          "costPerPolicyEth": 0.00000354,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5250,
+          "unitWei": "190000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00019,
+          "costPerPolicyEth": 0.00000224,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5250,
+          "unitWei": "190000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00018,
+          "costPerPolicyEth": 0.0000012,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5500,
+          "unitWei": "180000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00018,
+          "costPerPolicyEth": 0.00000107,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5500,
+          "unitWei": "180000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96421,
+      "nHit": 820,
+      "nHitByTier": [
+        820,
+        76
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.444924,
+      "imminentRatePct": 4.483772,
+      "pointRatePct": 1.699707,
+      "upperRatePct": 2.118409,
+      "var99RatePct": 2.195667,
+      "vsUncond": 3.8202,
+      "loadFactor": 1.246,
+      "premiumRetailEth": 0.00058,
+      "fairRetailEth": 0.00058,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013204,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00058,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00021184,
+      "expectedPayoutEth": 0.00016997,
+      "marginPerPolicyEth": 0.00023612,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00058,
+          "costPerPolicyEth": 0.00013204,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "580000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96421,
+      "nHit": 820,
+      "nHitByTier": [
+        820,
+        76
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.444924,
+      "imminentRatePct": 4.483772,
+      "pointRatePct": 2.727312,
+      "upperRatePct": 3.203787,
+      "var99RatePct": 3.309597,
+      "vsUncond": 6.1298,
+      "loadFactor": 1.175,
+      "premiumRetailEth": 0.00076,
+      "fairRetailEth": 0.00076,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013327,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00076,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00032038,
+      "expectedPayoutEth": 0.00027273,
+      "marginPerPolicyEth": 0.00030635,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00076,
+          "costPerPolicyEth": 0.00013327,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "760000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96409,
+      "nHit": 735,
+      "nHitByTier": [
+        735,
+        113
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.410491,
+      "imminentRatePct": 3.672356,
+      "pointRatePct": 0.408936,
+      "upperRatePct": 0.647147,
+      "var99RatePct": 0.703583,
+      "vsUncond": 0.9962,
+      "loadFactor": 1.583,
+      "premiumRetailEth": 0.00033,
+      "fairRetailEth": 0.00033,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013049,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00033,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00006471,
+      "expectedPayoutEth": 0.00004089,
+      "marginPerPolicyEth": 0.00013479,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00033,
+          "costPerPolicyEth": 0.00013049,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "330000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00014,
+          "costPerPolicyEth": 0.00001349,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5758,
+          "unitWei": "140000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00012,
+          "costPerPolicyEth": 0.00000309,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6364,
+          "unitWei": "120000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00012,
+          "costPerPolicyEth": 0.00000179,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6364,
+          "unitWei": "120000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 7.5e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6667,
+          "unitWei": "110000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 6.2e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6667,
+          "unitWei": "110000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96409,
+      "nHit": 735,
+      "nHitByTier": [
+        735,
+        113
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.410491,
+      "imminentRatePct": 3.672356,
+      "pointRatePct": 0.97453,
+      "upperRatePct": 1.413675,
+      "var99RatePct": 1.495593,
+      "vsUncond": 2.3741,
+      "loadFactor": 1.451,
+      "premiumRetailEth": 0.00046,
+      "fairRetailEth": 0.00046,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013117,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00046,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00014137,
+      "expectedPayoutEth": 0.00009745,
+      "marginPerPolicyEth": 0.00018746,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00046,
+          "costPerPolicyEth": 0.00013117,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "460000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00026,
+          "costPerPolicyEth": 0.00001417,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4348,
+          "unitWei": "260000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00025,
+          "costPerPolicyEth": 0.00000377,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4565,
+          "unitWei": "250000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00024,
+          "costPerPolicyEth": 0.00000247,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4783,
+          "unitWei": "240000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00024,
+          "costPerPolicyEth": 0.00000143,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4783,
+          "unitWei": "240000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00024,
+          "costPerPolicyEth": 0.0000013,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4783,
+          "unitWei": "240000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96409,
+      "nHit": 735,
+      "nHitByTier": [
+        735,
+        113
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.410491,
+      "imminentRatePct": 3.672356,
+      "pointRatePct": 2.48278,
+      "upperRatePct": 3.156074,
+      "var99RatePct": 3.279001,
+      "vsUncond": 6.0483,
+      "loadFactor": 1.271,
+      "premiumRetailEth": 0.00075,
+      "fairRetailEth": 0.00075,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013298,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00075,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00031561,
+      "expectedPayoutEth": 0.00024828,
+      "marginPerPolicyEth": 0.00030141,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00075,
+          "costPerPolicyEth": 0.00013298,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "750000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 1,
+      "regionKey": "wuhan",
+      "regionName": "武汉",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96409,
+      "nHit": 735,
+      "nHitByTier": [
+        735,
+        113
+      ],
+      "nImm": 3574,
+      "uncondPointRatePct": 0.410491,
+      "imminentRatePct": 3.672356,
+      "pointRatePct": 4.17956,
+      "upperRatePct": 4.935469,
+      "var99RatePct": 5.094816,
+      "vsUncond": 10.1819,
+      "loadFactor": 1.181,
+      "premiumRetailEth": 0.00105,
+      "fairRetailEth": 0.00105,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013502,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00105,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00049355,
+      "expectedPayoutEth": 0.00041796,
+      "marginPerPolicyEth": 0.00042144,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00105,
+          "costPerPolicyEth": 0.00013502,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "1050000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96421,
+      "nHit": 744,
+      "nHitByTier": [
+        744,
+        52
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399291,
+      "imminentRatePct": 4.981829,
+      "pointRatePct": 0.398279,
+      "upperRatePct": 0.537414,
+      "var99RatePct": 0.566561,
+      "vsUncond": 0.9975,
+      "loadFactor": 1.349,
+      "premiumRetailEth": 0.00031,
+      "fairRetailEth": 0.00031,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013048,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00031,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00005374,
+      "expectedPayoutEth": 0.00003983,
+      "marginPerPolicyEth": 0.00012578,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00031,
+          "costPerPolicyEth": 0.00013048,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "310000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00012,
+          "costPerPolicyEth": 0.00001348,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6129,
+          "unitWei": "120000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 0.00000308,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6774,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 0.00000178,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6774,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 7.4e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6774,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 6.1e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6774,
+          "unitWei": "100000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96421,
+      "nHit": 744,
+      "nHitByTier": [
+        744,
+        52
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399291,
+      "imminentRatePct": 4.981829,
+      "pointRatePct": 0.636107,
+      "upperRatePct": 0.818043,
+      "var99RatePct": 0.853563,
+      "vsUncond": 1.5931,
+      "loadFactor": 1.286,
+      "premiumRetailEth": 0.00036,
+      "fairRetailEth": 0.00036,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013076,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00036,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.0000818,
+      "expectedPayoutEth": 0.00006361,
+      "marginPerPolicyEth": 0.00014743,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00036,
+          "costPerPolicyEth": 0.00013076,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "360000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00016,
+          "costPerPolicyEth": 0.00001376,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5556,
+          "unitWei": "160000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00015,
+          "costPerPolicyEth": 0.00000336,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5833,
+          "unitWei": "150000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00014,
+          "costPerPolicyEth": 0.00000206,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6111,
+          "unitWei": "140000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00014,
+          "costPerPolicyEth": 0.00000102,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6111,
+          "unitWei": "140000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00014,
+          "costPerPolicyEth": 8.9e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6111,
+          "unitWei": "140000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96421,
+      "nHit": 744,
+      "nHitByTier": [
+        744,
+        52
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399291,
+      "imminentRatePct": 4.981829,
+      "pointRatePct": 1.270314,
+      "upperRatePct": 1.495813,
+      "var99RatePct": 1.544367,
+      "vsUncond": 3.1814,
+      "loadFactor": 1.178,
+      "premiumRetailEth": 0.00047,
+      "fairRetailEth": 0.00047,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013152,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00047,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00014958,
+      "expectedPayoutEth": 0.00012703,
+      "marginPerPolicyEth": 0.00018889,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00047,
+          "costPerPolicyEth": 0.00013152,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "470000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96421,
+      "nHit": 744,
+      "nHitByTier": [
+        744,
+        52
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399291,
+      "imminentRatePct": 4.981829,
+      "pointRatePct": 1.983797,
+      "upperRatePct": 2.185048,
+      "var99RatePct": 2.217343,
+      "vsUncond": 4.9683,
+      "loadFactor": 1.101,
+      "premiumRetailEth": 0.00059,
+      "fairRetailEth": 0.00059,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013238,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00059,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.0002185,
+      "expectedPayoutEth": 0.00019838,
+      "marginPerPolicyEth": 0.00023911,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00059,
+          "costPerPolicyEth": 0.00013238,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "590000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96409,
+      "nHit": 727,
+      "nHitByTier": [
+        727,
+        85
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399081,
+      "imminentRatePct": 4.429134,
+      "pointRatePct": 0.398449,
+      "upperRatePct": 0.564694,
+      "var99RatePct": 0.596235,
+      "vsUncond": 0.9984,
+      "loadFactor": 1.417,
+      "premiumRetailEth": 0.00032,
+      "fairRetailEth": 0.00032,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013048,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00032,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00005647,
+      "expectedPayoutEth": 0.00003984,
+      "marginPerPolicyEth": 0.00013305,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00032,
+          "costPerPolicyEth": 0.00013048,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "320000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00012,
+          "costPerPolicyEth": 0.00001348,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6250,
+          "unitWei": "120000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 0.00000308,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6875,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 0.00000178,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6875,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 7.4e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6875,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 6.1e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6875,
+          "unitWei": "100000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96409,
+      "nHit": 727,
+      "nHitByTier": [
+        727,
+        85
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399081,
+      "imminentRatePct": 4.429134,
+      "pointRatePct": 0.734128,
+      "upperRatePct": 0.95089,
+      "var99RatePct": 0.997704,
+      "vsUncond": 1.8395,
+      "loadFactor": 1.295,
+      "premiumRetailEth": 0.00038,
+      "fairRetailEth": 0.00038,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013088,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00038,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00009509,
+      "expectedPayoutEth": 0.00007341,
+      "marginPerPolicyEth": 0.00015403,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00038,
+          "costPerPolicyEth": 0.00013088,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "380000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00019,
+          "costPerPolicyEth": 0.00001388,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5000,
+          "unitWei": "190000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 0.00000348,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 0.00000218,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 0.00000114,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 0.00000101,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96409,
+      "nHit": 727,
+      "nHitByTier": [
+        727,
+        85
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399081,
+      "imminentRatePct": 4.429134,
+      "pointRatePct": 1.629275,
+      "upperRatePct": 1.900473,
+      "var99RatePct": 1.955357,
+      "vsUncond": 4.0826,
+      "loadFactor": 1.166,
+      "premiumRetailEth": 0.00054,
+      "fairRetailEth": 0.00054,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013196,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00054,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00019005,
+      "expectedPayoutEth": 0.00016293,
+      "marginPerPolicyEth": 0.000218,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00054,
+          "costPerPolicyEth": 0.00013196,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "540000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 2,
+      "regionKey": "shanghai",
+      "regionName": "上海",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96409,
+      "nHit": 727,
+      "nHitByTier": [
+        727,
+        85
+      ],
+      "nImm": 3302,
+      "uncondPointRatePct": 0.399081,
+      "imminentRatePct": 4.429134,
+      "pointRatePct": 2.636315,
+      "upperRatePct": 2.837345,
+      "var99RatePct": 2.879382,
+      "vsUncond": 6.606,
+      "loadFactor": 1.076,
+      "premiumRetailEth": 0.0007,
+      "fairRetailEth": 0.0007,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013316,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.0007,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00028373,
+      "expectedPayoutEth": 0.00026363,
+      "marginPerPolicyEth": 0.0002831,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.0007,
+          "costPerPolicyEth": 0.00013316,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "700000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96421,
+      "nHit": 412,
+      "nHitByTier": [
+        412,
+        43
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.224795,
+      "imminentRatePct": 3.854557,
+      "pointRatePct": 0.221604,
+      "upperRatePct": 0.327842,
+      "var99RatePct": 0.348122,
+      "vsUncond": 0.9858,
+      "loadFactor": 1.479,
+      "premiumRetailEth": 0.00028,
+      "fairRetailEth": 0.00028,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013027,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00028,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00003278,
+      "expectedPayoutEth": 0.00002216,
+      "marginPerPolicyEth": 0.00011695,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00028,
+          "costPerPolicyEth": 0.00013027,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "280000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00008,
+          "costPerPolicyEth": 0.00001327,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7143,
+          "unitWei": "80000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00006,
+          "costPerPolicyEth": 0.00000287,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7857,
+          "unitWei": "60000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00006,
+          "costPerPolicyEth": 0.00000157,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7857,
+          "unitWei": "60000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00006,
+          "costPerPolicyEth": 5.3e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7857,
+          "unitWei": "60000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00006,
+          "costPerPolicyEth": 4e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7857,
+          "unitWei": "60000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96421,
+      "nHit": 412,
+      "nHitByTier": [
+        412,
+        43
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.224795,
+      "imminentRatePct": 3.854557,
+      "pointRatePct": 0.438269,
+      "upperRatePct": 0.581657,
+      "var99RatePct": 0.606281,
+      "vsUncond": 1.9496,
+      "loadFactor": 1.327,
+      "premiumRetailEth": 0.00032,
+      "fairRetailEth": 0.00032,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013053,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00032,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00005817,
+      "expectedPayoutEth": 0.00004383,
+      "marginPerPolicyEth": 0.00013131,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00032,
+          "costPerPolicyEth": 0.00013053,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "320000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00012,
+          "costPerPolicyEth": 0.00001353,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6250,
+          "unitWei": "120000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 0.00000313,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6563,
+          "unitWei": "110000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 0.00000183,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6875,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 7.9e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6875,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 6.6e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6875,
+          "unitWei": "100000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96421,
+      "nHit": 412,
+      "nHitByTier": [
+        412,
+        43
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.224795,
+      "imminentRatePct": 3.854557,
+      "pointRatePct": 1.016042,
+      "upperRatePct": 1.194573,
+      "var99RatePct": 1.22322,
+      "vsUncond": 4.5199,
+      "loadFactor": 1.176,
+      "premiumRetailEth": 0.00042,
+      "fairRetailEth": 0.00042,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013122,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00042,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00011946,
+      "expectedPayoutEth": 0.0001016,
+      "marginPerPolicyEth": 0.00016932,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00042,
+          "costPerPolicyEth": 0.00013122,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "420000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96421,
+      "nHit": 412,
+      "nHitByTier": [
+        412,
+        43
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.224795,
+      "imminentRatePct": 3.854557,
+      "pointRatePct": 1.666037,
+      "upperRatePct": 1.811173,
+      "var99RatePct": 1.836561,
+      "vsUncond": 7.4113,
+      "loadFactor": 1.087,
+      "premiumRetailEth": 0.00053,
+      "fairRetailEth": 0.00053,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.000132,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00053,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00018112,
+      "expectedPayoutEth": 0.0001666,
+      "marginPerPolicyEth": 0.00021688,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00053,
+          "costPerPolicyEth": 0.000132,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "530000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96409,
+      "nHit": 422,
+      "nHitByTier": [
+        422,
+        42
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.22975,
+      "imminentRatePct": 2.746567,
+      "pointRatePct": 0.226305,
+      "upperRatePct": 0.360409,
+      "var99RatePct": 0.387341,
+      "vsUncond": 0.985,
+      "loadFactor": 1.593,
+      "premiumRetailEth": 0.00028,
+      "fairRetailEth": 0.00028,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013027,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00028,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00003604,
+      "expectedPayoutEth": 0.00002263,
+      "marginPerPolicyEth": 0.00011369,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00028,
+          "costPerPolicyEth": 0.00013027,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "280000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00009,
+          "costPerPolicyEth": 0.00001327,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6786,
+          "unitWei": "90000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00007,
+          "costPerPolicyEth": 0.00000287,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7500,
+          "unitWei": "70000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00007,
+          "costPerPolicyEth": 0.00000157,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7500,
+          "unitWei": "70000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00007,
+          "costPerPolicyEth": 5.3e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7500,
+          "unitWei": "70000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00007,
+          "costPerPolicyEth": 4e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7500,
+          "unitWei": "70000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96409,
+      "nHit": 422,
+      "nHitByTier": [
+        422,
+        42
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.22975,
+      "imminentRatePct": 2.746567,
+      "pointRatePct": 0.565886,
+      "upperRatePct": 0.7701,
+      "var99RatePct": 0.806553,
+      "vsUncond": 2.463,
+      "loadFactor": 1.361,
+      "premiumRetailEth": 0.00035,
+      "fairRetailEth": 0.00035,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013068,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00035,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00007701,
+      "expectedPayoutEth": 0.00005659,
+      "marginPerPolicyEth": 0.00014231,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00035,
+          "costPerPolicyEth": 0.00013068,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "350000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00016,
+          "costPerPolicyEth": 0.00001368,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5429,
+          "unitWei": "160000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00014,
+          "costPerPolicyEth": 0.00000328,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6000,
+          "unitWei": "140000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00014,
+          "costPerPolicyEth": 0.00000198,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6000,
+          "unitWei": "140000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00013,
+          "costPerPolicyEth": 9.4e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6286,
+          "unitWei": "130000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00013,
+          "costPerPolicyEth": 8.1e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6286,
+          "unitWei": "130000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96409,
+      "nHit": 422,
+      "nHitByTier": [
+        422,
+        42
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.22975,
+      "imminentRatePct": 2.746567,
+      "pointRatePct": 1.471433,
+      "upperRatePct": 1.744715,
+      "var99RatePct": 1.783307,
+      "vsUncond": 6.4045,
+      "loadFactor": 1.186,
+      "premiumRetailEth": 0.00052,
+      "fairRetailEth": 0.00052,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013177,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00052,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00017447,
+      "expectedPayoutEth": 0.00014714,
+      "marginPerPolicyEth": 0.00021376,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00052,
+          "costPerPolicyEth": 0.00013177,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "520000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 3,
+      "regionKey": "beijing",
+      "regionName": "北京",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96409,
+      "nHit": 422,
+      "nHitByTier": [
+        422,
+        42
+      ],
+      "nImm": 1602,
+      "uncondPointRatePct": 0.22975,
+      "imminentRatePct": 2.746567,
+      "pointRatePct": 2.490174,
+      "upperRatePct": 2.702173,
+      "var99RatePct": 2.73547,
+      "vsUncond": 10.8386,
+      "loadFactor": 1.085,
+      "premiumRetailEth": 0.00068,
+      "fairRetailEth": 0.00068,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013299,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00068,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00027022,
+      "expectedPayoutEth": 0.00024902,
+      "marginPerPolicyEth": 0.00027679,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00068,
+          "costPerPolicyEth": 0.00013299,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "680000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96421,
+      "nHit": 1249,
+      "nHitByTier": [
+        1249,
+        94
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.672053,
+      "imminentRatePct": 4.450222,
+      "pointRatePct": 0.673192,
+      "upperRatePct": 0.890809,
+      "var99RatePct": 0.954127,
+      "vsUncond": 1.0017,
+      "loadFactor": 1.323,
+      "premiumRetailEth": 0.00037,
+      "fairRetailEth": 0.00037,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013081,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00037,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00008908,
+      "expectedPayoutEth": 0.00006732,
+      "marginPerPolicyEth": 0.00015011,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00037,
+          "costPerPolicyEth": 0.00013081,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "370000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00018,
+          "costPerPolicyEth": 0.00001381,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5135,
+          "unitWei": "180000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00016,
+          "costPerPolicyEth": 0.00000341,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5676,
+          "unitWei": "160000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00016,
+          "costPerPolicyEth": 0.00000211,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5676,
+          "unitWei": "160000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00016,
+          "costPerPolicyEth": 0.00000107,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5676,
+          "unitWei": "160000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00016,
+          "costPerPolicyEth": 9.4e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5676,
+          "unitWei": "160000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96421,
+      "nHit": 1249,
+      "nHitByTier": [
+        1249,
+        94
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.672053,
+      "imminentRatePct": 4.450222,
+      "pointRatePct": 0.988617,
+      "upperRatePct": 1.303273,
+      "var99RatePct": 1.369858,
+      "vsUncond": 1.471,
+      "loadFactor": 1.318,
+      "premiumRetailEth": 0.00044,
+      "fairRetailEth": 0.00044,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013119,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00044,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00013033,
+      "expectedPayoutEth": 0.00009886,
+      "marginPerPolicyEth": 0.00017849,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00044,
+          "costPerPolicyEth": 0.00013119,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "440000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00025,
+          "costPerPolicyEth": 0.00001419,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4318,
+          "unitWei": "250000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00023,
+          "costPerPolicyEth": 0.00000379,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4773,
+          "unitWei": "230000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00023,
+          "costPerPolicyEth": 0.00000249,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4773,
+          "unitWei": "230000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00022,
+          "costPerPolicyEth": 0.00000145,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5000,
+          "unitWei": "220000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00022,
+          "costPerPolicyEth": 0.00000132,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5000,
+          "unitWei": "220000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96421,
+      "nHit": 1249,
+      "nHitByTier": [
+        1249,
+        94
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.672053,
+      "imminentRatePct": 4.450222,
+      "pointRatePct": 1.829749,
+      "upperRatePct": 2.257187,
+      "var99RatePct": 2.34204,
+      "vsUncond": 2.7226,
+      "loadFactor": 1.234,
+      "premiumRetailEth": 0.0006,
+      "fairRetailEth": 0.0006,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.0001322,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.0006,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00022572,
+      "expectedPayoutEth": 0.00018297,
+      "marginPerPolicyEth": 0.00024209,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.0006,
+          "costPerPolicyEth": 0.0001322,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "600000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96421,
+      "nHit": 1249,
+      "nHitByTier": [
+        1249,
+        94
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.672053,
+      "imminentRatePct": 4.450222,
+      "pointRatePct": 2.776023,
+      "upperRatePct": 3.235023,
+      "var99RatePct": 3.336736,
+      "vsUncond": 4.1307,
+      "loadFactor": 1.165,
+      "premiumRetailEth": 0.00077,
+      "fairRetailEth": 0.00077,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013333,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00077,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.0003235,
+      "expectedPayoutEth": 0.0002776,
+      "marginPerPolicyEth": 0.00031317,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00077,
+          "costPerPolicyEth": 0.00013333,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "770000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96409,
+      "nHit": 1369,
+      "nHitByTier": [
+        1369,
+        122
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.741632,
+      "imminentRatePct": 4.07937,
+      "pointRatePct": 0.742419,
+      "upperRatePct": 1.014218,
+      "var99RatePct": 1.086371,
+      "vsUncond": 1.0011,
+      "loadFactor": 1.366,
+      "premiumRetailEth": 0.00039,
+      "fairRetailEth": 0.00039,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013089,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00039,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00010142,
+      "expectedPayoutEth": 0.00007424,
+      "marginPerPolicyEth": 0.00015769,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00039,
+          "costPerPolicyEth": 0.00013089,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "390000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.0002,
+          "costPerPolicyEth": 0.00001389,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4872,
+          "unitWei": "200000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00018,
+          "costPerPolicyEth": 0.00000349,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5385,
+          "unitWei": "180000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00018,
+          "costPerPolicyEth": 0.00000219,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5385,
+          "unitWei": "180000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00018,
+          "costPerPolicyEth": 0.00000115,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5385,
+          "unitWei": "180000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00018,
+          "costPerPolicyEth": 0.00000102,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5385,
+          "unitWei": "180000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96409,
+      "nHit": 1369,
+      "nHitByTier": [
+        1369,
+        122
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.741632,
+      "imminentRatePct": 4.07937,
+      "pointRatePct": 1.202488,
+      "upperRatePct": 1.613582,
+      "var99RatePct": 1.709165,
+      "vsUncond": 1.6214,
+      "loadFactor": 1.342,
+      "premiumRetailEth": 0.00049,
+      "fairRetailEth": 0.00049,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013144,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00049,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00016136,
+      "expectedPayoutEth": 0.00012025,
+      "marginPerPolicyEth": 0.0001972,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00049,
+          "costPerPolicyEth": 0.00013144,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "490000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.0003,
+          "costPerPolicyEth": 0.00001444,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 3878,
+          "unitWei": "300000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00028,
+          "costPerPolicyEth": 0.00000404,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4286,
+          "unitWei": "280000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00028,
+          "costPerPolicyEth": 0.00000274,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4286,
+          "unitWei": "280000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00028,
+          "costPerPolicyEth": 0.0000017,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4286,
+          "unitWei": "280000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00028,
+          "costPerPolicyEth": 0.00000157,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4286,
+          "unitWei": "280000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96409,
+      "nHit": 1369,
+      "nHitByTier": [
+        1369,
+        122
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.741632,
+      "imminentRatePct": 4.07937,
+      "pointRatePct": 2.429337,
+      "upperRatePct": 2.98659,
+      "var99RatePct": 3.061085,
+      "vsUncond": 3.2757,
+      "loadFactor": 1.229,
+      "premiumRetailEth": 0.00072,
+      "fairRetailEth": 0.00072,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013292,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00072,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00029866,
+      "expectedPayoutEth": 0.00024293,
+      "marginPerPolicyEth": 0.00028843,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00072,
+          "costPerPolicyEth": 0.00013292,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "720000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 4,
+      "regionKey": "guangzhou",
+      "regionName": "广州",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96409,
+      "nHit": 1369,
+      "nHitByTier": [
+        1369,
+        122
+      ],
+      "nImm": 6539,
+      "uncondPointRatePct": 0.741632,
+      "imminentRatePct": 4.07937,
+      "pointRatePct": 3.809543,
+      "upperRatePct": 4.417124,
+      "var99RatePct": 4.529789,
+      "vsUncond": 5.1367,
+      "loadFactor": 1.159,
+      "premiumRetailEth": 0.00097,
+      "fairRetailEth": 0.00097,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013457,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00097,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00044171,
+      "expectedPayoutEth": 0.00038095,
+      "marginPerPolicyEth": 0.00039372,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00097,
+          "costPerPolicyEth": 0.00013457,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "970000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96421,
+      "nHit": 604,
+      "nHitByTier": [
+        604,
+        52
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.326692,
+      "imminentRatePct": 4.995802,
+      "pointRatePct": 0.323361,
+      "upperRatePct": 0.494393,
+      "var99RatePct": 0.536565,
+      "vsUncond": 0.9898,
+      "loadFactor": 1.529,
+      "premiumRetailEth": 0.0003,
+      "fairRetailEth": 0.0003,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013039,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.0003,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00004944,
+      "expectedPayoutEth": 0.00003234,
+      "marginPerPolicyEth": 0.00012017,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.0003,
+          "costPerPolicyEth": 0.00013039,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "300000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 0.00001339,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6333,
+          "unitWei": "110000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00009,
+          "costPerPolicyEth": 0.00000299,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7000,
+          "unitWei": "90000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00009,
+          "costPerPolicyEth": 0.00000169,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7000,
+          "unitWei": "90000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00009,
+          "costPerPolicyEth": 6.5e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7000,
+          "unitWei": "90000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00009,
+          "costPerPolicyEth": 5.2e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7000,
+          "unitWei": "90000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96421,
+      "nHit": 604,
+      "nHitByTier": [
+        604,
+        52
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.326692,
+      "imminentRatePct": 4.995802,
+      "pointRatePct": 0.683578,
+      "upperRatePct": 0.95128,
+      "var99RatePct": 1.005689,
+      "vsUncond": 2.0924,
+      "loadFactor": 1.392,
+      "premiumRetailEth": 0.00038,
+      "fairRetailEth": 0.00038,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013082,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00038,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00009513,
+      "expectedPayoutEth": 0.00006836,
+      "marginPerPolicyEth": 0.00015405,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00038,
+          "costPerPolicyEth": 0.00013082,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "380000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00019,
+          "costPerPolicyEth": 0.00001382,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5000,
+          "unitWei": "190000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 0.00000342,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 0.00000212,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 0.00000108,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00017,
+          "costPerPolicyEth": 9.5e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5526,
+          "unitWei": "170000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96421,
+      "nHit": 604,
+      "nHitByTier": [
+        604,
+        52
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.326692,
+      "imminentRatePct": 4.995802,
+      "pointRatePct": 1.644157,
+      "upperRatePct": 2.014313,
+      "var99RatePct": 2.09915,
+      "vsUncond": 5.0327,
+      "loadFactor": 1.225,
+      "premiumRetailEth": 0.00056,
+      "fairRetailEth": 0.00056,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013197,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00056,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00020143,
+      "expectedPayoutEth": 0.00016442,
+      "marginPerPolicyEth": 0.0002266,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00056,
+          "costPerPolicyEth": 0.00013197,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "560000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 12,
+      "thresholdsMm": [
+        30,
+        70
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96421,
+      "nHit": 604,
+      "nHitByTier": [
+        604,
+        52
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.326692,
+      "imminentRatePct": 4.995802,
+      "pointRatePct": 2.724809,
+      "upperRatePct": 3.137321,
+      "var99RatePct": 3.215369,
+      "vsUncond": 8.3406,
+      "loadFactor": 1.151,
+      "premiumRetailEth": 0.00075,
+      "fairRetailEth": 0.00075,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013327,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00075,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00031373,
+      "expectedPayoutEth": 0.00027248,
+      "marginPerPolicyEth": 0.000303,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00075,
+          "costPerPolicyEth": 0.00013327,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "750000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 0,
+      "segKey": "t2c1",
+      "riderTier": 2,
+      "channel": 1,
+      "riderName": "平台团体",
+      "channelName": "平台代付",
+      "segName": "平台团体·平台代付",
+      "selectivity": 0,
+      "why": "平台整批为在册骑手投保，投保时点与天气无关 —— 择时归零，唯一\"干净\"的渠道",
+      "nWin": 96409,
+      "nHit": 573,
+      "nHitByTier": [
+        573,
+        83
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.318694,
+      "imminentRatePct": 3.851805,
+      "pointRatePct": 0.314469,
+      "upperRatePct": 0.52343,
+      "var99RatePct": 0.587053,
+      "vsUncond": 0.9867,
+      "loadFactor": 1.664,
+      "premiumRetailEth": 0.00031,
+      "fairRetailEth": 0.00031,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013038,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00031,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00005234,
+      "expectedPayoutEth": 0.00003145,
+      "marginPerPolicyEth": 0.00012728,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00031,
+          "costPerPolicyEth": 0.00013038,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "310000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00011,
+          "costPerPolicyEth": 0.00001338,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6452,
+          "unitWei": "110000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 0.00000298,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6774,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.0001,
+          "costPerPolicyEth": 0.00000168,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 6774,
+          "unitWei": "100000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00009,
+          "costPerPolicyEth": 6.4e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7097,
+          "unitWei": "90000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00009,
+          "costPerPolicyEth": 5.1e-7,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 7097,
+          "unitWei": "90000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 1,
+      "segKey": "t1c1",
+      "riderTier": 1,
+      "channel": 1,
+      "riderName": "认证骑手",
+      "channelName": "平台代付",
+      "segName": "认证骑手·平台代付",
+      "selectivity": 0.15,
+      "why": "认证骑手 + 平台代付结算，个人择时只剩微弱残差",
+      "nWin": 96409,
+      "nHit": 573,
+      "nHitByTier": [
+        573,
+        83
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.318694,
+      "imminentRatePct": 3.851805,
+      "pointRatePct": 0.866441,
+      "upperRatePct": 1.240225,
+      "var99RatePct": 1.321345,
+      "vsUncond": 2.7187,
+      "loadFactor": 1.431,
+      "premiumRetailEth": 0.00043,
+      "fairRetailEth": 0.00043,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013104,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00043,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00012402,
+      "expectedPayoutEth": 0.00008664,
+      "marginPerPolicyEth": 0.00017494,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00043,
+          "costPerPolicyEth": 0.00013104,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "430000000000000"
+        },
+        {
+          "N": 10,
+          "premiumEth": 0.00024,
+          "costPerPolicyEth": 0.00001404,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4419,
+          "unitWei": "240000000000000"
+        },
+        {
+          "N": 50,
+          "premiumEth": 0.00022,
+          "costPerPolicyEth": 0.00000364,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4884,
+          "unitWei": "220000000000000"
+        },
+        {
+          "N": 100,
+          "premiumEth": 0.00022,
+          "costPerPolicyEth": 0.00000234,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 4884,
+          "unitWei": "220000000000000"
+        },
+        {
+          "N": 500,
+          "premiumEth": 0.00021,
+          "costPerPolicyEth": 0.0000013,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5116,
+          "unitWei": "210000000000000"
+        },
+        {
+          "N": 1000,
+          "premiumEth": 0.00021,
+          "costPerPolicyEth": 0.00000117,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 5116,
+          "unitWei": "210000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 2,
+      "segKey": "t1c0",
+      "riderTier": 1,
+      "channel": 0,
+      "riderName": "认证骑手",
+      "channelName": "自助投保",
+      "segName": "认证骑手·自助投保",
+      "selectivity": 0.55,
+      "why": "平台 attestation 绑定身份 + 生产默认 ≥3 天冷静期，削掉短期择时但削不掉\"雨季才想起来买\"",
+      "nWin": 96409,
+      "nHit": 573,
+      "nHitByTier": [
+        573,
+        83
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.318694,
+      "imminentRatePct": 3.851805,
+      "pointRatePct": 2.338368,
+      "upperRatePct": 2.869641,
+      "var99RatePct": 2.973366,
+      "vsUncond": 7.3373,
+      "loadFactor": 1.227,
+      "premiumRetailEth": 0.0007,
+      "fairRetailEth": 0.0007,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013281,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.0007,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.00028696,
+      "expectedPayoutEth": 0.00023384,
+      "marginPerPolicyEth": 0.00028023,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.0007,
+          "costPerPolicyEth": 0.00013281,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "700000000000000"
+        }
+      ]
+    },
+    {
+      "regionId": 5,
+      "regionKey": "chengdu",
+      "regionName": "成都",
+      "hours": 24,
+      "thresholdsMm": [
+        50,
+        100
+      ],
+      "segId": 3,
+      "segKey": "t0c0",
+      "riderTier": 0,
+      "channel": 0,
+      "riderName": "众包自助",
+      "channelName": "自助投保",
+      "segName": "众包自助·自助投保",
+      "selectivity": 1,
+      "why": "无身份绑定、随时可买 —— 纯靠气候学\"只买雨季\"就能拿到的上限，不需要任何预报能力",
+      "nWin": 96409,
+      "nHit": 573,
+      "nHitByTier": [
+        573,
+        83
+      ],
+      "nImm": 2382,
+      "uncondPointRatePct": 0.318694,
+      "imminentRatePct": 3.851805,
+      "pointRatePct": 3.994285,
+      "upperRatePct": 4.570996,
+      "var99RatePct": 4.67036,
+      "vsUncond": 12.5333,
+      "loadFactor": 1.144,
+      "premiumRetailEth": 0.00099,
+      "fairRetailEth": 0.00099,
+      "sellable": true,
+      "unsellableReason": null,
+      "costPerPolicyEth": 0.00013479,
+      "costFloorEth": 0.00017,
+      "pNetEth": 0.00099,
+      "boundBy": "risk",
+      "upperPayoutEth": 0.0004571,
+      "expectedPayoutEth": 0.00039943,
+      "marginPerPolicyEth": 0.00039811,
+      "batch": [
+        {
+          "N": 1,
+          "premiumEth": 0.00099,
+          "costPerPolicyEth": 0.00013479,
+          "boundBy": "risk",
+          "sellable": true,
+          "discountBpsVsRetail": 0,
+          "unitWei": "990000000000000"
+        }
+      ]
+    }
+  ],
+  "batchBands": [
+    {
+      "bandIndex": 0,
+      "NMax": 1,
+      "discountBps": 0
+    },
+    {
+      "bandIndex": 1,
+      "NMax": 10,
+      "discountBps": 3878
+    },
+    {
+      "bandIndex": 2,
+      "NMax": 50,
+      "discountBps": 4286
+    },
+    {
+      "bandIndex": 3,
+      "NMax": 100,
+      "discountBps": 4286
+    },
+    {
+      "bandIndex": 4,
+      "NMax": 500,
+      "discountBps": 4286
+    },
+    {
+      "bandIndex": 5,
+      "NMax": 1000,
+      "discountBps": 4286
+    }
+  ],
+  "reserve": {
+    "var99PerPolicyEth": 0.00050948,
+    "worstCell": "武汉 24h seg#3",
+    "rule": "reserve ≥ 在保总份数 × var99PerPolicyEth",
+    "note": "取全格最差 segment 的 VaR99 → 无论实际渠道组合如何都不会低估"
+  },
+  "ratios": {
+    "region": [
+      {
+        "hours": 12,
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.00033,
+            "ratio": 1.179
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.00031,
+            "ratio": 1.107
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00028,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.00037,
+            "ratio": 1.321
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.0003,
+            "ratio": 1.071
+          }
+        ]
+      },
+      {
+        "hours": 12,
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.0004,
+            "ratio": 1.25
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.00036,
+            "ratio": 1.125
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00032,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.00044,
+            "ratio": 1.375
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.00038,
+            "ratio": 1.188
+          }
+        ]
+      },
+      {
+        "hours": 12,
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.00058,
+            "ratio": 1.381
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.00047,
+            "ratio": 1.119
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00042,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.0006,
+            "ratio": 1.429
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.00056,
+            "ratio": 1.333
+          }
+        ]
+      },
+      {
+        "hours": 12,
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.00076,
+            "ratio": 1.434
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.00059,
+            "ratio": 1.113
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00053,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.00077,
+            "ratio": 1.453
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.00075,
+            "ratio": 1.415
+          }
+        ]
+      },
+      {
+        "hours": 24,
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.00033,
+            "ratio": 1.179
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.00032,
+            "ratio": 1.143
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00028,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.00039,
+            "ratio": 1.393
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.00031,
+            "ratio": 1.107
+          }
+        ]
+      },
+      {
+        "hours": 24,
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.00046,
+            "ratio": 1.314
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.00038,
+            "ratio": 1.086
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00035,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.00049,
+            "ratio": 1.4
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.00043,
+            "ratio": 1.229
+          }
+        ]
+      },
+      {
+        "hours": 24,
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.00075,
+            "ratio": 1.442
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.00054,
+            "ratio": 1.038
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00052,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.00072,
+            "ratio": 1.385
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.0007,
+            "ratio": 1.346
+          }
+        ]
+      },
+      {
+        "hours": 24,
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "cells": [
+          {
+            "region": "武汉",
+            "premiumEth": 0.00105,
+            "ratio": 1.544
+          },
+          {
+            "region": "上海",
+            "premiumEth": 0.0007,
+            "ratio": 1.029
+          },
+          {
+            "region": "北京",
+            "premiumEth": 0.00068,
+            "ratio": 1
+          },
+          {
+            "region": "广州",
+            "premiumEth": 0.00097,
+            "ratio": 1.426
+          },
+          {
+            "region": "成都",
+            "premiumEth": 0.00099,
+            "ratio": 1.456
+          }
+        ]
+      }
+    ],
+    "hours": [
+      {
+        "region": "武汉",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "r12": 1,
+        "r24": 1
+      },
+      {
+        "region": "武汉",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "r12": 1,
+        "r24": 1.15
+      },
+      {
+        "region": "武汉",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "r12": 1,
+        "r24": 1.293
+      },
+      {
+        "region": "武汉",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "r12": 1,
+        "r24": 1.382
+      },
+      {
+        "region": "上海",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "r12": 1,
+        "r24": 1.032
+      },
+      {
+        "region": "上海",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "r12": 1,
+        "r24": 1.056
+      },
+      {
+        "region": "上海",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "r12": 1,
+        "r24": 1.149
+      },
+      {
+        "region": "上海",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "r12": 1,
+        "r24": 1.186
+      },
+      {
+        "region": "北京",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "r12": 1,
+        "r24": 1
+      },
+      {
+        "region": "北京",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "r12": 1,
+        "r24": 1.094
+      },
+      {
+        "region": "北京",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "r12": 1,
+        "r24": 1.238
+      },
+      {
+        "region": "北京",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "r12": 1,
+        "r24": 1.283
+      },
+      {
+        "region": "广州",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "r12": 1,
+        "r24": 1.054
+      },
+      {
+        "region": "广州",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "r12": 1,
+        "r24": 1.114
+      },
+      {
+        "region": "广州",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "r12": 1,
+        "r24": 1.2
+      },
+      {
+        "region": "广州",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "r12": 1,
+        "r24": 1.26
+      },
+      {
+        "region": "成都",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "r12": 1,
+        "r24": 1.033
+      },
+      {
+        "region": "成都",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "r12": 1,
+        "r24": 1.132
+      },
+      {
+        "region": "成都",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "r12": 1,
+        "r24": 1.25
+      },
+      {
+        "region": "成都",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "r12": 1,
+        "r24": 1.32
+      }
+    ],
+    "segment": [
+      {
+        "region": "武汉",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "selectivity": 0,
+        "premiumEth": 0.00033,
+        "vsUncond": 0.9962,
+        "upperRatePct": 0.647147,
+        "boundBy": "risk"
+      },
+      {
+        "region": "武汉",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "selectivity": 0.15,
+        "premiumEth": 0.00046,
+        "vsUncond": 2.3741,
+        "upperRatePct": 1.413675,
+        "boundBy": "risk"
+      },
+      {
+        "region": "武汉",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "selectivity": 0.55,
+        "premiumEth": 0.00075,
+        "vsUncond": 6.0483,
+        "upperRatePct": 3.156074,
+        "boundBy": "risk"
+      },
+      {
+        "region": "武汉",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "selectivity": 1,
+        "premiumEth": 0.00105,
+        "vsUncond": 10.1819,
+        "upperRatePct": 4.935469,
+        "boundBy": "risk"
+      },
+      {
+        "region": "上海",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "selectivity": 0,
+        "premiumEth": 0.00032,
+        "vsUncond": 0.9984,
+        "upperRatePct": 0.564694,
+        "boundBy": "risk"
+      },
+      {
+        "region": "上海",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "selectivity": 0.15,
+        "premiumEth": 0.00038,
+        "vsUncond": 1.8395,
+        "upperRatePct": 0.95089,
+        "boundBy": "risk"
+      },
+      {
+        "region": "上海",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "selectivity": 0.55,
+        "premiumEth": 0.00054,
+        "vsUncond": 4.0826,
+        "upperRatePct": 1.900473,
+        "boundBy": "risk"
+      },
+      {
+        "region": "上海",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "selectivity": 1,
+        "premiumEth": 0.0007,
+        "vsUncond": 6.606,
+        "upperRatePct": 2.837345,
+        "boundBy": "risk"
+      },
+      {
+        "region": "北京",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "selectivity": 0,
+        "premiumEth": 0.00028,
+        "vsUncond": 0.985,
+        "upperRatePct": 0.360409,
+        "boundBy": "risk"
+      },
+      {
+        "region": "北京",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "selectivity": 0.15,
+        "premiumEth": 0.00035,
+        "vsUncond": 2.463,
+        "upperRatePct": 0.7701,
+        "boundBy": "risk"
+      },
+      {
+        "region": "北京",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "selectivity": 0.55,
+        "premiumEth": 0.00052,
+        "vsUncond": 6.4045,
+        "upperRatePct": 1.744715,
+        "boundBy": "risk"
+      },
+      {
+        "region": "北京",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "selectivity": 1,
+        "premiumEth": 0.00068,
+        "vsUncond": 10.8386,
+        "upperRatePct": 2.702173,
+        "boundBy": "risk"
+      },
+      {
+        "region": "广州",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "selectivity": 0,
+        "premiumEth": 0.00039,
+        "vsUncond": 1.0011,
+        "upperRatePct": 1.014218,
+        "boundBy": "risk"
+      },
+      {
+        "region": "广州",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "selectivity": 0.15,
+        "premiumEth": 0.00049,
+        "vsUncond": 1.6214,
+        "upperRatePct": 1.613582,
+        "boundBy": "risk"
+      },
+      {
+        "region": "广州",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "selectivity": 0.55,
+        "premiumEth": 0.00072,
+        "vsUncond": 3.2757,
+        "upperRatePct": 2.98659,
+        "boundBy": "risk"
+      },
+      {
+        "region": "广州",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "selectivity": 1,
+        "premiumEth": 0.00097,
+        "vsUncond": 5.1367,
+        "upperRatePct": 4.417124,
+        "boundBy": "risk"
+      },
+      {
+        "region": "成都",
+        "segKey": "t2c1",
+        "segName": "平台团体·平台代付",
+        "selectivity": 0,
+        "premiumEth": 0.00031,
+        "vsUncond": 0.9867,
+        "upperRatePct": 0.52343,
+        "boundBy": "risk"
+      },
+      {
+        "region": "成都",
+        "segKey": "t1c1",
+        "segName": "认证骑手·平台代付",
+        "selectivity": 0.15,
+        "premiumEth": 0.00043,
+        "vsUncond": 2.7187,
+        "upperRatePct": 1.240225,
+        "boundBy": "risk"
+      },
+      {
+        "region": "成都",
+        "segKey": "t1c0",
+        "segName": "认证骑手·自助投保",
+        "selectivity": 0.55,
+        "premiumEth": 0.0007,
+        "vsUncond": 7.3373,
+        "upperRatePct": 2.869641,
+        "boundBy": "risk"
+      },
+      {
+        "region": "成都",
+        "segKey": "t0c0",
+        "segName": "众包自助·自助投保",
+        "selectivity": 1,
+        "premiumEth": 0.00099,
+        "vsUncond": 12.5333,
+        "upperRatePct": 4.570996,
+        "boundBy": "risk"
+      }
+    ],
+    "batch": [
+      {
+        "N": 1,
+        "discountBpsRange": [
+          0,
+          0
+        ],
+        "medianRatio": 1
+      },
+      {
+        "N": 10,
+        "discountBpsRange": [
+          3878,
+          7143
+        ],
+        "medianRatio": 0.457
+      },
+      {
+        "N": 50,
+        "discountBpsRange": [
+          4286,
+          7857
+        ],
+        "medianRatio": 0.417
+      },
+      {
+        "N": 100,
+        "discountBpsRange": [
+          4286,
+          7857
+        ],
+        "medianRatio": 0.4
+      },
+      {
+        "N": 500,
+        "discountBpsRange": [
+          4286,
+          7857
+        ],
+        "medianRatio": 0.389
+      },
+      {
+        "N": 1000,
+        "discountBpsRange": [
+          4286,
+          7857
+        ],
+        "medianRatio": 0.389
+      }
+    ]
+  },
+  "payload": {
+    "note": "B 定值、A 执行。单位 wei。本批 40 格全部可售；若出现不可售格，premiumWei=\"0\" 且合约必须 revert 而不是回退。",
+    "contract": "RainDeliveryInsuranceV3.sol",
+    "segmentOrder": [
+      "0=t2c1 平台团体·平台代付",
+      "1=t1c1 认证骑手·平台代付",
+      "2=t1c0 认证骑手·自助投保",
+      "3=t0c0 众包自助·自助投保"
+    ],
+    "bandN": [
+      1,
+      10,
+      50,
+      100,
+      500,
+      1000
+    ],
+    "retail": [
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00033,
+        "premiumWei": "330000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.0004,
+        "premiumWei": "400000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00058,
+        "premiumWei": "580000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00076,
+        "premiumWei": "760000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00033,
+        "premiumWei": "330000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00046,
+        "premiumWei": "460000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00075,
+        "premiumWei": "750000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00105,
+        "premiumWei": "1050000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00031,
+        "premiumWei": "310000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00036,
+        "premiumWei": "360000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00047,
+        "premiumWei": "470000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00059,
+        "premiumWei": "590000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00032,
+        "premiumWei": "320000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00038,
+        "premiumWei": "380000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00054,
+        "premiumWei": "540000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.0007,
+        "premiumWei": "700000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00032,
+        "premiumWei": "320000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00042,
+        "premiumWei": "420000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00053,
+        "premiumWei": "530000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00035,
+        "premiumWei": "350000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00052,
+        "premiumWei": "520000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00068,
+        "premiumWei": "680000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00037,
+        "premiumWei": "370000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00044,
+        "premiumWei": "440000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.0006,
+        "premiumWei": "600000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00077,
+        "premiumWei": "770000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00039,
+        "premiumWei": "390000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00049,
+        "premiumWei": "490000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00072,
+        "premiumWei": "720000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00097,
+        "premiumWei": "970000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.0003,
+        "premiumWei": "300000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00038,
+        "premiumWei": "380000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.00056,
+        "premiumWei": "560000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00075,
+        "premiumWei": "750000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "sellable": true,
+        "premiumEth": 0.00031,
+        "premiumWei": "310000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "sellable": true,
+        "premiumEth": 0.00043,
+        "premiumWei": "430000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 2,
+        "segKey": "t1c0",
+        "sellable": true,
+        "premiumEth": 0.0007,
+        "premiumWei": "700000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 3,
+        "segKey": "t0c0",
+        "sellable": true,
+        "premiumEth": 0.00099,
+        "premiumWei": "990000000000000"
+      }
+    ],
+    "bands": [
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00033,
+        "premiumWei": "330000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00013,
+        "premiumWei": "130000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00012,
+        "premiumWei": "120000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.0004,
+        "premiumWei": "400000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00021,
+        "premiumWei": "210000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00019,
+        "premiumWei": "190000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00019,
+        "premiumWei": "190000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00018,
+        "premiumWei": "180000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00018,
+        "premiumWei": "180000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00033,
+        "premiumWei": "330000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00014,
+        "premiumWei": "140000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00012,
+        "premiumWei": "120000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00012,
+        "premiumWei": "120000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00046,
+        "premiumWei": "460000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00026,
+        "premiumWei": "260000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00025,
+        "premiumWei": "250000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00024,
+        "premiumWei": "240000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00024,
+        "premiumWei": "240000000000000"
+      },
+      {
+        "regionId": 1,
+        "regionKey": "wuhan",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00024,
+        "premiumWei": "240000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00031,
+        "premiumWei": "310000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00012,
+        "premiumWei": "120000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00036,
+        "premiumWei": "360000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00016,
+        "premiumWei": "160000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00015,
+        "premiumWei": "150000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00014,
+        "premiumWei": "140000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00014,
+        "premiumWei": "140000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00014,
+        "premiumWei": "140000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00032,
+        "premiumWei": "320000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00012,
+        "premiumWei": "120000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00038,
+        "premiumWei": "380000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00019,
+        "premiumWei": "190000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 2,
+        "regionKey": "shanghai",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00008,
+        "premiumWei": "80000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00006,
+        "premiumWei": "60000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00006,
+        "premiumWei": "60000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00006,
+        "premiumWei": "60000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00006,
+        "premiumWei": "60000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00032,
+        "premiumWei": "320000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00012,
+        "premiumWei": "120000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00009,
+        "premiumWei": "90000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00007,
+        "premiumWei": "70000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00007,
+        "premiumWei": "70000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00007,
+        "premiumWei": "70000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00007,
+        "premiumWei": "70000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00035,
+        "premiumWei": "350000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00016,
+        "premiumWei": "160000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00014,
+        "premiumWei": "140000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00014,
+        "premiumWei": "140000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00013,
+        "premiumWei": "130000000000000"
+      },
+      {
+        "regionId": 3,
+        "regionKey": "beijing",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00013,
+        "premiumWei": "130000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00037,
+        "premiumWei": "370000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00018,
+        "premiumWei": "180000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00016,
+        "premiumWei": "160000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00016,
+        "premiumWei": "160000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00016,
+        "premiumWei": "160000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00016,
+        "premiumWei": "160000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00044,
+        "premiumWei": "440000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00025,
+        "premiumWei": "250000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00023,
+        "premiumWei": "230000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00023,
+        "premiumWei": "230000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00022,
+        "premiumWei": "220000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00022,
+        "premiumWei": "220000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00039,
+        "premiumWei": "390000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.0002,
+        "premiumWei": "200000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00018,
+        "premiumWei": "180000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00018,
+        "premiumWei": "180000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00018,
+        "premiumWei": "180000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00018,
+        "premiumWei": "180000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00049,
+        "premiumWei": "490000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.0003,
+        "premiumWei": "300000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 4,
+        "regionKey": "guangzhou",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00028,
+        "premiumWei": "280000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.0003,
+        "premiumWei": "300000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00009,
+        "premiumWei": "90000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00009,
+        "premiumWei": "90000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00009,
+        "premiumWei": "90000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00009,
+        "premiumWei": "90000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00038,
+        "premiumWei": "380000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00019,
+        "premiumWei": "190000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 12,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00017,
+        "premiumWei": "170000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00031,
+        "premiumWei": "310000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00011,
+        "premiumWei": "110000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.0001,
+        "premiumWei": "100000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00009,
+        "premiumWei": "90000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 0,
+        "segKey": "t2c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00009,
+        "premiumWei": "90000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 0,
+        "nMax": 1,
+        "premiumEth": 0.00043,
+        "premiumWei": "430000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 1,
+        "nMax": 10,
+        "premiumEth": 0.00024,
+        "premiumWei": "240000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 2,
+        "nMax": 50,
+        "premiumEth": 0.00022,
+        "premiumWei": "220000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 3,
+        "nMax": 100,
+        "premiumEth": 0.00022,
+        "premiumWei": "220000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 4,
+        "nMax": 500,
+        "premiumEth": 0.00021,
+        "premiumWei": "210000000000000"
+      },
+      {
+        "regionId": 5,
+        "regionKey": "chengdu",
+        "hours": 24,
+        "segId": 1,
+        "segKey": "t1c1",
+        "bandIndex": 5,
+        "nMax": 1000,
+        "premiumEth": 0.00021,
+        "premiumWei": "210000000000000"
+      }
+    ]
+  }
+}

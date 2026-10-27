@@ -1,0 +1,83 @@
+{
+  "schema": "rainproof/underwrite-review@1",
+  "review": {
+    "hook": "PolicyBought",
+    "policyId": 0,
+    "chainId": 11155111,
+    "contract": "0x89e7C942535930B61cB61631051E8b0bD670596a",
+    "abi": "v1",
+    "txHash": "0x27e4594d0d8e3ff063f4a550a788eea07541b70d9fdafc974360b3bf5203bfe8",
+    "blockNumber": 11855962,
+    "asOf": "2026-10-06T12:38:24.000Z",
+    "rider": "0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28",
+    "regionId": 2,
+    "regionKey": "shanghai",
+    "regionName": "上海",
+    "policyStatus": "active",
+    "startTime": 1791290304,
+    "endTime": 1791549504,
+    "windowHours": 72,
+    "thresholdMm": 50,
+    "premiumWei": "800000000000000",
+    "payoutWei": "10000000000000000",
+    "rainfallAtBuyMm": 0,
+    "onchainCumulativeMm": 34,
+    "incrementMm": 34,
+    "feed": {
+      "source": null,
+      "note": "投保区块之前、最近 10000 个区块内没有该区域的喂价事件（v1 没有 lastFeedAt 字段）"
+    },
+    "models": {
+      "status": "agree",
+      "agree": true,
+      "medianMm": 41.7,
+      "spreadMm": 11.8,
+      "toleranceMm": 8.3,
+      "perModelMm": [
+        {
+          "id": "ecmwf_ifs025",
+          "label": "ECMWF IFS025",
+          "org": "欧洲中期天气预报中心",
+          "mm": 35.9,
+          "days": 6
+        },
+        {
+          "id": "gfs_seamless",
+          "label": "GFS",
+          "org": "美国 NOAA/NCEP",
+          "mm": 47.7,
+          "days": 6
+        },
+        {
+          "id": "icon_seamless",
+          "label": "ICON",
+          "org": "德国气象局 DWD",
+          "mm": 41.7,
+          "days": 6
+        }
+      ],
+      "usable": [
+        "ecmwf_ifs025",
+        "gfs_seamless",
+        "icon_seamless"
+      ],
+      "missing": [],
+      "outlierModels": [],
+      "window": "2026-10-01 ~ 2026-10-06"
+    },
+    "baselineDeviationPct": 18.47,
+    "checks": {
+      "windowOk": true,
+      "baselineMonotonic": true,
+      "feedFresh": null,
+      "modelsAgree": true,
+      "baselineWithinModels": true
+    },
+    "flagged": [],
+    "verdict": "REVIEW_OK",
+    "reviewVersion": "hook-watch@1"
+  },
+  "reviewHash": "0xd885377ad92d25f576ca72a5ec21927e94bde21f4d1620dfeb5d5c599b15e483",
+  "reviewedAt": "2026-10-07T05:58:31.745Z",
+  "file": "D:\\workbuddy-use\\汉客松-参赛包\\09-AI判定留痕\\承保复核-chain11155111-policy0.json"
+}

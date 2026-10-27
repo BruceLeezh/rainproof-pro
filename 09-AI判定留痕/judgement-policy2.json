@@ -1,0 +1,36 @@
+{
+  "judgement": {
+    "schema": "rainproof/judgement@1",
+    "judgeVersion": "ai-judge-v1",
+    "policyId": 2,
+    "decision": 1,
+    "decisionLabel": "PAY",
+    "confidence": 94,
+    "sources": 3,
+    "simulated": true,
+    "metrics": {
+      "thresholdMm": 50,
+      "minConfidence": 60,
+      "officialIncrementMm": 153,
+      "modelIncrementsMm": [
+        153,
+        143.82,
+        159.12
+      ],
+      "medianMm": 153,
+      "spreadMm": 15.3,
+      "agreeCount": 3,
+      "divergencePct": 0
+    },
+    "reasons": [
+      "⚠️ 本快照为演示用合成数据（simulated=true），不是真实气象观测。",
+      "链上官方增量 153mm ≥ 阈值 50mm，且 3/3 个独立模型一致支持。",
+      "模型窗口增量 153 / 143.82 / 159.12 mm（中位数 153mm，离散度 15.3mm），与链上数字相符。"
+    ],
+    "inputHash": "0x39088a651fdf4d664cda8663a9f7f0620bdc5d3fd098697b1f86e7c97e6f856d"
+  },
+  "decidedAt": "2026-10-07T08:05:04.655Z",
+  "rationale": "保单 #2（广州，窗口自 2026-10-07 起）：链上官方累计增量 153mm，阈值 50mm；独立复核取了 ECMWF IFS025、GFS、ICON 三家模型，窗口增量分别为 153 / 143.82 / 159.12 mm。结论：PAY，置信度 94。（演示模式：快照为合成数据。）",
+  "rationaleSource": "deterministic",
+  "outputHash": "0x1a8a61fd9f0976b9d2d8e019a4544e88f886a4c1796c60ea2f19e587c13b4ec3"
+}
