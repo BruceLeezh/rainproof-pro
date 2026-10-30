@@ -1,5 +1,34 @@
 # 雨证 · RainProof
 
+> **已切换 V6（2026-10-29）**：BOT Chain 测试网 968，合约 `0xcDe1Bb9b8d61E55e194f18B6836fF1DBd49bC61F`；122区划 / 244格现价；7天领取宽限；池子4,958.40模拟元。当前页面为 `insurance.html` / `index-v6.html` / `verify-v6.html`，喂价与keeper已切换V6。V5保单与资金留在原合约，旧版本说明属于历史。
+>
+> 公共配置唯一来源为 `deployment.json`，迁移详情见 [V6切换记录](02-作战与答辩/V6切换与验收-2026-10-29.md)。
+
+> **保险创业赛 · 当前入口（2026-10-30）**：先 `node 07-测试工具/build-site.js`，再 `python -m http.server 8096 --directory site-dist`，首页 `insurance.html` 即保险演示导览。使用模拟资金；额度基数 100 元、最高实际给付 75 元。**V6 已于 2026-10-29 部署并切换为现行合约**（`0xcDe1Bb9b8d61E55e194f18B6836fF1DBd49bC61F`），V5 只保留旧合约留痕页 `rider-v5.html`。完整结论见 [V6切换与验收](02-作战与答辩/V6切换与验收-2026-10-29.md)。
+>
+> **项目结构（2026-10-30 合并）**：全仓已合并为单一项目 `雨证/`，`00-赛事资料`、`01-参赛材料`（文案 + `交付物/PPT` + `交付物/视频`）与 `02`–`12` 编号目录并列，不再有独立的「保险创业赛-2026」目录。明细见 [合并报告](02-作战与答辩/项目合并与精简-2026-10-30.md)。
+>
+> `cd 07-测试工具` 后运行 `npm test`；运行环境的 Windows 计划任务单独用 `npm run check-cadence:ops` 检查。公开站点构建命令为 `npm run build:site`，默认页使用保险赛导览，历史首页保留为 `index-v3.html`。
+
+> ## ⚠️ 现在要演示的东西在这里（2026-10-30 现状）
+>
+> 本文件下面记录的是 **v1 → v3 主网 677 的演进史**，命令与地址已过期。当前对外的是：
+> **BOT Chain 测试网 968 · V6 合约 `0xcDe1Bb9b8d61E55e194f18B6836fF1DBd49bC61F`**（122 个区划码 / 244 格现价，RDROP 计价 1:1 人民币，2/3 多签治理，7 天领取宽限）。
+>
+> ```bash
+> python -m http.server 8090 --directory 05-演示站点
+> # 导览首页： http://127.0.0.1:8090/insurance.html  ← 评委从这里进（不是 index.html，那是 677/v3 历史页）
+> # 看板：     http://127.0.0.1:8090/index-v6.html
+> # 核验台：   http://127.0.0.1:8090/verify-v6.html  ← 零输入，8 条断言逐条自证
+> # 骑手页：   http://127.0.0.1:8090/rider.html
+> # 控制台：   http://127.0.0.1:8090/console.html
+> ```
+>
+> - 上场前自检：`cd 04-脚本 && node preflight.js`（一条命令看「现在能不能演」：文件齐不齐 / 链读得通吗 / 122 个区划喂价还新鲜吗 / 钱包够不够两票 gas / 计划任务是不是被电池策略挡了；全绿退出码 0，`--json` 出机器可读）
+> - 喂价保鲜：计划任务 `RainProof-Feed` 每 30 分钟先 `node 04-脚本/fund-v6-ops-gas.js --send` 补 confirm 钱包 gas、再 `node 04-脚本/push-rainfall-v6.js --send`（`MAX_FEED_AGE=86400`，超时买不了新保单）
+> - 门禁：`cd 07-测试工具 && npm test`（29 组、596 项断言）
+> - 权威现状仍是 [交接文档](02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md)；本页下方内容保留作演进记录。
+
 [![Gates](https://github.com/juice-butterfly/rainproof/actions/workflows/gates.yml/badge.svg)](https://github.com/juice-butterfly/rainproof/actions/workflows/gates.yml)
 [![Deploy demo site](https://github.com/juice-butterfly/rainproof/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/juice-butterfly/rainproof/actions/workflows/deploy-demo.yml)
 
@@ -9,6 +38,10 @@
 队名：**神麻** · 仓库：https://github.com/juice-butterfly/rainproof
 
 ---
+
+> **接手本项目请先读**：[02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md](02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md)
+> 该文件是当前真相（v5/968 栈、29 组门禁、链上地址、18 条踩坑点、上手第一天 6 步）；本 README 保留为历史演进记录，含大量 v1/v2/v3 与 677 主网时代的过时描述，冲突时以交接文档为准。
+
 
 ## 最新状态（2026-10-12）
 
@@ -27,7 +60,7 @@
 - **Deployed on BOT Chain Mainnet (chainId 677)** — underwriting contract `0x89e7C942535930B61cB61631051E8b0bD670596a` (v3, runtime 15,823 B; deploy tx `0x54fc1e69…f436`). Demo site: https://juice-butterfly.github.io/rainproof/ — it reads mainnet 677 by default and falls back to Testnet 968 (RPC `rpc.bohr.life`) when the mainnet RPC is unreachable from your network. Explorer links: see the delivery checklist below.
 - **v3 underwriting layer** (deployed on mainnet 677; verified end-to-end on a local replay chain) — cover windows **12 h / 24 h only** (GB/T 28592—2012), threshold table 12 h → **30 / 70 mm**, 24 h → **50 / 100 mm**, two payout tiers **50% / 75%**.
 - **AI judgement layer** — three independent weather models are crossed-checked, deterministic rules R1–R5 return **DENY / PAY**, and the input hash + output hash go on-chain. The LLM never decides, and its explanation never enters the hash.
-- **Verify it yourself** — open `06-核验台单文件/汉客松-链上核验台.html` (one file, no backend) or the demo site's `verifier.html`, paste any transaction hash or address, and read the raw `eth_getLogs` / `eth_getTransactionByHash` output. No block explorer required.
+- **Verify it yourself** — open `06-核验台单文件/雨证-链上核验台.html` (one file, no backend) or the demo site's `verifier.html`, paste any transaction hash or address, and read the raw `eth_getLogs` / `eth_getTransactionByHash` output. No block explorer required.
 - **Team** 神麻 · 汉客松 S1 & ETH Wuhan 2026. The rest of this README is Chinese-first; this block is the English summary.
 
 ---
@@ -313,7 +346,7 @@ npm test          # 一条命令跑完 17 道门禁（断言数随门禁演进�
 - `make-verify-pack.js`（npm script 名 `check-verify-pack`）：贴到区块浏览器 verify 表单里的东西必须复现得了 —— 源文件无 import（本身即 flatten）、盘上 `.bytecode.txt` 与本次重编逐字节一致、运行时长度 = 链上实测的 15,823（V3，主网 677）/ 4,746（多签，677）/ 10,758（v1，Sepolia）/ 12,378（v2，968）字节；2026-10-12 起 v1/v2 也纳入（原来只查 V3 与多签，改 `.sol` 不重编能一路全绿）
 - `check-canonical.js`：确定性哈希口径（递归键排序、数值精度）自检（8 项）
 - `check-ai.js`：判定规则 R1–R5 + 1369 个用例的硬约束扫描（任何一格出现「PAY 且置信度低于门槛」即失败）
-- `check-ui.js`：前端契约 —— 降雨看板刻度与触发线必须指同一个地方（修过的 bug 不复发）、保障时长只列主网现行 v3 的 12/24 两档（运行时按链上 `hoursAllowed` 收窄成该层真能卖的档）、三个页面 JS 引用的 id/class 都真实存在（防 UI 改版让按钮静默失效）、演示界面里不许出现演讲提示（讲稿与分镜只放在 `提交材料/` 与 `02-作战与答辩/`）
+- `check-ui.js`：前端契约 —— 降雨看板刻度与触发线必须指同一个地方（修过的 bug 不复发）、保障时长只列主网现行 v3 的 12/24 两档（运行时按链上 `hoursAllowed` 收窄成该层真能卖的档）、三个页面 JS 引用的 id/class 都真实存在（防 UI 改版让按钮静默失效）、演示界面里不许出现演讲提示（讲稿与分镜只放在 `01-参赛材料/文案/` 与 `02-作战与答辩/`）
 - `e2e_contract.js`：本地链上跑完整业务流（v1 合约），73 项断言
 - `e2e_v2.js`：本地链上跑 v2 合约的九项改动（A1 保费网格 / A3 限购 / A4 冷静期 / A4b 喂价新鲜度 / A5 sources 上链 / A6 在保敞口 / A7 国标分档 / A8 白名单 / A9 productId），101 项断言 —— 它在部署前抓出过 `withdrawPool` 的 uint256 下溢缺陷
 
@@ -383,7 +416,7 @@ python -m http.server 8090 --directory 05-演示站点
 
 ### 离线核验（不依赖任何在线区块浏览器）
 
-双击 `06-核验台单文件/汉客松-链上核验台.html`，把交易哈希或地址粘进去即可。
+双击 `06-核验台单文件/雨证-链上核验台.html`，把交易哈希或地址粘进去即可。
 > ⚠️ 不要用 `sepolia.otterscan.io` —— 它的后端节点已挂，页面会一直转圈。
 
 ---
@@ -497,7 +530,7 @@ v1 与 968 上的 v2 的参数差别（**v1 的留痕仍是有效证据，但它
 - [交易哈希清单](02-作战与答辩/汉客松-交易哈希清单.md) —— 每个关键操作对应的链上交易
 - [真链留痕](08-截图存证/真链留痕-2026-10-06.md) —— 全部链上事件（含「不赔」与「赔付」两条路径）
 - [精算与定价口径](10-金融与定价/精算口径.md) —— 11 年真实降雨算出的触发概率、保本条件、准备金策略
-- [产品说明与商业模式](提交材料/产品说明与商业模式.md) —— 单位经济、谁付钱、与传统骑手险的对比
+- [产品说明与商业模式](01-参赛材料/文案/产品说明与商业模式.md) —— 单位经济、谁付钱、与传统骑手险的对比
 - [分工与流程](02-作战与答辩/分工与流程.md)
 - [下一步计划](02-作战与答辩/下一步计划.md)
 - [中期检查一页纸](02-作战与答辩/中期检查-一页纸.md) —— 一页讲清问题、AI 判定层、三条证据链与已知弱点

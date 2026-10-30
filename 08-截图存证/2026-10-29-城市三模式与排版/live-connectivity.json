@@ -1,0 +1,47 @@
+[
+  {
+    "city": {
+      "code": 420202,
+      "name": "黄石港区"
+    },
+    "mode": "live",
+    "ok": true,
+    "mm": 0.5,
+    "at": 1793263332151,
+    "lat": 30.212086,
+    "lon": 115.090164,
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=30.212086&longitude=115.090164&hourly=precipitation&timezone=Asia%2FShanghai&past_days=2&forecast_days=1",
+    "start": "2026-10-29T05:00",
+    "end": "2026-10-29T16:00"
+  },
+  {
+    "city": {
+      "code": 330782,
+      "name": "义乌市"
+    },
+    "mode": "live",
+    "ok": true,
+    "mm": 0,
+    "at": 1793263332316,
+    "lat": 29.306863,
+    "lon": 120.074911,
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=29.306863&longitude=120.074911&hourly=precipitation&timezone=Asia%2FShanghai&past_days=2&forecast_days=1",
+    "start": "2026-10-29T05:00",
+    "end": "2026-10-29T16:00"
+  },
+  {
+    "city": {
+      "code": 330782,
+      "name": "义乌市"
+    },
+    "mode": "real",
+    "ok": true,
+    "mm": 94.4,
+    "at": 1793263332889,
+    "lat": 29.306863,
+    "lon": 120.074911,
+    "url": "https://archive-api.open-meteo.com/v1/archive?latitude=29.306863&longitude=120.074911&hourly=precipitation&timezone=Asia%2FShanghai&start_date=2026-09-01&end_date=2026-10-08",
+    "start": "2026-09-01T00:00",
+    "end": "2026-10-08T23:00"
+  }
+]

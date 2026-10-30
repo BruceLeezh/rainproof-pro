@@ -14,18 +14,19 @@ const UPSTREAM = process.env.RPC_UPSTREAM || "https://rpc.botchain.ai";
 // ponytail: 进程内桶，实例横向扩容后实际额度 = 60 × 实例数；真需要精确限流时换成 Redis/Upstash 计数器。
 const PER_MINUTE = 60;
 const buckets = new Map(); // ip -> { tokens, ts }
-function allow(ip) {
+function allow(ip, cost) {
   const now = Date.now();
   let b = buckets.get(ip);
   if (!b) {
     if (buckets.size > 5000) { for (const [k, v] of buckets) if (now - v.ts > 600000) buckets.delete(k); }
-    b = { tokens: PER_MINUTE, ts: now };   // 新桶是满的：第一次请求不该被自己限流
+    if (buckets.size >= 5000) return false;
+    b = { tokens: PER_MINUTE, ts: now };
     buckets.set(ip, b);
   }
   b.tokens = Math.min(PER_MINUTE, b.tokens + ((now - b.ts) / 60000) * PER_MINUTE);
   b.ts = now;
-  if (b.tokens < 1) return false;
-  b.tokens -= 1;
+  if (b.tokens < cost) return false;
+  b.tokens -= cost;
   return true;
 }
 
@@ -44,20 +45,22 @@ module.exports = async (req, res) => {
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).json({ error: "POST only / 只接受 POST" });
 
-  const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() ||
-             (req.socket && req.socket.remoteAddress) || "unknown";
-  if (!allow(ip)) {
-    res.setHeader("Retry-After", "60");
-    return res.status(429).json({ error: "rate limited: max " + PER_MINUTE + " req/min per IP / 限流：每 IP 每分钟最多 " + PER_MINUTE + " 次" });
-  }
-
   let body = req.body;
+  if (Buffer.byteLength(typeof body === "string" ? body : JSON.stringify(body || {})) > 65536) return res.status(413).json({ error: "body too large" });
   if (typeof body === "string") { try { body = JSON.parse(body); } catch { return res.status(400).json({ error: "bad json" }); } }
   if (!body) return res.status(400).json({ error: "empty body" });
   const items = Array.isArray(body) ? body : [body];
+  if (!items.length || items.length > 20) return res.status(400).json({ error: "batch must contain 1 to 20 requests" });
   for (const it of items) {
+    if (!it || typeof it !== "object" || Array.isArray(it) || it.jsonrpc !== "2.0" || (it.params !== undefined && !Array.isArray(it.params) && (typeof it.params !== "object" || it.params === null))) return res.status(400).json({ error: "invalid JSON-RPC request" });
     const m = it && it.method;
     if (!READ_ONLY.has(m)) return res.status(403).json({ error: "method not allowed (read-only proxy): " + m });
+  }
+  const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() ||
+             (req.socket && req.socket.remoteAddress) || "unknown";
+  if (!allow(ip, items.length)) {
+    res.setHeader("Retry-After", "60");
+    return res.status(429).json({ error: "rate limited: max 60 RPC calls/min per IP" });
   }
 
   try {
@@ -65,6 +68,7 @@ module.exports = async (req, res) => {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(6000),
     });
     const text = await r.text();
     res.setHeader("Cache-Control", "no-store");
@@ -74,6 +78,6 @@ module.exports = async (req, res) => {
     if (status === 204 || status === 304) return res.status(status).end();
     return res.status(status).send(text);
   } catch (e) {
-    return res.status(502).json({ error: "upstream failed: " + (e && e.message) });
+    return res.status(e && (e.name === "TimeoutError" || e.name === "AbortError") ? 504 : 502).json({ error: "upstream unavailable; retry later" });
   }
 };

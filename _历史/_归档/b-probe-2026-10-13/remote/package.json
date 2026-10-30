@@ -1,0 +1,33 @@
+{
+  "name": "hanxong-test-tools",
+  "private": true,
+  "description": "汉客松 07-测试工具 的依赖清单（Node 从文件所在目录向上找 node_modules，所以必须装在这一层或包根）",
+  "scripts": {
+    "compile": "node compile_sol.js ../03-合约/RainDeliveryInsurance.sol",
+    "compile:v2": "node compile_sol.js ../03-合约/RainDeliveryInsuranceV2.sol --via-ir",
+    "compile:v3": "node compile_sol.js ../03-合约/RainDeliveryInsuranceV3.sol --via-ir",
+    "compile:multisig": "node compile_sol.js ../03-合约/OperatorMultisig.sol",
+    "sync-abi": "node sync_abi.js",
+    "build": "npm run compile && npm run sync-abi",
+    "e2e": "node e2e_contract.js",
+    "e2e:v2": "node e2e_v2.js",
+    "e2e:v3": "node e2e_v3.js",
+    "e2e:multisig": "node e2e_multisig.js",
+    "check-canonical": "node check-canonical.js",
+    "check-ai": "node check-ai.js",
+    "check-ui": "node check-ui.js",
+    "check-feed-verify": "node check-feed-verify.js",
+    "check-pricing-grid": "node check-pricing-grid.js",
+    "check-public-repo": "node check-public-repo.js",
+    "check-frozen-node": "node check-frozen-node.js",
+    "ai:collect": "node ../04-脚本/ai-collect.js",
+    "ai:judge": "node ../04-脚本/ai-judge.js",
+    "ai:submit": "node ../04-脚本/submit-judgement.js",
+    "test": "npm run check-public-repo && npm run check-frozen-node && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-feed-verify && npm run check-pricing-grid && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "ganache": "^7.9.2",
+    "solc": "^0.8.26"
+  }
+}

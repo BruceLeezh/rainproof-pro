@@ -29,7 +29,8 @@
  *   node ai-judge.js 0 --llm          # 额外让大模型写一段解释（需要 LLM_API_KEY）
  */
 
-try { require("dotenv").config(); } catch (_) { /* dotenv 可选 */ }
+try { require("dotenv").config({path:require("path").join(__dirname,".env")}); } catch (_) { /* dotenv 可选 */ }
+const ACTIVE = require("./active-deployment").applyDeployment();
 const fs = require("fs");
 const path = require("path");
 const { evidenceHashOf } = require("./canonical");
@@ -44,22 +45,24 @@ const LABEL = { 0: "DENY", 1: "PAY" };
 function median(arr) {
   const s = [...arr].sort((a, b) => a - b);
   const m = s.length >> 1;
+  if (!s.length) return 0;
   const v = s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
   return Math.round(v * 1e6) / 1e6;
 }
 
 /** 只有真取到数的来源才算来源：缺 inWindowMm 的那一项既不能进中位数，也不该算进 sources
  *  （正常路径下三家都在；这条防的是「快照里混进取数失败的项」把中位数/离散度算成 NaN）。 */
-const usableModels = (snap) => (snap.weather.models || []).filter((m) => Number.isFinite(m.inWindowMm));
+const usableModels = (snap) => (snap.weather.models || []).filter((m) => Number.isFinite(m.inWindowMm) && m.inWindowMm >= 0);
 
 /** 确定性判定 —— 输入相同必然输出相同，这是它能上链的前提 */
 function decide(snap) {
   const threshold = snap.thresholds.thresholdMm;
   const minConf = snap.thresholds.minConfidence;
+  if (!Number.isFinite(threshold) || threshold <= 0 || !Number.isFinite(minConf) || minConf < 0 || minConf > 100 || !Number.isFinite(snap.oracle.officialIncrementMm) || snap.oracle.officialIncrementMm < 0) throw new Error("Invalid judgement thresholds or rainfall");
   const models = usableModels(snap);
   const incs = models.map((m) => m.inWindowMm);
   const med = median(incs);
-  const spread = Math.round((Math.max(...incs) - Math.min(...incs)) * 1e6) / 1e6;
+  const spread = Math.round((incs.length ? Math.max(...incs) - Math.min(...incs) : 0) * 1e6) / 1e6;
   const agreeCount = incs.filter((v) => v >= threshold).length;
   const official = snap.oracle.officialIncrementMm;
   const divergencePct = official > 0 ? Math.round((Math.abs(med - official) / official) * 1000) / 10 : 0;
@@ -144,6 +147,7 @@ async function llmRationale(snap, r) {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(15000),
   });
   if (!res.ok) throw new Error(`LLM HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const j = await res.json();
@@ -222,7 +226,7 @@ async function main() {
   const record = buildRecord({ policyId, snapshot, r, inputHash, rationale, rationaleSource, llmInfo });
   const { judgement, outputHash } = record;
   const file = path.join(OUT_DIR, `judgement-policy${policyId}.json`);
-  fs.writeFileSync(file, JSON.stringify(record, null, 2));
+  fs.writeFileSync(file, JSON.stringify(record, null, 2), {flag:"wx"});
 
   console.log("=".repeat(74));
   console.log(`AI 判定（保单 #${policyId} · ${snapshot.region.name}）`);

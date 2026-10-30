@@ -34,17 +34,37 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const CONTRACT_DIR = path.join(ROOT, "03-合约");
-const TARGETS = [path.join(ROOT, "05-演示站点", "index.html")];
 
 /* 页面里每个 ABI 块 ← 哪个合约文件。顺序 = 页面按链上探针挑块的优先级。 */
 const BLOCKS = [
   { varName: "ABI", dest: "RainDeliveryInsuranceV3", note: "主网 677 的 v3 合约（页面第一目标）" },
   { varName: "ABI_V2", dest: "RainDeliveryInsuranceV2", note: "测试网 968 的 v2 合约（主网连不上时自动降级用）" },
 ];
+/** index-v5.html 只有一个块，且它装的是 v5 —— 别拿 v3/v2 覆盖它。 */
+const BLOCKS_V5 = [
+  { varName: "ABI", dest: "RainDeliveryInsuranceV5", note: "测试网 968 的 v5 合约（现行演示页）" },
+];
 
-// 只匹配「整行就是一个 const X = [...];」，并用 $1 保留原文件的行尾（\r\n 或 \n）
+/* 每个目标文件配自己的块表：同一个 varName 在不同页面里装的是不同版本的合约。
+   2026-10-26 之前这里只有 index.html，index-v5.html 的 102 条 V5 ABI 无人校验。 */
+const BLOCKS_V6 = [{varName:"ABI",dest:"RainDeliveryInsuranceV6",note:"V6 active deployment"}];
+const TARGETS = [
+  { file: path.join(ROOT, "05-演示站点", "index.html"), blocks: BLOCKS },
+  { file: path.join(ROOT, "05-演示站点", "index-v5.html"), blocks: BLOCKS_V5 },
+  { file: path.join(ROOT, "05-演示站点", "index-v6.html"), blocks: BLOCKS_V6 },
+];
+
+// 只匹配「整行就是一个 const X = [...];」，$1 = 「];」之后到行尾的一切（注释/空白/CRLF），改写时原样拼回。
+// index-v5.html 那一行尾上就挂着 `// v5（全国区域版 · uint32 行政区划代码）`，不能丢。
 function reFor(varName, flags) {
-  return new RegExp(`^const ${varName} = \\[.*?\\];([ \\t]*\\r?)$`, flags);
+  return new RegExp(`^const ${varName} = \\[.*?\\];([^\\n]*)$`, flags);
+}
+
+/** 把一行块拆成 { abi, tail }：abi 是 JSON，tail 是「];」之后的行尾原文 */
+function splitBlock(line, varName) {
+  const m = line.match(new RegExp(`^const ${varName} = (\\[.*?\\]);([^\\n]*)$`));
+  if (!m) throw new Error(`无法切分 const ${varName} = [...]`);
+  return { abi: JSON.parse(m[1]), tail: m[2] };
 }
 
 /* ------------------------------------------------------------------ 纯逻辑 */
@@ -83,9 +103,7 @@ function extractAbi(src, rel, varName) {
   if (hits !== 1) {
     throw new Error(`${rel}: 期望恰好找到 1 处 const ${varName} = [...]，实际 ${hits} 处 —— 拒绝写入`);
   }
-  return JSON.parse(src.match(reFor(varName, "m"))[0]
-    .replace(new RegExp(`^const ${varName} = `), "")
-    .replace(/;[ \t\r]*$/, ""));
+  return splitBlock(src.match(reFor(varName, "m"))[0], varName).abi;
 }
 
 /** 两份 ABI 的签名差（只用于打印人看的差集；判定用的是整份 JSON 逐字节相等） */
@@ -139,10 +157,10 @@ const fmtList = (xs) =>
 function main() {
   const argv = process.argv.slice(2);
   const opts = { force: argv.includes("--force"), check: argv.includes("--check") };
-  const total = TARGETS.length * BLOCKS.length;
+  const total = TARGETS.reduce((n, t) => n + t.blocks.length, 0);
   let drifted = 0;
-  for (const file of TARGETS) {
-    const r = syncOne(file, opts);
+  for (const t of TARGETS) {
+    const r = syncOne(t.file, { ...opts, blocks: t.blocks });
     console.log(r.rel);
     for (const p of r.blocks) {
       const tail = !p.changed
@@ -166,10 +184,10 @@ function main() {
       );
       process.exit(1);
     }
-    console.log(`\n✅ 通过 ${total} 项 · 失败 0 项（${TARGETS.length} 个文件 × ${BLOCKS.length} 个 ABI 块：内嵌 ABI 与 03-合约 逐字节一致）`);
+    console.log(`\n✅ 通过 ${total} 项 · 失败 0 项（${TARGETS.length} 个文件 / 共 ${total} 个 ABI 块：内嵌 ABI 与 03-合约 逐字节一致）`);
     return;
   }
-  console.log(`\n共同步 ${TARGETS.length} 个文件 × ${BLOCKS.length} 个 ABI 块${drifted ? "" : "（本来就一致，未改动）"}`);
+  console.log(`\n共同步 ${TARGETS.length} 个文件 / 共 ${total} 个 ABI 块${drifted ? "" : "（本来就一致，未改动）"}`);
 }
 
 /* ------------------------------------------------------------------ 自检 */
@@ -235,17 +253,19 @@ function selfCheck() {
 
   try { fs.rmSync(dir, { recursive: true, force: true }); } catch (_) { /* 临时目录，清不掉也不影响结论 */ }
 
-  // 真仓库：两个块都得在（只验结构，不验一致性 —— 一致性由 --check / npm test 负责）
-  const realRel = path.relative(ROOT, TARGETS[0]);
-  const real = fs.readFileSync(TARGETS[0], "utf8");
-  ok(`真仓库 ${realRel} 里两个 ABI 块都在（${BLOCKS.map((b) => b.varName).join(" + ")}）`,
-    BLOCKS.every((b) => (real.match(reFor(b.varName, "gm")) || []).length === 1));
+  // 真仓库：每个目标文件的每个块都得在（只验结构，不验一致性 —— 一致性由 --check / npm test 负责）
+  for (const t of TARGETS) {
+    const rel = path.relative(ROOT, t.file);
+    const real = fs.readFileSync(t.file, "utf8");
+    ok(`真仓库 ${rel} 里 ${t.blocks.length} 个 ABI 块都在（${t.blocks.map((b) => b.varName).join(" + ")}）`,
+      t.blocks.every((b) => (real.match(reFor(b.varName, "gm")) || []).length === 1));
+  }
 
   console.log(`\n${fail ? "❌" : "✅"} sync_abi 自检：${pass} 项通过 / ${fail} 项失败`);
   process.exit(fail ? 1 : 0);
 }
 
-module.exports = { BLOCKS, sigOf, setOf, loadCandidates, candFor, extractAbi, delta, planBlock, syncOne };
+module.exports = { BLOCKS, BLOCKS_V5, TARGETS, sigOf, setOf, loadCandidates, candFor, extractAbi, delta, planBlock, syncOne };
 
 if (require.main === module && process.argv.includes("--self-check")) selfCheck();
 else if (require.main === module) {

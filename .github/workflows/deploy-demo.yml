@@ -33,8 +33,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: 构建保险创业赛默认入口并保留历史页
+        run: node 07-测试工具/build-site.js
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: 05-演示站点
+          path: site-dist
       - id: deployment
         uses: actions/deploy-pages@v4

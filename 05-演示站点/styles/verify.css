@@ -1,0 +1,50 @@
+*{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.65 -apple-system,"Segoe UI","Noto Sans SC",system-ui,sans-serif;
+       -webkit-font-smoothing:antialiased;padding:0 20px 80px}
+  .wrap{max-width:960px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+         padding:22px 0 18px;border-bottom:1px solid var(--line);margin-bottom:26px}
+  .mark{width:34px;height:34px;border:1px solid var(--measure);border-radius:8px;
+        display:grid;place-items:center;color:var(--measure);font-weight:700}
+  h1{font-size:19px;margin:0;letter-spacing:.02em}
+  .sub{color:var(--dim);font-size:12.5px;margin-top:2px}
+  .badges{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--dim)}
+  .badges b{color:var(--ink);font-family:ui-monospace,Consolas,monospace}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--wait);margin-right:6px;vertical-align:1px}
+  .dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+  .dot.err{background:var(--bad)}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  button{background:transparent;color:var(--ink);border:1px solid var(--line);
+         padding:8px 16px;border-radius:9px;font:inherit;cursor:pointer}
+  button:hover{border-color:var(--measure);color:var(--measure)}
+  button:disabled{opacity:.45;cursor:default}
+  .score{margin-left:auto;font-size:13px;color:var(--dim)}
+  .score b{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .rows{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+  .row{display:grid;grid-template-columns:26px 1fr;gap:12px;background:var(--panel);
+       border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .row.ok{border-left:3px solid var(--ok)}
+  .row.bad{border-left:3px solid var(--bad)}
+  .row.wait{border-left:3px solid var(--wait)}
+  .st{font-size:16px;line-height:1.4;color:var(--wait)}
+  .row.ok .st{color:var(--ok)} .row.bad .st{color:var(--bad)}
+  .t{font-weight:600;font-size:14.5px}
+  .why{color:var(--dim);font-size:12.8px;margin-top:3px}
+  .kv{font-family:ui-monospace,Consolas,monospace;font-size:12.4px;color:var(--measure);
+      margin-top:7px;word-break:break-all}
+  .kv .k{color:var(--dim)}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);
+         color:var(--dim);font-size:12.6px}
+  footer b{color:var(--ink)}
+  code{font-family:ui-monospace,Consolas,monospace;background:#101a24;padding:1px 5px;border-radius:4px;font-size:12px;
+       overflow-wrap:anywhere}
+  a{color:var(--measure)}
+  .mono{font-family:ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+  .row>div{min-width:0}
+  @media(max-width:640px){
+    body{padding:0 12px 60px}
+    .kv{font-size:11.5px}
+    h1{font-size:17px}
+    .badges{margin-left:0;width:100%}
+  }

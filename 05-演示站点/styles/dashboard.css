@@ -1,0 +1,594 @@
+/* ============================================================================
+     雨证 · 演示页设计系统（2026-10-07 重构）
+     原则：① 层级只声明一次 —— 描边或阴影，不同时（不再有"描边+内高光"的幽灵卡片）
+           ② 颜色只表状态：蓝=可操作/链接/选中，金=金额与赔付，绿=成功，红=错误
+           ③ 字阶收敛为 6 档；所有数值等宽 + tabular-nums + 右对齐
+           ④ 正文行宽 65–75ch；说明文字退到折叠区，主视线只留操作与结果
+     禁止（craft floor）：title 上的 kicker、emoji 当图标、卡片左侧 4px 彩色边、
+           玻璃模糊、渐变文字、常驻装饰动画、零偏移彩色光晕。
+     ============================================================================ */
+  
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{color-scheme:dark}
+  body{
+    font-family:var(--f-ui);color:var(--ink);font-size:var(--t-body);line-height:1.65;
+    background:
+      radial-gradient(1100px 620px at 14% -12%, rgba(52,211,228,.075), transparent 62%),
+      radial-gradient(860px 500px at 86% -8%, rgba(158,140,245,.05), transparent 60%),
+      var(--night);
+    background-attachment:fixed; -webkit-font-smoothing:antialiased; padding-bottom:var(--s8);
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 var(--s6)}
+
+  /* 浏览器自己的表面也要主题化 —— 这一页是被搭建过的，不是拼装的 */
+  ::selection{background:rgba(52,211,228,.26)}
+  input,select,textarea{caret-color:var(--blue-l)}
+  ::placeholder{color:var(--faint);opacity:1}
+  a{color:var(--blue-l);text-decoration:none;text-underline-offset:3px}
+  a:hover{text-decoration:underline}
+  :focus-visible{outline:2px solid var(--blue-l);outline-offset:2px;border-radius:3px}
+  html{scrollbar-width:thin;scrollbar-color:var(--hair-2) transparent}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--hair-2);border:2px solid transparent;background-clip:content-box;border-radius:99px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(148,180,215,.4);background-clip:content-box}
+  .mono,.pmeta,.pai,.v,.rail-i b,footer code{font-variant-numeric:tabular-nums}
+
+  /* ---------- 顶栏 + 状态 rail ---------- */
+  header{padding:22px 0 0;border-bottom:1px solid var(--hair)}
+  .brand{display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding-bottom:16px}
+  .logo{width:38px;height:38px;flex:none;display:grid;place-items:center;color:var(--blue-l)}
+  .logo svg{width:34px;height:34px;display:block}
+  h1{font-size:var(--t-h1);font-weight:640;letter-spacing:-.01em;line-height:1.25}
+  h1 span{display:block;font-size:var(--t-lab);color:var(--faint);font-weight:400;letter-spacing:.2px;margin-top:2px}
+  .chainbar{margin-left:auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);display:inline-block;margin-right:6px}
+  .dot.on{background:var(--ok)}
+  .dot.err{background:var(--bad)}
+  .chainbar b{color:var(--ink);font-weight:600}
+  .rail{display:flex;flex-wrap:wrap;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+  .rail-i{padding:12px 26px 12px 0;margin-right:26px;border-right:1px solid var(--hair);min-width:150px}
+  .rail-i:last-child{border-right:none;margin-right:0}
+  .rl{display:block;font-size:var(--t-lab);color:var(--faint);letter-spacing:.3px}
+  .rail-i b{display:block;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--ink);margin-top:3px}
+
+  /* ---------- 区块：靠 hairline 与留白分段，不靠卡片墙 ---------- */
+  /* 分区标题分两级。四个标题一样大 = 页面没有视觉入口：
+     只有「降雨看板」是这一页的入口（17px / 660 / --ink），其余是它的支撑（14px / 600 / --dim）。
+     台阶只靠字号 + 字重 + 颜色深浅，不加边条、不加编号（DESIGN.md 的 Don't 清单）。 */
+  .sec{padding-top:22px}
+  .sec + .sec{border-top:1px solid var(--hair)}
+  .sec > h2{font-size:var(--t-h2);font-weight:600;letter-spacing:.1px;color:var(--dim);
+    display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .sec > h2 em{font-style:normal;font-size:var(--t-lab);color:var(--faint);font-weight:400;letter-spacing:.2px}
+  .sec.lead{padding-top:28px}
+  .sec.lead > h2{font-size:17px;font-weight:660;color:var(--ink);letter-spacing:0;margin-bottom:14px}
+  .sec.lead > h2 em{font-size:12px;color:var(--dim)}
+  .panel{background:var(--panel);border:1px solid var(--hair);border-radius:var(--r);padding:18px 20px}
+  .panel.plain{background:transparent;border-style:dashed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .grid2{display:grid;grid-template-columns:1.55fr .95fr;gap:28px}
+  /* 右栏整列一起粘（不是只粘投保面板）：粘一半会在右下方留一块空白跟着滚，
+     而且那块空白没有任何内容可以填 —— 整列粘 + 右栏下面接「AI 层做了什么」，
+     这样滚动时右边始终是"动作 + 它背后的智能"，左边始终是链上现状。 */
+  .rcol{position:sticky;top:20px;align-self:start}
+  /* 看板右栏（p1）：同一份链上读数的另外两种读法 —— 五城一览（精确数字 + 距阈值）
+     与读数来源（哪一层在答、什么时候抓的）。两块都是现成读数的视图，不引入新口径。 */
+  .ctab{display:grid}
+  .crow{display:grid;grid-template-columns:44px 1fr auto;gap:var(--s3);align-items:baseline;width:100%;
+    text-align:left;background:none;border:0;border-bottom:1px solid var(--hair);
+    padding:11px 3px;color:inherit;font:inherit;cursor:pointer;transition:background .16s}
+  .crow:last-child{border-bottom:0}
+  .crow:hover{background:rgba(150,180,215,.05)}
+  .crow.on{background:var(--measure-dim)}
+  .crow > b{font-weight:640;font-size:var(--t-body)}
+  .crow .v{font-family:var(--mono);font-size:var(--t-num);font-variant-numeric:tabular-nums}
+  .crow .v u{font-size:var(--t-lab);color:var(--dim);text-decoration:none;margin-left:2px}
+  .crow .d{font-size:var(--t-data);color:var(--dim);text-align:right;font-variant-numeric:tabular-nums}
+  .crow .d.over{color:var(--money)}
+  .srcrow{display:flex;gap:var(--s3);align-items:baseline;justify-content:space-between;
+    padding:9px 0;border-bottom:1px dashed var(--hair)}
+  .srcrow:last-of-type{border-bottom:0}
+  .srcrow > .k{font-size:var(--t-lab);color:var(--faint);margin:0;flex:0 0 auto}
+  .srcrow > .v{font-family:var(--mono);font-size:var(--t-data);text-align:right;word-break:break-all}
+  body[data-page="p1"] .rcol > .sec:first-child{padding-top:var(--d-lead)}
+  @media (max-width:1000px){
+    .grid2{grid-template-columns:1fr}
+    /* 看板窄屏：右栏（表格 + 来源）排在图表与事件流之后 —— 看板的主角是图，不是旁注 */
+    body[data-page="p1"] .grid2 > div:last-child{order:0}
+    /* 窄屏右栏会被挤到最下面：投保面板必须排在事件流前面，否则手机上要先划过整屏日志才看得到"投保" */
+    .grid2 > div:last-child{order:-1}
+  }
+  .k{font-size:var(--t-lab);color:var(--faint);letter-spacing:.3px;margin-bottom:6px}
+  .v{font-family:var(--mono);font-size:var(--t-tbl);word-break:break-all}
+  .mono{font-family:var(--mono)}
+  .mlabel{font-size:var(--t-tbl);color:var(--dim)}
+  .metric{font-family:var(--mono);font-size:var(--t-metric);font-weight:640;line-height:1.15;
+    color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+  /* ---------- 控件 ---------- */
+  .btn{border:1px solid var(--hair-2);background:var(--panel2);color:var(--ink);
+    font-family:var(--sans);font-size:13px;font-weight:560;padding:10px 18px;
+    border-radius:var(--r-sm);cursor:pointer;transition:background .16s,border-color .16s,color .16s;white-space:nowrap}
+  .btn:hover:not(:disabled){border-color:var(--blue-l);background:#152740}
+  .btn:active:not(:disabled){background:#0E1B2C}
+  .btn:disabled{opacity:.5;cursor:not-allowed;border-style:dashed}
+  .btn.primary{background:var(--blue);border-color:var(--blue);color:#04101F;font-weight:640}
+  .btn.primary:hover:not(:disabled){background:#5A97F8;border-color:#5A97F8}
+  .btn.gold{border-color:rgba(255,200,87,.45);background:rgba(255,200,87,.12);color:var(--accent)}
+  .btn.gold:hover:not(:disabled){border-color:var(--accent);background:rgba(255,200,87,.2)}
+  .btn.sm{padding:6px 12px;font-size:11.5px;border-radius:var(--r-xs)}
+  .btn.block{width:100%;padding:13px;font-size:14px;font-weight:620}
+  input,select{background:#0A1521;border:1px solid var(--hair-2);border-radius:var(--r-sm);color:var(--ink);
+    font-family:var(--mono);font-size:var(--t-tbl);padding:10px 12px;outline:none;transition:border-color .16s}
+  input:hover,select:hover{border-color:rgba(148,180,215,.36)}
+  input:focus,select:focus{border-color:var(--blue-l)}
+  select{cursor:pointer;font-family:var(--sans);font-size:13px;appearance:none;padding-right:34px;
+    background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),linear-gradient(135deg,var(--dim) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  label.mlabel{display:block;margin-bottom:6px}
+
+  /* ---------- 配置条 / 状态标签 ---------- */
+  .cfg{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .cfg input{flex:1 1 340px;min-width:0;font-size:11.5px}
+  .tag{font-size:var(--t-lab);font-family:var(--mono);padding:3px 8px;border-radius:var(--r-xs);
+    border:1px solid var(--hair-2);color:var(--dim);white-space:nowrap}
+  .tag.gold{border-color:rgba(255,200,87,.45);color:var(--accent);background:rgba(255,200,87,.10)}
+  .tag.red{border-color:rgba(240,131,111,.45);color:var(--bad);background:rgba(240,131,111,.10)}
+  .tag.warn{border-color:var(--line-2);color:var(--ink-3);background:transparent}
+
+  /* ---------- 降雨看板：刻度尺 + 阈值线（阈值落在 50%） ---------- */
+  .region{padding:12px 0;border-top:1px solid var(--hair)}
+  .region:first-child{border-top:none;padding-top:2px}
+  .rtop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;font-size:var(--t-tbl)}
+  .rtop b{font-family:var(--mono);font-size:14px;color:var(--ink)}
+  .bar{height:8px;background:#08111C;border-radius:99px;position:relative;margin-top:18px;
+    outline:1px solid var(--hair)}
+  .bar::before{content:"触发线";position:absolute;left:calc(50% + 6px);top:-15px;font-size:11px;letter-spacing:.4px;
+    color:var(--faint);white-space:nowrap}
+  .bar i{display:block;height:100%;border-radius:99px;position:relative;
+    background:var(--blue);transition:width .5s cubic-bezier(.16,1,.3,1)}
+  .bar i.hit{background:var(--accent)}
+  .bar::after{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--measure);opacity:.8}
+  .rnote{font-size:var(--t-lab);color:var(--faint);margin-top:5px}
+  /* 「触发线」三个字原来在 5 行里各出现一次 —— 同一条线、同一个含义，写 5 遍是噪声。
+     只留在选中那一行（它正好也是背景雨幕的来源），其余行只留线不留字。 */
+  .region:not(.is-sel) .bar::before{content:""}
+  /* 三行说同一件事也是噪声：状态词交给金色标签（"已超阈值"），条子只管"跨过线了没有"，
+     每行只报自己独有的数（越过多少 / 还差多少），共同的那句解释写一遍在这里。 */
+  .rlegend{font-size:var(--t-lab);color:var(--faint);line-height:1.85;margin-top:12px;padding-top:11px;
+    border-top:1px solid var(--hair)}
+  .rlegend b{color:var(--dim);font-weight:600}
+  /* 选中的那一行 == 整页背景雨幕的来源 */
+  .region.is-sel .rtop > span:first-child{color:var(--ink);font-weight:620}
+  .region.is-sel .rtop > span:first-child::after{content:"背景雨幕";margin-left:7px;font-size:11px;
+    font-weight:400;letter-spacing:.2px;color:var(--cyan);border:1px solid rgba(47,211,238,.4);
+    background:rgba(47,211,238,.07);border-radius:var(--r-xs);padding:1px 5px;vertical-align:1px}
+  .region.is-sel > .bar{outline-color:rgba(47,211,238,.45)}
+
+  /* ---------- 我的保单：数据行（不是卡片） ---------- */
+  .ptable-head{display:grid;grid-template-columns:200px minmax(220px,1.15fr) minmax(300px,1.5fr) auto;gap:18px;
+    padding:0 0 8px;border-bottom:1px solid var(--hair-2);font-size:var(--t-lab);color:var(--faint);letter-spacing:.3px}
+  .sec:has(#myPolicies .empty) .ptable-head{display:none}
+  .pol{display:grid;grid-template-columns:200px minmax(220px,1.15fr) minmax(300px,1.5fr) auto;gap:18px;
+    align-items:start;padding:13px 0;border-bottom:1px solid var(--hair)}
+  .pol:last-child{border-bottom:none}
+  .pid{font-size:13.5px;font-weight:600;line-height:1.5}
+  .pid .mono{color:var(--dim);font-weight:500}
+  .pol.paid .pid{color:var(--ok)}
+  .pol.claimable .pid{color:var(--accent)}
+  .pol.denied .pid,.pol.expired .pid{color:var(--dim)}
+  .pol.expired .pmeta,.pol.expired .pai{opacity:.7}
+  .pmeta{font-family:var(--mono);font-size:11.5px;color:var(--dim);line-height:1.75;overflow-wrap:anywhere}
+  .pai{font-family:var(--mono);font-size:11.5px;color:var(--dim);line-height:1.75;overflow-wrap:anywhere}
+  .pai b{color:var(--ink);font-weight:600}
+  .pai .none{color:var(--faint)}
+  @media (max-width:1000px){
+    .ptable-head{display:none}
+    .pol{grid-template-columns:minmax(0,1fr);gap:7px;padding:14px 0}
+  }
+
+  /* ---------- 链上动态：数据行 ---------- */
+  .ev{display:grid;grid-template-columns:158px minmax(0,1fr) 120px 66px;gap:14px;align-items:baseline;
+    padding:9px 0;border-bottom:1px solid var(--hair);font-size:var(--t-tbl)}
+  .ev:last-child{border-bottom:none}
+  .ev .en{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:var(--r-xs);white-space:nowrap;
+    border:1px solid var(--hair-2);color:var(--dim);justify-self:start}
+  .ev .en.gold{border-color:rgba(255,200,87,.4);color:var(--accent)}
+  .ev .en.blue{border-color:rgba(127,176,255,.35);color:var(--blue-l)}
+  .ev .et{color:var(--dim);overflow-wrap:anywhere}
+  .ev .ea{color:var(--faint);font-family:var(--mono);font-size:11px;white-space:nowrap;text-align:right}
+  .ev .etx{font-size:11px;color:var(--blue-l);white-space:nowrap;text-align:right}
+  .ev-more{display:none;margin-top:12px}
+  @media (max-width:1000px){
+    .ev{grid-template-columns:minmax(0,1fr);gap:3px}
+    .ev .ea,.ev .etx{text-align:left}
+    /* 手机上 20 条事件 × 3 行会占掉 2/3 屏，把投保和保单挤没了。
+       先给 6 条，余下的点一下再展开 —— 数据一条不少，只是先折叠。 */
+    .ev-extra{display:none}
+    .events-open .ev-extra{display:grid}
+    .ev-more{display:inline-block}
+  }
+
+  /* ---------- AI 层：右栏三个动作，一行一条（不是卡片阵列） ---------- */
+  .airow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:baseline;
+    padding:10px 0;border-top:1px solid var(--hair);font-size:var(--t-tbl)}
+  .airow:first-child{border-top:none;padding-top:2px}
+  .airow b{color:var(--ink);font-weight:600;white-space:nowrap}
+  .airow span{color:var(--dim);line-height:1.7}
+  .airow span code{font-family:var(--mono);font-size:11px;color:var(--faint)}
+
+  .empty{color:var(--faint);font-size:var(--t-tbl)}
+  .loading{color:var(--dim);font-size:var(--t-tbl)}
+  .loading::after{content:"";display:inline-block;width:8px;height:8px;margin-left:8px;vertical-align:middle;
+    border:1.5px solid var(--blue);border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .note{margin-top:14px;color:var(--dim);font-size:var(--t-tbl);line-height:1.85;max-width:72ch}
+  .note b,.note strong{color:var(--ink)}
+  .steps{font-size:var(--t-tbl);color:var(--dim);line-height:2;max-width:72ch}
+  .steps b{color:var(--ink);font-family:var(--mono)}
+  footer{margin-top:26px;padding:20px 0 0;border-top:1px solid var(--hair);font-size:var(--t-tbl);color:var(--faint);line-height:1.9}
+  footer code{font-family:var(--mono);color:var(--dim);font-size:11.5px}
+  footer p{max-width:78ch;margin-bottom:9px}
+  footer p:last-child{margin-bottom:0}
+
+  /* ---------- 折叠区（设置 / 诚实说明）：说明该有，但不该占道 ---------- */
+  details.cfgbox,details.notes{margin-top:26px;border-top:1px solid var(--hair);padding-top:16px}
+  details > summary{cursor:pointer;font-size:var(--t-h2);font-weight:600;color:var(--dim);list-style:none;
+    display:flex;align-items:center;gap:9px}
+  details > summary::-webkit-details-marker{display:none}
+  details > summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--faint);
+    border-bottom:1.5px solid var(--faint);transform:rotate(-45deg);transition:transform .18s;margin-left:2px}
+  details[open] > summary::before{transform:rotate(45deg)}
+  details > summary:hover{color:var(--blue-l)}
+  details .panel{margin-top:14px}
+
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(140%);
+    background:var(--panel2);border:1px solid var(--hair-2);border-radius:var(--r);padding:12px 18px;font-size:13px;
+    max-width:min(680px,92vw);z-index:99;transition:transform .3s cubic-bezier(.16,1,.3,1);
+    box-shadow:0 18px 44px -18px rgba(0,0,0,.9)}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+  #toast.err{border-color:rgba(240,131,111,.6)}
+  #toast.ok{border-color:rgba(63,217,165,.6)}
+
+  /* ---------- 减弱动效：静态雨丝兜底（仅 reduced-motion 下存在） ---------- */
+  @media (prefers-reduced-motion: reduce){
+    body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+      background:repeating-linear-gradient(103deg,transparent 0 7px,rgba(190,220,255,.035) 7px 8px)}
+    *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  }
+  /* ============================================================================
+     重设计落地层（UI 重设计方案 · 第一档纯视觉 + 第二档结构）
+     上层 :root 是唯一一套令牌；这一层把历史规则换算到新刻度：
+       · 容器 1240，间距一律走 --s1..--s8
+       · 等宽只给数字、哈希、地址、交易号、区块号、模型版本
+       · 层级只用 1px 发丝线；阴影只留真浮层（提示条、证据块）
+     ============================================================================ */
+
+  /* ---------- 铭牌（顶栏） ---------- */
+  header.plate{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap;
+    padding:var(--s5) 0 var(--s4);border-bottom:1px solid var(--line)}
+  .mark{width:34px;height:34px;flex:none;display:grid;place-items:center;color:var(--ink-2)}
+  .mark svg{display:block}
+  .who h1{font-size:var(--t-h1);font-weight:650;letter-spacing:-.015em;line-height:1.2}
+  .who p{font-size:var(--t-lab);color:var(--ink-3);margin-top:3px;letter-spacing:.02em}
+  .net{margin-left:auto;display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap;
+    font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-2)}
+  .net .item{display:flex;align-items:center;gap:6px}
+  .net b{color:var(--ink);font-weight:600}
+  .chainpill{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:var(--r-xs);
+    border:1px solid var(--line-2);background:var(--surface);font-family:var(--f-num);
+    font-size:var(--t-lab);color:var(--ink)}
+  /* 旧顶栏的两个容器退场：rail 的三项升级成读数条，brand 换成铭牌 */
+  .brand,.rail{display:none}
+
+  /* ---------- 读数条：回答「够不够赔 / 赔过没有 / 现在什么状态」 ---------- */
+  .readouts{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .ro{padding:var(--s4) var(--s5) var(--s4) 0;margin-right:var(--s5);border-right:1px solid var(--line);min-width:168px}
+  .ro:last-child{border-right:none;margin-right:0}
+  .ro .lb{display:block;font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.06em}
+  .ro .vl{display:block;font-family:var(--f-num);font-size:var(--t-num);font-weight:600;
+    color:var(--ink);margin-top:5px;letter-spacing:-.01em}
+  .ro .un{font-size:var(--t-lab);color:var(--ink-3);font-weight:400;margin-left:3px}
+  .ro .sub{display:block;font-size:var(--t-lab);color:var(--ink-3);margin-top:3px;font-family:var(--f-ui)}
+  .ro.money .vl{color:var(--money)}
+  .ro.measure .vl{color:var(--measure)}
+
+  /* ---------- 区块 / 容器 ---------- */
+  .sec{padding-top:var(--s6)}
+  .sec + .sec{border-top:1px solid var(--line);margin-top:var(--s6)}
+  .sec > h2, .hd h2{font-size:var(--t-h1);font-weight:640;letter-spacing:-.01em;color:var(--ink)}
+  .sec > h2 em{display:block;font-size:var(--t-lab);font-weight:400;font-style:normal;color:var(--ink-3);
+    letter-spacing:.02em;margin-top:5px;max-width:82ch}
+  .hd{display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;margin-bottom:var(--s4)}
+  .hd .n{font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3)}
+  .hd .r{margin-left:auto;font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.04em}
+  .panel,.block{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s5)}
+  .grid2,.cols{display:grid;grid-template-columns:1.42fr .92fr;gap:var(--s6)}
+  /* 栅格子项默认 min-width:auto ⇒ 内容的 min-content 会把每条 1fr 轨道顶宽（曾把 390 的视口顶到 404，
+     整列卡片跟着越界）。压成 0 让轨道听容器的话，内容自己想办法换行。 */
+  .grid2 > *,.cols > *{min-width:0}
+  @media (max-width:1080px){.grid2,.cols{grid-template-columns:1fr}}
+  .rcol,.stick{position:sticky;top:var(--s5)}
+  @media (max-width:1080px){.rcol,.stick{position:static}}
+
+  /* ---------- 城市片（既是筛选，也是背景雨幕的来源） ---------- */
+  .chips{display:flex;gap:var(--s2);flex-wrap:wrap}
+  .chip{border:1px solid var(--line-2);background:transparent;color:var(--ink-2);font-family:var(--f-ui);
+    font-size:var(--t-body);font-weight:550;padding:7px 15px;border-radius:99px;cursor:pointer;
+    transition:border-color .16s,color .16s,background .16s;display:inline-flex;align-items:center;gap:7px}
+  .chip:hover{border-color:var(--measure);color:var(--ink)}
+  .chip:disabled{opacity:.45;cursor:not-allowed}
+  .chip.on{border-color:var(--measure);background:var(--measure-dim);color:var(--ink);font-weight:620}
+  .chip .dotq{width:5px;height:5px;border-radius:50%;background:var(--ink-3)}
+  .chip.on .dotq{background:var(--measure)}
+  .chip.over .dotq{background:var(--money)}
+
+  /* ---------- 五支柱雨量图：一条阈值线横贯五柱 ---------- */
+  .gauge{display:grid;grid-template-columns:46px 1fr;gap:var(--s4);margin-top:var(--s5)}
+  .axis{position:relative;height:264px}
+  .axis .tick{position:absolute;right:0;transform:translateY(50%);font-family:var(--f-num);
+    font-size:var(--t-lab);color:var(--ink-3);white-space:nowrap}
+  .plot{position:relative;height:264px;border-bottom:1px solid var(--line-2);
+    background:repeating-linear-gradient(to top,var(--line) 0 1px,transparent 1px 66px)}
+  .thr{position:absolute;left:0;right:0;border-top:1px solid var(--measure);z-index:2}
+  .thr span{position:absolute;left:0;bottom:3px;font-family:var(--f-num);font-size:var(--t-lab);
+    color:var(--measure);background:var(--night);border:1px solid rgba(52,211,228,.38);
+    border-radius:var(--r-xs);padding:1px 7px;white-space:nowrap}
+  .spill{position:absolute;left:50%;transform:translateX(-50%);width:16px;height:3px;
+    background:var(--money);border-radius:2px}
+  .cols5.cols6{grid-template-columns:repeat(6,1fr)}
+  .foot5.cols6{grid-template-columns:repeat(6,1fr);gap:var(--s4)}
+  .ucpop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:80;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.95);padding:16px 18px;width:min(480px,94vw);display:none}
+  .ucpop.open{display:block}
+  .ucpop .cfg{margin-top:8px}
+  .ucpop .cfg select{flex:1 1 120px;min-width:0}
+  .ucpop .list{max-height:200px;overflow:auto;border:1px solid var(--hair);border-radius:var(--r-sm);margin-top:8px}
+  .ucpop .list button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--hair);
+    color:var(--ink);font-size:13px;padding:8px 10px;cursor:pointer}
+  .ucpop .list button:hover{background:var(--measure-dim)}
+  .ucpop .list button:last-child{border-bottom:0}
+  .ucpop .hint{font-size:var(--t-lab);color:var(--faint);margin-top:8px;line-height:1.7}
+  .cols5{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;
+    gap:var(--s6);padding:0 var(--s4)}
+  .colwrap{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end;
+    align-items:center;cursor:pointer}
+  /* 数字标签绝对定位、不占流量高度 —— 否则 flex 会把柱子压扁，柱子里的「青/金分界」就会被压到阈值线下面
+     （现场实测：上海 96%、广州 100% 那两根会发生，短柱看不出来）。分界相对柱子顶端定位，公式就是柱高本身。 */
+  .colv{position:absolute;left:0;right:0;text-align:center;
+    font-family:var(--f-num);font-size:var(--t-body);font-weight:600;color:var(--ink-2)}
+  .pbar{width:52px;border-radius:4px 4px 0 0;position:relative;overflow:hidden;
+    background:var(--measure-dim);transition:opacity .2s}
+  .pbar .below{position:absolute;left:0;right:0;bottom:0;
+    background:linear-gradient(180deg,rgba(52,211,228,.62),rgba(52,211,228,.30))}
+  .pbar .above{position:absolute;left:0;right:0;
+    background:linear-gradient(180deg,rgba(255,200,87,.95),rgba(255,200,87,.55))}
+  .colwrap.on .pbar{outline:1.5px solid var(--measure);outline-offset:2px}
+  .colwrap.on .colv{color:var(--measure)}
+  /* 柱脚必须和柱子同列：.foot5 是 .gauge 的兄弟节点、不吃它的第一列（46px 刻度列 + var(--s4) 列间距），
+     少了这个左偏移每个城市名就会比它那根柱子左移 46px+间距 —— 2026-10-12 现场发现。
+     改 .gauge 的刻度列宽或列间距时，这里必须一起改。 */
+  .foot5{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s6);padding:0 var(--s4);margin-top:var(--s3);
+    margin-left:calc(46px + var(--s4))}
+  .foot5 .c{text-align:center}
+  .foot5 .c b{display:block;font-size:var(--t-body);font-weight:600;color:var(--ink-2)}
+  .foot5 .c.on b{color:var(--ink)}
+  .foot5 .c span{font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3)}
+  .foot5 .c .tagm{margin-top:5px;display:inline-block}
+  /* 旧横条视图退出舞台（规则按门禁要求保留，元素由 JS 生成后隐藏） */
+  #rainBoard .region{display:none}
+
+  /* ---------- 读数行：选中城市的主读数 ---------- */
+  .readline{display:flex;align-items:flex-end;gap:var(--s5);flex-wrap:wrap;
+    padding-bottom:var(--s4);margin-bottom:var(--s2);border-bottom:1px solid var(--line)}
+  .hero{font-family:var(--f-num);font-size:var(--t-hero);font-weight:620;color:var(--measure);
+    line-height:1;letter-spacing:-.03em}
+  .hero u{font-size:var(--t-num);color:var(--ink-3);text-decoration:none;font-weight:400;margin-left:6px}
+  .hero-lb{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.06em;margin-bottom:7px}
+  .kvbox{display:flex;flex-direction:column;gap:4px;padding-bottom:4px}
+  .kvbox .k{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.06em}
+  .kvbox .v{font-family:var(--f-num);font-size:var(--t-num);color:var(--ink);font-weight:600}
+  .kvbox .v small{font-size:var(--t-lab);color:var(--ink-3);font-weight:400;margin-left:2px}
+
+  /* ---------- 徽标 ---------- */
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:var(--t-lab);font-family:var(--f-num);
+    padding:3px 8px;border-radius:var(--r-xs);border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
+  .tag.gold,.tag.money{border-color:rgba(255,200,87,.42);color:var(--money);background:var(--money-dim)}
+  .tag.measure{border-color:rgba(52,211,228,.42);color:var(--measure);background:var(--measure-dim)}
+  .tag.evi{border-color:rgba(158,140,245,.42);color:var(--evi);background:var(--evi-dim)}
+  .tag.red,.tag.bad{border-color:rgba(240,131,111,.45);color:var(--bad);background:rgba(240,131,111,.10)}
+  .tag.warn{border-style:dashed;background:transparent;color:var(--ink-3)}
+  .tag.neutral{border-style:dashed}
+  .tag.plain{border:none;background:transparent;color:var(--ink-3);padding-left:0}
+  .tagn{font-family:var(--f-num);font-size:var(--t-lab);padding:2px 7px;border-radius:var(--r-xs);
+    border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap;justify-self:start;display:inline-block}
+  .tagn.money{border-color:rgba(255,200,87,.42);color:var(--money)}
+  .tagn.evi{border-color:rgba(158,140,245,.4);color:var(--evi)}
+  .tagn.measure{border-color:rgba(52,211,228,.4);color:var(--measure)}
+  .tagn.gray{border-style:dashed}
+
+  /* ---------- 控件 ---------- */
+  .btn{border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);font-family:var(--f-ui);
+    font-size:var(--t-body);font-weight:560;padding:10px 18px;border-radius:var(--r-sm);cursor:pointer;
+    transition:background .16s,border-color .16s,color .16s;white-space:nowrap}
+  .btn:hover:not(:disabled){border-color:var(--measure)}
+  .btn.ghost{background:transparent}
+  .btn.primary{background:var(--measure);border-color:var(--measure);color:#04181C;font-weight:650}
+  .btn.primary:hover:not(:disabled){background:#4FE0EE;border-color:#4FE0EE}
+  .btn.gold{border-color:rgba(255,200,87,.45);background:var(--money-dim);color:var(--money)}
+  .btn.gold:hover:not(:disabled){border-color:var(--money);background:rgba(255,200,87,.2)}
+  .btn.block{width:100%;padding:14px;font-size:15px}
+  .btn.sm{padding:6px 12px;font-size:var(--t-lab);border-radius:var(--r-xs)}
+  .btn:disabled,.btn.off{background:transparent;border-style:dashed;border-color:var(--line-2);
+    color:var(--ink-3);cursor:not-allowed;font-weight:520;opacity:1}
+  input,select{background:#0A1521;border:1px solid var(--line-2);border-radius:var(--r-sm);color:var(--ink);
+    font-family:var(--f-num);font-size:var(--t-data);padding:10px 12px;outline:none;transition:border-color .16s}
+  input:hover,select:hover{border-color:rgba(148,180,215,.36)}
+  input:focus,select:focus{border-color:var(--measure)}
+  /* 只读连接行：不经过钱包插件，粘贴地址即可查看该地址的链上数据 */
+  .roconnect{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin-top:var(--s4);
+    padding:var(--s3) var(--s4);border:1px dashed var(--line-2);border-radius:var(--r-sm);background:var(--surface-2)}
+  .roconnect[hidden]{display:none}
+  .roconnect input{flex:1 1 280px;min-width:0;font-family:var(--f-num);padding:var(--s2) var(--s3);font-size:var(--t-data)}
+  .rohint{flex:1 1 100%;font-size:var(--t-lab);color:var(--ink-3);line-height:1.6}
+  select{cursor:pointer;font-family:var(--f-ui);font-size:var(--t-body);appearance:none;padding-right:34px;
+    background-image:linear-gradient(45deg,transparent 50%,var(--ink-2) 50%),linear-gradient(135deg,var(--ink-2) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+  /* 时长片是 select 的代理控件：select 留在 DOM 里（当状态与门禁契约：check-ui ② 要求它带着那三个选项在场；它 disabled，用户点不到），视觉上退出 */
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  label.mlabel{display:block;margin-bottom:6px}
+  .k{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.06em}
+  .metric{font-family:var(--f-num);font-size:var(--t-big);font-weight:620;color:var(--money);
+    line-height:1.1;letter-spacing:-.02em}
+  .v{font-family:var(--f-num);font-size:var(--t-num);color:var(--measure);font-weight:600}
+
+  /* ---------- 图例 ---------- */
+  .legend{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;margin-top:var(--s5);
+    padding-top:var(--s4);border-top:1px solid var(--line);font-size:var(--t-data);color:var(--ink-2)}
+  .legend .sw{display:inline-flex;align-items:center;gap:8px}
+  .legend .sq{width:11px;height:11px;border-radius:3px;flex:none}
+  .legend .sq.m{background:var(--measure)}
+  .legend .sq.y{background:var(--money)}
+  .legend .sp{margin-left:auto}
+
+  /* ---------- 开单 ---------- */
+  .quote{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s4);margin-top:var(--s5)}
+  .quote .lb{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.06em;margin-bottom:6px}
+  .quote .amt{font-family:var(--f-num);font-size:var(--t-big);font-weight:620;color:var(--money);
+    line-height:1;letter-spacing:-.02em}
+  .quote .amt u{font-size:var(--t-body);text-decoration:none;margin-left:5px;color:var(--money);opacity:.8}
+  .quote .side{font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3);text-align:right;line-height:1.7}
+  .spec{margin-top:var(--s5);border-top:1px solid var(--line)}
+  .spec .r{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);
+    padding:11px 0;border-bottom:1px solid var(--line)}
+  .spec .r:last-child{border-bottom:none}
+  .spec .l{font-size:var(--t-body);color:var(--ink-2)}
+  .spec .r .v2{font-family:var(--f-num);font-size:var(--t-body);color:var(--ink)}
+  .spec .r .v2.money{color:var(--money);font-weight:600}
+
+  /* ---------- 链上动态（纸带） ---------- */
+  .filters{display:flex;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s2)}
+  .f{font-family:var(--f-ui);font-size:var(--t-lab);padding:5px 11px;border-radius:99px;
+    border:1px solid var(--line);background:transparent;color:var(--ink-3);cursor:pointer}
+  .f.on{border-color:var(--line-2);color:var(--ink);background:var(--surface)}
+  #events{display:flex;flex-direction:column}
+  .ev{display:grid;grid-template-columns:96px 168px minmax(0,1fr) 46px;gap:var(--s4);align-items:baseline;
+    padding:11px 0;border-bottom:1px solid var(--line);font-size:var(--t-data)}
+  .ev:last-child{border-bottom:none}
+  /* 区块号与「多久前」分两行：挤在一行会顶出格子，压在右边的事件名标签上 */
+  .ev .ea{order:1;font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3);white-space:normal;line-height:1.45}
+  .ev .ea i{display:block;font-style:normal;opacity:.78}
+  .ev .en{order:2;justify-self:start}
+  .ev .et{order:3;color:var(--ink-2);font-family:var(--f-ui);font-size:var(--t-body);line-height:1.5;overflow-wrap:anywhere}
+  .ev .et b{color:var(--ink);font-weight:600}
+  .ev .et .mono,.ev .et span[title]{font-family:var(--f-num);color:var(--evi)}
+  /* 右边这一格是「去核验台查这笔交易」的入口：写完整哈希太长、↗ 又看不出是干什么的，
+     改成两个中文字，完整哈希放 title（悬停可见） */
+  .ev .etx{order:4;font-family:var(--f-ui);font-size:var(--t-lab);color:var(--measure);text-align:right;
+    white-space:nowrap;text-decoration:none}
+  .ev .etx:hover{text-decoration:underline}
+  .ev .en.money{border-color:rgba(255,200,87,.42);color:var(--money)}
+  .ev .en.measure{border-color:rgba(52,211,228,.4);color:var(--measure)}
+  .ev .en.evi{border-color:rgba(158,140,245,.4);color:var(--evi)}
+  .ev .en.warn{border-style:dashed}
+  .ev-more{display:none;margin-top:var(--s3)}
+
+  /* ---------- 我的保单（三层堆叠卡） ---------- */
+  #myPolicies{background:transparent;border:none;padding:0;display:flex;flex-direction:column;gap:var(--s3)}
+  .ptable-head{display:none}
+  .pol{display:block;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--s4)}
+  .pol .pid{font-size:var(--t-body);font-weight:600;display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
+  .pol .pid .mono{font-family:var(--f-num);color:var(--ink-2);font-weight:500}
+  .pol .pid .stat{margin-left:auto}
+  .pol.paid .pid{color:var(--ok)}
+  .pol.claimable{border-color:rgba(255,200,87,.34)}
+  .pol.claimable .pid{color:var(--money)}
+  .pol.denied .pid,.pol.expired .pid{color:var(--ink-2)}
+  .pol.expired{opacity:.8}
+  .pmeta{font-size:var(--t-data);color:var(--ink-2);line-height:1.7;margin-top:5px;overflow-wrap:anywhere}
+  .pai{font-size:var(--t-data);color:var(--ink-2);line-height:1.75;margin-top:var(--s3);padding-top:var(--s3);
+    border-top:1px solid var(--line);overflow-wrap:anywhere}
+  .pai b{color:var(--ink);font-weight:600}
+  .pai .none{color:var(--ink-3)}
+  .pai .mono,.pai span[title]{font-family:var(--f-num);color:var(--evi)}
+  .incre{margin-top:var(--s3)}
+  .incre .top{display:flex;justify-content:space-between;gap:var(--s3);font-size:var(--t-lab);color:var(--ink-3)}
+  .incre .top b{font-family:var(--f-num);color:var(--ink-2);font-weight:600}
+  .incre .track{height:8px;border-radius:99px;background:#08111C;outline:1px solid var(--line);
+    margin-top:6px;overflow:hidden}
+  .incre .fill{height:100%;border-radius:99px;background:var(--measure)}
+  .incre.over .fill{background:var(--money)}
+  .incre.none .track{outline-style:dashed}
+  .polbtns{margin-top:var(--s3);display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
+  .polbtns a.btn{text-decoration:none}
+
+  /* ---------- AI 层三件事 ---------- */
+  .airow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px var(--s3);align-items:baseline;
+    padding:11px 0;border-top:1px solid var(--line);font-size:var(--t-data)}
+  .airow:first-child{border-top:none;padding-top:2px}
+  .airow b{color:var(--ink);font-weight:600;white-space:nowrap;font-size:var(--t-body)}
+  .airow span{color:var(--ink-2);line-height:1.7}
+  .airow span code{font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3)}
+
+  /* ---------- 说明 / 空态 / 折叠 / 页脚铭牌 ---------- */
+  .empty,.loading{color:var(--ink-3);font-size:var(--t-data)}
+  .empty{border:1px dashed var(--line-2);border-radius:var(--r-sm);padding:var(--s5);line-height:1.8}
+  .note{font-size:var(--t-data);color:var(--ink-2);line-height:1.8;max-width:76ch}
+  .note b,.note strong{color:var(--ink)}
+  .note code{font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3)}
+  .note a{color:var(--measure)}
+  details.cfgbox,details.notes{border-top:1px solid var(--line);padding-top:var(--s4);margin-top:var(--s6)}
+  details > summary{cursor:pointer;font-size:var(--t-body);font-weight:600;color:var(--ink-2);
+    list-style:none;display:flex;align-items:center;gap:9px}
+  details > summary::-webkit-details-marker{display:none}
+  details > summary::before{content:"";width:6px;height:6px;border-right:1.5px solid var(--ink-3);
+    border-bottom:1.5px solid var(--ink-3);transform:rotate(-45deg);transition:transform .18s;margin-left:2px}
+  details[open] > summary::before{transform:rotate(45deg)}
+  details > summary:hover{color:var(--measure)}
+  details .panel,details .block{margin-top:var(--s4)}
+  .foot{border-top:1px solid var(--line);margin-top:var(--s7);padding-top:var(--s5);display:flex;
+    gap:var(--s6);flex-wrap:wrap;align-items:flex-start;font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3)}
+  .foot b{color:var(--ink-2);font-weight:600}
+  .foot .sp{margin-left:auto}
+  .foot a{color:var(--measure)}
+
+  /* ---------- 提示条 ---------- */
+  #toast{border-radius:var(--r);border-color:var(--line-2);box-shadow:0 18px 44px -18px rgba(0,0,0,.9)}
+
+  /* ---------- 窄屏 ---------- */
+  @media (max-width:1000px){
+    .grid2,.cols{grid-template-columns:1fr}
+    .grid2 > div:last-child{order:-1}
+    .readouts .ro{min-width:calc(50% - var(--s5));margin-right:var(--s5)}
+    .ev{grid-template-columns:minmax(0,1fr) auto;gap:2px var(--s3);padding:13px 0}
+    .ev .en{order:2;justify-self:end}
+    .ev .ea{order:1}
+    .ev .et{order:3;grid-column:1 / -1}
+    .ev .etx{order:4;grid-column:1 / -1;text-align:left}
+    .ev-extra{display:none}
+    .events-open .ev-extra{display:grid}
+    .ev-more{display:inline-block}
+  }
+  @media (max-width:720px){
+    .gauge{grid-template-columns:30px 1fr}
+    .plot,.axis{height:196px}
+    .cols5{gap:var(--s3)}
+    .pbar{width:26px}
+    .colv{font-size:var(--t-lab)}
+    .thr span{font-size:10px;padding:1px 5px}
+    .chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:var(--s2)}
+    .chips .chip{flex:none}
+    .readline{flex-wrap:wrap;gap:var(--s4)}
+    .hero{font-size:38px}
+    .foot{gap:var(--s3)}
+    /* 标题行与筛选片在窄屏换行 —— 它们的 min-content 合计约 372px，不换行会把整页顶宽 */
+    .hd{flex-wrap:wrap;row-gap:var(--s2)}
+    .filters{flex-wrap:wrap;row-gap:var(--s2)}
+    /* 柱脚与柱子同列：列间距跟 .cols5 保持一致，左偏移跟 .gauge 的 30px 刻度列一致 */
+    .foot5{gap:var(--s3);margin-left:calc(30px + var(--s4))}
+  }
+  /* Bilingual: small English under or after the Chinese label (read-only additions). */
+  .en{display:block;font-size:var(--t-lab);font-weight:400;font-style:normal;color:var(--ink-3);letter-spacing:.04em;margin-top:2px}
+  .eni{font-size:var(--t-lab);font-weight:400;color:var(--ink-3)}
+  .eni::before{content:" / ";opacity:.75}

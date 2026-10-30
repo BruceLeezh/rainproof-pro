@@ -73,7 +73,7 @@ console.log("\n[③ DOM 契约] 页面 JS 引用的 id / class 必须真实存�
   const files = [
     ["05-演示站点/index.html", path.join(DEMO, "index.html")],
     ["05-演示站点/verifier.html", path.join(DEMO, "verifier.html")],
-    ["06-核验台单文件/汉客松-链上核验台.html", path.join(__dirname, "..", "06-核验台单文件", "汉客松-链上核验台.html")],
+    ["06-核验台单文件/雨证-链上核验台.html", path.join(__dirname, "..", "06-核验台单文件", "雨证-链上核验台.html")],
   ];
   for (const [name, p] of files) {
     const src = fs.readFileSync(p, "utf8");
@@ -111,7 +111,7 @@ console.log('\n[④ 演讲提示] 演示界面里不许出现"讲给我们自己
   const pages = [
     ["05-演示站点/index.html", path.join(DEMO, "index.html")],
     ["05-演示站点/verifier.html", path.join(DEMO, "verifier.html")],
-    ["06-核验台单文件/汉客松-链上核验台.html", path.join(__dirname, "..", "06-核验台单文件", "汉客松-链上核验台.html")],
+    ["06-核验台单文件/雨证-链上核验台.html", path.join(__dirname, "..", "06-核验台单文件", "雨证-链上核验台.html")],
   ];
   for (const [name, p] of pages) {
     const src = fs.readFileSync(p, "utf8");
@@ -139,7 +139,7 @@ console.log("\n[⑥ 窄屏不溢出的静态代理] 长地址 / 长数字必须�
   const pages = [
     ["05-演示站点/index.html", path.join(DEMO, "index.html")],
     ["05-演示站点/verifier.html", path.join(DEMO, "verifier.html")],
-    ["06-核验台单文件/汉客松-链上核验台.html", path.join(__dirname, "..", "06-核验台单文件", "汉客松-链上核验台.html")],
+    ["06-核验台单文件/雨证-链上核验台.html", path.join(__dirname, "..", "06-核验台单文件", "雨证-链上核验台.html")],
   ];
   const srcs = pages.map(([n, p]) => [n, fs.readFileSync(p, "utf8")]);
   ok("index.html 的栅格子项有 min-width:0（.grid2 > * / .cols > *）", /\.grid2\s*>\s*\*[^{]*\{[^}]*min-width:0/.test(index));

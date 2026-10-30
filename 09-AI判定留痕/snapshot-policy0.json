@@ -3,164 +3,277 @@
     "schema": "rainproof/judge-input@1",
     "collectVersion": "ai-collect-v1",
     "policyId": 0,
-    "collectedAt": "2026-10-06T12:39:42.407Z",
     "simulated": false,
     "epoch": "2026-10-01",
     "region": {
-      "id": 2,
+      "id": 310100,
       "key": "shanghai",
       "name": "上海",
       "lat": 31.2304,
       "lon": 121.4737
     },
     "policy": {
-      "rider": "0xDA2E6266529Ce8b3E606B17628072c15Cfa33D28",
-      "regionId": 2,
-      "startTime": 1791290304,
-      "endTime": 1791549504,
-      "startDate": "2026-10-06",
-      "rainfallAtBuy": 0,
+      "rider": "0x6F0A73BCA4805950130D01069ebEb187C0f3DAb5",
+      "regionId": 310100,
+      "startTime": 1792992290,
+      "endTime": 1793035490,
+      "startDate": "2026-10-26",
+      "rainfallAtBuy": 172,
       "paid": false
     },
     "oracle": {
-      "cumulativeMm": 34,
-      "officialIncrementMm": 34,
-      "contract": "0x89e7C942535930B61cB61631051E8b0bD670596a",
-      "chainId": 11155111
+      "cumulativeMm": 172,
+      "officialIncrementMm": 0,
+      "contract": "0xFE3D9f897CE3038B75b876923D843F9F6752e136",
+      "chainId": 968
     },
     "weather": {
       "source": "open-meteo:ecmwf_ifs025+gfs_seamless+icon_seamless",
-      "windowFrom": "2026-10-06",
+      "api": "open-meteo:forecast-api",
+      "windowFrom": "2026-10-26",
+      "windowTo": "2026-10-26",
       "models": [
         {
           "id": "ecmwf_ifs025",
           "label": "ECMWF IFS025",
           "org": "欧洲中期天气预报中心",
-          "sinceEpochMm": 35.9,
+          "sinceEpochMm": 88.5,
           "inWindowMm": 0,
           "days": [
             {
-              "date": "2026-10-01",
-              "mm": 3
+              "date": "2026-10-12",
+              "mm": 0.1
             },
             {
-              "date": "2026-10-02",
+              "date": "2026-10-13",
               "mm": 0
             },
             {
-              "date": "2026-10-03",
-              "mm": 7.9
+              "date": "2026-10-14",
+              "mm": 0.1
             },
             {
-              "date": "2026-10-04",
-              "mm": 25
-            },
-            {
-              "date": "2026-10-05",
+              "date": "2026-10-15",
               "mm": 0
             },
             {
-              "date": "2026-10-06",
+              "date": "2026-10-16",
+              "mm": 0.2
+            },
+            {
+              "date": "2026-10-17",
               "mm": 0
             },
             {
-              "date": "2026-10-07",
+              "date": "2026-10-18",
+              "mm": 0.6
+            },
+            {
+              "date": "2026-10-19",
+              "mm": 5
+            },
+            {
+              "date": "2026-10-20",
+              "mm": 1.9
+            },
+            {
+              "date": "2026-10-21",
+              "mm": 8.5
+            },
+            {
+              "date": "2026-10-22",
               "mm": 0
             },
             {
-              "date": "2026-10-08",
+              "date": "2026-10-23",
+              "mm": 33.4
+            },
+            {
+              "date": "2026-10-24",
+              "mm": 36.8
+            },
+            {
+              "date": "2026-10-25",
+              "mm": 1.9
+            },
+            {
+              "date": "2026-10-26",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-27",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-28",
               "mm": 0
             }
-          ]
+          ],
+          "missingDays": 0
         },
         {
           "id": "gfs_seamless",
           "label": "GFS",
           "org": "美国 NOAA/NCEP",
-          "sinceEpochMm": 47.7,
+          "sinceEpochMm": 72.3,
           "inWindowMm": 0,
           "days": [
             {
-              "date": "2026-10-01",
-              "mm": 1.1
-            },
-            {
-              "date": "2026-10-02",
+              "date": "2026-10-12",
               "mm": 0
             },
             {
-              "date": "2026-10-03",
-              "mm": 29.3
-            },
-            {
-              "date": "2026-10-04",
-              "mm": 17.3
-            },
-            {
-              "date": "2026-10-05",
+              "date": "2026-10-13",
               "mm": 0
             },
             {
-              "date": "2026-10-06",
+              "date": "2026-10-14",
               "mm": 0
             },
             {
-              "date": "2026-10-07",
+              "date": "2026-10-15",
               "mm": 0
             },
             {
-              "date": "2026-10-08",
+              "date": "2026-10-16",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-17",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-18",
+              "mm": 2.8
+            },
+            {
+              "date": "2026-10-19",
+              "mm": 0.3
+            },
+            {
+              "date": "2026-10-20",
+              "mm": 0.9
+            },
+            {
+              "date": "2026-10-21",
+              "mm": 10.8
+            },
+            {
+              "date": "2026-10-22",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-23",
+              "mm": 25.3
+            },
+            {
+              "date": "2026-10-24",
+              "mm": 28
+            },
+            {
+              "date": "2026-10-25",
+              "mm": 4.2
+            },
+            {
+              "date": "2026-10-26",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-27",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-28",
               "mm": 0
             }
-          ]
+          ],
+          "missingDays": 0
         },
         {
           "id": "icon_seamless",
           "label": "ICON",
           "org": "德国气象局 DWD",
-          "sinceEpochMm": 41.7,
+          "sinceEpochMm": 96.6,
           "inWindowMm": 0,
           "days": [
             {
-              "date": "2026-10-01",
-              "mm": 0.8
-            },
-            {
-              "date": "2026-10-02",
-              "mm": 0.9
-            },
-            {
-              "date": "2026-10-03",
-              "mm": 24.5
-            },
-            {
-              "date": "2026-10-04",
-              "mm": 15.5
-            },
-            {
-              "date": "2026-10-05",
+              "date": "2026-10-12",
               "mm": 0
             },
             {
-              "date": "2026-10-06",
+              "date": "2026-10-13",
               "mm": 0
             },
             {
-              "date": "2026-10-07",
+              "date": "2026-10-14",
               "mm": 0
             },
             {
-              "date": "2026-10-08",
+              "date": "2026-10-15",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-16",
+              "mm": 0.1
+            },
+            {
+              "date": "2026-10-17",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-18",
+              "mm": 0.2
+            },
+            {
+              "date": "2026-10-19",
+              "mm": 0.6
+            },
+            {
+              "date": "2026-10-20",
+              "mm": 0.3
+            },
+            {
+              "date": "2026-10-21",
+              "mm": 15.4
+            },
+            {
+              "date": "2026-10-22",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-23",
+              "mm": 28.3
+            },
+            {
+              "date": "2026-10-24",
+              "mm": 51.4
+            },
+            {
+              "date": "2026-10-25",
+              "mm": 0.3
+            },
+            {
+              "date": "2026-10-26",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-27",
+              "mm": 0
+            },
+            {
+              "date": "2026-10-28",
               "mm": 0
             }
-          ]
+          ],
+          "missingDays": 0
         }
       ]
     },
     "thresholds": {
-      "thresholdMm": 50,
+      "thresholdMm": 30,
       "minConfidence": 60
     }
   },
-  "inputHash": "0x5a10121e258355411a16b7569effce1ec2b4a5f7471edf3c7c20c7d1f00b03f7"
+  "collectedAt": "2026-10-26T12:01:58.793Z",
+  "inputHash": "0x9b7e32f6dc4e07247df7177b5d34f74083ea8fa617117aae471ec6a5fd85d1ad"
 }

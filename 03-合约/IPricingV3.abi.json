@@ -1,0 +1,46 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "regionId",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "hours_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "riderTier",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "channel",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteOrZero",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "sellable",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

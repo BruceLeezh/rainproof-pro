@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 253 253'%3E%3Crect width='253' height='253' rx='40' fill='%2308121c'/%3E%3Crect x='6.5' y='6.5' width='239' height='239' rx='22' fill='none' stroke='%237cb0f9' stroke-width='13'/%3E%3Cpath d='M116.5 62.5L60.5 155.5M171.5 47.5L124.5 123.5M189.5 89.5L150.5 155.5' fill='none' stroke='%23b9e0f8' stroke-width='13' stroke-linecap='round'/%3E%3Cpath d='M42 189.5h170' fill='none' stroke='%23fec459' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>雨证 · BOT Chain 链上核验台 · On-chain Verifier</title>
+<style>
+  /* ===== 设计令牌（2026-10-07 重设计：从「运营台」到「量测仪」）=====
+     三条语义色域各司其职：
+       measure 青  → 只给 mm、刻度、阈值线、窗口进度、选中态描边
+       money   琥珀 → 只给 BOT、保费、赔付额、越线的那一段
+       evi     鸢尾 → 只给哈希、地址、交易号、签名、模型版本
+     状态色：ok 绿 = 校验通过（唯一用途）；bad 红 = 真错误（唯一用途）。
+     字面纪律：能用计算器按出来的东西才用等宽。 */
+  :root{
+    --night:#050A12; --night-2:#0A1220; --surface:#0D1727; --surface-2:#121E31;
+    --line:rgba(150,180,215,.13); --line-2:rgba(150,180,215,.26);
+    --ink:#EDF3FA; --ink-2:#A6B8CB; --ink-3:#6E8299;
+    --measure:#34D3E4; --measure-dim:rgba(52,211,228,.16);
+    --money:#FFC857;   --money-dim:rgba(255,200,87,.14);
+    --evi:#9E8CF5;     --evi-dim:rgba(158,140,245,.16);
+    --ok:#3FD9A5; --bad:#F0836F;
+    --f-ui:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+    --f-num:ui-monospace,Consolas,"Cascadia Mono","SFMono-Regular",Menlo,monospace;
+    --t-hero:46px; --t-big:30px; --t-h1:22px; --t-num:19px; --t-body:14px; --t-data:12.5px; --t-lab:11px;
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+    --r:10px; --r-sm:7px; --r-xs:5px;
+    /* 雨幕动画进度：本页没有雨幕层，保留这一行只为三页 :root 逐字相同 */
+    --rain:0;
+    /* ↓ 旧名别名：只为让历史规则平滑接收新色；新写的规则一律用上面那套 */
+    --bg:var(--night); --bg2:var(--night-2); --panel:var(--surface); --panel2:var(--surface-2);
+    --dim:var(--ink-2); --faint:var(--ink-3);
+    --hair:var(--line); --hair-2:var(--line-2);
+    --blue:var(--measure); --blue-l:var(--measure); --accent:var(--money); --cyan:var(--measure);
+    --mono:var(--f-num); --sans:var(--f-ui);
+    --t-metric:var(--t-num); --t-h2:var(--t-h1); --t-tbl:var(--t-data);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  html{color-scheme:dark;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+  ::selection{background:rgba(52,211,228,.26)}
+  input,select,textarea{caret-color:var(--measure)}
+  ::placeholder{color:var(--ink-3);opacity:1}
+  a{color:var(--measure);text-decoration:none;text-underline-offset:3px}
+  a:hover{text-decoration:underline}
+  :focus-visible{outline:2px solid var(--measure);outline-offset:2px;border-radius:3px}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line-2);border:2px solid transparent;background-clip:content-box;border-radius:99px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(150,180,215,.4);background-clip:content-box}
+  .mono,.k,.tbl,.addrline{font-variant-numeric:tabular-nums}
+
+  body{
+    font-family:var(--f-ui); color:var(--ink); font-size:var(--t-body); line-height:1.6;
+    background:
+      radial-gradient(1100px 620px at 14% -12%, rgba(52,211,228,.075), transparent 62%),
+      radial-gradient(860px 500px at 86% -8%, rgba(158,140,245,.05), transparent 60%),
+      var(--night);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 var(--s8);
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 var(--s6)}
+
+  /* ---------- 顶部：铭牌 + 状态胶囊 ---------- */
+  header{padding:var(--s5) 0 var(--s4);border-bottom:1px solid var(--line)}
+  .brandrow{display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap}
+  .logo{width:34px;height:34px;flex:none;display:grid;place-items:center;color:var(--ink-2)}
+  .logo svg{width:34px;height:34px;display:block}
+  h1{font-size:var(--t-h1);font-weight:650;letter-spacing:-.015em;line-height:1.2}
+  h1 span{display:block;font-size:var(--t-lab);font-weight:450;color:var(--ink-3);letter-spacing:.02em;margin-top:var(--s1)}
+  .chainbar{
+    margin-left:auto;display:flex;align-items:center;gap:var(--s4);flex-wrap:wrap;
+    font-size:var(--t-lab);color:var(--ink-2);
+    background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-xs);
+    padding:var(--s1) var(--s3);
+  }
+  .chainbar > span{display:inline-flex;align-items:center;gap:var(--s1)}
+  .chainbar b{font-family:var(--f-num);font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--ink-3);flex:none;display:inline-block;transition:.3s}
+  .dot.on{background:var(--ok)}
+  .dot.err{background:var(--bad)}
+  .subtitle{margin-top:var(--s3);font-size:var(--t-data);color:var(--ink-3);max-width:76ch}
+  .subtitle code{font-family:var(--f-num);color:var(--measure)}
+
+  /* ---------- 区块：靠留白与字号分层，不用侧边色条 ---------- */
+  .sec{padding-top:var(--s6)}
+  .sec + .sec{border-top:1px solid var(--line);margin-top:var(--s6)}
+  .sec > h2{
+    font-size:var(--t-h1);font-weight:640;letter-spacing:-.01em;line-height:1.3;color:var(--ink);
+    display:flex;align-items:baseline;gap:var(--s3);flex-wrap:wrap;
+  }
+  .sec > h2 em{font-style:normal;font-size:var(--t-lab);color:var(--ink-3);font-weight:400;letter-spacing:.04em}
+  .sec > h2.gold{color:var(--ink)}
+
+  /* ---------- 查询框 ---------- */
+  .searchrow{display:flex;gap:var(--s3);margin-top:var(--s5);flex-wrap:wrap}
+  #q{
+    flex:1 1 420px;min-width:0;
+    background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);
+    color:var(--ink);font-family:var(--f-num);font-size:var(--t-body);
+    padding:var(--s3) var(--s4);outline:none;transition:border-color .2s;
+  }
+  #q::placeholder{color:var(--ink-3);font-family:var(--f-ui);font-size:var(--t-data)}
+  #q:focus{border-color:var(--measure)}
+  .btn{
+    border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);
+    font-family:var(--f-ui);font-size:var(--t-body);font-weight:560;
+    padding:var(--s3) var(--s5);border-radius:var(--r-sm);cursor:pointer;
+    transition:background .16s,border-color .16s,color .16s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--measure)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent}
+  .btn.primary{background:var(--measure);border-color:var(--measure);color:#04181C;font-weight:650}
+  .btn.primary:hover{background:#4FE0EE;border-color:#4FE0EE}
+  .btn.gold{border-color:rgba(255,200,87,.45);background:var(--money-dim);color:var(--money)}
+  .btn.off{background:transparent;border-style:dashed;border-color:var(--line-2);color:var(--ink-3);cursor:not-allowed;font-weight:520}
+  .btn.off:hover{border-color:var(--line-2)}
+  .btn.sm{padding:var(--s2) var(--s3);font-size:var(--t-lab);border-radius:var(--r-xs)}
+
+  .chips{display:flex;gap:var(--s2);margin-top:var(--s4);flex-wrap:wrap;align-items:center}
+  .chips > span{font-size:var(--t-lab);color:var(--ink-3)}
+  .chip{
+    display:inline-flex;align-items:center;gap:var(--s2);
+    border:1px solid var(--line-2);background:transparent;color:var(--ink-2);
+    font-family:var(--f-ui);font-size:var(--t-body);font-weight:550;
+    padding:var(--s2) var(--s4);border-radius:99px;cursor:pointer;
+    transition:background .16s,border-color .16s,color .16s;
+  }
+  .chip:hover{border-color:var(--measure);color:var(--ink)}
+  .chip.on{border-color:var(--measure);background:var(--measure-dim);color:var(--ink);font-weight:620}
+  .chip b{font-weight:600;color:var(--ink-2)}
+  .chip:hover b{color:var(--measure)}
+
+  /* ---------- 卡片 ---------- */
+  .panel{
+    margin-top:var(--s4);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    padding:var(--s5);
+  }
+  .panel.hidden{display:none}
+  .sec.hidden{display:none}
+  .panel.err{border-color:rgba(240,131,111,.45);background:rgba(240,131,111,.06)}
+
+  .ptitle{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4);flex-wrap:wrap}
+  .tag{
+    display:inline-flex;align-items:center;gap:var(--s1);white-space:nowrap;
+    font-family:var(--f-ui);font-size:var(--t-lab);font-weight:550;
+    padding:var(--s1) var(--s2);border-radius:var(--r-xs);
+    border:1px solid rgba(52,211,228,.42);color:var(--measure);background:var(--measure-dim);
+  }
+  .tag.measure{border-color:rgba(52,211,228,.42);color:var(--measure);background:var(--measure-dim)}
+  .tag.money,.tag.gold{border-color:rgba(255,200,87,.42);color:var(--money);background:var(--money-dim)}
+  .tag.evi{border-color:rgba(158,140,245,.42);color:var(--evi);background:var(--evi-dim)}
+  .tag.bad,.tag.red{border-color:rgba(240,131,111,.45);color:var(--bad);background:rgba(240,131,111,.10)}
+  .tag.neutral{border-color:var(--line-2);border-style:dashed;color:var(--ink-2);background:transparent}
+  .tag.plain{border:none;background:transparent;color:var(--ink-3);padding-left:0}
+  .mono{font-family:var(--f-num)}
+  .small{font-size:var(--t-data);color:var(--ink-3)}
+
+  /* ---------- 键值网格：1px 发丝线分隔，宽屏四格 ---------- */
+  .kv{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;
+  }
+  .kv > div{background:var(--surface);padding:var(--s4);min-width:0}
+  .k{font-size:var(--t-lab);color:var(--ink-3);letter-spacing:.04em;margin-bottom:var(--s1)}
+  .v{font-family:var(--f-num);font-size:var(--t-body);font-weight:560;color:var(--ink);word-break:break-all;line-height:1.45}
+  .v.big{font-size:var(--t-num);font-weight:620;color:var(--money)}
+  .v.gold{font-size:var(--t-num);font-weight:620;color:var(--measure)}
+  .v.small{font-size:var(--t-data);font-weight:450;color:var(--ink-3)}
+  .v.bad{color:var(--bad)}
+
+  .addrline{
+    display:flex;align-items:center;gap:var(--s2);
+    font-family:var(--f-num);font-size:var(--t-data);color:var(--evi);
+    background:var(--evi-dim);border:1px solid rgba(158,140,245,.24);border-radius:var(--r-xs);
+    padding:var(--s2) var(--s3);word-break:break-all;overflow-wrap:anywhere;line-height:1.5;
+  }
+  .addrline .a{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+  .cp{
+    flex:none;border:1px solid var(--line-2);background:transparent;color:var(--ink-3);
+    font-family:var(--f-num);font-size:var(--t-lab);padding:var(--s1) var(--s2);
+    border-radius:var(--r-xs);cursor:pointer;transition:.18s;
+  }
+  .cp:hover{border-color:var(--measure);color:var(--measure)}
+  .cp.done{border-color:var(--ok);color:var(--ok)}
+
+  /* ---------- 表格（区块 / 事件） ---------- */
+  .tbl{width:100%;border-collapse:collapse;font-family:var(--f-num);font-size:var(--t-data);margin-top:var(--s2)}
+  .tbl th{
+    text-align:left;font-family:var(--f-ui);color:var(--ink-3);font-weight:520;
+    font-size:var(--t-lab);letter-spacing:.06em;padding:var(--s2) var(--s3);
+    border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  .tbl td{padding:var(--s3);border-bottom:1px solid var(--line);color:var(--ink-2);white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl tbody tr:hover td{background:rgba(255,255,255,.022)}
+  .tbl .hl{color:var(--evi)}
+  .tbl .gd{color:var(--measure)}
+  .tbl .lk{cursor:pointer;text-decoration:underline;text-decoration-color:var(--line-2);text-underline-offset:3px}
+  .tbl .lk:hover{color:var(--measure)}
+
+  .empty{
+    border:1px dashed var(--line-2);border-radius:var(--r-sm);padding:var(--s5);
+    color:var(--ink-3);font-size:var(--t-data);line-height:1.8;background:rgba(255,255,255,.012);
+  }
+  .loading{color:var(--ink-2);font-size:var(--t-data);padding:var(--s2) 0}
+  .loading::after{content:"";display:inline-block;width:9px;height:9px;margin-left:var(--s2);
+    border:1.5px solid var(--measure);border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;
+    vertical-align:middle}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* ---------- 长说明：收进 <details> ---------- */
+  details{border-top:1px solid var(--line);padding-top:var(--s4);margin-top:var(--s6)}
+  summary{cursor:pointer;font-size:var(--t-body);font-weight:600;list-style:none;display:flex;align-items:center;gap:var(--s2)}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"";width:6px;height:6px;flex:none;margin-left:var(--s1);
+    border-right:1.5px solid var(--ink-3);border-bottom:1.5px solid var(--ink-3);
+    transform:rotate(-45deg);transition:transform .18s}
+  details[open] summary::before{transform:rotate(45deg)}
+  summary:hover{color:var(--measure)}
+  details > p{margin-top:var(--s3);max-width:76ch;font-size:var(--t-data);color:var(--ink-3);line-height:1.8}
+  details > p b{color:var(--ink-2);font-weight:600}
+  details > p code{font-family:var(--f-num);color:var(--measure)}
+
+  /* ---------- 页脚：一行铭牌 ---------- */
+  footer{margin-top:var(--s7)}
+  .foot{
+    border-top:1px solid var(--line);padding-top:var(--s5);
+    display:flex;gap:var(--s5);flex-wrap:wrap;align-items:baseline;
+    font-family:var(--f-num);font-size:var(--t-lab);color:var(--ink-3);
+  }
+  .foot b{color:var(--ink-2);font-weight:600}
+  .foot .sp{margin-left:auto}
+  footer code{font-family:var(--f-num);color:var(--measure);font-size:var(--t-data)}
+  .note{font-size:var(--t-data);color:var(--ink-3);line-height:1.8;max-width:76ch;margin-top:var(--s4)}
+  .note b{color:var(--ink-2);font-weight:600}
+  .note.dim{color:var(--ink-3)}
+
+  /* ---------- 手机 / 窄屏 ---------- */
+  .tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  @media (max-width:760px){
+    .wrap{padding:0 var(--s4)}
+    header{padding:var(--s4) 0 var(--s3)}
+    h1{font-size:var(--t-num);line-height:1.35}
+    .chainbar{margin-left:0;width:100%;flex-wrap:wrap;gap:var(--s1) var(--s3);justify-content:flex-start}
+    .logo,.logo svg{width:30px;height:30px}
+    #q{font-size:var(--t-data);padding:var(--s3)}
+    .btn{flex:1 1 auto;padding:var(--s3) var(--s4)}
+    .chips{gap:var(--s2)}
+    .chip{font-size:var(--t-data);padding:var(--s2) var(--s3)}
+    .panel{padding:var(--s4)}
+    .kv{grid-template-columns:1fr 1fr}
+    .kv > div{padding:var(--s3)}
+    .v{font-size:var(--t-data)}
+    .v.big,.v.gold{font-size:var(--t-num)}
+    .addrline{font-size:var(--t-lab);padding:var(--s2)}
+    .tbl{font-size:var(--t-lab)}
+    .tbl th,.tbl td{padding:var(--s2)}
+    .sec > h2{font-size:var(--t-num)}
+  }
+  @media (max-width:420px){
+    .kv{grid-template-columns:1fr}
+  }
+
+  /* ---------- 减弱动效：静态雨丝兜底（只在 reduced-motion 下存在） ---------- */
+  @media (prefers-reduced-motion: reduce){
+    body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+      background:repeating-linear-gradient(103deg,transparent 0 7px,rgba(190,220,255,.035) 7px 8px)}
+  }
+</style>
+</head>
+<body>
+<div class="legacy-banner" role="note">
+  <b>这是 v3 / 677 主网时代的历史核验台</b>（保留作演进记录）。当前对外演示的是 <b>968 演示网 v5</b> 合约，
+  请用 <a href="../05-演示站点/verify-v5.html">v5 核验台</a>：零输入、8 条断言逐条自证，含喂价证据哈希与保单台账。
+</div>
+<style>.legacy-banner{{margin:0 0 16px;padding:12px 16px;border-left:3px solid #e0a63a;background:rgba(224,166,58,.08);color:#d8dee9;font-size:13px;line-height:1.7;border-radius:0 6px 6px 0}}
+.legacy-banner a{{color:#7fd1e0}}</style>
+<div class="wrap">
+
+<header>
+  <div class="brandrow">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 253 253" fill="none">
+        <!-- 品牌标（2026-10-07 换新版）：圆角方框 + 三道雨丝 + 一条金色水位线 -->
+        <rect x="6.5" y="6.5" width="239" height="239" rx="22" stroke="#7cb0f9" stroke-width="13"/>
+        <path d="M116.5 62.5L60.5 155.5M171.5 47.5L124.5 123.5M189.5 89.5L150.5 155.5"
+              stroke="#b9e0f8" stroke-width="13" stroke-linecap="round"/>
+        <path d="M42 189.5h170" stroke="#fec459" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>BOT Chain 链上核验台<span>雨证 · 不依赖任何区块浏览器 · on-chain verifier, no block explorer needed</span></h1>
+    <div class="chainbar">
+      <span><span class="dot" id="dot"></span><span id="connText">连接中… connecting</span></span>
+      <span>区块 block <b id="blkNum">—</b></span>
+      <span>延迟 latency <b id="lat">—</b></span>
+      <span>Gas <b id="gas">—</b></span>
+    </div>
+  </div>
+  <p class="subtitle">
+    这一页直接向公开节点提问，把链上的原始数据取回来显示。<b style="color:var(--dim)">它不经过 scan.botchain.ai，
+    也不经过任何后端索引服务。</b>请求的是
+    <code id="rpcShown">https://rpc.botchain.ai</code><span style="color:var(--dim);font-size:12px"> · asks a public node directly; raw chain data, no block explorer, no backend indexer</span>
+  </p>
+  <p class="subtitle" style="margin-top:-8px">
+    <b style="color:#f2b33d">本页没有离线快照兜底：链不可达时读不到数据。</b>
+    <span style="color:var(--dim);font-size:12px">这是刻意的 —— 这一页只摆节点直读的实时结果，读不到就说读不到，不拿旧数据顶替（要看断网快照请用 05-演示站点/index.html）。</span>
+    <span style="color:var(--dim);font-size:12px"> · No offline snapshot fallback: no node, no data. Deliberate — this page only ever shows what the node returns right now. For the bundled offline snapshot, use 05-演示站点/index.html.</span>
+  </p>
+</header>
+
+<!-- ========== 查询 ========== -->
+<section class="sec">
+  <h2>查询<em>粘地址查合约 / 粘哈希查交易，自动识别 · paste an address for the contract, a hash for the tx — auto-detected</em></h2>
+
+  <div class="searchrow">
+    <input id="q" spellcheck="false" autocomplete="off" aria-label="合约地址或交易哈希"
+           placeholder="0x… 地址（40 位）或 0x… 交易哈希（64 位） · 0x… address (40) or 0x… tx hash (64)">
+    <button class="btn primary" id="goBtn">查询<span style="font-size:12px"> query</span></button>
+    <button class="btn" id="refreshBtn">刷新链状态<span style="color:var(--dim);font-size:12px"> refresh chain</span></button>
+  </div>
+
+  <div class="chips">
+    <span>我这次的：<span style="color:var(--dim);font-size:12px"> from my run</span></span>
+    <button class="chip" data-q="0x89e7C942535930B61cB61631051E8b0bD670596a">合约 <b>0x89e7C9…596a</b><span style="color:var(--dim);font-size:12px"> · contract</span></button>
+    <button class="chip" data-q="0xa294f0293ab391b0ff458964333bc23a9109f8b72d31a905211b1c30e9e53515">部署交易 <b>0xa294f0…e53515</b><span style="color:var(--dim);font-size:12px"> · deploy tx</span></button>
+    <button class="chip" data-q="0x02af3d51399808cd62fca3a20bee9ef8d8716dffe5f35cbf8f5a2703a02ad6e9">判定交易 <b>0x02af3d51…d6e9</b>（保单 #2 · 判定 PAY · 留痕可互证）<span style="color:var(--dim);font-size:12px"> · judgement tx (policy #2 · judgement PAY · trace verifiable)</span></button>
+    <button class="chip" data-q="0x07f7eff6d4daad8c1859c0a79e6496ed8f18c6709b5fc344dd693e7d7793286b">赔付交易 <b>0x07f7ef…3286b</b><span style="color:var(--dim);font-size:12px"> · payout tx</span></button>
+  </div>
+  <p style="color:var(--dim);font-size:12px;margin:10px 0 0;max-width:72ch">
+    ✅ 上面那笔「判定交易」是<b>保单 #2</b>：链上 <code>inputHash</code> / <code>outputHash</code> 与仓库留痕 <code>09-AI判定留痕/snapshot-policy2.json</code>、<code>judgement-policy2.json</code> 重算出来的哈希<b>逐字节相同</b>，<code>modelVersion</code> 是 <code>ai-judge-v1</code> —— 这一笔可以当场互证：拿仓库里的 JSON 重算，得到的就该是链上这两个哈希。
+    <span style="display:block;margin-top:4px">⚠️ 同族六笔里只有 #2 / #4 / #5 是这样：#0、#1、#3 三笔的 <code>modelVersion</code> 是 <code>bot-rehearsal-v1</code>（排练脚本提交，两个哈希是 <code>keccak256("input/N")</code> 占位值），本来就没有 AI 留痕，不能与 AI 留痕互证。仓库里 #0 / #1 另有两份 <code>ai-judge-v1</code> 留痕，但它们属于第一阶段 <b>Sepolia</b> 链（<code>chainId 11155111</code>），与 968 无关。见 <code>09-AI判定留痕/README.md</code>。</span>
+    <span style="display:block;margin-top:4px">The judgement tx above is policy #2: its on-chain inputHash / outputHash match, byte for byte, the hashes recomputed from the repo traces <code>09-AI判定留痕/{snapshot,judgement}-policy2.json</code> (modelVersion = ai-judge-v1) — it can be cross-checked on the spot. ⚠️ Only #2/#4/#5 of the six are like this; #0, #1 and #3 were submitted by the rehearsal script (modelVersion = bot-rehearsal-v1, placeholder hashes) and never had an AI trace. The #0/#1 traces in the repo belong to the phase-1 Sepolia chain (chainId 11155111), not 968.</span>
+  </p>
+
+  <div class="panel hidden" id="errPanel"></div>
+</section>
+
+<!-- ========== 结果 ========== -->
+<section class="sec hidden" id="resultSec">
+  <h2 class="gold">查询结果<em id="resultKind">result</em></h2>
+  <div id="resultBody"></div>
+</section>
+
+<!-- ========== 事件日志 ========== -->
+<section class="sec hidden" id="logSec">
+  <h2>合约事件日志<em>eth_getLogs · 这个合约发出过的事件 · the events this contract emitted</em></h2>
+  <div class="panel" id="logPanel"></div>
+</section>
+
+<!-- ========== 最近区块 ========== -->
+<section class="sec">
+  <h2>链上最近区块<em>证明这条链在动 · proof this chain is moving</em></h2>
+  <div class="panel" id="blockPanel">
+    <div class="loading">正在读最新区块<span style="color:var(--dim);font-size:12px"> / reading latest block</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot">
+    <span><b>雨证 · BOT Chain 链上核验台</b> · on-chain verifier</span>
+    <span>chainId <b id="chainIdShown">677</b></span>
+    <span>合约 contract <b>0x89e7…596a</b></span>
+    <span class="sp">不依赖任何区块浏览器 · no block explorer needed</span>
+  </div>
+  <details>
+    <summary>这一页为什么能当证据 / 打不开怎么办<span style="color:var(--dim);font-size:12px"> · why this page counts as evidence / what to do if it will not open</span></summary>
+    <p><b>为什么要有这一页：</b>主网 677 的浏览器是 <code>scan.botchain.ai</code>（测试网 968 是 <code>scan.bohr.life</code>），但它显示的是「它认为的事实」；
+  这一页把 <code>eth_getLogs</code> 与 <code>eth_getTransactionByHash</code> 的原始返回直接摆出来，字段一个不改。
+  <b>这一页绕开全部中间商，直接问节点要数据 —— 浏览器打不开也能验。</b><span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">Why this page exists: the explorer for mainnet 677 is scan.botchain.ai (scan.bohr.life for testnet 968), but it shows what it believes is true. This page puts the raw returns of eth_getLogs and eth_getTransactionByHash side by side, not one field changed. It skips every middleman and asks the node directly, so it still verifies when the explorer will not open.</span></p>
+    <p><b>打不开怎么办：</b>双击本文件即可，无需安装任何东西（真正的单文件，不依赖 ethers）。
+    若浏览器拦截本地文件发请求，在文件所在目录执行 <code>python -m http.server 8090</code>，然后访问
+    <code>http://127.0.0.1:8090/雨证-链上核验台.html</code> 打开本页。
+    <br><b>但要说清楚：</b>页面本身离线能开，<b>读链必须联网</b>。网络断时只会显示「连不上节点」。<b>本页没有离线快照兜底：链不可达时读不到数据</b>（05-演示站点/index.html 才带断网快照）。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">If it will not open: just double-click this file, nothing to install (a real single file, no ethers). If your browser blocks requests from local files, run <code>python -m http.server 8090</code> in this folder and open <code>http://127.0.0.1:8090/雨证-链上核验台.html</code>. To be clear: the page itself opens offline, but reading the chain needs a network — with none it only shows "cannot reach the node". No offline snapshot fallback: when the chain is unreachable this page has nothing to show (index.html is the one that carries the offline snapshot).</span></p>
+  </details>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ================= 配置 ================= */
+// ★ 现行演示基线 = 主网 677 上的 v3（README.md「演示基线」一节，2026-10-08 起）。
+//   968 上的 v2 降为「测试网历史留痕」：要看它就在网址后面加 ?rpc=https://rpc.bohr.life。
+//   （2026-10-12 修正：以前这里默认 968，却已经在别处生成 ?rpc= 链接、注释里也写着"支持 ?rpc="，
+//     而本页从来没有真的解析过这个参数 —— 点过去仍然读 bohr.life。现在真读了。）
+const RPC_OVERRIDE = (() => {
+  try {
+    const m = /[?&]rpc=([^&#]+)/i.exec(location.search);
+    return m ? (decodeURIComponent(m[1]).trim() || null) : null;
+  } catch (e) { return null; }
+})();
+const NODES = [
+  RPC_OVERRIDE || "https://rpc.botchain.ai"
+  // ★ 诚实的单节点：主网 677 与测试网 968 各自只有一个可验证的公共 RPC，所以不承诺"自动轮换节点"。
+  //   这里**故意不**把两条链塞进一个轮换表 —— 那样 677 连不上时会静默读 968，然后拿测试网数据冒充主网证据。
+  //   节点抖了就换网络（改这一行或加 ?rpc=<你确信可达的节点>），读不到就如实说读不到。
+];
+const DEFAULT_QUERY = "0x89e7C942535930B61cB61631051E8b0bD670596a";
+
+// ★ 真链判据：chainId 可以被本地假链伪装（07-测试工具/prep_local_chain.js 就设成 11155111），
+//   但区块高度伪装不了 —— BOT Chain 已经 2500 万+，本地假链从 0 开始。
+const MIN_REAL_BLOCK = 1000000;
+// 已知真链：chainId → 显示名。NODES / ?rpc= 指向哪条链都在这里登记。
+const KNOWN_CHAINS = { 968: "BOT Chain Testnet", 677: "BOT Chain Mainnet", 11155111: "Sepolia" };
+// 计价符号跟着链走：BOT Chain（968 / 677）是 BOT，Sepolia 只在本地联调时出现。
+const CHAIN_SYM = { 968: "BOT", 677: "BOT", 11155111: "SepETH" };
+
+// 事件 topics[0] → 事件名。这几个哈希是用 ethers 的 keccak256(签名) 实算出来的，不是手抄的。
+const EVENT_SIG = {
+  "0xdccc8dbc2a3e4dd0eae153285714d3bfad507041e9038fc622161223fafec77e": "ClaimPaid",    // ClaimPaid(uint256,address,uint256,uint8)
+  "0x7ae41b1684d17ed6eaf29cf472c814f6970099f0f9a30c7fb93e8a3d9485da03": "CoolingPeriodSet",    // CoolingPeriodSet(uint64)
+  "0xba5e4ed7c80eae9c2c260272d7411b12e0210599083e35e40749dad58dc719b4": "EligibleRequiredSet",    // EligibleRequiredSet(bool)
+  "0xea7cc9d56973c09921e839370160ec6a335e5aa82c59f46c86f19b7290b307fe": "EligibleSet",    // EligibleSet(address,bool,bytes32)
+  "0x8a8c02070b587d7224582d3b7667d447f6b8ca48b95cfd1213940f2e8910e237": "ExposureSettled",    // ExposureSettled(uint256,uint256)
+  "0xa598d76536d6e82556f921f06a3722cf11ea82ba65cd995187aa29b841a501cd": "FeedRejected",    // FeedRejected(uint8,uint8,uint8,bytes32,string)
+  "0x5eb70a67a1870444df9ac0085894d480824ffac2785b380ec6b6744f0473e906": "JudgementSubmitted",    // JudgementSubmitted(uint256,uint8,uint8,uint8,uint8,bytes32,bytes32,string)
+  "0xd58299b712891143e76310d5e664c4203c940a67db37cf856bdaa3c5c76a802c": "OperatorChanged",    // OperatorChanged(address,address)
+  "0x40db37ff5c0bdc2c427fbb2078c8f24afea940abac0e3c23bb4ea3bf2da2b212": "PausedSet",    // PausedSet(bool)
+  "0x08476b3283bd7027e33ec5c9b0b9ffe351a2ba22d416a146417cd0eedcd351a5": "PolicyBought",    // PolicyBought(uint256,address,uint8,uint256,uint256)
+  "0xce66f10ae4269ec7bfd83e4659aed202bd4efb93d241bae453642969c2f079d3": "PoolFunded",    // PoolFunded(address,uint256,uint256)
+  "0x6f07e6169c1653554eb707b6f6cd8f7ccf9cc29e54a0d8a71d9d5867d2057ac2": "PoolWithdrawn",    // PoolWithdrawn(address,uint256)
+  "0xe007c34ff6c0c12890a61488cc5b4cfd2ff99a6c1ef8b4d2d9dfa0e58625519e": "PremiumSet",    // PremiumSet(uint8,uint256,uint256,bytes32)
+  "0x23a0dbb5798c2746e4b438636e914157ceb7cccb38365cfff98df882ec05221e": "RainfallUpdated",    // RainfallUpdated(uint8,uint256,bytes32,uint8,address)
+  "0xfa66ae93a8043aceae6463b400778fbde6fc189e5277519c39862c79f85b4565": "ReserveSet",    // ReserveSet(uint256)
+  "0x74f9234f95765be42a98e6150968f81ddad109fcea08bce75c63148d10002b2b": "UnderwritingDecision"    // UnderwritingDecision(uint8,uint8,uint256,bytes32)
+};
+// ⚠️ RainfallUpdated 的 topic0 在赛期变了（事件加了 evidenceHash / confidence / sources 三个参数）。
+//    任何按 topic0 过滤这条事件的地方都必须用上面这个新值，别再用旧的 0x93238e87…。
+
+const S = { rpc: NODES[0], lat: null, lastAddr: null, chainId: null };
+const SYM = () => CHAIN_SYM[S.chainId] || "BOT";
+
+/* 假链报警：红色横幅 + 顶部状态改为「本地假链」，避免演示时误把假链当真链 */
+function showFakeChainBar(bn) {
+  if (document.getElementById("fakeChainBar")) return;
+  const bar = document.createElement("div");
+  bar.id = "fakeChainBar";
+  bar.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:99999;background:#b42318;color:#fff;" +
+    "font:700 14px/1.7 system-ui,'Microsoft YaHei',sans-serif;padding:8px 14px;text-align:center;" +
+    "box-shadow:0 2px 10px rgba(0,0,0,.35)";
+  bar.textContent = "⚠ 当前连的是本地假链（块高 " + Number(bn).toLocaleString("en-US") +
+    "，chainId 被伪装成本地登记过的链）—— 这里查到的不是真链数据。去掉网址里的 ?rpc= 参数后刷新。" + " / local fake chain, not real chain data. remove ?rpc= and refresh.";
+  document.body.appendChild(bar);
+  document.body.style.paddingTop = "44px";
+}
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ================= JSON-RPC ================= */
+/* requireNonNull=true 时，把「返回 null 的节点」也当失败，继续试下一个 —— 有些节点
+   对较旧的交易返回 null 回执（2026-10-06 实测：publicnode 对区块 11,833,556 的部署
+   交易返回 null receipt，tenderly 正常）。null 是合法的成功响应，默认不会触发换节点。 */
+async function rpc(method, params, timeout = 20000, requireNonNull = false) {
+  let lastErr, sawNull = false;
+  for (const url of [S.rpc, ...NODES.filter(n => n !== S.rpc)]) {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), timeout);
+    const t0 = performance.now();
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        // BOT Chain 的节点只认 application/json：发 text/plain 会被回 415 invalid content type（2026-10-07 实测），
+        // 而 publicnode 那种节点两个都收 —— 所以这条只有换到 BOT Chain 之后才会暴露。
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+        signal: ctl.signal
+      });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const json = await res.json();
+      if (json.error) throw new Error(json.error.message || "RPC error");
+      S.rpc = url;
+      S.lat = Math.round(performance.now() - t0);
+      $("rpcShown").textContent = url;
+      if (requireNonNull && (json.result === null || json.result === undefined)) { sawNull = true; continue; }
+      return json.result;
+    } catch (e) {
+      clearTimeout(timer);
+      lastErr = e;
+    }
+  }
+  if (sawNull && !lastErr) return null;
+  throw lastErr || new Error("所有节点都连不上 / all nodes unreachable");
+}
+
+/* ================= 数值格式化 ================= */
+const HEX = /^0x[0-9a-fA-F]*$/;
+const big = h => (h == null ? 0n : BigInt(h));
+const fmtEth = wei => {
+  const n = big(wei);
+  const whole = n / 10n ** 18n;
+  const frac = (n % 10n ** 18n).toString().padStart(18, "0").slice(0, 8).replace(/0+$/, "");
+  return frac ? `${whole}.${frac}` : `${whole}`;
+};
+const fmtNum = n => big(n).toLocaleString("en-US");
+// Gwei：1 Gwei = 1e9 wei，做整数运算避免精度丢失
+const fmtGwei = wei => {
+  const n = big(wei);
+  const whole = n / 10n ** 9n;
+  const frac = (n % 10n ** 9n).toString().padStart(9, "0").slice(0, 6).replace(/0+$/, "");
+  return frac ? `${whole}.${frac}` : `${whole}`;
+};
+const short = a => (a && a.length > 12 ? a.slice(0, 6) + "…" + a.slice(-4) : a);
+// 区块时间戳差值
+function ago(ts) {
+  const d = Math.floor(Date.now() / 1000) - Number(ts);
+  if (d < 0) return "刚刚 / just now";
+  if (d < 60) return d + " 秒前 / sec ago";
+  if (d < 3600) return Math.floor(d / 60) + " 分钟前 / min ago";
+  if (d < 86400) return Math.floor(d / 3600) + " 小时前 / h ago";
+  return Math.floor(d / 86400) + " 天前 / d ago";
+}
+const isAddr = q => /^0x[0-9a-fA-F]{40}$/.test(q);
+const isTx = q => /^0x[0-9a-fA-F]{64}$/.test(q);
+
+/* ================= UI 小件 ================= */
+function copyBtn(text, label) {
+  const id = "c" + Math.random().toString(36).slice(2, 9);
+  setTimeout(() => {
+    const el = $(id);
+    if (el) el.onclick = () => {
+      navigator.clipboard.writeText(text).then(() => {
+        el.textContent = "已复制 copied"; el.classList.add("done");
+        setTimeout(() => { el.textContent = label || "复制 copy"; el.classList.remove("done"); }, 1400);
+      }).catch(() => { el.textContent = "手动选 manual"; });
+    };
+  }, 0);
+  return `<button class="cp" id="${id}">${label || "复制 copy"}</button>`;
+}
+function addrRow(label, addr) {
+  return `<div style="margin-bottom:14px">
+    <div class="k" style="margin-bottom:7px">${esc(label)}</div>
+    <div class="addrline"><span class="a">${esc(addr)}</span>${copyBtn(addr)}</div>
+  </div>`;
+}
+function kv(items) {
+  return `<div class="kv">${items.map(([k, v, cls]) =>
+    `<div><div class="k">${esc(k)}</div><div class="v ${cls || ""}">${v}</div></div>`).join("")}</div>`;
+}
+function showErr(msg, hint) {
+  const p = $("errPanel");
+  p.className = "panel err";
+  p.innerHTML = `<div class="ptitle"><span class="tag red">出错了 error</span></div>
+    <div class="v" style="font-size:13px">${esc(msg)}</div>
+    ${hint ? `<div class="v small" style="margin-top:10px">${hint}</div>` : ""}`;
+}
+const clearErr = () => { $("errPanel").className = "panel hidden"; $("errPanel").innerHTML = ""; };
+
+/* ================= 链状态 ================= */
+async function chainStatus(silent) {
+  try {
+    const [blkHex, gasHex] = await Promise.all([rpc("eth_blockNumber", []), rpc("eth_gasPrice", [])]);
+    const id = await rpc("eth_chainId", []);
+    const cid = parseInt(id, 16);
+    const chainName = KNOWN_CHAINS[cid];
+    if (!chainName) throw new Error("不是已知的真链（chainId=" + cid + "）/ unknown chain");
+    S.chainId = cid;
+    const bn = Number(BigInt(blkHex));
+    $("blkNum").textContent = fmtNum(big(blkHex));
+    $("gas").textContent = fmtGwei(gasHex) + " Gwei";
+    $("lat").textContent = S.lat + "ms";
+    $("dot").className = "dot on";
+    $("chainIdShown").textContent = String(cid);
+    if (bn < MIN_REAL_BLOCK) { $("connText").textContent = "本地假链（非 " + chainName + "）/ local fake chain"; showFakeChainBar(bn); }
+    else { $("connText").textContent = "已连接 " + chainName + "（节点直读）/ connected, read straight from the node"; }
+    return bn;
+  } catch (e) {
+    $("dot").className = "dot err";
+    $("connText").textContent = "连不上节点 / offline";
+    $("lat").textContent = "—";
+    if (!silent) showErr("连不上 BOT Chain 节点：" + e.message + " / cannot reach a BOT Chain node",
+      "检查网络。这一页访问的是 <b>" + esc(S.rpc) + "</b>（公共节点，通常能直连，也可用 ?rpc= 换一个你确信可达的节点）。<b>本页没有离线快照兜底：节点连不上就读不到数据，不会拿旧数据顶替。</b><br>check your network — this page talks to <b>" + esc(S.rpc) + "</b>, a public node that usually connects directly (or add ?rpc= to point at a node you know is reachable). No offline snapshot fallback here: if the node is unreachable you get nothing, never a stale stand-in.");
+    throw e;
+  }
+}
+
+/* ================= 查地址 ================= */
+async function lookupAddress(addr, isPrimary) {
+  clearErr();
+  $("resultSec").classList.remove("hidden");
+  $("resultKind").textContent = "地址 / 合约 · address / contract";
+  $("resultBody").innerHTML = `<div class="panel"><div class="loading">正在读链上数据<span style="color:var(--dim);font-size:12px"> / reading on-chain data</span></div></div>`;
+
+  const [bal, nonce, code] = await Promise.all([
+    rpc("eth_getBalance", [addr, "latest"]),
+    rpc("eth_getTransactionCount", [addr, "latest"]),
+    rpc("eth_getCode", [addr, "latest"])
+  ]);
+
+  const isContract = code && code !== "0x";
+  const codeBytes = isContract ? (code.length - 2) / 2 : 0;
+  S.lastAddr = isContract ? addr : null;
+
+  const rows = [
+    ["余额 balance", fmtEth(bal) + " <span style='font-size:12px;color:var(--dim)'>" + SYM() + "</span>", "big"],
+    ["发过多少笔交易（nonce）· txs sent", fmtNum(nonce), ""],
+    ["这是不是合约 · is it a contract", isContract
+      ? `<span style="color:var(--ok)">是合约 ✅ contract</span>`
+      : `<span style="color:var(--money)">普通账户（没有代码）· plain account</span>`, ""],
+    ["合约代码长度 · code length", isContract ? codeBytes + " 字节 bytes" : "0（空）empty", isContract ? "gold" : "small"],
+    ["查询节点 · node", S.rpc.replace("https://", ""), "small"],
+    ["响应延迟 · latency", S.lat + " ms", "small"]
+  ];
+
+  $("resultBody").innerHTML = `<div class="panel">
+    <div class="ptitle">
+      <span class="tag ${isContract ? "" : "gold"}">${isContract ? "智能合约 contract" : "普通账户 account"}</span>
+      <span style="font-size:12px;color:var(--faint)">这条记录此刻就在链上，不是缓存<span style="color:var(--dim);font-size:12px"> · this record is on-chain right now, not a cache</span></span>
+    </div>
+    ${addrRow("地址 address", addr)}
+    ${kv(rows)}
+    ${isContract ? `<div class="note" style="--note-line:rgba(59,130,246,.26);--note-bg:rgba(59,130,246,.06)">
+      <b>代码长度不为 0，说明这个地址上真的躺着一份合约。</b>
+      这就是「部署成功」的硬证据：不看任何界面，只问节点。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">code length is not 0, so a contract really sits at this address. that is the hard proof of a successful deploy: no UI, just ask the node.</span>
+    </div>` : ""}
+  </div>`;
+
+  if (isContract) loadLogs(addr); else $("logSec").classList.add("hidden");
+}
+
+/* ================= 这条哈希是不是在别的链上 =================
+   2026-10-07 实测到的坑：手边的哈希可能来自**另一条链** —— 第一阶段 Sepolia 留痕（v1，区块 11,85x,xxx）、
+   主网 677、或者本机联调链。本页只读一条链，这种情况必然返回 null。
+   与其让人误判成「钱包/节点坏了」，不如代他去另外那两条已知链上问一次：命中就说明白的；
+   不命中 / 超时 / 对方拒跨域，一律静默 —— 绝不改变「查不到」这个结论，也不拖慢渲染（异步补写）。*/
+const OTHER_CHAINS = [
+  { url: "https://ethereum-sepolia-rpc.publicnode.com", name: "Sepolia（第一阶段 v1 留痕） / phase-1 v1 trail" },
+  { url: "https://rpc.botchain.ai", name: "BOT Chain 主网 677 / mainnet" },
+  // 2026-10-12：默认链改成主网后，968 上的哈希也要能被指路（968 是测试网历史留痕，不是基线）。
+  { url: "https://rpc.bohr.life", name: "BOT Chain 测试网 968（v2 历史留痕） / testnet 968, historical trail" }
+];
+async function probeOtherChains(hash) {
+  const slot = document.getElementById("probeHint");
+  if (!slot) return;
+  for (const c of OTHER_CHAINS) {
+    if (c.url === S.rpc) continue;
+    try {
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 6000);
+      const res = await fetch(c.url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_getTransactionByHash", params: [hash] }),
+        signal: ctl.signal
+      });
+      clearTimeout(timer);
+      const j = await res.json();
+      if (j && j.result) {
+        const bn = j.result.blockNumber
+          ? Number(BigInt(j.result.blockNumber)).toLocaleString("en-US") : "（还在待打包）/ pending";
+        const who = (j.result.from ? "发送方 sender <code>" + esc(j.result.from) + "</code>，" : "")
+                  + (j.result.to ? "收款方 receiver <code>" + esc(j.result.to) + "</code>" : "是一笔合约部署 / a contract deploy");
+        // 不止说一句"它在别的链上" —— 给一条真能走的路：带上那条链的 ?rpc= 重开本页，
+        // 页面会用那个节点把这条交易完整读出来（?rpc= 与 ?q= 都是本页本来就支持的传参）。
+        slot.innerHTML = `<div class="v" style="margin-top:10px">✅ 不过它在 <b>${esc(c.name)}</b> 上是真交易：
+          区块 block ${bn}，${who}。
+          <br><span class="small">这条哈希来自另一条链，本页读的 ${esc(KNOWN_CHAINS[S.chainId] || "当前链")} 上查不到它 —— 这正是我们把「哈希/地址必须跟 chainId 一起说」写进口径的原因。<br>this hash belongs to another chain and cannot be found on the chain this page reads — which is why our convention requires quoting a hash or an address together with its chainId.</span>
+          <div style="margin-top:10px"><a class="btn sm" style="display:inline-block;text-decoration:none"
+            href="?rpc=${encodeURIComponent(c.url)}&amp;q=${encodeURIComponent(hash)}">在这条链上打开这条哈希 →<span style="font-size:12px"> open on that chain</span></a></div>
+        </div>`;
+        return;
+      }
+    } catch (e) { /* 这条链不可达或拒了跨域：静默，不影响结论 */ }
+  }
+}
+
+/* ================= 查交易 ================= */
+async function lookupTx(hash) {
+  clearErr();
+  $("logSec").classList.add("hidden");
+  $("resultSec").classList.remove("hidden");
+  $("resultKind").textContent = "交易 · transaction";
+  $("resultBody").innerHTML = `<div class="panel"><div class="loading">正在读这笔交易<span style="color:var(--dim);font-size:12px"> / reading this tx</span></div></div>`;
+
+  const [tx, rc] = await Promise.all([
+    rpc("eth_getTransactionByHash", [hash]),
+    rpc("eth_getTransactionReceipt", [hash], 20000, true)
+  ]);
+
+  if (!tx) {
+    $("logSec").classList.add("hidden");
+    const cn = KNOWN_CHAINS[S.chainId] || "当前链";
+    $("resultBody").innerHTML = `<div class="panel">
+      <div class="ptitle"><span class="tag red">查不到 not found</span></div>
+      <div class="v">节点返回 null：这条哈希在 ${esc(cn)} 上不存在。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">the node returned null: this hash does not exist on ${esc(cn)}</span></div>
+      <div id="probeHint"></div>
+      <div class="v small" style="margin-top:10px">
+        本页只读一条链（<code>${esc(S.rpc)}</code>）。若这条哈希来自<b>第一阶段 Sepolia 留痕</b>
+        （<code>08-截图存证/真链留痕-2026-10-06.md</code> 里区块 11,85x,xxx 那几张表）或本机联调链，
+        它在 ${esc(cn)} 上本来就不存在 —— <b>哈希和地址必须跟链一起说</b>。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">this page reads one chain only (<code>${esc(S.rpc)}</code> = ${esc(cn)}). if this hash came from the phase-1 Sepolia trail or a local dev chain, it does not exist on ${esc(cn)} — a hash or an address must always be quoted together with its chain. 968 上的 v2 只是测试网历史留痕，不是本页的演示基线（要看它加 ?rpc=https://rpc.bohr.life）。</span>
+      </div>
+      <div class="v small" style="margin-top:12px">
+        最常见的原因：<b>哈希复制少了/多了字符</b>（完整哈希是 66 个字符：<code>0x</code> + 64 位）、
+        混进了空格或尖括号、或者这笔交易还在待打包。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">the most common causes: a hash copied with too few or too many characters (a full hash is 66 chars: 0x plus 64), stray spaces or angle brackets, or a tx that is still pending.</span>
+      </div>
+      <div class="addrline" style="margin-top:12px"><span class="a">${esc(hash)}</span>
+        <span style="color:var(--faint);font-size:12px">长度 ${hash.length} / 应为 66 · length should be 66</span></div>
+    </div>`;
+    probeOtherChains(hash);
+    $("resultSec").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+
+  let ts = null;
+  if (tx.blockNumber) {
+    const blk = await rpc("eth_getBlockByNumber", [tx.blockNumber, false]);
+    if (blk) ts = blk.timestamp;
+  }
+  const ok = rc ? big(rc.status) === 1n : false;
+  const isDeploy = tx.to === null;
+
+  const rows = [
+    ["状态 · status", rc ? (ok ? "<span style='color:var(--ok)'>成功 ✅ success</span>" : "<span style='color:var(--bad)'>失败 ❌ failed</span>") : "待打包 pending", ""],
+    ["区块号 · block", tx.blockNumber ? fmtNum(big(tx.blockNumber)) : "待打包 pending", tx.blockNumber ? "" : "small"],
+    ["区块时间 · block time", ts ? ago(ts) : "—", "small"],
+    ["这笔是什么 · what is this", isDeploy ? "<span style='color:var(--money)'>部署合约 contract deploy</span>" : "普通转账 / 调合约 plain tx / contract call", isDeploy ? "gold" : ""],
+    ["转账金额 · amount", fmtEth(tx.value) + " " + SYM(), ""],
+    ["Gas 实际用了 · gas used", rc ? fmtNum(big(rc.gasUsed)) : "—", ""],
+    ["Gas 价格 · gas price", fmtGwei(tx.gasPrice) + " Gwei", "small"],
+    ["nonce", fmtNum(big(tx.nonce)) + "（这是该账户发的第几笔）· tx number from this account", "small"],
+    ["查询节点 · node", S.rpc.replace("https://", ""), "small"]
+  ];
+
+  const contractRow = rc && rc.contractAddress
+    ? `<div class="note" style="--note-line:rgba(242,179,61,.22);--note-bg:rgba(242,179,61,.055);margin-top:16px">
+         <b>这笔交易创建了一个合约，地址是：</b><span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">this tx created a contract at:</span>
+         <div class="addrline" style="margin-top:9px">
+           <span class="a">${esc(rc.contractAddress)}</span>${copyBtn(rc.contractAddress)}
+         </div>
+         <div style="margin-top:11px">
+           <button class="btn sm" onclick="document.getElementById('q').value='${rc.contractAddress}';run('${rc.contractAddress}')">
+             查看这个合约 →<span style="font-size:12px"> view contract</span></button>
+         </div>
+       </div>`
+    : "";
+
+  $("resultBody").innerHTML = `<div class="panel">
+    <div class="ptitle">
+      <span class="tag ${isDeploy ? "gold" : ""}">${isDeploy ? "合约部署交易 contract deploy" : "普通交易 plain tx"}</span>
+      <span style="font-size:12px;color:var(--faint)">数据来源：节点直读<span style="color:var(--dim);font-size:12px"> · read straight from the node</span></span>
+    </div>
+    ${addrRow("交易哈希 tx hash", hash)}
+    ${isDeploy ? "" : addrRow("发送方 from", tx.from)}
+    ${addrRow(isDeploy ? "发送方 from" : "接收方 to", isDeploy ? tx.from : tx.to)}
+    ${kv(rows)}
+    ${contractRow}
+  </div>`;
+
+  if (rc && rc.contractAddress) loadLogs(rc.contractAddress);
+  else if (tx.to) loadLogs(tx.to);
+  else $("logSec").classList.add("hidden");
+  $("resultSec").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+/* ================= 事件日志 ================= */
+async function loadLogs(addr) {
+  $("logSec").classList.remove("hidden");
+  $("logPanel").innerHTML = `<div class="loading">正在读事件日志<span style="color:var(--dim);font-size:12px"> / reading event logs</span></div>`;
+  let logs = null;
+  for (const [f, t] of [["0x0", "latest"], ["0x0", "latest"]]) {
+    try { logs = await rpc("eth_getLogs", [{ address: addr, fromBlock: f, toBlock: t }], 25000); break; }
+    catch (e) { logs = null; }
+  }
+  if (logs === null) {
+    $("logPanel").innerHTML = `<div class="empty">这个节点不让一次扫全部区块，或该合约没有事件。不影响结论。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">this node will not scan all blocks in one call, or the contract emitted nothing. it does not change the conclusion.</span></div>`;
+    return;
+  }
+  if (!logs.length) {
+    $("logPanel").innerHTML = `<div class="empty">
+      这个地址到目前为止没有发出过任何事件（logs）。两种可能：
+      ① <b>这个地址不是本项目的合约</b>，例如脚手架 <code>SimpleStore</code>，它里面根本没有任何 <code>event</code>，所以永远是空的；
+      ② 地址对，但合约确实还没被操作过。先确认地址再来判断。<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">this address has emitted no events (logs) so far. two possibilities: 1) the address is not this project's contract — e.g. the SimpleStore scaffold has no event at all, so it is always empty; 2) the address is right but the contract has not been used yet. confirm the address first.</span></div>`;
+    return;
+  }
+  const rows = logs.slice(-25).reverse().map(l => {
+    const t0 = l.topics[0] || "";
+    const name = EVENT_SIG[t0] || "";
+    return `<tr>
+      <td>${fmtNum(big(l.blockNumber))}</td>
+      <td class="hl">${esc(short(l.transactionHash))}</td>
+      <td>${name ? `<b class="hl">${esc(name)}</b>` : `<span class="gd">未知事件 unknown event</span>`}</td>
+      <td class="gd">${esc(t0 ? short(t0) : "—")}</td>
+      <td>${l.topics.length - 1} 个 indexed</td>
+    </tr>`;
+  }).join("");
+  $("logPanel").innerHTML = `
+    <div class="ptitle"><span class="tag">共 ${logs.length} 条 · total</span>
+      <span style="font-size:12px;color:var(--faint)">显示最近 25 条 · latest 25</span></div>
+    <div class="tblwrap"><table class="tbl"><thead><tr>
+      <th>区块 block</th><th>交易 tx</th><th>事件 event</th><th>签名 signature topics[0]</th><th>参数 args</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ================= 最近区块 ================= */
+async function loadBlocks(n = 8) {
+  try {
+    const latest = await chainStatus();
+    const nums = [];
+    for (let i = 0; i < n; i++) nums.push(latest - i);
+    const blks = await Promise.all(nums.map(b =>
+      rpc("eth_getBlockByNumber", ["0x" + b.toString(16), false]).catch(() => null)));
+    const rows = blks.filter(Boolean).map(b => `<tr>
+        <td class="hl">${fmtNum(big(b.number))}</td>
+        <td>${ago(b.timestamp)}</td>
+        <td>${b.transactions.length}</td>
+        <td>${fmtGwei(b.baseFeePerGas || "0x0")} Gwei</td>
+        <td>${esc(short(b.miner))}</td>
+      </tr>`).join("");
+    $("blockPanel").innerHTML = `
+      <div class="ptitle"><span class="tag">实时 live</span>
+        <span style="font-size:12px;color:var(--faint)">BOT Chain 出块很快，这一栏的数字每次刷新都在涨<span style="color:var(--dim);font-size:12px"> · blocks are fast here, these numbers rise on every refresh</span></span></div>
+      <div class="tblwrap"><table class="tbl"><thead><tr>
+        <th>区块号 block</th><th>出块时间 time</th><th>交易数 txs</th><th>基础费率 base fee</th><th>出块节点 miner</th>
+      </tr></thead><tbody>${rows}</tbody></table></div>`;
+  } catch (e) {
+    $("blockPanel").innerHTML = `<div class="empty">读不到区块：${esc(e.message)}<span style="display:block;color:var(--dim);font-size:12px;margin-top:6px">cannot read blocks</span></div>`;
+  }
+}
+
+/* ================= 入口 ================= */
+async function run(q) {
+  q = (q || $("q").value).trim();
+  // 容错：去掉常见脏字符
+  q = q.replace(/^[<"'\s]+|[>"'\s]+$/g, "").replace(/\s+/g, "");
+  if (!q) { showErr("先粘一个地址或交易哈希进来。 / paste an address or a tx hash first."); return; }
+  if (!q.startsWith("0x")) q = "0x" + q;
+  $("q").value = q;
+
+  try {
+    if (isTx(q)) await lookupTx(q);
+    else if (isAddr(q)) await lookupAddress(q);
+    else {
+      $("logSec").classList.add("hidden");
+      $("resultSec").classList.add("hidden");
+      showErr(`这串东西既不是地址也不是交易哈希（长度 ${q.length}）。 / neither an address nor a tx hash (length ${q.length})`,
+        `地址是 <code>0x</code> + 40 位十六进制 = 共 42 字符；交易哈希是 <code>0x</code> + 64 位 = 共 66 字符。
+         你这串是 ${q.length} 字符。<b>多半是把地址两端的尖括号、空格或换行一起复制进来了。</b><br>an address is 0x plus 40 hex digits = 42 chars; a tx hash is 0x plus 64 digits = 66 chars. yours is ${q.length} chars. <b>you probably copied the angle brackets, spaces or newlines around the address too.</b>`);
+    }
+  } catch (e) {
+    showErr("查询失败：" + e.message + " / query failed", "换个网络再试，或在网址后加 ?rpc= 指向一个你确信可达的节点。<br>try another network, or add ?rpc= to the URL pointing at a node you know is reachable.");
+  }
+}
+window.run = run;
+
+$("goBtn").onclick = () => run();
+$("refreshBtn").onclick = () => { clearErr(); loadBlocks(); };
+$("q").addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+document.querySelectorAll(".chip").forEach(c =>
+  c.onclick = () => { $("q").value = c.dataset.q; run(c.dataset.q); });
+
+/* 支持网址传参：?q=0x… ，方便收藏某一条记录 */
+function fromUrl() {
+  const m = /[?&](?:q|tx|addr|address)=([^&#]+)/i.exec(location.search);
+  if (!m) return null;
+  try { const v = decodeURIComponent(m[1]).trim(); return v || null; } catch (e) { return null; }
+}
+
+/* 一进来就把自己的合约读出来 */
+(async () => {
+  await loadBlocks();
+  const q0 = fromUrl() || DEFAULT_QUERY;
+  $("q").value = q0;
+  run(q0);
+})();
+
+/* 每 12 秒刷一次链状态（证明它是活的） */
+setInterval(() => { chainStatus(true).then(() => loadBlocks()).catch(() => {}); }, 12000);
+</script>
+</body>
+</html>

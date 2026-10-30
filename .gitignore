@@ -6,6 +6,8 @@ _local_chain.json
 
 # ===== 依赖与锁文件 =====
 node_modules/
+site-dist/
+07-测试工具/audit-*.log
 # package-lock.json 必须进仓库：CI 用 npm ci 装依赖（没有它装不了），
 # 徽章上的「全绿」也才可能被别人复现。2026-10-11 之前这里忽略锁文件，CI 因此红过一次。
 

@@ -236,7 +236,7 @@ function imminentFlags(mm10, windowHours) {
 // 3. 主流程
 // ══════════════════════════════════════════════════════════════════════════════
 
-function main() {
+function main({ write = true } = {}) {
   // ── 3.1 读缓存，建月份索引 ────────────────────────────────────────────────
   const monthSet = new Set();
   const cities = [];
@@ -550,7 +550,7 @@ function main() {
     cells: rows, batchBands: bands, reserve, ratios, payload,
   };
 
-  A.emit(path.join(__dirname, 'pricing-engine.json'), JSON.stringify(report, null, 2) + '\n');
+  if (write) A.emit(path.join(__dirname, 'pricing-engine.json'), JSON.stringify(report, null, 2) + '\n');
   return report;
 }
 
@@ -935,7 +935,7 @@ function emitMarkdown(rep, outPath) {
 }
 
 if (require.main === module) {
-  const rep = main();
+  const rep = main({ write: !process.argv.includes('--self-check') });
   if (process.argv.slice(2).includes('--self-check')) {
     const fails = selfCheck(rep);
     console.log(`\n自检结果：${fails.total} 项断言，${fails.length === 0 ? '全部通过' : fails.length + ' 项失败'}`);

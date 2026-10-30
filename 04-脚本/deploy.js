@@ -193,7 +193,7 @@ async function main() {
   console.log("     npm run demo     ← 注入模拟暴雨，把 5 个区域的降雨推上去");
 
   console.log("\n【怎么确认链上真有了】");
-  console.log("  双击  " + path.join(__dirname, "..", "06-核验台单文件", "汉客松-链上核验台.html"));
+  console.log("  双击  " + path.join(__dirname, "..", "06-核验台单文件", "雨证-链上核验台.html"));
   console.log("  把上面那个合约地址粘进去 → 应该看到：");
   console.log("    这是不是合约 → 是合约 ✅");
   console.log("    合约代码长度 → 正整数（不是 0）");

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>雨证 · V6 核验台 — 链上事实逐条自证</title>
+<meta name="description" content="雨证 V6 核验台：浏览器直接读链，逐条核对合约状态、六城区划码、喂价证据哈希与保单台账。无需登录、无后端。">
+<link rel="stylesheet" href="styles/verify.css">
+<script src="runtime.js"></script>
+<script src="deployment.js"></script>
+<script src="contract-v6.js"></script>
+<link rel="stylesheet" href="styles/site.css">
+<script src="site.js" defer></script>
+<meta name="theme-color" content="#080f17">
+<link rel="icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 253 253"%3E%3Crect width="253" height="253" rx="40" fill="%23080f17"/%3E%3Crect x="17" y="17" width="219" height="219" rx="22" fill="none" stroke="%237cb0f9" stroke-width="13"/%3E%3Cpath d="m116 62-56 93m111-108-47 76m65-34-39 66" stroke="%23b9e0f8" stroke-width="13" stroke-linecap="round"/%3E%3Cpath d="M42 190h170" stroke="%23fec459" stroke-width="10" stroke-linecap="round"/%3E%3C/svg%3E'>
+</head>
+<body class="rp-app rp-verify">
+<a class="rp-skip" href="#rp-main">跳转到主要内容</a>
+<div class="rp-topbar"><div class="rp-container rp-topbar-inner">
+ <a class="rp-brand" href="insurance.html" aria-label="雨证 RainProof 首页"><svg viewBox="0 0 253 253" fill="none" aria-hidden="true"><rect x="6.5" y="6.5" width="239" height="239" rx="22" stroke="#7cb0f9" stroke-width="13"/><path d="M116.5 62.5L60.5 155.5M171.5 47.5L124.5 123.5M189.5 89.5L150.5 155.5" stroke="#b9e0f8" stroke-width="13" stroke-linecap="round"/><path d="M42 189.5h170" stroke="#fec459" stroke-width="10" stroke-linecap="round"/></svg><span class="rp-brand-copy"><strong>雨证</strong><span>RainProof</span></span></a>
+ <button class="rp-menu-toggle" type="button" aria-label="展开或收起导航" aria-expanded="false" aria-controls="rp-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+ <nav class="rp-menu" id="rp-menu" aria-label="主导航"><a href="insurance.html">首页</a><a href="index-v6.html#dashboard">技术看板</a><a href="rider.html">骑手保障</a><a href="console.html">平台控制台</a><a href="verify-v6.html" aria-current="page">证据核验</a></nav>
+ <span class="rp-env"><i aria-hidden="true"></i>技术原型 · 模拟资金</span>
+</div></div>
+<div class="wrap" id="rp-main" role="main" tabindex="-1">
+
+<header>
+  <div class="mark">雨</div>
+  <div>
+    <h1>证据核验台</h1>
+    <div class="sub">直接读取公开节点，逐项核对链上事实；连接失败时如实显示原因。</div>
+  </div>
+  <div class="badges">
+    <span><i class="dot" id="chainDot"></i><b id="chainName">连接中…</b></span>
+    <span>合约 <b id="addrShort">0xcDe1…C61F</b></span>
+  </div>
+</header>
+
+<div class="bar">
+  <button id="run">重新核验</button>
+  <span class="score">通过 <b id="pass">—</b> / <span id="total">8</span></span>
+</div>
+
+<div class="rows" id="rows"></div>
+
+<footer>
+  <b>核验对象：</b>V6 的代码指纹、治理、7天领取宽限、区划、迁移证据与资金台账。迁移基线明确来自 V5，并不表示重新获取了一份气象观测。<br><br>
+  <b>链上地址：</b>承保合约 <span class="mono" id="addrFull"></span>｜
+  链 BOT Chain 测试网 968（<span class="mono">rpc.bohr.life</span>）｜
+  计价 RDROP 与人民币 1:1，链上以「分」记账。<br>
+  <b>一句话免责：</b>本页读的是测试网，RDROP 是演示计价单位，不构成任何真实保险要约。
+  ｜ <a href="index-v6.html">← 回看板</a>　<a href="console.html">控制台</a>
+</footer>
+
+</div>
+
+<script src="./ethers.umd.min.js"></script>
+<script src="evidence/v6-migration-inline.js"></script>
+<script src="verify-v6.js"></script>
+</body>
+</html>

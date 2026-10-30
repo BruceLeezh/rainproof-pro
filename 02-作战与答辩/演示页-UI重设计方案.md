@@ -225,5 +225,5 @@ JS 引用的 **23 个 id**：`toast` `modeTag` `addrInput` `blk` `dot` `netText`
 **验证**：`npm test` 五道 **232/0**（8/29/21/73/101）；`07-测试工具/check-html-syntax.js` 三段页面脚本语法全过；
 headless Edge 采三张图逐项核对：桌面 1440px、插桩实测 414px（`iframe` 内 `scrollWidth == clientWidth == 414`、越界元素 0）、2× 放大局部。
 
-**已知遗留**：`05-演示站点/verifier.html` 与 `06-核验台单文件/汉客松-链上核验台.html` 未同步这套 token（本轮只改主演示页），
+**已知遗留**：`05-演示站点/verifier.html` 与 `06-核验台单文件/雨证-链上核验台.html` 未同步这套 token（本轮只改主演示页），
 两页的 id / class 契约未动。

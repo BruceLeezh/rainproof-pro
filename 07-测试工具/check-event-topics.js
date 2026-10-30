@@ -4,7 +4,7 @@
  * 这个文件存在的原因（来源：2026-10-07 全仓只读审计 A10）：
  *
  *   两个核验台各自揣着一份**手写的事件清单**，两份都不是从合约 ABI 生成的：
- *     · `06-核验台单文件/汉客松-链上核验台.html:386-403` 手写 `EVENT_SIG`（topic0 → 事件名，16 条）
+ *     · `06-核验台单文件/雨证-链上核验台.html:386-403` 手写 `EVENT_SIG`（topic0 → 事件名，16 条）
  *     · `05-演示站点/verifier.html:722` 内嵌 `EVENT_ABI`（11 个事件的 ABI 副本）
  *   赛期里 `RainfallUpdated` 的 topic0 就已经因为加参数而变过一次 —— 当时是**人肉**发现的。
  *   合约再改一次事件，这两个文件不会报错，只会安静地把交易解码成「未知事件」，
@@ -25,7 +25,7 @@ const { ethers } = require("ethers");
 
 const R = path.join(__dirname, "..");
 const VERIFIER = path.join(R, "05-演示站点", "verifier.html");
-const EXPLORER = path.join(R, "06-核验台单文件", "汉客松-链上核验台.html");
+const EXPLORER = path.join(R, "06-核验台单文件", "雨证-链上核验台.html");
 const ABI_FILES = {
   v1: path.join(R, "03-合约", "RainDeliveryInsurance.abi.json"),
   v2: path.join(R, "03-合约", "RainDeliveryInsuranceV2.abi.json"),

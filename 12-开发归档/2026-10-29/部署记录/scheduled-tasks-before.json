@@ -1,0 +1,18 @@
+﻿[
+    {
+        "Name":  "RainProof-Feed",
+        "Enabled":  true,
+        "State":  "Running",
+        "Execute":  "cmd",
+        "Arguments":  "/c cd /d \"C:\\Users\\lenovo\\Desktop\\汉客松\\雨证·Rainproof\\04-脚本\" \u0026\u0026 node push-rainfall-v5.js --send \u003e\u003e \"C:\\Users\\lenovo\\Desktop\\汉客松\\雨证·Rainproof\\02-作战与答辩\\自动完善-定时日志.txt\" 2\u003e\u00261",
+        "WorkingDirectory":  null
+    },
+    {
+        "Name":  "RainProof-OpsDaily",
+        "Enabled":  true,
+        "State":  "Ready",
+        "Execute":  "powershell",
+        "Arguments":  "-NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\lenovo\\Desktop\\汉客松\\雨证·Rainproof\\04-脚本\\ops-daily.ps1\"",
+        "WorkingDirectory":  null
+    }
+]

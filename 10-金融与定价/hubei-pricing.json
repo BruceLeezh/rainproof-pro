@@ -1,0 +1,6670 @@
+{
+  "schema": "rainproof/hubei-pricing@1",
+  "generatedAt": "2026-10-27T10:24:12.375Z",
+  "dataStart": "2015-10-01",
+  "dataEnd": "2026-09-30",
+  "timezone": "Asia/Shanghai",
+  "source": "Open-Meteo Archive (ERA5) hourly precipitation",
+  "method": {
+    "thresholds": {
+      "12": [
+        30,
+        70
+      ],
+      "24": [
+        50,
+        100
+      ]
+    },
+    "tierBps": [
+      5000,
+      7500
+    ],
+    "selectivityKappa": 1,
+    "bootstrap": {
+      "unit": "calendar month",
+      "reps": 4000,
+      "seed": 20261007,
+      "quantile": 0.975
+    },
+    "formula": "max(ceil10((upper*10000+30)/0.6), ceil10(30*1.25), 100)",
+    "costFen": 30,
+    "payoutFen": 10000,
+    "rTarget": 0.6,
+    "tickFen": 10,
+    "note": "县级费率用同一 ERA5 序列、同一档线与同一年化上界；五城既有网格不覆盖（保持链上 590/880 等）。"
+  },
+  "selfCheck": {
+    "ok": true,
+    "detail": {
+      "12": {
+        "computedUpperPct": 3.203787,
+        "engineUpperPct": 3.203787,
+        "computedPriceFen": 590,
+        "enginePriceEth": 0.00076,
+        "ok": true
+      },
+      "24": {
+        "computedUpperPct": 4.935469,
+        "engineUpperPct": 4.935469,
+        "computedPriceFen": 880,
+        "enginePriceEth": 0.00105,
+        "ok": true
+      }
+    }
+  },
+  "counts": {
+    "total": 118,
+    "priced": 118
+  },
+  "regions": [
+    {
+      "code": 420100,
+      "name": "武汉市",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.584355,
+      "lon": 114.298572,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 820,
+        "nHitByTier": [
+          820,
+          76
+        ],
+        "pointRatePct": 2.727312,
+        "upperRatePct": 3.203787,
+        "priceFen": 590,
+        "priceYuan": 5.9,
+        "boundBy": "risk",
+        "loadFactor": 1.175
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 735,
+        "nHitByTier": [
+          735,
+          113
+        ],
+        "pointRatePct": 4.17956,
+        "upperRatePct": 4.935469,
+        "priceFen": 880,
+        "priceYuan": 8.8,
+        "boundBy": "risk",
+        "loadFactor": 1.181
+      },
+      "grid": {
+        "12": 590,
+        "24": 880
+      },
+      "digest": "5f554b00880c4fb3d7ff202ee168e9752bf8452168815c4da9e50a3187adb7b2",
+      "sourceUrl": "cache:420100.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420100 武汉市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x697c5b862f2a76779dbd8429864faf358614533423c6e23342ac9ececdb11f16",
+      "cachedAt": "2026-10-27T10:23:19.760Z"
+    },
+    {
+      "code": 420102,
+      "name": "江岸区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.594911,
+      "lon": 114.30304,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 820,
+        "nHitByTier": [
+          820,
+          76
+        ],
+        "pointRatePct": 2.727312,
+        "upperRatePct": 3.203787,
+        "priceFen": 590,
+        "priceYuan": 5.9,
+        "boundBy": "risk",
+        "loadFactor": 1.175
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 735,
+        "nHitByTier": [
+          735,
+          113
+        ],
+        "pointRatePct": 4.17956,
+        "upperRatePct": 4.935469,
+        "priceFen": 880,
+        "priceYuan": 8.8,
+        "boundBy": "risk",
+        "loadFactor": 1.181
+      },
+      "grid": {
+        "12": 590,
+        "24": 880
+      },
+      "digest": "5d3d4d096f9441095ba4488b8c6a39d170eeed64556bb7794c7da4bda237e6f9",
+      "sourceUrl": "cache:420102.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420102 江岸区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x48bae5112a615aa20d1bb419b9fdb5a603bc05f728d6bbc7e13a423328d39ea4",
+      "cachedAt": "2026-10-27T10:23:19.804Z"
+    },
+    {
+      "code": 420103,
+      "name": "江汉区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.578771,
+      "lon": 114.283109,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 820,
+        "nHitByTier": [
+          820,
+          76
+        ],
+        "pointRatePct": 2.727312,
+        "upperRatePct": 3.203787,
+        "priceFen": 590,
+        "priceYuan": 5.9,
+        "boundBy": "risk",
+        "loadFactor": 1.175
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 735,
+        "nHitByTier": [
+          735,
+          113
+        ],
+        "pointRatePct": 4.17956,
+        "upperRatePct": 4.935469,
+        "priceFen": 880,
+        "priceYuan": 8.8,
+        "boundBy": "risk",
+        "loadFactor": 1.181
+      },
+      "grid": {
+        "12": 590,
+        "24": 880
+      },
+      "digest": "9d7063906cdbbe91e4fbf207ca8d862ca7d2d42c26b49a4fefdd922fac585ea7",
+      "sourceUrl": "cache:420103.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420103 江汉区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x56cca66b4de8ca9c8bd7b1e0b6099fe3ff6fa59fc07a22b0fd6e8cd08eebca9d",
+      "cachedAt": "2026-10-27T10:23:19.834Z"
+    },
+    {
+      "code": 420104,
+      "name": "硚口区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.57061,
+      "lon": 114.264568,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 806,
+        "nHitByTier": [
+          806,
+          50
+        ],
+        "pointRatePct": 2.752998,
+        "upperRatePct": 3.248106,
+        "priceFen": 600,
+        "priceYuan": 6,
+        "boundBy": "risk",
+        "loadFactor": 1.18
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 714,
+        "nHitByTier": [
+          714,
+          78
+        ],
+        "pointRatePct": 4.353287,
+        "upperRatePct": 5.119025,
+        "priceFen": 910,
+        "priceYuan": 9.1,
+        "boundBy": "risk",
+        "loadFactor": 1.176
+      },
+      "grid": {
+        "12": 600,
+        "24": 910
+      },
+      "digest": "ec5256bb6fdc2e3149703fc5396d7ed2f1584e789160fefd949a494557b6c07b",
+      "sourceUrl": "cache:420104.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420104 硚口区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x78abf197c8eaf5989d21fcec47cc9eb1a9f26114cce24303d28a282baff24220",
+      "cachedAt": "2026-10-27T10:23:19.857Z"
+    },
+    {
+      "code": 420105,
+      "name": "汉阳区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.549326,
+      "lon": 114.265807,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 806,
+        "nHitByTier": [
+          806,
+          50
+        ],
+        "pointRatePct": 2.752998,
+        "upperRatePct": 3.248106,
+        "priceFen": 600,
+        "priceYuan": 6,
+        "boundBy": "risk",
+        "loadFactor": 1.18
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 714,
+        "nHitByTier": [
+          714,
+          78
+        ],
+        "pointRatePct": 4.353287,
+        "upperRatePct": 5.119025,
+        "priceFen": 910,
+        "priceYuan": 9.1,
+        "boundBy": "risk",
+        "loadFactor": 1.176
+      },
+      "grid": {
+        "12": 600,
+        "24": 910
+      },
+      "digest": "7dd4e32bdde1887fb6d0e4c5a1b5aca1264b3d485f87b175bc9891adfc05f06f",
+      "sourceUrl": "cache:420105.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420105 汉阳区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2432e26e5b5583b8da56d88fc8b92c22f3c3ef82fea6fc9484e5900d9704ab62",
+      "cachedAt": "2026-10-27T10:23:19.895Z"
+    },
+    {
+      "code": 420106,
+      "name": "武昌区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.546536,
+      "lon": 114.307344,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 773,
+        "nHitByTier": [
+          773,
+          49
+        ],
+        "pointRatePct": 2.751998,
+        "upperRatePct": 3.238815,
+        "priceFen": 590,
+        "priceYuan": 5.9,
+        "boundBy": "risk",
+        "loadFactor": 1.177
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 693,
+        "nHitByTier": [
+          693,
+          87
+        ],
+        "pointRatePct": 4.41329,
+        "upperRatePct": 5.215767,
+        "priceFen": 920,
+        "priceYuan": 9.2,
+        "boundBy": "risk",
+        "loadFactor": 1.182
+      },
+      "grid": {
+        "12": 590,
+        "24": 920
+      },
+      "digest": "9272b57a8fd898412e97a6a4557a291f9e77b9f639ec06cc0e9d585b7d434a3e",
+      "sourceUrl": "cache:420106.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420106 武昌区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xc6b8f0e6a7d2f8f231c42089b77fad3fa87c05c39ba737a9ea474d5bdf499909",
+      "cachedAt": "2026-10-27T10:23:19.917Z"
+    },
+    {
+      "code": 420107,
+      "name": "青山区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.634215,
+      "lon": 114.39707,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 888,
+        "nHitByTier": [
+          888,
+          70
+        ],
+        "pointRatePct": 2.934447,
+        "upperRatePct": 3.389837,
+        "priceFen": 620,
+        "priceYuan": 6.2,
+        "boundBy": "risk",
+        "loadFactor": 1.155
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 800,
+        "nHitByTier": [
+          800,
+          108
+        ],
+        "pointRatePct": 4.388868,
+        "upperRatePct": 5.062436,
+        "priceFen": 900,
+        "priceYuan": 9,
+        "boundBy": "risk",
+        "loadFactor": 1.153
+      },
+      "grid": {
+        "12": 620,
+        "24": 900
+      },
+      "digest": "63a584b3d9584ba0f94ebf6e1a0daa50e62f19f85d58c2d27dfe405c7c13b1ad",
+      "sourceUrl": "cache:420107.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420107 青山区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x8acfee24db4db6581ccfb02acd69724c4e4cdecbf4182762801d0fc080576cea",
+      "cachedAt": "2026-10-27T10:23:19.936Z"
+    },
+    {
+      "code": 420111,
+      "name": "洪山区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.504259,
+      "lon": 114.400718,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 779,
+        "nHitByTier": [
+          779,
+          42
+        ],
+        "pointRatePct": 2.897457,
+        "upperRatePct": 3.415839,
+        "priceFen": 620,
+        "priceYuan": 6.2,
+        "boundBy": "risk",
+        "loadFactor": 1.179
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 689,
+        "nHitByTier": [
+          689,
+          91
+        ],
+        "pointRatePct": 4.130543,
+        "upperRatePct": 4.830072,
+        "priceFen": 860,
+        "priceYuan": 8.6,
+        "boundBy": "risk",
+        "loadFactor": 1.169
+      },
+      "grid": {
+        "12": 620,
+        "24": 860
+      },
+      "digest": "2b72e379566da76b8607f4174195b4155b4292168abc2e8e1ed7340f0ea19920",
+      "sourceUrl": "cache:420111.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420111 洪山区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2f471eae96a09550a1f5d1ec81d94b0ed32215d5fcdb74ee579ffaff90746c8d",
+      "cachedAt": "2026-10-27T10:23:19.964Z"
+    },
+    {
+      "code": 420112,
+      "name": "东西湖区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.622467,
+      "lon": 114.142483,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 717,
+        "nHitByTier": [
+          717,
+          55
+        ],
+        "pointRatePct": 2.641107,
+        "upperRatePct": 3.09419,
+        "priceFen": 570,
+        "priceYuan": 5.7,
+        "boundBy": "risk",
+        "loadFactor": 1.172
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 662,
+        "nHitByTier": [
+          662,
+          97
+        ],
+        "pointRatePct": 4.096002,
+        "upperRatePct": 4.816885,
+        "priceFen": 860,
+        "priceYuan": 8.6,
+        "boundBy": "risk",
+        "loadFactor": 1.176
+      },
+      "grid": {
+        "12": 570,
+        "24": 860
+      },
+      "digest": "46335f92d17ae3df472e3f1a74df2147e902aa2b328430f2a43eacb2e9462ced",
+      "sourceUrl": "cache:420112.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420112 东西湖区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2e5e5161c3c7440cdf61e105241720fec39db673b4b421db9f2d3b06398bc0b2",
+      "cachedAt": "2026-10-27T10:23:19.994Z"
+    },
+    {
+      "code": 420113,
+      "name": "汉南区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.309637,
+      "lon": 114.08124,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 775,
+        "nHitByTier": [
+          775,
+          59
+        ],
+        "pointRatePct": 3.070375,
+        "upperRatePct": 3.664739,
+        "priceFen": 670,
+        "priceYuan": 6.7,
+        "boundBy": "risk",
+        "loadFactor": 1.194
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 629,
+        "nHitByTier": [
+          629,
+          103
+        ],
+        "pointRatePct": 5.129137,
+        "upperRatePct": 5.965536,
+        "priceFen": 1050,
+        "priceYuan": 10.5,
+        "boundBy": "risk",
+        "loadFactor": 1.163
+      },
+      "grid": {
+        "12": 670,
+        "24": 1050
+      },
+      "digest": "83374ae61e2d4eeb10bfacaaceb19559a00da34f4bc316612dac69243c468d03",
+      "sourceUrl": "cache:420113.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420113 汉南区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xdc1c1380f91484d20ee7ac55c752f2db2e813c3f191bd4020647b9721cfe769c",
+      "cachedAt": "2026-10-27T10:23:20.014Z"
+    },
+    {
+      "code": 420114,
+      "name": "蔡甸区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.582186,
+      "lon": 114.029341,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 738,
+        "nHitByTier": [
+          738,
+          60
+        ],
+        "pointRatePct": 2.893952,
+        "upperRatePct": 3.363357,
+        "priceFen": 620,
+        "priceYuan": 6.2,
+        "boundBy": "risk",
+        "loadFactor": 1.162
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 675,
+        "nHitByTier": [
+          675,
+          93
+        ],
+        "pointRatePct": 4.625098,
+        "upperRatePct": 5.386908,
+        "priceFen": 950,
+        "priceYuan": 9.5,
+        "boundBy": "risk",
+        "loadFactor": 1.165
+      },
+      "grid": {
+        "12": 620,
+        "24": 950
+      },
+      "digest": "304371cf34f5f27408df8f3f8137704298828581bff97ef265ce406155d3d069",
+      "sourceUrl": "cache:420114.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420114 蔡甸区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x6794330d36a3719680255aa693c649d01c3dfdeff8a0ecfec4f0420ed16ebd20",
+      "cachedAt": "2026-10-27T10:23:20.039Z"
+    },
+    {
+      "code": 420115,
+      "name": "江夏区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.349045,
+      "lon": 114.313961,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 747,
+        "nHitByTier": [
+          747,
+          56
+        ],
+        "pointRatePct": 2.956561,
+        "upperRatePct": 3.518322,
+        "priceFen": 640,
+        "priceYuan": 6.4,
+        "boundBy": "risk",
+        "loadFactor": 1.19
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 614,
+        "nHitByTier": [
+          614,
+          80
+        ],
+        "pointRatePct": 4.639214,
+        "upperRatePct": 5.427749,
+        "priceFen": 960,
+        "priceYuan": 9.6,
+        "boundBy": "risk",
+        "loadFactor": 1.17
+      },
+      "grid": {
+        "12": 640,
+        "24": 960
+      },
+      "digest": "3135811b7a7d269c8702042a6c20dd4d4ac443760291e0ee077b1d58c8612a17",
+      "sourceUrl": "cache:420115.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420115 江夏区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xfad57a68f138726250566d21525724ec0472c1cf22085cfe327ca2c96a248f2e",
+      "cachedAt": "2026-10-27T10:23:20.076Z"
+    },
+    {
+      "code": 420116,
+      "name": "黄陂区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.874155,
+      "lon": 114.374025,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 817,
+        "nHitByTier": [
+          817,
+          48
+        ],
+        "pointRatePct": 2.190065,
+        "upperRatePct": 2.467934,
+        "priceFen": 470,
+        "priceYuan": 4.7,
+        "boundBy": "risk",
+        "loadFactor": 1.127
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 798,
+        "nHitByTier": [
+          798,
+          53
+        ],
+        "pointRatePct": 2.923811,
+        "upperRatePct": 3.280843,
+        "priceFen": 600,
+        "priceYuan": 6,
+        "boundBy": "risk",
+        "loadFactor": 1.122
+      },
+      "grid": {
+        "12": 470,
+        "24": 600
+      },
+      "digest": "487414920bfb0c509ede027d9c1546811dd0578a764f80714406141e901dceec",
+      "sourceUrl": "cache:420116.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420116 黄陂区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x4ff743ce490ec5e610b3339e0b5edf283ea3bbd5396440c54f02bb99232ea77c",
+      "cachedAt": "2026-10-27T10:23:20.097Z"
+    },
+    {
+      "code": 420117,
+      "name": "新洲区",
+      "kind": "county",
+      "parent": 420100,
+      "lat": 30.842149,
+      "lon": 114.802108,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 797,
+        "nHitByTier": [
+          797,
+          50
+        ],
+        "pointRatePct": 2.864729,
+        "upperRatePct": 3.304992,
+        "priceFen": 610,
+        "priceYuan": 6.1,
+        "boundBy": "risk",
+        "loadFactor": 1.154
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 851,
+        "nHitByTier": [
+          851,
+          101
+        ],
+        "pointRatePct": 4.722004,
+        "upperRatePct": 5.409072,
+        "priceFen": 960,
+        "priceYuan": 9.6,
+        "boundBy": "risk",
+        "loadFactor": 1.146
+      },
+      "grid": {
+        "12": 610,
+        "24": 960
+      },
+      "digest": "7e7810b9b44db35ae4e7c02e852dc30bde673d54801bf1b59b9f06512ec6c340",
+      "sourceUrl": "cache:420117.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420117 新洲区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x705974e8e627c67d4b91f01dc1f6bfd2a502fb7f82056f77b017f1acd0c573d8",
+      "cachedAt": "2026-10-27T10:23:20.116Z"
+    },
+    {
+      "code": 420200,
+      "name": "黄石市",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.220074,
+      "lon": 115.077048,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 697,
+        "nHitByTier": [
+          697,
+          55
+        ],
+        "pointRatePct": 2.30547,
+        "upperRatePct": 2.569207,
+        "priceFen": 480,
+        "priceYuan": 4.8,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 672,
+        "nHitByTier": [
+          672,
+          60
+        ],
+        "pointRatePct": 3.171016,
+        "upperRatePct": 3.623347,
+        "priceFen": 660,
+        "priceYuan": 6.6,
+        "boundBy": "risk",
+        "loadFactor": 1.143
+      },
+      "grid": {
+        "12": 480,
+        "24": 660
+      },
+      "digest": "1f6fde1dce66a618d898ac8dd057686b5b2821f4ab8f61a85cbc9eb9e9770791",
+      "sourceUrl": "cache:420200.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420200 黄石市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x157e72b216457e4b06d214f81ccaf93046d265dc75c799173612046a8a62cc75",
+      "cachedAt": "2026-10-27T10:23:20.136Z"
+    },
+    {
+      "code": 420202,
+      "name": "黄石港区",
+      "kind": "county",
+      "parent": 420200,
+      "lat": 30.212086,
+      "lon": 115.090164,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 697,
+        "nHitByTier": [
+          697,
+          55
+        ],
+        "pointRatePct": 2.30547,
+        "upperRatePct": 2.569207,
+        "priceFen": 480,
+        "priceYuan": 4.8,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 672,
+        "nHitByTier": [
+          672,
+          60
+        ],
+        "pointRatePct": 3.171016,
+        "upperRatePct": 3.623347,
+        "priceFen": 660,
+        "priceYuan": 6.6,
+        "boundBy": "risk",
+        "loadFactor": 1.143
+      },
+      "grid": {
+        "12": 480,
+        "24": 660
+      },
+      "digest": "9dfdd4f99656cdfcdb75f0c14ce76816fb830fdb5a411c65bca33f6041090b60",
+      "sourceUrl": "cache:420202.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420202 黄石港区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x8c31f38592b8df1c86f476f34e3490b6c0dc52150d94d2aaadfc33bb702c2ee5",
+      "cachedAt": "2026-10-27T10:23:20.157Z"
+    },
+    {
+      "code": 420203,
+      "name": "西塞山区",
+      "kind": "county",
+      "parent": 420200,
+      "lat": 30.205365,
+      "lon": 115.093354,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 697,
+        "nHitByTier": [
+          697,
+          55
+        ],
+        "pointRatePct": 2.30547,
+        "upperRatePct": 2.569207,
+        "priceFen": 480,
+        "priceYuan": 4.8,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 672,
+        "nHitByTier": [
+          672,
+          60
+        ],
+        "pointRatePct": 3.171016,
+        "upperRatePct": 3.623347,
+        "priceFen": 660,
+        "priceYuan": 6.6,
+        "boundBy": "risk",
+        "loadFactor": 1.143
+      },
+      "grid": {
+        "12": 480,
+        "24": 660
+      },
+      "digest": "e2e89eaca51747743d719ddf59d8e6158a8874ca45d43ec057a7188907b94fa4",
+      "sourceUrl": "cache:420203.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420203 西塞山区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xf07466624808dc977e79170c67569fc4b2540f058f7772148ef1dd61ebed92b1",
+      "cachedAt": "2026-10-27T10:23:20.185Z"
+    },
+    {
+      "code": 420204,
+      "name": "下陆区",
+      "kind": "county",
+      "parent": 420200,
+      "lat": 30.177845,
+      "lon": 114.975755,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 748,
+        "nHitByTier": [
+          748,
+          57
+        ],
+        "pointRatePct": 2.390444,
+        "upperRatePct": 2.671889,
+        "priceFen": 500,
+        "priceYuan": 5,
+        "boundBy": "risk",
+        "loadFactor": 1.118
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 764,
+        "nHitByTier": [
+          764,
+          57
+        ],
+        "pointRatePct": 3.207908,
+        "upperRatePct": 3.641743,
+        "priceFen": 660,
+        "priceYuan": 6.6,
+        "boundBy": "risk",
+        "loadFactor": 1.135
+      },
+      "grid": {
+        "12": 500,
+        "24": 660
+      },
+      "digest": "206515987e6c67078dc9d09410bef701690e530b1a80fa721be5613cf97204a1",
+      "sourceUrl": "cache:420204.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420204 下陆区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x15f34dc623397ece612dacd25fe9a29c3cadf1818c06ec2909d25ec0174c288a",
+      "cachedAt": "2026-10-27T10:23:20.206Z"
+    },
+    {
+      "code": 420205,
+      "name": "铁山区",
+      "kind": "county",
+      "parent": 420200,
+      "lat": 30.20601,
+      "lon": 114.901366,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 748,
+        "nHitByTier": [
+          748,
+          57
+        ],
+        "pointRatePct": 2.390444,
+        "upperRatePct": 2.671889,
+        "priceFen": 500,
+        "priceYuan": 5,
+        "boundBy": "risk",
+        "loadFactor": 1.118
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 764,
+        "nHitByTier": [
+          764,
+          57
+        ],
+        "pointRatePct": 3.207908,
+        "upperRatePct": 3.641743,
+        "priceFen": 660,
+        "priceYuan": 6.6,
+        "boundBy": "risk",
+        "loadFactor": 1.135
+      },
+      "grid": {
+        "12": 500,
+        "24": 660
+      },
+      "digest": "073215094dc0c06e42055970eee76e29c236f99f5769d8081b3a8f137b0e5720",
+      "sourceUrl": "cache:420205.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420205 铁山区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xc8443d68888788ecedad4dc91862fe66d51897b36dd48a0b3cf32f41538e3820",
+      "cachedAt": "2026-10-27T10:23:20.226Z"
+    },
+    {
+      "code": 420222,
+      "name": "阳新县",
+      "kind": "county",
+      "parent": 420200,
+      "lat": 29.841572,
+      "lon": 115.212883,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 432,
+        "nHitByTier": [
+          432,
+          25
+        ],
+        "pointRatePct": 2.120339,
+        "upperRatePct": 2.413948,
+        "priceFen": 460,
+        "priceYuan": 4.6,
+        "boundBy": "risk",
+        "loadFactor": 1.138
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 433,
+        "nHitByTier": [
+          433,
+          59
+        ],
+        "pointRatePct": 3.230852,
+        "upperRatePct": 3.611892,
+        "priceFen": 660,
+        "priceYuan": 6.6,
+        "boundBy": "risk",
+        "loadFactor": 1.118
+      },
+      "grid": {
+        "12": 460,
+        "24": 660
+      },
+      "digest": "1e6bc911f86427714b6a93e71e1ea66a138ac4821faa8fdd2f98a8ca448bae34",
+      "sourceUrl": "cache:420222.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420222 阳新县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x0c039e91d16edf8e2c56dc7888181462f9fe8965dcfbfdf7e7eeecc8f69f6738",
+      "cachedAt": "2026-10-27T10:23:20.245Z"
+    },
+    {
+      "code": 420281,
+      "name": "大冶市",
+      "kind": "county",
+      "parent": 420200,
+      "lat": 30.098804,
+      "lon": 114.974842,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 677,
+        "nHitByTier": [
+          677,
+          57
+        ],
+        "pointRatePct": 2.28448,
+        "upperRatePct": 2.574469,
+        "priceFen": 480,
+        "priceYuan": 4.8,
+        "boundBy": "risk",
+        "loadFactor": 1.127
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 667,
+        "nHitByTier": [
+          667,
+          109
+        ],
+        "pointRatePct": 3.394066,
+        "upperRatePct": 3.819351,
+        "priceFen": 690,
+        "priceYuan": 6.9,
+        "boundBy": "risk",
+        "loadFactor": 1.125
+      },
+      "grid": {
+        "12": 480,
+        "24": 690
+      },
+      "digest": "c6d7cf4444060e154842b65dea2fd40f357aaf65842935e0dfaf61a0ee06a8d8",
+      "sourceUrl": "cache:420281.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420281 大冶市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x216026bc60bf2904cf9583746f659bf1721abf381c72ba1096631713008661c1",
+      "cachedAt": "2026-10-27T10:23:20.264Z"
+    },
+    {
+      "code": 420300,
+      "name": "十堰市",
+      "kind": "city",
+      "parent": null,
+      "lat": 32.646907,
+      "lon": 110.787916,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 229,
+        "nHitByTier": [
+          229,
+          22
+        ],
+        "pointRatePct": 1.008588,
+        "upperRatePct": 1.092545,
+        "priceFen": 240,
+        "priceYuan": 2.4,
+        "boundBy": "risk",
+        "loadFactor": 1.083
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 170,
+        "nHitByTier": [
+          170,
+          42
+        ],
+        "pointRatePct": 1.585608,
+        "upperRatePct": 1.717935,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.083
+      },
+      "grid": {
+        "12": 240,
+        "24": 340
+      },
+      "digest": "86ad087b94cc0a74ece367376f215f7614258494ca7a0636aa70be7e56aeeb25",
+      "sourceUrl": "cache:420300.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420300 十堰市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xa3c967f48ca50ae866ef4a2b06df7918094c95c46984044032b1eabd24835069",
+      "cachedAt": "2026-10-27T10:23:20.282Z"
+    },
+    {
+      "code": 420302,
+      "name": "茅箭区",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.644463,
+      "lon": 110.78621,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 212,
+        "nHitByTier": [
+          212,
+          19
+        ],
+        "pointRatePct": 0.970466,
+        "upperRatePct": 1.036889,
+        "priceFen": 230,
+        "priceYuan": 2.3,
+        "boundBy": "risk",
+        "loadFactor": 1.068
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 152,
+        "nHitByTier": [
+          152,
+          19
+        ],
+        "pointRatePct": 1.567982,
+        "upperRatePct": 1.663374,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.061
+      },
+      "grid": {
+        "12": 230,
+        "24": 330
+      },
+      "digest": "74a09c82189684d61f7059fb46df248351b8684d7bc6c1d314b1576ef6242464",
+      "sourceUrl": "cache:420302.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420302 茅箭区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x062e57a8e9ce97e7a33df682bd431203ae86dfb5530ac4d3f25ce40a914264a2",
+      "cachedAt": "2026-10-27T10:23:20.307Z"
+    },
+    {
+      "code": 420303,
+      "name": "张湾区",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.652516,
+      "lon": 110.772365,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 229,
+        "nHitByTier": [
+          229,
+          22
+        ],
+        "pointRatePct": 1.008588,
+        "upperRatePct": 1.092545,
+        "priceFen": 240,
+        "priceYuan": 2.4,
+        "boundBy": "risk",
+        "loadFactor": 1.083
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 170,
+        "nHitByTier": [
+          170,
+          42
+        ],
+        "pointRatePct": 1.585608,
+        "upperRatePct": 1.717935,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.083
+      },
+      "grid": {
+        "12": 240,
+        "24": 340
+      },
+      "digest": "81261c42f1a7ef6a37c2c3baa808a47ca5365ef0bf7f4537c63dd1a95eae463b",
+      "sourceUrl": "cache:420303.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420303 张湾区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xa43379104f9d344bf09a18092782249c8148363e5cc15d204a56ce6fbf2507d3",
+      "cachedAt": "2026-10-27T10:23:20.325Z"
+    },
+    {
+      "code": 420304,
+      "name": "郧阳区",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.838267,
+      "lon": 110.812099,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 207,
+        "nHitByTier": [
+          207,
+          16
+        ],
+        "pointRatePct": 0.958632,
+        "upperRatePct": 1.036202,
+        "priceFen": 230,
+        "priceYuan": 2.3,
+        "boundBy": "risk",
+        "loadFactor": 1.081
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 142,
+        "nHitByTier": [
+          142,
+          22
+        ],
+        "pointRatePct": 1.500324,
+        "upperRatePct": 1.623578,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.082
+      },
+      "grid": {
+        "12": 230,
+        "24": 330
+      },
+      "digest": "65f10ddcb89ec44d85664affa79c8f9ad623c82a9ab90f8e516e3ade43d53c79",
+      "sourceUrl": "cache:420304.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420304 郧阳区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xadda8bc3de9bf06abb6a5c243696fe4131271fc71196edc7565b1ea5eb69b709",
+      "cachedAt": "2026-10-27T10:23:20.343Z"
+    },
+    {
+      "code": 420322,
+      "name": "郧西县",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.991457,
+      "lon": 110.426472,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 218,
+        "nHitByTier": [
+          218,
+          16
+        ],
+        "pointRatePct": 0.99559,
+        "upperRatePct": 1.068667,
+        "priceFen": 230,
+        "priceYuan": 2.3,
+        "boundBy": "risk",
+        "loadFactor": 1.073
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 254,
+        "nHitByTier": [
+          254,
+          22
+        ],
+        "pointRatePct": 1.576317,
+        "upperRatePct": 1.677053,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.064
+      },
+      "grid": {
+        "12": 230,
+        "24": 330
+      },
+      "digest": "de9007e4c39bea8c6e83b565aa000e5b5a96bc1b0773a20063c3196214e06648",
+      "sourceUrl": "cache:420322.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420322 郧西县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x4050b894081babace5f6d9eb908391dad50edfbc03fbd8ed551d42bdc3016c46",
+      "cachedAt": "2026-10-27T10:23:20.361Z"
+    },
+    {
+      "code": 420323,
+      "name": "竹山县",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.22586,
+      "lon": 110.2296,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 144,
+        "nHitByTier": [
+          144,
+          9
+        ],
+        "pointRatePct": 0.720062,
+        "upperRatePct": 0.770032,
+        "priceFen": 180,
+        "priceYuan": 1.8,
+        "boundBy": "risk",
+        "loadFactor": 1.069
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 70,
+        "nHitByTier": [
+          70,
+          0
+        ],
+        "pointRatePct": 1.297014,
+        "upperRatePct": 1.351061,
+        "priceFen": 280,
+        "priceYuan": 2.8,
+        "boundBy": "risk",
+        "loadFactor": 1.042
+      },
+      "grid": {
+        "12": 180,
+        "24": 280
+      },
+      "digest": "f1c291eb2f23b2e548c7dfcac0c828c93db568594a87bb0e351a429edc99156a",
+      "sourceUrl": "cache:420323.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420323 竹山县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xae659de2ad841ce1d591ff8c30cdd8cc06f66173e906206cc19a6674228e0226",
+      "cachedAt": "2026-10-27T10:23:20.379Z"
+    },
+    {
+      "code": 420324,
+      "name": "竹溪县",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.315342,
+      "lon": 109.717196,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 413,
+        "nHitByTier": [
+          413,
+          6
+        ],
+        "pointRatePct": 1.18167,
+        "upperRatePct": 1.294667,
+        "priceFen": 270,
+        "priceYuan": 2.7,
+        "boundBy": "risk",
+        "loadFactor": 1.096
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 338,
+        "nHitByTier": [
+          338,
+          0
+        ],
+        "pointRatePct": 1.412307,
+        "upperRatePct": 1.501999,
+        "priceFen": 310,
+        "priceYuan": 3.1,
+        "boundBy": "risk",
+        "loadFactor": 1.064
+      },
+      "grid": {
+        "12": 270,
+        "24": 310
+      },
+      "digest": "e37a2686f94c004f72c319bbb5ea304a6fd68fbc4f58bcdcb0b9b98e3e9deda4",
+      "sourceUrl": "cache:420324.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420324 竹溪县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x284d252e684078b6ccda9cc3bb76ac99d48c8d93ee159c17b8efa1a77f796a44",
+      "cachedAt": "2026-10-27T10:23:20.406Z"
+    },
+    {
+      "code": 420325,
+      "name": "房县",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.055002,
+      "lon": 110.741966,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 190,
+        "nHitByTier": [
+          190,
+          0
+        ],
+        "pointRatePct": 0.675995,
+        "upperRatePct": 0.722837,
+        "priceFen": 180,
+        "priceYuan": 1.8,
+        "boundBy": "risk",
+        "loadFactor": 1.069
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 72,
+        "nHitByTier": [
+          72,
+          0
+        ],
+        "pointRatePct": 1.01425,
+        "upperRatePct": 1.081175,
+        "priceFen": 240,
+        "priceYuan": 2.4,
+        "boundBy": "risk",
+        "loadFactor": 1.066
+      },
+      "grid": {
+        "12": 180,
+        "24": 240
+      },
+      "digest": "f0cb8f68ff0abc8e1da33514697872201124f85a03834edc68d1eeea3ce7a495",
+      "sourceUrl": "cache:420325.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420325 房县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x771390eb006e4e893e1e8549c092fb3715febb55471e09d2c23d297d99c5a3e5",
+      "cachedAt": "2026-10-27T10:24:11.883Z"
+    },
+    {
+      "code": 420381,
+      "name": "丹江口市",
+      "kind": "county",
+      "parent": 420300,
+      "lat": 32.538839,
+      "lon": 111.513793,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 295,
+        "nHitByTier": [
+          295,
+          26
+        ],
+        "pointRatePct": 1.255922,
+        "upperRatePct": 1.370476,
+        "priceFen": 280,
+        "priceYuan": 2.8,
+        "boundBy": "risk",
+        "loadFactor": 1.091
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 259,
+        "nHitByTier": [
+          259,
+          36
+        ],
+        "pointRatePct": 1.784247,
+        "upperRatePct": 1.919557,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.076
+      },
+      "grid": {
+        "12": 280,
+        "24": 370
+      },
+      "digest": "f8e87c1b06ab2f40eaf04c7d2fa7dcfcdacb28a758dd06c767dad16020e08505",
+      "sourceUrl": "cache:420381.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420381 丹江口市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x009e45065f6403163bc2f8b87e51a5e46ff87c890ab2082d68f4fbc59cf8bfad",
+      "cachedAt": "2026-10-27T10:24:11.919Z"
+    },
+    {
+      "code": 420500,
+      "name": "宜昌市",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.702636,
+      "lon": 111.290843,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 561,
+        "nHitByTier": [
+          561,
+          48
+        ],
+        "pointRatePct": 1.882193,
+        "upperRatePct": 2.046269,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.087
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 533,
+        "nHitByTier": [
+          533,
+          58
+        ],
+        "pointRatePct": 2.574973,
+        "upperRatePct": 2.762368,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.073
+      },
+      "grid": {
+        "12": 400,
+        "24": 520
+      },
+      "digest": "748d3a28f72de520b67c31f266a215acdf151e55280a39ef09ed074974021ccc",
+      "sourceUrl": "cache:420500.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420500 宜昌市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x9574361515303ba987eeba6e597fd504c446187829b9ab281a2c26fe8cde0a93",
+      "cachedAt": "2026-10-27T10:24:11.960Z"
+    },
+    {
+      "code": 420502,
+      "name": "西陵区",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.702476,
+      "lon": 111.295468,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 561,
+        "nHitByTier": [
+          561,
+          48
+        ],
+        "pointRatePct": 1.882193,
+        "upperRatePct": 2.046269,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.087
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 533,
+        "nHitByTier": [
+          533,
+          58
+        ],
+        "pointRatePct": 2.574973,
+        "upperRatePct": 2.762368,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.073
+      },
+      "grid": {
+        "12": 400,
+        "24": 520
+      },
+      "digest": "d50bafd5340f79157be9518e894196cd5e2af0b4a67b7060db79ef3041e9bedd",
+      "sourceUrl": "cache:420502.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420502 西陵区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xbfd76612538e1c895bde03bc88c2e663daeb15ed535dfad6e63343cd385f7e67",
+      "cachedAt": "2026-10-27T10:24:11.996Z"
+    },
+    {
+      "code": 420503,
+      "name": "伍家岗区",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.679053,
+      "lon": 111.307215,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 561,
+        "nHitByTier": [
+          561,
+          48
+        ],
+        "pointRatePct": 1.882193,
+        "upperRatePct": 2.046269,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.087
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 533,
+        "nHitByTier": [
+          533,
+          58
+        ],
+        "pointRatePct": 2.574973,
+        "upperRatePct": 2.762368,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.073
+      },
+      "grid": {
+        "12": 400,
+        "24": 520
+      },
+      "digest": "a3df3135644c9cb3f673a5704f664b59a2e052023d9a74456d0c575de8b868ac",
+      "sourceUrl": "cache:420503.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420503 伍家岗区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x609552c59e582fd56538d7d9e4be7897d8bc2d81185ea517b2e1d7ee2d311deb",
+      "cachedAt": "2026-10-27T10:23:20.429Z"
+    },
+    {
+      "code": 420504,
+      "name": "点军区",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.692322,
+      "lon": 111.268163,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 561,
+        "nHitByTier": [
+          561,
+          48
+        ],
+        "pointRatePct": 1.882193,
+        "upperRatePct": 2.046269,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.087
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 533,
+        "nHitByTier": [
+          533,
+          58
+        ],
+        "pointRatePct": 2.574973,
+        "upperRatePct": 2.762368,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.073
+      },
+      "grid": {
+        "12": 400,
+        "24": 520
+      },
+      "digest": "85f48c0314669ab41decbbaef308e9f124f1e56fc86a4374bd2b0282b18acc28",
+      "sourceUrl": "cache:420504.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420504 点军区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x5087f81c2615f65089b777bb03ad6699477ecae7007c5d9d1261516f3cc6c2b9",
+      "cachedAt": "2026-10-27T10:23:20.450Z"
+    },
+    {
+      "code": 420505,
+      "name": "猇亭区",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.530744,
+      "lon": 111.427642,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 630,
+        "nHitByTier": [
+          630,
+          30
+        ],
+        "pointRatePct": 1.712826,
+        "upperRatePct": 1.863799,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.088
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 589,
+        "nHitByTier": [
+          589,
+          47
+        ],
+        "pointRatePct": 2.545725,
+        "upperRatePct": 2.761079,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.085
+      },
+      "grid": {
+        "12": 370,
+        "24": 520
+      },
+      "digest": "0775fb0b731cbe914290a81993fd136e91f0e256fe4cc922ac464c0d76265cef",
+      "sourceUrl": "cache:420505.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420505 猇亭区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x46e4594d4e16052792c5c6553f4222b93eec2f9e2e49170e05f9af5e94f41e56",
+      "cachedAt": "2026-10-27T10:23:20.472Z"
+    },
+    {
+      "code": 420506,
+      "name": "夷陵区",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.770199,
+      "lon": 111.326747,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 559,
+        "nHitByTier": [
+          559,
+          36
+        ],
+        "pointRatePct": 1.855874,
+        "upperRatePct": 2.002892,
+        "priceFen": 390,
+        "priceYuan": 3.9,
+        "boundBy": "risk",
+        "loadFactor": 1.079
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 500,
+        "nHitByTier": [
+          500,
+          33
+        ],
+        "pointRatePct": 2.584245,
+        "upperRatePct": 2.767188,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.071
+      },
+      "grid": {
+        "12": 390,
+        "24": 520
+      },
+      "digest": "4ff4781b80c0d51079d62ec812a44ea9208e3fdf6b6a6411f5a3debd36cc0b01",
+      "sourceUrl": "cache:420506.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420506 夷陵区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe44dee16ae1e5fa72c14c323238ec144714c25f388652b205e3fb2ae82246e54",
+      "cachedAt": "2026-10-27T10:23:20.491Z"
+    },
+    {
+      "code": 420525,
+      "name": "远安县",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 31.059626,
+      "lon": 111.64331,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 539,
+        "nHitByTier": [
+          539,
+          35
+        ],
+        "pointRatePct": 1.663835,
+        "upperRatePct": 1.820719,
+        "priceFen": 360,
+        "priceYuan": 3.6,
+        "boundBy": "risk",
+        "loadFactor": 1.094
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 505,
+        "nHitByTier": [
+          505,
+          45
+        ],
+        "pointRatePct": 2.414526,
+        "upperRatePct": 2.632084,
+        "priceFen": 490,
+        "priceYuan": 4.9,
+        "boundBy": "risk",
+        "loadFactor": 1.09
+      },
+      "grid": {
+        "12": 360,
+        "24": 490
+      },
+      "digest": "f17e0a20346533279e2f56313f60ccb73b3fa7c9e62317bfb8b0268c645aa7d5",
+      "sourceUrl": "cache:420525.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420525 远安县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2824ec92cc479a80d7c534c6e2b8db62774d1b265a7544d71e37de588caa375f",
+      "cachedAt": "2026-10-27T10:23:20.517Z"
+    },
+    {
+      "code": 420526,
+      "name": "兴山县",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 31.34795,
+      "lon": 110.754499,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 362,
+        "nHitByTier": [
+          362,
+          0
+        ],
+        "pointRatePct": 1.42635,
+        "upperRatePct": 1.542661,
+        "priceFen": 310,
+        "priceYuan": 3.1,
+        "boundBy": "risk",
+        "loadFactor": 1.082
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 342,
+        "nHitByTier": [
+          342,
+          2
+        ],
+        "pointRatePct": 1.853659,
+        "upperRatePct": 2.010885,
+        "priceFen": 390,
+        "priceYuan": 3.9,
+        "boundBy": "risk",
+        "loadFactor": 1.085
+      },
+      "grid": {
+        "12": 310,
+        "24": 390
+      },
+      "digest": "b037ef4900025a64e10d35535b3bbb6e1f49a603de47b529849ae80c10f29af1",
+      "sourceUrl": "cache:420526.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420526 兴山县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x067d44cd60a0d66a31bb55ee198fe36b374e94b1e18add39298727485bd402ce",
+      "cachedAt": "2026-10-27T10:23:20.535Z"
+    },
+    {
+      "code": 420527,
+      "name": "秭归县",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.823908,
+      "lon": 110.976785,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 580,
+        "nHitByTier": [
+          580,
+          24
+        ],
+        "pointRatePct": 1.618687,
+        "upperRatePct": 1.780999,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.1
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 398,
+        "nHitByTier": [
+          398,
+          12
+        ],
+        "pointRatePct": 1.986551,
+        "upperRatePct": 2.161161,
+        "priceFen": 420,
+        "priceYuan": 4.2,
+        "boundBy": "risk",
+        "loadFactor": 1.088
+      },
+      "grid": {
+        "12": 350,
+        "24": 420
+      },
+      "digest": "c718b94ece81120bfb72b6e0f45c2db8b8093d5c111990d06606b932752cf93c",
+      "sourceUrl": "cache:420527.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420527 秭归县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x531eff5f6a432fec7deb8d0a04605a22903564a2f04d5b2fbe20a229fe009bf4",
+      "cachedAt": "2026-10-27T10:23:20.553Z"
+    },
+    {
+      "code": 420528,
+      "name": "长阳土家族自治县",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.466534,
+      "lon": 111.198475,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 679,
+        "nHitByTier": [
+          679,
+          16
+        ],
+        "pointRatePct": 1.744947,
+        "upperRatePct": 1.902357,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.09
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 710,
+        "nHitByTier": [
+          710,
+          0
+        ],
+        "pointRatePct": 2.814861,
+        "upperRatePct": 3.070201,
+        "priceFen": 570,
+        "priceYuan": 5.7,
+        "boundBy": "risk",
+        "loadFactor": 1.091
+      },
+      "grid": {
+        "12": 370,
+        "24": 570
+      },
+      "digest": "99c55109a2714df7f80fe48d5bfa81f83d48506848df94f8cd3f28ebb7c14df7",
+      "sourceUrl": "cache:420528.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420528 长阳土家族自治县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x91c358e24093df111c5b1b4ee6305eec1de346589c512c868a20c700d186d2e5",
+      "cachedAt": "2026-10-27T10:23:20.571Z"
+    },
+    {
+      "code": 420529,
+      "name": "五峰土家族自治县",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.199252,
+      "lon": 110.674938,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 447,
+        "nHitByTier": [
+          447,
+          10
+        ],
+        "pointRatePct": 2.056262,
+        "upperRatePct": 2.282723,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.11
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 497,
+        "nHitByTier": [
+          497,
+          8
+        ],
+        "pointRatePct": 3.222201,
+        "upperRatePct": 3.492163,
+        "priceFen": 640,
+        "priceYuan": 6.4,
+        "boundBy": "risk",
+        "loadFactor": 1.084
+      },
+      "grid": {
+        "12": 440,
+        "24": 640
+      },
+      "digest": "970a310e9cc45fa398fee69f054cc43cd6161762b1d07e8695c2d004d80bbce6",
+      "sourceUrl": "cache:420529.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420529 五峰土家族自治县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x733aed7a421e0f7eb36be3542907921149d50255a97b0863315a98191cb1b656",
+      "cachedAt": "2026-10-27T10:23:20.589Z"
+    },
+    {
+      "code": 420581,
+      "name": "宜都市",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.387234,
+      "lon": 111.454367,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 543,
+        "nHitByTier": [
+          543,
+          19
+        ],
+        "pointRatePct": 1.330965,
+        "upperRatePct": 1.451935,
+        "priceFen": 300,
+        "priceYuan": 3,
+        "boundBy": "risk",
+        "loadFactor": 1.091
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 464,
+        "nHitByTier": [
+          464,
+          11
+        ],
+        "pointRatePct": 1.8643,
+        "upperRatePct": 1.979761,
+        "priceFen": 380,
+        "priceYuan": 3.8,
+        "boundBy": "risk",
+        "loadFactor": 1.062
+      },
+      "grid": {
+        "12": 300,
+        "24": 380
+      },
+      "digest": "5864c0a13bbd05b600fe33f119b99b8c8488a71d3b7510f497e92819e9c85145",
+      "sourceUrl": "cache:420581.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420581 宜都市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x544dfd3d74045de43906ea641f39dafbbfc26071c8f8e2d36b3894e9bc48871d",
+      "cachedAt": "2026-10-27T10:23:20.610Z"
+    },
+    {
+      "code": 420582,
+      "name": "当阳市",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.824492,
+      "lon": 111.793419,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 573,
+        "nHitByTier": [
+          573,
+          16
+        ],
+        "pointRatePct": 1.692337,
+        "upperRatePct": 1.855127,
+        "priceFen": 360,
+        "priceYuan": 3.6,
+        "boundBy": "risk",
+        "loadFactor": 1.096
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 456,
+        "nHitByTier": [
+          456,
+          15
+        ],
+        "pointRatePct": 2.379539,
+        "upperRatePct": 2.611345,
+        "priceFen": 490,
+        "priceYuan": 4.9,
+        "boundBy": "risk",
+        "loadFactor": 1.097
+      },
+      "grid": {
+        "12": 360,
+        "24": 490
+      },
+      "digest": "75aae50964791e1472eb11dddc9e965d969cbdc2b8ca534b510ad3cf0150eef6",
+      "sourceUrl": "cache:420582.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420582 当阳市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xbfb2b57a3612bd1011f1d443e226bb2999d5e7b5c25761fda49513d3ef6b7cd1",
+      "cachedAt": "2026-10-27T10:23:20.637Z"
+    },
+    {
+      "code": 420583,
+      "name": "枝江市",
+      "kind": "county",
+      "parent": 420500,
+      "lat": 30.425364,
+      "lon": 111.751799,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 591,
+        "nHitByTier": [
+          591,
+          17
+        ],
+        "pointRatePct": 1.482204,
+        "upperRatePct": 1.602865,
+        "priceFen": 320,
+        "priceYuan": 3.2,
+        "boundBy": "risk",
+        "loadFactor": 1.081
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 517,
+        "nHitByTier": [
+          517,
+          0
+        ],
+        "pointRatePct": 1.881436,
+        "upperRatePct": 2.001908,
+        "priceFen": 390,
+        "priceYuan": 3.9,
+        "boundBy": "risk",
+        "loadFactor": 1.064
+      },
+      "grid": {
+        "12": 320,
+        "24": 390
+      },
+      "digest": "e711f9189ccfe9f328ca00baab18085604524ed9e1c4840c865a1994e30f54a6",
+      "sourceUrl": "cache:420583.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420583 枝江市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xabd85692ddea2186e0414f0321b7cb28c157d53eb2c76f815d1e8e055668a234",
+      "cachedAt": "2026-10-27T10:23:20.656Z"
+    },
+    {
+      "code": 420600,
+      "name": "襄阳市",
+      "kind": "city",
+      "parent": null,
+      "lat": 32.042426,
+      "lon": 112.144146,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 456,
+        "nHitByTier": [
+          456,
+          44
+        ],
+        "pointRatePct": 1.538388,
+        "upperRatePct": 1.699836,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.105
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 397,
+        "nHitByTier": [
+          397,
+          54
+        ],
+        "pointRatePct": 2.204253,
+        "upperRatePct": 2.428969,
+        "priceFen": 460,
+        "priceYuan": 4.6,
+        "boundBy": "risk",
+        "loadFactor": 1.102
+      },
+      "grid": {
+        "12": 340,
+        "24": 460
+      },
+      "digest": "48125a2670fe2115dea29d05d491db113692c9ef268603c38400e59f1ca8974c",
+      "sourceUrl": "cache:420600.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420600 襄阳市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x4087e28be912c2f627d01bd7aa85a64bde24b7323f98d3d416c3a6b752245a19",
+      "cachedAt": "2026-10-27T10:23:20.676Z"
+    },
+    {
+      "code": 420602,
+      "name": "襄城区",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 32.015088,
+      "lon": 112.150327,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 456,
+        "nHitByTier": [
+          456,
+          44
+        ],
+        "pointRatePct": 1.538388,
+        "upperRatePct": 1.699836,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.105
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 397,
+        "nHitByTier": [
+          397,
+          54
+        ],
+        "pointRatePct": 2.204253,
+        "upperRatePct": 2.428969,
+        "priceFen": 460,
+        "priceYuan": 4.6,
+        "boundBy": "risk",
+        "loadFactor": 1.102
+      },
+      "grid": {
+        "12": 340,
+        "24": 460
+      },
+      "digest": "cad76b2009743dfeb2a60973e1cb82923bf85bd68b5919bbf97e25733e233db5",
+      "sourceUrl": "cache:420602.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420602 襄城区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x9fcb6bd5d8fb040d2c0c85a056a3338346e5ff6118197abda3e8755708816e44",
+      "cachedAt": "2026-10-27T10:23:20.695Z"
+    },
+    {
+      "code": 420606,
+      "name": "樊城区",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 32.058589,
+      "lon": 112.13957,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 456,
+        "nHitByTier": [
+          456,
+          44
+        ],
+        "pointRatePct": 1.538388,
+        "upperRatePct": 1.699836,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.105
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 397,
+        "nHitByTier": [
+          397,
+          54
+        ],
+        "pointRatePct": 2.204253,
+        "upperRatePct": 2.428969,
+        "priceFen": 460,
+        "priceYuan": 4.6,
+        "boundBy": "risk",
+        "loadFactor": 1.102
+      },
+      "grid": {
+        "12": 340,
+        "24": 460
+      },
+      "digest": "f9d14df0ce0c80512d223edb80f8fed9ac1aa64aeb80f962b94cb9df6d006377",
+      "sourceUrl": "cache:420606.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420606 樊城区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xafcf13894bc02d27977d1bc895dc6a16c4da4d5fbbd72fd88d0702287648dac9",
+      "cachedAt": "2026-10-27T10:23:20.715Z"
+    },
+    {
+      "code": 420607,
+      "name": "襄州区",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 32.085517,
+      "lon": 112.197378,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 456,
+        "nHitByTier": [
+          456,
+          45
+        ],
+        "pointRatePct": 1.452818,
+        "upperRatePct": 1.608423,
+        "priceFen": 320,
+        "priceYuan": 3.2,
+        "boundBy": "risk",
+        "loadFactor": 1.107
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 409,
+        "nHitByTier": [
+          409,
+          46
+        ],
+        "pointRatePct": 2.08442,
+        "upperRatePct": 2.305642,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.106
+      },
+      "grid": {
+        "12": 320,
+        "24": 440
+      },
+      "digest": "b21b366305cf5bab6a10f49b160d46cd7e9c55ae1c341156f63b4b8190fc71f3",
+      "sourceUrl": "cache:420607.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420607 襄州区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xffb3c1ddbb336638826f7a0ee42d0a9d0e50036a10375ab1d4fe36afaed1c6cf",
+      "cachedAt": "2026-10-27T10:23:20.741Z"
+    },
+    {
+      "code": 420624,
+      "name": "南漳县",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 31.77692,
+      "lon": 111.844424,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 433,
+        "nHitByTier": [
+          433,
+          45
+        ],
+        "pointRatePct": 1.276248,
+        "upperRatePct": 1.387345,
+        "priceFen": 290,
+        "priceYuan": 2.9,
+        "boundBy": "risk",
+        "loadFactor": 1.087
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 338,
+        "nHitByTier": [
+          338,
+          64
+        ],
+        "pointRatePct": 1.955316,
+        "upperRatePct": 2.111182,
+        "priceFen": 410,
+        "priceYuan": 4.1,
+        "boundBy": "risk",
+        "loadFactor": 1.08
+      },
+      "grid": {
+        "12": 290,
+        "24": 410
+      },
+      "digest": "eaadda3e43b4f1eafb33bf24bf10e7f9ca503b2f45bfad36247b677099f41343",
+      "sourceUrl": "cache:420624.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420624 南漳县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe2c077ede455e262f554d17dcf62f3dc9f68c1c9178a05767107d4279f60da65",
+      "cachedAt": "2026-10-27T10:23:20.761Z"
+    },
+    {
+      "code": 420625,
+      "name": "谷城县",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 32.262676,
+      "lon": 111.640147,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 341,
+        "nHitByTier": [
+          341,
+          38
+        ],
+        "pointRatePct": 1.204464,
+        "upperRatePct": 1.312911,
+        "priceFen": 270,
+        "priceYuan": 2.7,
+        "boundBy": "risk",
+        "loadFactor": 1.09
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 341,
+        "nHitByTier": [
+          341,
+          40
+        ],
+        "pointRatePct": 1.935835,
+        "upperRatePct": 2.098081,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.084
+      },
+      "grid": {
+        "12": 270,
+        "24": 400
+      },
+      "digest": "fb14f35be6bab3e35ffca9298817e093b227fcb7f04d0879e157ab256fad547c",
+      "sourceUrl": "cache:420625.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420625 谷城县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xaaff476eec82f501ab91702e0eaf50836111afe12739fb407042bfda27bca36e",
+      "cachedAt": "2026-10-27T10:23:20.780Z"
+    },
+    {
+      "code": 420626,
+      "name": "保康县",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 31.873507,
+      "lon": 111.262235,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 275,
+        "nHitByTier": [
+          275,
+          28
+        ],
+        "pointRatePct": 1.056934,
+        "upperRatePct": 1.157119,
+        "priceFen": 250,
+        "priceYuan": 2.5,
+        "boundBy": "risk",
+        "loadFactor": 1.095
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 188,
+        "nHitByTier": [
+          188,
+          41
+        ],
+        "pointRatePct": 1.808637,
+        "upperRatePct": 1.931021,
+        "priceFen": 380,
+        "priceYuan": 3.8,
+        "boundBy": "risk",
+        "loadFactor": 1.068
+      },
+      "grid": {
+        "12": 250,
+        "24": 380
+      },
+      "digest": "9f56fda31e260b1d894feda19e47c38b30b5bbf86afa4fec9f981ac9a4dd0b1f",
+      "sourceUrl": "cache:420626.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420626 保康县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x81a4fbacc1a9863cf7fd57e1c4426f84578067d7f070c4799e35e80a66d31c59",
+      "cachedAt": "2026-10-27T10:23:20.799Z"
+    },
+    {
+      "code": 420682,
+      "name": "老河口市",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 32.385438,
+      "lon": 111.675732,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 339,
+        "nHitByTier": [
+          339,
+          28
+        ],
+        "pointRatePct": 1.26825,
+        "upperRatePct": 1.396848,
+        "priceFen": 290,
+        "priceYuan": 2.9,
+        "boundBy": "risk",
+        "loadFactor": 1.101
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 361,
+        "nHitByTier": [
+          361,
+          33
+        ],
+        "pointRatePct": 2.025754,
+        "upperRatePct": 2.226787,
+        "priceFen": 430,
+        "priceYuan": 4.3,
+        "boundBy": "risk",
+        "loadFactor": 1.099
+      },
+      "grid": {
+        "12": 290,
+        "24": 430
+      },
+      "digest": "333c0f841e290f09783f276fe2260050430f61a9af5e60277534790797edf3fc",
+      "sourceUrl": "cache:420682.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420682 老河口市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe1efc6a756faa9a07574d47addaf2283ba05823ada3c53aabc7e1b333da047e3",
+      "cachedAt": "2026-10-27T10:23:20.819Z"
+    },
+    {
+      "code": 420683,
+      "name": "枣阳市",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 32.123083,
+      "lon": 112.765268,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 577,
+        "nHitByTier": [
+          577,
+          34
+        ],
+        "pointRatePct": 1.818697,
+        "upperRatePct": 1.979285,
+        "priceFen": 380,
+        "priceYuan": 3.8,
+        "boundBy": "risk",
+        "loadFactor": 1.088
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 518,
+        "nHitByTier": [
+          518,
+          62
+        ],
+        "pointRatePct": 2.606863,
+        "upperRatePct": 2.81827,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.081
+      },
+      "grid": {
+        "12": 380,
+        "24": 520
+      },
+      "digest": "a7dde17a75036aceb77a84a014b2fd08c2f7f662a352ed09ae4e23629357a0e3",
+      "sourceUrl": "cache:420683.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420683 枣阳市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe60737c364e2a28f1a7ca97c821af1ddfcd5f47b42200009a22add0fab61b116",
+      "cachedAt": "2026-10-27T10:23:20.844Z"
+    },
+    {
+      "code": 420684,
+      "name": "宜城市",
+      "kind": "county",
+      "parent": 420600,
+      "lat": 31.709203,
+      "lon": 112.261441,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 537,
+        "nHitByTier": [
+          537,
+          54
+        ],
+        "pointRatePct": 1.520071,
+        "upperRatePct": 1.611384,
+        "priceFen": 320,
+        "priceYuan": 3.2,
+        "boundBy": "risk",
+        "loadFactor": 1.06
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 472,
+        "nHitByTier": [
+          472,
+          55
+        ],
+        "pointRatePct": 1.781372,
+        "upperRatePct": 1.894712,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.064
+      },
+      "grid": {
+        "12": 320,
+        "24": 370
+      },
+      "digest": "5c1a0c4fb13cea87d447c66a3af1d62d833cf24995ff87165cd90d0cd21ecb0c",
+      "sourceUrl": "cache:420684.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420684 宜城市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x20b0c12ebaf44946c7ad260fb818c731e7efae348152fda4657bb53c1af8dfa0",
+      "cachedAt": "2026-10-27T10:24:12.019Z"
+    },
+    {
+      "code": 420700,
+      "name": "鄂州市",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.396536,
+      "lon": 114.890593,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 754,
+        "nHitByTier": [
+          754,
+          65
+        ],
+        "pointRatePct": 2.510122,
+        "upperRatePct": 2.878177,
+        "priceFen": 530,
+        "priceYuan": 5.3,
+        "boundBy": "risk",
+        "loadFactor": 1.147
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 747,
+        "nHitByTier": [
+          747,
+          86
+        ],
+        "pointRatePct": 3.657662,
+        "upperRatePct": 4.183671,
+        "priceFen": 750,
+        "priceYuan": 7.5,
+        "boundBy": "risk",
+        "loadFactor": 1.144
+      },
+      "grid": {
+        "12": 530,
+        "24": 750
+      },
+      "digest": "0a25aaa53e94493536e25379f11add3418624fbdb61a427d5417ae514b275651",
+      "sourceUrl": "cache:420700.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420700 鄂州市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xf74f3564ee0717cf1fead8aa4532457f204b479fc8bbfeab609a7a4edb1619a7",
+      "cachedAt": "2026-10-27T10:24:12.043Z"
+    },
+    {
+      "code": 420702,
+      "name": "梁子湖区",
+      "kind": "county",
+      "parent": 420700,
+      "lat": 30.098191,
+      "lon": 114.681967,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 745,
+        "nHitByTier": [
+          745,
+          44
+        ],
+        "pointRatePct": 2.071439,
+        "upperRatePct": 2.325303,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.123
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 752,
+        "nHitByTier": [
+          752,
+          79
+        ],
+        "pointRatePct": 3.131003,
+        "upperRatePct": 3.501149,
+        "priceFen": 640,
+        "priceYuan": 6.4,
+        "boundBy": "risk",
+        "loadFactor": 1.118
+      },
+      "grid": {
+        "12": 440,
+        "24": 640
+      },
+      "digest": "81e979049c12ea05fc8e78f3a2fc300e8d175424e0765660d20e730bb1637b97",
+      "sourceUrl": "cache:420702.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420702 梁子湖区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2e74e14219c1ea1c05978a5a8fa349042df5e529ce47c45ff9680b2f2197daff",
+      "cachedAt": "2026-10-27T10:24:12.086Z"
+    },
+    {
+      "code": 420703,
+      "name": "华容区",
+      "kind": "county",
+      "parent": 420700,
+      "lat": 30.534468,
+      "lon": 114.74148,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 730,
+        "nHitByTier": [
+          730,
+          72
+        ],
+        "pointRatePct": 2.745278,
+        "upperRatePct": 3.238865,
+        "priceFen": 590,
+        "priceYuan": 5.9,
+        "boundBy": "risk",
+        "loadFactor": 1.18
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 644,
+        "nHitByTier": [
+          644,
+          101
+        ],
+        "pointRatePct": 4.175918,
+        "upperRatePct": 4.842884,
+        "priceFen": 860,
+        "priceYuan": 8.6,
+        "boundBy": "risk",
+        "loadFactor": 1.16
+      },
+      "grid": {
+        "12": 590,
+        "24": 860
+      },
+      "digest": "c13308cdc3521ac475ab2186e314d4caa23d515ac38830e08e9b45a8b713842c",
+      "sourceUrl": "cache:420703.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420703 华容区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x0414a331f514867aac90c3058165ca503e52a2dcb9247cd583b8bee2d58c0549",
+      "cachedAt": "2026-10-27T10:24:12.106Z"
+    },
+    {
+      "code": 420704,
+      "name": "鄂城区",
+      "kind": "county",
+      "parent": 420700,
+      "lat": 30.39669,
+      "lon": 114.890012,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 754,
+        "nHitByTier": [
+          754,
+          65
+        ],
+        "pointRatePct": 2.510122,
+        "upperRatePct": 2.878177,
+        "priceFen": 530,
+        "priceYuan": 5.3,
+        "boundBy": "risk",
+        "loadFactor": 1.147
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 747,
+        "nHitByTier": [
+          747,
+          86
+        ],
+        "pointRatePct": 3.657662,
+        "upperRatePct": 4.183671,
+        "priceFen": 750,
+        "priceYuan": 7.5,
+        "boundBy": "risk",
+        "loadFactor": 1.144
+      },
+      "grid": {
+        "12": 530,
+        "24": 750
+      },
+      "digest": "28d052baa151b87452bb75d1bbe36b8c0f3162a3a9f5ed815fff7ed2e5468983",
+      "sourceUrl": "cache:420704.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420704 鄂城区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xecc4497f7ef06e7e6f85000d3b4465eb06530e2244f4ad9a8dca59ec39acadbe",
+      "cachedAt": "2026-10-27T10:24:12.127Z"
+    },
+    {
+      "code": 420800,
+      "name": "荆门市",
+      "kind": "city",
+      "parent": null,
+      "lat": 31.03542,
+      "lon": 112.204251,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 454,
+        "nHitByTier": [
+          454,
+          22
+        ],
+        "pointRatePct": 1.502895,
+        "upperRatePct": 1.709187,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.137
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 363,
+        "nHitByTier": [
+          363,
+          32
+        ],
+        "pointRatePct": 2.638066,
+        "upperRatePct": 2.978423,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.129
+      },
+      "grid": {
+        "12": 340,
+        "24": 550
+      },
+      "digest": "a0e8d98fd02af78a70ec28307a05fa0078306802b580157a6b9ab2fb4aa71dbd",
+      "sourceUrl": "cache:420800.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420800 荆门市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x75026fbc0d4811264f1b4cc5c64d5e221692a0c85f6bf950223ac4a038ddf4ec",
+      "cachedAt": "2026-10-27T10:24:12.147Z"
+    },
+    {
+      "code": 420802,
+      "name": "东宝区",
+      "kind": "county",
+      "parent": 420800,
+      "lat": 31.033461,
+      "lon": 112.204804,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 454,
+        "nHitByTier": [
+          454,
+          22
+        ],
+        "pointRatePct": 1.502895,
+        "upperRatePct": 1.709187,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.137
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 363,
+        "nHitByTier": [
+          363,
+          32
+        ],
+        "pointRatePct": 2.638066,
+        "upperRatePct": 2.978423,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.129
+      },
+      "grid": {
+        "12": 340,
+        "24": 550
+      },
+      "digest": "bd201d05e3179c46c62cd0989a7f4a5a856891d4bb533b7354e0c2cd406e59e6",
+      "sourceUrl": "cache:420802.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420802 东宝区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe16acc7686b2592ca58ef7450aee1e448e34d8b19d3de635f0b9113efd688a0c",
+      "cachedAt": "2026-10-27T10:24:12.166Z"
+    },
+    {
+      "code": 420804,
+      "name": "掇刀区",
+      "kind": "county",
+      "parent": 420800,
+      "lat": 30.980798,
+      "lon": 112.198413,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 512,
+        "nHitByTier": [
+          512,
+          20
+        ],
+        "pointRatePct": 1.550768,
+        "upperRatePct": 1.762526,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.137
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 416,
+        "nHitByTier": [
+          416,
+          34
+        ],
+        "pointRatePct": 2.418759,
+        "upperRatePct": 2.746195,
+        "priceFen": 510,
+        "priceYuan": 5.1,
+        "boundBy": "risk",
+        "loadFactor": 1.135
+      },
+      "grid": {
+        "12": 350,
+        "24": 510
+      },
+      "digest": "80f1bc3e80cdc1b10286dddf20181d3145c0dd65a8720a6405624c49ea5179cc",
+      "sourceUrl": "cache:420804.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420804 掇刀区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x9d8bff4c8e58793cfbbd8364b63a5387cf3b8dd596e6fc18b4bcff5cd9e3cec7",
+      "cachedAt": "2026-10-27T10:24:12.196Z"
+    },
+    {
+      "code": 420822,
+      "name": "沙洋县",
+      "kind": "county",
+      "parent": 420800,
+      "lat": 30.70359,
+      "lon": 112.595218,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 585,
+        "nHitByTier": [
+          585,
+          16
+        ],
+        "pointRatePct": 1.374866,
+        "upperRatePct": 1.492385,
+        "priceFen": 300,
+        "priceYuan": 3,
+        "boundBy": "risk",
+        "loadFactor": 1.085
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 516,
+        "nHitByTier": [
+          516,
+          7
+        ],
+        "pointRatePct": 2.009001,
+        "upperRatePct": 2.174738,
+        "priceFen": 420,
+        "priceYuan": 4.2,
+        "boundBy": "risk",
+        "loadFactor": 1.082
+      },
+      "grid": {
+        "12": 300,
+        "24": 420
+      },
+      "digest": "6aa13f7cc4c07bb1ba0019496e5500d1281878cdd3d8a13b42376102dfbd8006",
+      "sourceUrl": "cache:420822.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420822 沙洋县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x1bafd97265af555e2533639a80515019ba5350db55f912dd7193902e9a4eb13c",
+      "cachedAt": "2026-10-27T10:23:20.866Z"
+    },
+    {
+      "code": 420881,
+      "name": "钟祥市",
+      "kind": "county",
+      "parent": 420800,
+      "lat": 31.165573,
+      "lon": 112.587267,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 459,
+        "nHitByTier": [
+          459,
+          56
+        ],
+        "pointRatePct": 1.715481,
+        "upperRatePct": 1.922515,
+        "priceFen": 380,
+        "priceYuan": 3.8,
+        "boundBy": "risk",
+        "loadFactor": 1.121
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 383,
+        "nHitByTier": [
+          383,
+          56
+        ],
+        "pointRatePct": 2.310669,
+        "upperRatePct": 2.573738,
+        "priceFen": 480,
+        "priceYuan": 4.8,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "grid": {
+        "12": 380,
+        "24": 480
+      },
+      "digest": "ecb1ff945933110b75ffe02942fd38b7d9b04c8d428445e73139131b7644e86e",
+      "sourceUrl": "cache:420881.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420881 钟祥市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x98fe8ad37c0dd7a174ad9e11a4215d6acb68337006710a70ad5d743285f4834a",
+      "cachedAt": "2026-10-27T10:23:20.886Z"
+    },
+    {
+      "code": 420882,
+      "name": "京山市",
+      "kind": "county",
+      "parent": 420800,
+      "lat": 31.022457,
+      "lon": 113.114595,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 483,
+        "nHitByTier": [
+          483,
+          33
+        ],
+        "pointRatePct": 1.403343,
+        "upperRatePct": 1.529865,
+        "priceFen": 310,
+        "priceYuan": 3.1,
+        "boundBy": "risk",
+        "loadFactor": 1.09
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 412,
+        "nHitByTier": [
+          412,
+          31
+        ],
+        "pointRatePct": 2.088237,
+        "upperRatePct": 2.308179,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.105
+      },
+      "grid": {
+        "12": 310,
+        "24": 440
+      },
+      "digest": "b3b2d04c5c0b8ea6dd9176229a8842894c11fbe09ab3b27112060879dcfac392",
+      "sourceUrl": "cache:420882.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420882 京山市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x0540590ae8d41ab39a24791a1774452b4b0bff68ffbb687654433722fd2382fc",
+      "cachedAt": "2026-10-27T10:23:20.908Z"
+    },
+    {
+      "code": 420900,
+      "name": "孝感市",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.926423,
+      "lon": 113.926655,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 689,
+        "nHitByTier": [
+          689,
+          24
+        ],
+        "pointRatePct": 1.831383,
+        "upperRatePct": 2.030325,
+        "priceFen": 390,
+        "priceYuan": 3.9,
+        "boundBy": "risk",
+        "loadFactor": 1.109
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 686,
+        "nHitByTier": [
+          686,
+          33
+        ],
+        "pointRatePct": 2.655941,
+        "upperRatePct": 2.928784,
+        "priceFen": 540,
+        "priceYuan": 5.4,
+        "boundBy": "risk",
+        "loadFactor": 1.103
+      },
+      "grid": {
+        "12": 390,
+        "24": 540
+      },
+      "digest": "f263b49601e692aaef83bca9c23f012e9cc2f0c9d0b5f0bb856eae0e52dce7f9",
+      "sourceUrl": "cache:420900.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420900 孝感市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x7f4ac32b46e71206f182fe21148c0fef265326bceb5ee03e7b2d55506d3c63aa",
+      "cachedAt": "2026-10-27T10:23:20.927Z"
+    },
+    {
+      "code": 420902,
+      "name": "孝南区",
+      "kind": "county",
+      "parent": 420900,
+      "lat": 30.925966,
+      "lon": 113.925849,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 689,
+        "nHitByTier": [
+          689,
+          24
+        ],
+        "pointRatePct": 1.831383,
+        "upperRatePct": 2.030325,
+        "priceFen": 390,
+        "priceYuan": 3.9,
+        "boundBy": "risk",
+        "loadFactor": 1.109
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 686,
+        "nHitByTier": [
+          686,
+          33
+        ],
+        "pointRatePct": 2.655941,
+        "upperRatePct": 2.928784,
+        "priceFen": 540,
+        "priceYuan": 5.4,
+        "boundBy": "risk",
+        "loadFactor": 1.103
+      },
+      "grid": {
+        "12": 390,
+        "24": 540
+      },
+      "digest": "2bd610cd4bea9e21b0b3f3d090b6bd7bcab6de216265f6575f531603155e9666",
+      "sourceUrl": "cache:420902.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420902 孝南区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x22cb1feb26466e0bc10f23a8dbe6af426bdff5fe1c8ea3eb88221762d89d8a54",
+      "cachedAt": "2026-10-27T10:23:20.946Z"
+    },
+    {
+      "code": 420921,
+      "name": "孝昌县",
+      "kind": "county",
+      "parent": 420900,
+      "lat": 31.251618,
+      "lon": 113.988964,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 651,
+        "nHitByTier": [
+          651,
+          40
+        ],
+        "pointRatePct": 1.705473,
+        "upperRatePct": 1.873812,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.099
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 600,
+        "nHitByTier": [
+          600,
+          42
+        ],
+        "pointRatePct": 2.441042,
+        "upperRatePct": 2.638023,
+        "priceFen": 490,
+        "priceYuan": 4.9,
+        "boundBy": "risk",
+        "loadFactor": 1.081
+      },
+      "grid": {
+        "12": 370,
+        "24": 490
+      },
+      "digest": "7e49bbe3ae6c34d16656e628e13c1102596d4fc4047538809edd120a888dc3b5",
+      "sourceUrl": "cache:420921.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420921 孝昌县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe96bfde4174aa326a71b3ca0e66aea503e648ada1d526a0014817c935ab8c4aa",
+      "cachedAt": "2026-10-27T10:23:20.973Z"
+    },
+    {
+      "code": 420922,
+      "name": "大悟县",
+      "kind": "county",
+      "parent": 420900,
+      "lat": 31.565483,
+      "lon": 114.126249,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 648,
+        "nHitByTier": [
+          648,
+          38
+        ],
+        "pointRatePct": 1.631589,
+        "upperRatePct": 1.777528,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.089
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 674,
+        "nHitByTier": [
+          674,
+          41
+        ],
+        "pointRatePct": 2.689047,
+        "upperRatePct": 2.951389,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.098
+      },
+      "grid": {
+        "12": 350,
+        "24": 550
+      },
+      "digest": "628769e5d984980cc674a9f2ceedddf79c203dac2198108ff6022a9a31c6be72",
+      "sourceUrl": "cache:420922.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420922 大悟县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x15a8d97c9fc0e8751cc9ef1d9c82bf0894c5f7c365c995d72b91f80b277c7db3",
+      "cachedAt": "2026-10-27T10:23:20.991Z"
+    },
+    {
+      "code": 420923,
+      "name": "云梦县",
+      "kind": "county",
+      "parent": 420900,
+      "lat": 31.021691,
+      "lon": 113.750616,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 608,
+        "nHitByTier": [
+          608,
+          10
+        ],
+        "pointRatePct": 1.637376,
+        "upperRatePct": 1.784359,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.09
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 583,
+        "nHitByTier": [
+          583,
+          13
+        ],
+        "pointRatePct": 2.372761,
+        "upperRatePct": 2.556088,
+        "priceFen": 480,
+        "priceYuan": 4.8,
+        "boundBy": "risk",
+        "loadFactor": 1.077
+      },
+      "grid": {
+        "12": 350,
+        "24": 480
+      },
+      "digest": "eec247517234cf1ce40f841d2d4f2de68db68f35e47372d9adae9e344d611296",
+      "sourceUrl": "cache:420923.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420923 云梦县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x5fc39c4b0054d11a073a0037a3485f52d5bbfffcb264db545981643f85e2b215",
+      "cachedAt": "2026-10-27T10:23:21.009Z"
+    },
+    {
+      "code": 420981,
+      "name": "应城市",
+      "kind": "county",
+      "parent": 420900,
+      "lat": 30.939038,
+      "lon": 113.573842,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 610,
+        "nHitByTier": [
+          610,
+          8
+        ],
+        "pointRatePct": 1.51508,
+        "upperRatePct": 1.649548,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.089
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 588,
+        "nHitByTier": [
+          588,
+          14
+        ],
+        "pointRatePct": 2.172691,
+        "upperRatePct": 2.359991,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.086
+      },
+      "grid": {
+        "12": 330,
+        "24": 450
+      },
+      "digest": "fa443296515ae4d836a11fc3f841a9830b8d6b50d5a95c889bb745d7281f75f0",
+      "sourceUrl": "cache:420981.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420981 应城市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x785f8348877de5f8fd9e5aa122c306026cc232644a884b15645195b891368f01",
+      "cachedAt": "2026-10-27T10:23:21.027Z"
+    },
+    {
+      "code": 420982,
+      "name": "安陆市",
+      "kind": "county",
+      "parent": 420900,
+      "lat": 31.26174,
+      "lon": 113.690401,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 549,
+        "nHitByTier": [
+          549,
+          44
+        ],
+        "pointRatePct": 1.601257,
+        "upperRatePct": 1.747261,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.091
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 524,
+        "nHitByTier": [
+          524,
+          37
+        ],
+        "pointRatePct": 2.24123,
+        "upperRatePct": 2.42207,
+        "priceFen": 460,
+        "priceYuan": 4.6,
+        "boundBy": "risk",
+        "loadFactor": 1.081
+      },
+      "grid": {
+        "12": 350,
+        "24": 460
+      },
+      "digest": "83257416f9c324aeccf314342bce26a61860be39710f262dfa5f9d603ab43f7d",
+      "sourceUrl": "cache:420982.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420982 安陆市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xab89714ad6a442e1f5de14f457b85c43c3d2795ec2af1aec5dfc6a4936549ef2",
+      "cachedAt": "2026-10-27T10:23:21.044Z"
+    },
+    {
+      "code": 420984,
+      "name": "汉川市",
+      "kind": "county",
+      "parent": 420900,
+      "lat": 30.652165,
+      "lon": 113.835301,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 622,
+        "nHitByTier": [
+          622,
+          42
+        ],
+        "pointRatePct": 2.324668,
+        "upperRatePct": 2.659351,
+        "priceFen": 500,
+        "priceYuan": 5,
+        "boundBy": "risk",
+        "loadFactor": 1.144
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 555,
+        "nHitByTier": [
+          555,
+          56
+        ],
+        "pointRatePct": 3.63452,
+        "upperRatePct": 4.200439,
+        "priceFen": 760,
+        "priceYuan": 7.6,
+        "boundBy": "risk",
+        "loadFactor": 1.156
+      },
+      "grid": {
+        "12": 500,
+        "24": 760
+      },
+      "digest": "30c17d4257efed95bfcbb0e3b8dac623fc14e79e35f1c165b3fdfe5a46795b22",
+      "sourceUrl": "cache:420984.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 420984 汉川市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x51bdd515525fff93ea091af9c9260799e24b694fb0040660a7ecebb55217d88d",
+      "cachedAt": "2026-10-27T10:23:21.068Z"
+    },
+    {
+      "code": 421000,
+      "name": "荆州市",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.326857,
+      "lon": 112.23813,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 536,
+        "nHitByTier": [
+          536,
+          35
+        ],
+        "pointRatePct": 1.579505,
+        "upperRatePct": 1.72581,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.093
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 422,
+        "nHitByTier": [
+          422,
+          1
+        ],
+        "pointRatePct": 1.948901,
+        "upperRatePct": 2.146057,
+        "priceFen": 410,
+        "priceYuan": 4.1,
+        "boundBy": "risk",
+        "loadFactor": 1.101
+      },
+      "grid": {
+        "12": 340,
+        "24": 410
+      },
+      "digest": "2a8ee31e15dfe142687315d4db4fba0904cf53090bb31dc3acef7392ab4f59ad",
+      "sourceUrl": "cache:421000.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421000 荆州市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x5a6c76d8851e3eda4755d7f9760fe4f507f69deb4e8345bd000fc2b22ec05f06",
+      "cachedAt": "2026-10-27T10:23:21.088Z"
+    },
+    {
+      "code": 421002,
+      "name": "沙市区",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 30.315895,
+      "lon": 112.257433,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 536,
+        "nHitByTier": [
+          536,
+          35
+        ],
+        "pointRatePct": 1.579505,
+        "upperRatePct": 1.72581,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.093
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 422,
+        "nHitByTier": [
+          422,
+          1
+        ],
+        "pointRatePct": 1.948901,
+        "upperRatePct": 2.146057,
+        "priceFen": 410,
+        "priceYuan": 4.1,
+        "boundBy": "risk",
+        "loadFactor": 1.101
+      },
+      "grid": {
+        "12": 340,
+        "24": 410
+      },
+      "digest": "89a9a34a0aebda5e710983318b923c7eef2d0690c364e3c44d990b05faa55853",
+      "sourceUrl": "cache:421002.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421002 沙市区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xf31ae2ed4a26d3a1ed0965d6c777669fd08082c13f340ac69eb2fd4993125307",
+      "cachedAt": "2026-10-27T10:23:21.106Z"
+    },
+    {
+      "code": 421003,
+      "name": "荆州区",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 30.350674,
+      "lon": 112.195354,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 537,
+        "nHitByTier": [
+          537,
+          32
+        ],
+        "pointRatePct": 1.519646,
+        "upperRatePct": 1.658648,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.091
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 391,
+        "nHitByTier": [
+          391,
+          16
+        ],
+        "pointRatePct": 2.164532,
+        "upperRatePct": 2.352337,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.087
+      },
+      "grid": {
+        "12": 330,
+        "24": 450
+      },
+      "digest": "5214ccd45ec78bd6b1b30cb30987776c9a0d36abd8ad43232c0b30f53e3de6bb",
+      "sourceUrl": "cache:421003.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421003 荆州区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x176b8506d81e05bdd76a5bfd5be90bb413edb0be8bc06bb2e45d01ec0c4d03da",
+      "cachedAt": "2026-10-27T10:23:21.124Z"
+    },
+    {
+      "code": 421022,
+      "name": "公安县",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 30.059065,
+      "lon": 112.230179,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 553,
+        "nHitByTier": [
+          553,
+          30
+        ],
+        "pointRatePct": 1.58648,
+        "upperRatePct": 1.76267,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.111
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 422,
+        "nHitByTier": [
+          422,
+          41
+        ],
+        "pointRatePct": 2.114497,
+        "upperRatePct": 2.297394,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.086
+      },
+      "grid": {
+        "12": 350,
+        "24": 440
+      },
+      "digest": "9227bee933aa52bb9f677ebd98628a2925b251c855653672124edb8b47f6f514",
+      "sourceUrl": "cache:421022.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421022 公安县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x9b417dad7075f8c99c07d652dc969210321a9824882750239e5d0e0f70dd4f79",
+      "cachedAt": "2026-10-27T10:23:21.142Z"
+    },
+    {
+      "code": 421024,
+      "name": "江陵县",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 30.033919,
+      "lon": 112.41735,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 530,
+        "nHitByTier": [
+          530,
+          27
+        ],
+        "pointRatePct": 1.684231,
+        "upperRatePct": 1.890189,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.122
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 468,
+        "nHitByTier": [
+          468,
+          34
+        ],
+        "pointRatePct": 2.457865,
+        "upperRatePct": 2.708554,
+        "priceFen": 510,
+        "priceYuan": 5.1,
+        "boundBy": "risk",
+        "loadFactor": 1.102
+      },
+      "grid": {
+        "12": 370,
+        "24": 510
+      },
+      "digest": "e17b850a610cdfbb3f6dba66a614dd5ab4dec13c7f730a01baf9ca09bfc71d4c",
+      "sourceUrl": "cache:421024.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421024 江陵县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x866938c648451a99177a6dbe27197d55ac4dc8c0df370adb29d610a1b7c0067c",
+      "cachedAt": "2026-10-27T10:23:21.161Z"
+    },
+    {
+      "code": 421071,
+      "name": "荆州经济技术开发区",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 30.326857,
+      "lon": 112.23813,
+      "geoSource": "parent-fallback",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 536,
+        "nHitByTier": [
+          536,
+          35
+        ],
+        "pointRatePct": 1.579505,
+        "upperRatePct": 1.72581,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.093
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 422,
+        "nHitByTier": [
+          422,
+          1
+        ],
+        "pointRatePct": 1.948901,
+        "upperRatePct": 2.146057,
+        "priceFen": 410,
+        "priceYuan": 4.1,
+        "boundBy": "risk",
+        "loadFactor": 1.101
+      },
+      "grid": {
+        "12": 340,
+        "24": 410
+      },
+      "digest": "444219af95059c74690c3945ac5cc8511906813db4c7d5ca7f38e427d79b67ac",
+      "sourceUrl": "cache:421071.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421071 荆州经济技术开发区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x0f2b5043f5e89cb0525a5ede76074562f4a863d05715f1768e0a6738fabb6a22",
+      "cachedAt": "2026-10-27T10:23:21.189Z"
+    },
+    {
+      "code": 421081,
+      "name": "石首市",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 29.716437,
+      "lon": 112.40887,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 634,
+        "nHitByTier": [
+          634,
+          33
+        ],
+        "pointRatePct": 2.057294,
+        "upperRatePct": 2.318124,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.127
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 564,
+        "nHitByTier": [
+          564,
+          12
+        ],
+        "pointRatePct": 2.67025,
+        "upperRatePct": 3.003252,
+        "priceFen": 560,
+        "priceYuan": 5.6,
+        "boundBy": "risk",
+        "loadFactor": 1.125
+      },
+      "grid": {
+        "12": 440,
+        "24": 560
+      },
+      "digest": "84fd5b8eaf0ec653f60edbd29d4544cb56a23fd6dccb51d70a999ea960bbedcf",
+      "sourceUrl": "cache:421081.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421081 石首市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe871116a502a7b0b87e9960d7ea078dadee1620925c841af72a75e8f06a00452",
+      "cachedAt": "2026-10-27T10:23:21.208Z"
+    },
+    {
+      "code": 421083,
+      "name": "洪湖市",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 29.81297,
+      "lon": 113.470304,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 757,
+        "nHitByTier": [
+          757,
+          49
+        ],
+        "pointRatePct": 2.071519,
+        "upperRatePct": 2.285846,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.103
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 744,
+        "nHitByTier": [
+          744,
+          56
+        ],
+        "pointRatePct": 2.932273,
+        "upperRatePct": 3.185,
+        "priceFen": 590,
+        "priceYuan": 5.9,
+        "boundBy": "risk",
+        "loadFactor": 1.086
+      },
+      "grid": {
+        "12": 440,
+        "24": 590
+      },
+      "digest": "155f46fbc12fadf83dfe98922e8ef819e9a53662e8f278e9f09c60684f186627",
+      "sourceUrl": "cache:421083.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421083 洪湖市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xfe22cf01fbaa483092e965f90fd5418d95dabffbfd4ea01d7e14cbd54eb12f7d",
+      "cachedAt": "2026-10-27T10:23:21.226Z"
+    },
+    {
+      "code": 421087,
+      "name": "松滋市",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 30.176037,
+      "lon": 111.77818,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 486,
+        "nHitByTier": [
+          486,
+          15
+        ],
+        "pointRatePct": 1.193847,
+        "upperRatePct": 1.292741,
+        "priceFen": 270,
+        "priceYuan": 2.7,
+        "boundBy": "risk",
+        "loadFactor": 1.083
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 370,
+        "nHitByTier": [
+          370,
+          0
+        ],
+        "pointRatePct": 1.574072,
+        "upperRatePct": 1.678241,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.066
+      },
+      "grid": {
+        "12": 270,
+        "24": 330
+      },
+      "digest": "37b2671a088da4944c9e1f8e7f82ff3cb6bfe4652d5323f170fe2cac6bfc1151",
+      "sourceUrl": "cache:421087.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421087 松滋市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x491f164279c8a283117606d231feaf9fc63bfb6686b8f79ef2d5d0aca63aaa86",
+      "cachedAt": "2026-10-27T10:23:21.244Z"
+    },
+    {
+      "code": 421088,
+      "name": "监利市",
+      "kind": "county",
+      "parent": 421000,
+      "lat": 30.326857,
+      "lon": 112.23813,
+      "geoSource": "parent-fallback",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 536,
+        "nHitByTier": [
+          536,
+          35
+        ],
+        "pointRatePct": 1.579505,
+        "upperRatePct": 1.72581,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.093
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 422,
+        "nHitByTier": [
+          422,
+          1
+        ],
+        "pointRatePct": 1.948901,
+        "upperRatePct": 2.146057,
+        "priceFen": 410,
+        "priceYuan": 4.1,
+        "boundBy": "risk",
+        "loadFactor": 1.101
+      },
+      "grid": {
+        "12": 340,
+        "24": 410
+      },
+      "digest": "4f66acbb4deb0d0f119a2a1c79bc6244cfe69eac2f9b7e7dd13e3f2bd4c2624a",
+      "sourceUrl": "cache:421088.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421088 监利市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xbcf431a8e60053b61f758945ce07328be49a9d48cd907933af61d760e0a01447",
+      "cachedAt": "2026-10-27T10:23:21.265Z"
+    },
+    {
+      "code": 421100,
+      "name": "黄冈市",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.447711,
+      "lon": 114.879365,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 698,
+        "nHitByTier": [
+          698,
+          76
+        ],
+        "pointRatePct": 2.663111,
+        "upperRatePct": 3.074257,
+        "priceFen": 570,
+        "priceYuan": 5.7,
+        "boundBy": "risk",
+        "loadFactor": 1.154
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 663,
+        "nHitByTier": [
+          663,
+          108
+        ],
+        "pointRatePct": 3.96792,
+        "upperRatePct": 4.535578,
+        "priceFen": 810,
+        "priceYuan": 8.1,
+        "boundBy": "risk",
+        "loadFactor": 1.143
+      },
+      "grid": {
+        "12": 570,
+        "24": 810
+      },
+      "digest": "118e10260f82dd330384bcb93568514aa7ac08715fb30bc2f965e0836724dd4d",
+      "sourceUrl": "cache:421100.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421100 黄冈市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x0d57ca6faa85043ff9da139e183382b2f11af745b79d4c26e1f74dbfe8993c00",
+      "cachedAt": "2026-10-27T10:24:12.216Z"
+    },
+    {
+      "code": 421102,
+      "name": "黄州区",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.447435,
+      "lon": 114.878934,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 698,
+        "nHitByTier": [
+          698,
+          76
+        ],
+        "pointRatePct": 2.663111,
+        "upperRatePct": 3.074257,
+        "priceFen": 570,
+        "priceYuan": 5.7,
+        "boundBy": "risk",
+        "loadFactor": 1.154
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 663,
+        "nHitByTier": [
+          663,
+          108
+        ],
+        "pointRatePct": 3.96792,
+        "upperRatePct": 4.535578,
+        "priceFen": 810,
+        "priceYuan": 8.1,
+        "boundBy": "risk",
+        "loadFactor": 1.143
+      },
+      "grid": {
+        "12": 570,
+        "24": 810
+      },
+      "digest": "eda3113a29a34859e67fd0c8217c5c688003b72901a7b716a8930f1238fd6e88",
+      "sourceUrl": "cache:421102.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421102 黄州区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x9fc0d41521f43ca456be510571f3311c0f7da69bfc9d0c995ea5ca9b60324d13",
+      "cachedAt": "2026-10-27T10:24:12.235Z"
+    },
+    {
+      "code": 421121,
+      "name": "团风县",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.63569,
+      "lon": 114.872029,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 776,
+        "nHitByTier": [
+          776,
+          69
+        ],
+        "pointRatePct": 2.870749,
+        "upperRatePct": 3.3291,
+        "priceFen": 610,
+        "priceYuan": 6.1,
+        "boundBy": "risk",
+        "loadFactor": 1.16
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 702,
+        "nHitByTier": [
+          702,
+          106
+        ],
+        "pointRatePct": 4.727382,
+        "upperRatePct": 5.436412,
+        "priceFen": 960,
+        "priceYuan": 9.6,
+        "boundBy": "risk",
+        "loadFactor": 1.15
+      },
+      "grid": {
+        "12": 610,
+        "24": 960
+      },
+      "digest": "54c7e84495e496961aff6848aa1750431d232e9d111925c800e72328c0c51c93",
+      "sourceUrl": "cache:421121.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421121 团风县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x23885194adc68110fbb6f980f3aadc0003f0825c77288d3043430cdc5caa4dfa",
+      "cachedAt": "2026-10-27T10:24:12.257Z"
+    },
+    {
+      "code": 421122,
+      "name": "红安县",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 31.284777,
+      "lon": 114.615095,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 718,
+        "nHitByTier": [
+          718,
+          34
+        ],
+        "pointRatePct": 2.105849,
+        "upperRatePct": 2.348145,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.115
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 768,
+        "nHitByTier": [
+          768,
+          48
+        ],
+        "pointRatePct": 3.330202,
+        "upperRatePct": 3.688209,
+        "priceFen": 670,
+        "priceYuan": 6.7,
+        "boundBy": "risk",
+        "loadFactor": 1.108
+      },
+      "grid": {
+        "12": 450,
+        "24": 670
+      },
+      "digest": "5c99175e3d15a4436879f7a0398a685dd8efafc9c6b9802e7eff61f9e695bc1b",
+      "sourceUrl": "cache:421122.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421122 红安县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x4bb5fcd4ea8144b97811e575ef9edb97f4c67c40863871c9740f2d69dd269453",
+      "cachedAt": "2026-10-27T10:24:12.279Z"
+    },
+    {
+      "code": 421123,
+      "name": "罗田县",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.781679,
+      "lon": 115.398984,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 1039,
+        "nHitByTier": [
+          1039,
+          65
+        ],
+        "pointRatePct": 2.793281,
+        "upperRatePct": 3.163968,
+        "priceFen": 580,
+        "priceYuan": 5.8,
+        "boundBy": "risk",
+        "loadFactor": 1.133
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 1017,
+        "nHitByTier": [
+          1017,
+          115
+        ],
+        "pointRatePct": 4.015837,
+        "upperRatePct": 4.478564,
+        "priceFen": 800,
+        "priceYuan": 8,
+        "boundBy": "risk",
+        "loadFactor": 1.115
+      },
+      "grid": {
+        "12": 580,
+        "24": 800
+      },
+      "digest": "13b70ae93402856f29c78fd53b84a6cf55809a4e07a331c4284e56565ac9d72f",
+      "sourceUrl": "cache:421123.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421123 罗田县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2fd378385b5bd007d69b17545f5f6a836e8763c855b451b663953f37cd221dc0",
+      "cachedAt": "2026-10-27T10:23:21.295Z"
+    },
+    {
+      "code": 421124,
+      "name": "英山县",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.735794,
+      "lon": 115.67753,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 943,
+        "nHitByTier": [
+          943,
+          73
+        ],
+        "pointRatePct": 2.768822,
+        "upperRatePct": 3.129768,
+        "priceFen": 580,
+        "priceYuan": 5.8,
+        "boundBy": "risk",
+        "loadFactor": 1.13
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 929,
+        "nHitByTier": [
+          929,
+          123
+        ],
+        "pointRatePct": 4.354725,
+        "upperRatePct": 4.93378,
+        "priceFen": 880,
+        "priceYuan": 8.8,
+        "boundBy": "risk",
+        "loadFactor": 1.133
+      },
+      "grid": {
+        "12": 580,
+        "24": 880
+      },
+      "digest": "2da9134d5088f35b1c187dbde1c63a0e074fd73c44a675fbe242403a14949798",
+      "sourceUrl": "cache:421124.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421124 英山县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x6bdbde0c0b30ea88849897238bbeee01e09a75323410b3f113ef8b33910d0b85",
+      "cachedAt": "2026-10-27T10:23:21.317Z"
+    },
+    {
+      "code": 421125,
+      "name": "浠水县",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.454837,
+      "lon": 115.26344,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 860,
+        "nHitByTier": [
+          860,
+          76
+        ],
+        "pointRatePct": 2.906315,
+        "upperRatePct": 3.289603,
+        "priceFen": 600,
+        "priceYuan": 6,
+        "boundBy": "risk",
+        "loadFactor": 1.132
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 861,
+        "nHitByTier": [
+          861,
+          104
+        ],
+        "pointRatePct": 3.946623,
+        "upperRatePct": 4.434228,
+        "priceFen": 790,
+        "priceYuan": 7.9,
+        "boundBy": "risk",
+        "loadFactor": 1.124
+      },
+      "grid": {
+        "12": 600,
+        "24": 790
+      },
+      "digest": "b6a42ac91449073c2f41e72d22413abe97bc3317245a7e608582229a5ea7553c",
+      "sourceUrl": "cache:421125.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421125 浠水县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2f2d8a33da358639553c44e2427c5ab1f973d43c1bce26d0410f99f088d22d71",
+      "cachedAt": "2026-10-27T10:23:21.336Z"
+    },
+    {
+      "code": 421126,
+      "name": "蕲春县",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.234927,
+      "lon": 115.433964,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 793,
+        "nHitByTier": [
+          793,
+          53
+        ],
+        "pointRatePct": 2.47032,
+        "upperRatePct": 2.803676,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.135
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 806,
+        "nHitByTier": [
+          806,
+          89
+        ],
+        "pointRatePct": 3.595855,
+        "upperRatePct": 4.091769,
+        "priceFen": 740,
+        "priceYuan": 7.4,
+        "boundBy": "risk",
+        "loadFactor": 1.138
+      },
+      "grid": {
+        "12": 520,
+        "24": 740
+      },
+      "digest": "72c079f2fc123217bce6afe12ea7e562b8218bedf6b28e8614ed8062f83b2a9e",
+      "sourceUrl": "cache:421126.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421126 蕲春县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x42053a91a8f9483a21053f8d049c1126326c2c8e02e4b844254a8d6f67dfb9d4",
+      "cachedAt": "2026-10-27T10:23:21.358Z"
+    },
+    {
+      "code": 421127,
+      "name": "黄梅县",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.075113,
+      "lon": 115.942548,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 841,
+        "nHitByTier": [
+          841,
+          37
+        ],
+        "pointRatePct": 2.45989,
+        "upperRatePct": 2.794786,
+        "priceFen": 520,
+        "priceYuan": 5.2,
+        "boundBy": "risk",
+        "loadFactor": 1.136
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 865,
+        "nHitByTier": [
+          865,
+          75
+        ],
+        "pointRatePct": 3.506022,
+        "upperRatePct": 3.964103,
+        "priceFen": 720,
+        "priceYuan": 7.2,
+        "boundBy": "risk",
+        "loadFactor": 1.131
+      },
+      "grid": {
+        "12": 520,
+        "24": 720
+      },
+      "digest": "8d1ddba60af8a0ebba92e3cb56030b08fcbcddde9a85760318427fde69c38be1",
+      "sourceUrl": "cache:421127.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421127 黄梅县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x41e2477c7fcece70de6f3d03c4214f580beec632d66b26de3281943372cf4411",
+      "cachedAt": "2026-10-27T10:23:21.378Z"
+    },
+    {
+      "code": 421171,
+      "name": "龙感湖管理区",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 30.447711,
+      "lon": 114.879365,
+      "geoSource": "parent-fallback",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 698,
+        "nHitByTier": [
+          698,
+          76
+        ],
+        "pointRatePct": 2.663111,
+        "upperRatePct": 3.074257,
+        "priceFen": 570,
+        "priceYuan": 5.7,
+        "boundBy": "risk",
+        "loadFactor": 1.154
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 663,
+        "nHitByTier": [
+          663,
+          108
+        ],
+        "pointRatePct": 3.96792,
+        "upperRatePct": 4.535578,
+        "priceFen": 810,
+        "priceYuan": 8.1,
+        "boundBy": "risk",
+        "loadFactor": 1.143
+      },
+      "grid": {
+        "12": 570,
+        "24": 810
+      },
+      "digest": "49ec5b1ca14b40c590d6e0aa8fab5a34bf502b60fd629115088c4bd71853433e",
+      "sourceUrl": "cache:421171.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421171 龙感湖管理区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x79493ef4ae868c263f36af296c94063134e3bfc7a85af76368223f54c36b82af",
+      "cachedAt": "2026-10-27T10:23:21.403Z"
+    },
+    {
+      "code": 421181,
+      "name": "麻城市",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 31.177906,
+      "lon": 115.02541,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 842,
+        "nHitByTier": [
+          842,
+          42
+        ],
+        "pointRatePct": 2.158202,
+        "upperRatePct": 2.372244,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.099
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 866,
+        "nHitByTier": [
+          866,
+          68
+        ],
+        "pointRatePct": 2.769294,
+        "upperRatePct": 3.005093,
+        "priceFen": 560,
+        "priceYuan": 5.6,
+        "boundBy": "risk",
+        "loadFactor": 1.085
+      },
+      "grid": {
+        "12": 450,
+        "24": 560
+      },
+      "digest": "30744cc81b10996206383130e9ef2e14811c1ae912dc52d4cb3d59ade51e7f57",
+      "sourceUrl": "cache:421181.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421181 麻城市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x7d308c6035b958b2c9df1118174dc171355a26c02a2c7fe96c9dee66758b3cfa",
+      "cachedAt": "2026-10-27T10:23:21.424Z"
+    },
+    {
+      "code": 421182,
+      "name": "武穴市",
+      "kind": "county",
+      "parent": 421100,
+      "lat": 29.849342,
+      "lon": 115.56242,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 564,
+        "nHitByTier": [
+          564,
+          11
+        ],
+        "pointRatePct": 2.194449,
+        "upperRatePct": 2.454773,
+        "priceFen": 460,
+        "priceYuan": 4.6,
+        "boundBy": "risk",
+        "loadFactor": 1.119
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 580,
+        "nHitByTier": [
+          580,
+          30
+        ],
+        "pointRatePct": 3.158219,
+        "upperRatePct": 3.516771,
+        "priceFen": 640,
+        "priceYuan": 6.4,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "grid": {
+        "12": 460,
+        "24": 640
+      },
+      "digest": "032873b9bd9a5934f0624c9e399063ec35de1e9c1dc706f3c546aad178e376a9",
+      "sourceUrl": "cache:421182.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421182 武穴市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xb0f36a7da26d7f8e013173857e4dc3d2cc3626e3483ee733e5b04826a6db1895",
+      "cachedAt": "2026-10-27T10:23:21.443Z"
+    },
+    {
+      "code": 421200,
+      "name": "咸宁市",
+      "kind": "city",
+      "parent": null,
+      "lat": 29.832798,
+      "lon": 114.328963,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 712,
+        "nHitByTier": [
+          712,
+          77
+        ],
+        "pointRatePct": 2.081725,
+        "upperRatePct": 2.343309,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.126
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 628,
+        "nHitByTier": [
+          628,
+          87
+        ],
+        "pointRatePct": 3.096796,
+        "upperRatePct": 3.490644,
+        "priceFen": 640,
+        "priceYuan": 6.4,
+        "boundBy": "risk",
+        "loadFactor": 1.127
+      },
+      "grid": {
+        "12": 450,
+        "24": 640
+      },
+      "digest": "d2d3b13cf3a55288ef8b3b1aceed76cd8469bc26f5eb5025f8ec507353502c1c",
+      "sourceUrl": "cache:421200.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421200 咸宁市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x50f6c95c4162a0e7ca1082af816c19e8ed7756efdb4e7ce97c59808513fa241b",
+      "cachedAt": "2026-10-27T10:23:21.462Z"
+    },
+    {
+      "code": 421202,
+      "name": "咸安区",
+      "kind": "county",
+      "parent": 421200,
+      "lat": 29.824716,
+      "lon": 114.333894,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 696,
+        "nHitByTier": [
+          696,
+          70
+        ],
+        "pointRatePct": 2.2008,
+        "upperRatePct": 2.476254,
+        "priceFen": 470,
+        "priceYuan": 4.7,
+        "boundBy": "risk",
+        "loadFactor": 1.125
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 635,
+        "nHitByTier": [
+          635,
+          94
+        ],
+        "pointRatePct": 3.265244,
+        "upperRatePct": 3.654998,
+        "priceFen": 660,
+        "priceYuan": 6.6,
+        "boundBy": "risk",
+        "loadFactor": 1.119
+      },
+      "grid": {
+        "12": 470,
+        "24": 660
+      },
+      "digest": "8f3b0b3dc347d7c6c8548964f40de6f532c234b4a212fc152f51776776347ff9",
+      "sourceUrl": "cache:421202.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421202 咸安区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x6ab4ee8d2cbf3ab593e2220fa9a96cafd72aa389e4901cb301cd5ee0e9018ead",
+      "cachedAt": "2026-10-27T10:23:21.483Z"
+    },
+    {
+      "code": 421221,
+      "name": "嘉鱼县",
+      "kind": "county",
+      "parent": 421200,
+      "lat": 29.973363,
+      "lon": 113.921547,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 657,
+        "nHitByTier": [
+          657,
+          40
+        ],
+        "pointRatePct": 1.717702,
+        "upperRatePct": 1.871872,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.09
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 659,
+        "nHitByTier": [
+          659,
+          44
+        ],
+        "pointRatePct": 2.6366,
+        "upperRatePct": 2.878542,
+        "priceFen": 530,
+        "priceYuan": 5.3,
+        "boundBy": "risk",
+        "loadFactor": 1.092
+      },
+      "grid": {
+        "12": 370,
+        "24": 530
+      },
+      "digest": "2af1554a64b8ace9cceea4c767a7cbd72b8d7e8e5e058809917bed07a3d37e93",
+      "sourceUrl": "cache:421221.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421221 嘉鱼县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x8785c3d62dd3b56da7d550238e673786c1b98ed6f96e2089aaef6d56592bb57e",
+      "cachedAt": "2026-10-27T10:23:21.504Z"
+    },
+    {
+      "code": 421222,
+      "name": "通城县",
+      "kind": "county",
+      "parent": 421200,
+      "lat": 29.246076,
+      "lon": 113.814131,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 682,
+        "nHitByTier": [
+          682,
+          18
+        ],
+        "pointRatePct": 2.5675,
+        "upperRatePct": 2.940826,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.145
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 719,
+        "nHitByTier": [
+          719,
+          39
+        ],
+        "pointRatePct": 3.839044,
+        "upperRatePct": 4.301533,
+        "priceFen": 770,
+        "priceYuan": 7.7,
+        "boundBy": "risk",
+        "loadFactor": 1.12
+      },
+      "grid": {
+        "12": 550,
+        "24": 770
+      },
+      "digest": "c20a3cacae196870b927388004ad0fcb397654e103ec45e7a509c1cbe3a55ec0",
+      "sourceUrl": "cache:421222.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421222 通城县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x69f2d872e770ff33e0eed94aec44ed699b71c6d6a02a9dc3ef7869d89061eb6e",
+      "cachedAt": "2026-10-27T10:23:21.530Z"
+    },
+    {
+      "code": 421223,
+      "name": "崇阳县",
+      "kind": "county",
+      "parent": 421200,
+      "lat": 29.54101,
+      "lon": 114.049958,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 588,
+        "nHitByTier": [
+          588,
+          26
+        ],
+        "pointRatePct": 2.110401,
+        "upperRatePct": 2.3726,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.124
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 583,
+        "nHitByTier": [
+          583,
+          47
+        ],
+        "pointRatePct": 3.453036,
+        "upperRatePct": 3.870713,
+        "priceFen": 700,
+        "priceYuan": 7,
+        "boundBy": "risk",
+        "loadFactor": 1.121
+      },
+      "grid": {
+        "12": 450,
+        "24": 700
+      },
+      "digest": "8791d0d6bdb97e4ad32c61c777c79b13d8ba03fd9730074c5c970135f5c8960a",
+      "sourceUrl": "cache:421223.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421223 崇阳县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x58730e6f70143d1856fd2f95ea02e0aed74154d1e05b59c187142980dc2af14b",
+      "cachedAt": "2026-10-27T10:23:21.550Z"
+    },
+    {
+      "code": 421224,
+      "name": "通山县",
+      "kind": "county",
+      "parent": 421200,
+      "lat": 29.604455,
+      "lon": 114.493163,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 499,
+        "nHitByTier": [
+          499,
+          26
+        ],
+        "pointRatePct": 2.162866,
+        "upperRatePct": 2.499983,
+        "priceFen": 470,
+        "priceYuan": 4.7,
+        "boundBy": "risk",
+        "loadFactor": 1.156
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 417,
+        "nHitByTier": [
+          417,
+          55
+        ],
+        "pointRatePct": 3.435201,
+        "upperRatePct": 3.90457,
+        "priceFen": 710,
+        "priceYuan": 7.1,
+        "boundBy": "risk",
+        "loadFactor": 1.137
+      },
+      "grid": {
+        "12": 470,
+        "24": 710
+      },
+      "digest": "ba1cb48c0cac20de5ed2be57bf9502271768f83e89ae5db1b59e7e3bd2f2a8d4",
+      "sourceUrl": "cache:421224.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421224 通山县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xb6e9d5aaf1c5dce3a13f299d9500c8faf32da4e1aa2030dd3bc44cd20e719311",
+      "cachedAt": "2026-10-27T10:23:21.568Z"
+    },
+    {
+      "code": 421281,
+      "name": "赤壁市",
+      "kind": "county",
+      "parent": 421200,
+      "lat": 29.716879,
+      "lon": 113.88366,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 771,
+        "nHitByTier": [
+          771,
+          47
+        ],
+        "pointRatePct": 2.065083,
+        "upperRatePct": 2.28666,
+        "priceFen": 440,
+        "priceYuan": 4.4,
+        "boundBy": "risk",
+        "loadFactor": 1.107
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 774,
+        "nHitByTier": [
+          774,
+          59
+        ],
+        "pointRatePct": 2.600596,
+        "upperRatePct": 2.883769,
+        "priceFen": 540,
+        "priceYuan": 5.4,
+        "boundBy": "risk",
+        "loadFactor": 1.109
+      },
+      "grid": {
+        "12": 440,
+        "24": 540
+      },
+      "digest": "1dc7a41bf6d3bd101a3a718e262c61753ae8e55f0b22a4c61a2b5dfcc49815b5",
+      "sourceUrl": "cache:421281.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421281 赤壁市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x33721bcf3491f87d43e9042f0997e2b5c734eb3aefccd150d20d5d5f58954017",
+      "cachedAt": "2026-10-27T10:23:21.586Z"
+    },
+    {
+      "code": 421300,
+      "name": "随州市",
+      "kind": "city",
+      "parent": null,
+      "lat": 31.717497,
+      "lon": 113.37377,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 505,
+        "nHitByTier": [
+          505,
+          42
+        ],
+        "pointRatePct": 1.482177,
+        "upperRatePct": 1.630748,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.1
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 431,
+        "nHitByTier": [
+          431,
+          51
+        ],
+        "pointRatePct": 2.114661,
+        "upperRatePct": 2.35658,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "grid": {
+        "12": 330,
+        "24": 450
+      },
+      "digest": "8501f6d5d666613980a695b7792b09e57e86b2d6c9a8d286d4873a2634b83988",
+      "sourceUrl": "cache:421300.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421300 随州市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x2794d9ffbb5b856e843cdfe0ba2e82d87c3b9848b8c949a8dfcb445ebd9b28c6",
+      "cachedAt": "2026-10-27T10:23:21.604Z"
+    },
+    {
+      "code": 421303,
+      "name": "曾都区",
+      "kind": "county",
+      "parent": 421300,
+      "lat": 31.717521,
+      "lon": 113.374519,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 505,
+        "nHitByTier": [
+          505,
+          42
+        ],
+        "pointRatePct": 1.482177,
+        "upperRatePct": 1.630748,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.1
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 431,
+        "nHitByTier": [
+          431,
+          51
+        ],
+        "pointRatePct": 2.114661,
+        "upperRatePct": 2.35658,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "grid": {
+        "12": 330,
+        "24": 450
+      },
+      "digest": "bc50cf37df1a39c7ffe36416f2bab4d6062bc2166d69532a7127bfee0fa26550",
+      "sourceUrl": "cache:421303.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421303 曾都区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x26c749166859ea99d1a32a1a46f163852ab1eb02d9c0a0d55ee7a245cec913bb",
+      "cachedAt": "2026-10-27T10:23:21.628Z"
+    },
+    {
+      "code": 421321,
+      "name": "随县",
+      "kind": "county",
+      "parent": 421300,
+      "lat": 31.854246,
+      "lon": 113.301384,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 505,
+        "nHitByTier": [
+          505,
+          22
+        ],
+        "pointRatePct": 1.501149,
+        "upperRatePct": 1.656891,
+        "priceFen": 330,
+        "priceYuan": 3.3,
+        "boundBy": "risk",
+        "loadFactor": 1.104
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 432,
+        "nHitByTier": [
+          432,
+          28
+        ],
+        "pointRatePct": 2.121871,
+        "upperRatePct": 2.359889,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.112
+      },
+      "grid": {
+        "12": 330,
+        "24": 450
+      },
+      "digest": "cbcc7b593e03d8fb02383008a8ca8ed6c53136d339e4155a5bfd203bc36616e9",
+      "sourceUrl": "cache:421321.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421321 随县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x1ecf5854282acce2531b256278b81d0ba3671e0d263246c4abf30ee1ebd2fb17",
+      "cachedAt": "2026-10-27T10:23:21.650Z"
+    },
+    {
+      "code": 421381,
+      "name": "广水市",
+      "kind": "county",
+      "parent": 421300,
+      "lat": 31.617731,
+      "lon": 113.826601,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 597,
+        "nHitByTier": [
+          597,
+          49
+        ],
+        "pointRatePct": 1.594287,
+        "upperRatePct": 1.770791,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.111
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 531,
+        "nHitByTier": [
+          531,
+          64
+        ],
+        "pointRatePct": 2.464885,
+        "upperRatePct": 2.684668,
+        "priceFen": 500,
+        "priceYuan": 5,
+        "boundBy": "risk",
+        "loadFactor": 1.089
+      },
+      "grid": {
+        "12": 350,
+        "24": 500
+      },
+      "digest": "62112dafeaa4f50c5978c1f5a0648393492f6b391493f6e2e447a537b84b2a37",
+      "sourceUrl": "cache:421381.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 421381 广水市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x22ed71da2c36938cb03380b09f9e50d77a8bab2243c8806384b6bbfe495e03a0",
+      "cachedAt": "2026-10-27T10:23:21.668Z"
+    },
+    {
+      "code": 422800,
+      "name": "恩施土家族苗族自治州",
+      "kind": "city",
+      "parent": null,
+      "lat": 30.283114,
+      "lon": 109.48699,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 733,
+        "nHitByTier": [
+          733,
+          22
+        ],
+        "pointRatePct": 1.84152,
+        "upperRatePct": 2.058751,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.118
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 732,
+        "nHitByTier": [
+          732,
+          2
+        ],
+        "pointRatePct": 2.716005,
+        "upperRatePct": 2.999348,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.104
+      },
+      "grid": {
+        "12": 400,
+        "24": 550
+      },
+      "digest": "0cc1df05361d99a1a172b6cf903ee59d87c6252e7e6d8f2e73754796abbc3974",
+      "sourceUrl": "cache:422800.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422800 恩施土家族苗族自治州 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x813ab351e1749dbacd36ec85ecfafc3c92818d08ba66230aa1a18e7f95ca363b",
+      "cachedAt": "2026-10-27T10:23:21.689Z"
+    },
+    {
+      "code": 422801,
+      "name": "恩施市",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 30.282406,
+      "lon": 109.486761,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 733,
+        "nHitByTier": [
+          733,
+          22
+        ],
+        "pointRatePct": 1.84152,
+        "upperRatePct": 2.058751,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.118
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 732,
+        "nHitByTier": [
+          732,
+          2
+        ],
+        "pointRatePct": 2.716005,
+        "upperRatePct": 2.999348,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.104
+      },
+      "grid": {
+        "12": 400,
+        "24": 550
+      },
+      "digest": "f5a6dfef2e5a424390f629e4d6b50c2dc5db74cc7779961eb041659fe9a8a59e",
+      "sourceUrl": "cache:422801.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422801 恩施市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x254a685e5a622e25ecbc1c3473779f13a940753987b0de2d9526aa08e419f251",
+      "cachedAt": "2026-10-27T10:23:21.707Z"
+    },
+    {
+      "code": 422802,
+      "name": "利川市",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 30.294247,
+      "lon": 108.943491,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 453,
+        "nHitByTier": [
+          453,
+          12
+        ],
+        "pointRatePct": 1.434175,
+        "upperRatePct": 1.595516,
+        "priceFen": 320,
+        "priceYuan": 3.2,
+        "boundBy": "risk",
+        "loadFactor": 1.112
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 363,
+        "nHitByTier": [
+          363,
+          12
+        ],
+        "pointRatePct": 2.18343,
+        "upperRatePct": 2.396648,
+        "priceFen": 450,
+        "priceYuan": 4.5,
+        "boundBy": "risk",
+        "loadFactor": 1.098
+      },
+      "grid": {
+        "12": 320,
+        "24": 450
+      },
+      "digest": "ef2349b03fb95a8ed4b54d338633f86d60a2f9efa3a12293049a8e07730aa312",
+      "sourceUrl": "cache:422802.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422802 利川市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xe4ce3040ba7599d357c5e90d94cfdd4240de1981bc25e0e051c3edde1cc004fc",
+      "cachedAt": "2026-10-27T10:24:12.303Z"
+    },
+    {
+      "code": 422822,
+      "name": "建始县",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 30.601632,
+      "lon": 109.723822,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 657,
+        "nHitByTier": [
+          657,
+          32
+        ],
+        "pointRatePct": 1.705227,
+        "upperRatePct": 1.901771,
+        "priceFen": 370,
+        "priceYuan": 3.7,
+        "boundBy": "risk",
+        "loadFactor": 1.115
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 658,
+        "nHitByTier": [
+          658,
+          57
+        ],
+        "pointRatePct": 2.573698,
+        "upperRatePct": 2.829148,
+        "priceFen": 530,
+        "priceYuan": 5.3,
+        "boundBy": "risk",
+        "loadFactor": 1.099
+      },
+      "grid": {
+        "12": 370,
+        "24": 530
+      },
+      "digest": "fdcd20696aa8efe69b55b664543c3c4adfdc1598d9d2788e54c55e8ce466313e",
+      "sourceUrl": "cache:422822.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422822 建始县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x958522417a7979094c8b64fe00d083cfdad8c0925e0c1241fca5bbc1b3d70334",
+      "cachedAt": "2026-10-27T10:24:12.333Z"
+    },
+    {
+      "code": 422823,
+      "name": "巴东县",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 31.041403,
+      "lon": 110.336665,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 410,
+        "nHitByTier": [
+          410,
+          43
+        ],
+        "pointRatePct": 1.628624,
+        "upperRatePct": 1.814287,
+        "priceFen": 360,
+        "priceYuan": 3.6,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 388,
+        "nHitByTier": [
+          388,
+          47
+        ],
+        "pointRatePct": 2.674238,
+        "upperRatePct": 2.962573,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.108
+      },
+      "grid": {
+        "12": 360,
+        "24": 550
+      },
+      "digest": "3ca01b3e65f77ca3ad430540887a04004a98b3961ee69c6f9fe8770439c03d67",
+      "sourceUrl": "cache:422823.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422823 巴东县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x0ee3eb6697d36fce061a7e65f56c9caf6f5fe9bd7895baf76333446e95f4719e",
+      "cachedAt": "2026-10-27T10:24:12.355Z"
+    },
+    {
+      "code": 422825,
+      "name": "宣恩县",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 29.98867,
+      "lon": 109.482819,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 734,
+        "nHitByTier": [
+          734,
+          19
+        ],
+        "pointRatePct": 1.762279,
+        "upperRatePct": 1.987387,
+        "priceFen": 390,
+        "priceYuan": 3.9,
+        "boundBy": "risk",
+        "loadFactor": 1.128
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 690,
+        "nHitByTier": [
+          690,
+          17
+        ],
+        "pointRatePct": 2.67501,
+        "upperRatePct": 2.974418,
+        "priceFen": 550,
+        "priceYuan": 5.5,
+        "boundBy": "risk",
+        "loadFactor": 1.112
+      },
+      "grid": {
+        "12": 390,
+        "24": 550
+      },
+      "digest": "537082dd1bd86a89f457c9413ca5f9be8d2abd369edf0b4d6e7180c7bc6d86ba",
+      "sourceUrl": "cache:422825.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422825 宣恩县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x77cc51ec26e6419d4c59e79f6e35bd4bf64acd0788970996b7068e2696720abd",
+      "cachedAt": "2026-10-27T10:24:12.375Z"
+    },
+    {
+      "code": 422826,
+      "name": "咸丰县",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 29.678967,
+      "lon": 109.15041,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 507,
+        "nHitByTier": [
+          507,
+          11
+        ],
+        "pointRatePct": 1.948833,
+        "upperRatePct": 2.24099,
+        "priceFen": 430,
+        "priceYuan": 4.3,
+        "boundBy": "risk",
+        "loadFactor": 1.15
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 376,
+        "nHitByTier": [
+          376,
+          16
+        ],
+        "pointRatePct": 3.541774,
+        "upperRatePct": 3.94715,
+        "priceFen": 710,
+        "priceYuan": 7.1,
+        "boundBy": "risk",
+        "loadFactor": 1.114
+      },
+      "grid": {
+        "12": 430,
+        "24": 710
+      },
+      "digest": "231d858094dad6d60bc00029082284b02064e0100b11e35a03038e2ee0ce62be",
+      "sourceUrl": "cache:422826.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422826 咸丰县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x6d37d3fdc678ba8aa0146a7f6dea86de5a997bea46ed6461a58f816ce933579d",
+      "cachedAt": "2026-10-27T10:23:21.725Z"
+    },
+    {
+      "code": 422827,
+      "name": "来凤县",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 29.506945,
+      "lon": 109.408328,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 656,
+        "nHitByTier": [
+          656,
+          21
+        ],
+        "pointRatePct": 1.86952,
+        "upperRatePct": 2.084538,
+        "priceFen": 400,
+        "priceYuan": 4,
+        "boundBy": "risk",
+        "loadFactor": 1.115
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 633,
+        "nHitByTier": [
+          633,
+          40
+        ],
+        "pointRatePct": 3.20281,
+        "upperRatePct": 3.503457,
+        "priceFen": 640,
+        "priceYuan": 6.4,
+        "boundBy": "risk",
+        "loadFactor": 1.094
+      },
+      "grid": {
+        "12": 400,
+        "24": 640
+      },
+      "digest": "b22a8d1818e559a7dbf8d141295c45b287ae88f9aab91aa18f202c4b6b4f4879",
+      "sourceUrl": "cache:422827.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422827 来凤县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0x4522a1fc333c767fcf1e540359eced569adf960002425ece6642ff1e44afd83f",
+      "cachedAt": "2026-10-27T10:23:21.750Z"
+    },
+    {
+      "code": 422828,
+      "name": "鹤峰县",
+      "kind": "county",
+      "parent": 422800,
+      "lat": 29.887298,
+      "lon": 110.033699,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 981,
+        "nHitByTier": [
+          981,
+          32
+        ],
+        "pointRatePct": 2.732712,
+        "upperRatePct": 3.098737,
+        "priceFen": 570,
+        "priceYuan": 5.7,
+        "boundBy": "risk",
+        "loadFactor": 1.134
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 1049,
+        "nHitByTier": [
+          1049,
+          47
+        ],
+        "pointRatePct": 3.729629,
+        "upperRatePct": 4.151087,
+        "priceFen": 750,
+        "priceYuan": 7.5,
+        "boundBy": "risk",
+        "loadFactor": 1.113
+      },
+      "grid": {
+        "12": 570,
+        "24": 750
+      },
+      "digest": "b270a106d5e3ea8fab23c4a236a485bb6ab53cc60dd7de2b3443d3f1585e6295",
+      "sourceUrl": "cache:422828.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 422828 鹤峰县 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xb633bdddb63165a46a0d01a0d62c64d8a39c73f923f88bd8374fa6c3d2e4b7bf",
+      "cachedAt": "2026-10-27T10:23:21.768Z"
+    },
+    {
+      "code": 429004,
+      "name": "仙桃市",
+      "kind": "county",
+      "parent": null,
+      "lat": 30.364953,
+      "lon": 113.453974,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 712,
+        "nHitByTier": [
+          712,
+          31
+        ],
+        "pointRatePct": 2.270067,
+        "upperRatePct": 2.579898,
+        "priceFen": 480,
+        "priceYuan": 4.8,
+        "boundBy": "risk",
+        "loadFactor": 1.136
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 643,
+        "nHitByTier": [
+          643,
+          37
+        ],
+        "pointRatePct": 3.047605,
+        "upperRatePct": 3.417466,
+        "priceFen": 620,
+        "priceYuan": 6.2,
+        "boundBy": "risk",
+        "loadFactor": 1.121
+      },
+      "grid": {
+        "12": 480,
+        "24": 620
+      },
+      "digest": "635c2680aaa68bee65c3c7a43857a0bae7ee1aac41eb3813ad7576f48f05c1df",
+      "sourceUrl": "cache:429004.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 429004 仙桃市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xf8193295c86f2324c216a974b236385595e5eb3fc45a310ac787273486e0b739",
+      "cachedAt": "2026-10-27T10:23:21.787Z"
+    },
+    {
+      "code": 429005,
+      "name": "潜江市",
+      "kind": "county",
+      "parent": null,
+      "lat": 30.421215,
+      "lon": 112.896866,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 634,
+        "nHitByTier": [
+          634,
+          37
+        ],
+        "pointRatePct": 1.59702,
+        "upperRatePct": 1.754389,
+        "priceFen": 350,
+        "priceYuan": 3.5,
+        "boundBy": "risk",
+        "loadFactor": 1.099
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 522,
+        "nHitByTier": [
+          522,
+          32
+        ],
+        "pointRatePct": 2.094321,
+        "upperRatePct": 2.269002,
+        "priceFen": 430,
+        "priceYuan": 4.3,
+        "boundBy": "risk",
+        "loadFactor": 1.083
+      },
+      "grid": {
+        "12": 350,
+        "24": 430
+      },
+      "digest": "2a403641a2443fbec88337d0438b32713315c252132b9d788325fe07bad1e156",
+      "sourceUrl": "cache:429005.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 429005 潜江市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xbabcb6c627dd6bec4b6bdabffbeff97d6c3d6df66aa249f624bf2b6a51c33136",
+      "cachedAt": "2026-10-27T10:23:21.806Z"
+    },
+    {
+      "code": 429006,
+      "name": "天门市",
+      "kind": "county",
+      "parent": null,
+      "lat": 30.653061,
+      "lon": 113.165862,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 618,
+        "nHitByTier": [
+          618,
+          17
+        ],
+        "pointRatePct": 1.567281,
+        "upperRatePct": 1.694592,
+        "priceFen": 340,
+        "priceYuan": 3.4,
+        "boundBy": "risk",
+        "loadFactor": 1.081
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 579,
+        "nHitByTier": [
+          579,
+          38
+        ],
+        "pointRatePct": 2.037304,
+        "upperRatePct": 2.177351,
+        "priceFen": 420,
+        "priceYuan": 4.2,
+        "boundBy": "risk",
+        "loadFactor": 1.069
+      },
+      "grid": {
+        "12": 340,
+        "24": 420
+      },
+      "digest": "20fa7cb9f0a92ceb353957df57d7c2245eac0f3a37bec6527350464105f4e2ef",
+      "sourceUrl": "cache:429006.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 429006 天门市 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xc6f06322d6cfcdc2d2ee6d660e0b9a2adb8faf49d08e6390cb7a5b770e948cfe",
+      "cachedAt": "2026-10-27T10:23:21.824Z"
+    },
+    {
+      "code": 429021,
+      "name": "神农架林区",
+      "kind": "county",
+      "parent": null,
+      "lat": 31.744449,
+      "lon": 110.671525,
+      "geoSource": "datav-areas_v3",
+      "hours12": {
+        "hours": 12,
+        "thresholdsMm": [
+          30,
+          70
+        ],
+        "nWin": 96421,
+        "nHit": 290,
+        "nHitByTier": [
+          290,
+          9
+        ],
+        "pointRatePct": 1.203395,
+        "upperRatePct": 1.299801,
+        "priceFen": 270,
+        "priceYuan": 2.7,
+        "boundBy": "risk",
+        "loadFactor": 1.08
+      },
+      "hours24": {
+        "hours": 24,
+        "thresholdsMm": [
+          50,
+          100
+        ],
+        "nWin": 96409,
+        "nHit": 192,
+        "nHitByTier": [
+          192,
+          0
+        ],
+        "pointRatePct": 1.495184,
+        "upperRatePct": 1.599938,
+        "priceFen": 320,
+        "priceYuan": 3.2,
+        "boundBy": "risk",
+        "loadFactor": 1.07
+      },
+      "grid": {
+        "12": 270,
+        "24": 320
+      },
+      "digest": "d102a9baf17fc5b6b8bb306259ff886e16a2c9bee8e17235fd4cf806d60b5667",
+      "sourceUrl": "cache:429021.json.gz",
+      "basis": "rainproof-hubei grid 2026-10-27 · 429021 神农架林区 · crowd-self κ=1 · PAYOUT=10000fen · C=30fen · R*=0.6 · ERA5 2015-10-01..2026-09-30",
+      "reasonHash": "0xb6e3e083903d6d42937cd1b4e305b10a85693ac43942dc21ae9e0931f351766a",
+      "cachedAt": "2026-10-27T10:23:21.849Z"
+    }
+  ]
+}

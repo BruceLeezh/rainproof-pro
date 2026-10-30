@@ -1,0 +1,1159 @@
+
+> test
+> npm run check-public-repo && npm run check-frozen-node && npm run check-verify-pack && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-abi && npm run check-page-decode && npm run check-feed-verify && npm run check-pricing-grid && npm run check-v3-prices:offline && npm run check-event-topics && npm run check-rmb-grid && npm run check-v5-bytecode && npm run check-html-syntax && npm run check-cities && npm run check-cadence && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3 && npm run e2e:v4 && npm run e2e:v5 && npm run check-replay
+
+
+> check-public-repo
+> node check-public-repo.js
+
+
+[公开仓库自检] 被跟踪文件 251 个
+
+[① 禁止入库清单]
+  [OK] ^01-赛事资料\/ 不在跟踪列表里
+  [OK] (^|\/)\.env$ 不在跟踪列表里
+  [OK] _local_chain\.json$ 不在跟踪列表里
+  [OK] 没有 *.key / *.pem / *.p12 被跟踪
+
+[② 私钥赋值]
+  [OK] 没有 PRIVATE_KEY/SECRET_KEY/MNEMONIC = 0x…64 的赋值
+
+[③ 个人信息]
+  [OK] 被跟踪的文本文件里没有手机号 / 身份证号
+  （粗筛命中 599 行，都属于十六进制串/长小数的一部分，已按 token 边界排除）
+
+[④ 真实密钥反查]
+  （.env 里被判为「密钥形状」的变量：.env:PRIVATE_KEY, .env:RIDER_KEY, .env:CONTRACT_ADDRESS_V4, .env:CONTRACT_ADDRESS）
+  [OK] 1 个 .env* 里 4 个密钥形状的值在被跟踪文件里 0 命中
+
+通过 7 项 · 跳过 0 项 · 失败 0 项
+
+> check-frozen-node
+> node check-frozen-node.js
+
+============================================================
+检查：链上快照兜底（05-演示站点/frozen-node.js ↔ index.html）
+============================================================
+  ✅ ① frozen-node.js 存在
+  ✅ ① 能解析出 window.FROZEN_NODE（JSON 合法）
+  ✅ ② 快照链是 677（主网）· 实际 677
+  ✅ ② 快照地址与页面 FALLBACK_ADDR 一致（两处口径不许漂）
+  ✅ ③ code 长度 = 15823 字节，与 meta.codeLength 一致
+  ✅ ③ bytecode.txt 是合法十六进制，且不短于 15823 字节运行时（实际全长 15928 字节）
+  ✅ ③ meta.codeLength = 15823 与旁车 runtime-size.txt 一致（实际 15823）
+  ✅ ③ code 与 bytecode.txt 尾部的 15823 字节运行时逐字节一致（不再是自己造 0x00 自证）
+  ✅ ④ eth_call 条目 48 条（≥40）
+  ✅ ④ 如实记录 2 条 revert（v3 只卖 12/24，48/72 链上真的 revert）· 实际 2
+  ✅ ④ hoursAllowed(12) 在快照里是可用的（true）
+  ✅ ④ hoursAllowed(24) 在快照里是可用的（true）
+  ✅ ④ hoursAllowed(48) 在快照里如实记录为 revert（v3 现行只卖 12/24；check-ui.js 的静态脚手架同样只列 12/24）
+  ✅ ④ hoursAllowed(72) 在快照里如实记录为 revert（v3 现行只卖 12/24；check-ui.js 的静态脚手架同样只列 12/24）
+  ✅ ⑤ 保费网格满 10 格（5 城 × 12h/24h）· 实际 10
+  ✅ ⑥ 事件行 8 条（≥8）
+  ✅ ⑥ 含 FeedRejected（成都被闸门拒收的留痕）
+  ✅ ⑥ 事件区块只收录确凿时间（4 条 = 四次喂价的链上时刻），其余宁缺勿编
+  ✅ ⑥ 时间戳都落在 2025-10 ~ 2027-01（1760000000–1800000000）—— 比原来 2023–2030 的松区间更紧，编的 0 或 2025 年也得被卡住
+  ✅ ⑦ 页面在主脚本之前加载 frozen-node.js
+  ✅ ⑦ 页面里有 FrozenProvider（快照 provider）
+  ✅ ⑦ 页面支持 ?snap=1 强制 / ?snap=0 关闭
+------------------------------------------------------------
+结果：22 项通过 / 0 项失败
+快照兜底口径一致（断网时页面显示的就是这份快照，不再是一片「—」）
+
+> check-verify-pack
+> node make-verify-pack.js --check
+
+solc: 0.8.37+commit.f401782d.Emscripten.clang
+
+=== RainDeliveryInsuranceV3（RainDeliveryInsuranceV3.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 15823 字节 = 链上实测长度（主网 677 上 eth_getCode 实测（2026-10-08））
+  ✅ runtime-size 旁车文件一致
+     源码 sha256        : 0x4151dd750cc2a0b18ceaf5cbe88b4a97cbf72b31ee6412e1b35e62049a900e26
+     创建码 sha256      : 0xd1a511170e3e3c679bdf8dc9e02842caf59a6218e50ad61dfc93bad33058f91b
+     运行时 sha256      : 0xf415f6d30c548f42bb52a328ece810745fd7d79fcf3e55121ece6c7f4ee85bdc
+     运行时 keccak256   : 0x68cf9c8d03fdfa709f0520dde68dac4e50faa3b2371bb5a9df72bddc6851fcdb
+
+=== OperatorMultisig（OperatorMultisig.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 4746 字节 = 链上实测长度（主网 677 上 eth_getCode 实测（2026-10-08））
+  ✅ runtime-size 旁车文件一致
+     源码 sha256        : 0x6280a8d99984b76dbf600a4623489516f7ac83d277abf7cbe90b0686fc82045b
+     创建码 sha256      : 0x8e36a2bd79940a1c15c11031ae2ceba99bdff13a9e3fa0741a8224885dba6205
+     运行时 sha256      : 0x4bbaf22e239d65bb2f292e731ae558ada60bd27b0c0864966ba739e540cdfbd1
+     运行时 keccak256   : 0xb2c26ac993b3e61dff461ee09fa7f573d591bde479978f201818b0fb0c1a7c7a
+
+=== RainDeliveryInsurance（RainDeliveryInsurance.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 10758 字节 = 链上实测长度（Sepolia 11155111 上 eth_getCode 实测（02-作战与答辩/汉客松-交易哈希清单.md:237、08-截图存证/真链留痕-2026-10-06.md:19））
+  ✅ 无 runtime-size 旁车（v1 历来没有，A33：compile_sol.js 本会写）
+     源码 sha256        : 0xce4a89bd728175975e88f9e4d368b58abd9f8f9e71cfc72a8be7b7625bde0614
+     创建码 sha256      : 0x024f22838c6378b34b818bfe8ed66a8d38aa382b33fec66466e35f19faaabd28
+     运行时 sha256      : 0x46bb1293d42782c6fbef44162d983f18316fd1c76e86b38c5ff3b948e36346d9
+     运行时 keccak256   : 0xf241ff63766d661a3be18c97ba873d386a9563adcac16c18f6ec9b3faa791b50
+
+=== RainDeliveryInsuranceV2（RainDeliveryInsuranceV2.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 12378 字节 = 链上实测长度（BOT Chain 968 上 eth_getCode 实测（08-截图存证/截图断言报告-2026-10-07.json）+ 旁车 RainDeliveryInsuranceV2.runtime-size.txt）
+  ✅ runtime-size 旁车文件一致
+     源码 sha256        : 0x92ca07c8ca2a151c6098c426af5d729b74a3db974e329168bb279336566364b4
+     创建码 sha256      : 0x932a602b10807588d287ab36037b9bca0644bdbe9ebeaadf270ee310aa87e870
+     运行时 sha256      : 0xbea23afb5a87c8abf43394d27d2fffd05a0714c4e75fef1d879770cef59a0d35
+     运行时 keccak256   : 0xafb563dc2e24338fd2664126409841b81d79e8d78b22f52b4e02648d134ddb92
+
+✅ 0 项失败 → 03-合约\verify-manifest.json（内容无变化，未改写）
+
+> check-canonical
+> node check-canonical.js
+
+
+哈希口径回归 · canonical.js
+============================================================
+  ✅ 键序不同 → 同一个哈希
+  ✅ 嵌套对象的键序也不同 → 仍同一个哈希
+  ✅ 37.2 与 37.20 同哈希；第 7 位小数被截掉，也同哈希
+  ✅ 精度差异落在第 6 位 → 哈希必须不同（否则精度就没意义了）
+  ✅ 数组顺序不同 → 哈希必须不同
+  ✅ canonicalize 的具体形状符合约定的口径
+  ✅ 不支持的类型直接报错，不做隐式转换
+  ✅ 雨量改 1mm → 哈希变（防「哈希没跟着数据走」）
+============================================================
+结果：8 项通过 / 0 项失败
+
+
+> check-ai
+> node check-ai.js
+
+==========================================================================
+AI 判定层检查
+==========================================================================
+
+[R1] 雨量本身没达标 —— 与模型无关，直接不赔
+  ✅ official 30 < 阈值 50 → DENY  decision=0
+  ✅ 置信度给到 95（这是确定性的，不是推测）  confidence=95
+  ✅ 理由里点名了阈值
+
+[R2] ★ 独立复核发现预言机和模型严重不符 —— AI 真正值钱的地方
+  ✅ 链上 80mm vs 三模型中位数 21mm（背离 73.8% > 60%）→ DENY  decision=0 divergence=73.8%
+  ✅ 背离时给高置信度 92（对『链上数据不可信』这件事很确定）
+  ✅ 理由里写明了背离百分比
+  ✅ 反向验证：同样的数字打了 simulated=true，R2 的背离复核照样跑（模拟标记只写进理由，不再整条免检）
+  ✅ simulated=true 仍会在理由里如实写出「这是合成数据」
+  ✅ 混进一个取数失败的模型：中位数仍是 80、判定仍是 PAY  decision=1 metrics={"thresholdMm":50,"minConfidence":60,"officialIncrementMm":80,"modelIncrementsMm":[80,84,78],"medianMm":80,"spreadMm":6,"agreeCount":3,"divergencePct":0}
+  ✅ 取数失败的模型不算来源（sources = 3，不是 4）
+
+[R3] 三家里只有 ≤1 家支持赔付
+  ✅ 达标模型 0/3 → DENY  agree=0
+  ✅ 理由里报告了达标家数
+
+[R4] 模型自己吵翻天 —— 置信度压到门槛以下，不敢拍板
+  ✅ 离散度 80 ≥ 中位数 50 → DENY
+  ✅ 置信度被压到 45（< 验收门槛 60）  confidence=45
+  ✅ 理由里说明了离散度与门槛
+
+[R5] 正常赔付路径
+  ✅ 3/3 模型一致且与链上相符 → PAY  decision=1
+  ✅ 置信度 ≥ 门槛  confidence=95
+  ✅ 离散度越小置信度越高（单调性）
+
+[硬约束] 绝不允许输出「PAY 且置信度 < 门槛」
+  ✅ 1178 个 PAY 用例全部过门槛，且置信度都落在 0..99
+
+[可复算] 同一份快照必须得到逐字节相同的结果
+  ✅ 两次调用结果完全一致
+  ✅ decide() 不修改输入快照
+
+[哈希绑定] 结论一变，outputHash 必变
+  ✅ decision 变 → 哈希变
+  ✅ confidence 变 → 哈希变
+  ✅ 键序不同、内容相同 → 哈希不变
+
+[可复算] 换个运行时间、换段解释文字，outputHash 必须一个字节都不动
+  ✅ decidedAt 变 → outputHash 不变  0xa97245dcaeb4db60e6f121501606c7811538f7c5553f5fae7df319cfae38f800
+  ✅ 解释文字/来源变 → outputHash 不变
+  ✅ judgement 对象里不含 decidedAt / rationale
+  ✅ 同一份输入重跑 → 整条记录逐字节相同
+  ✅ 指标（离散度）变 → outputHash 必变
+
+[可复算·实证据] 仓库里每一条留痕，哈希都要能当场重算出来
+  ✅ 找到 22 个留痕文件
+  ✅ 所有留痕的哈希都能重算出来（含真链 #0/#1 的修复前留档、含承保复核的 reviewHash）  22 个全对
+  ✅ 带 reviewHash 的承保复核留痕（8 个）一个都没漏进复算  8 个全在
+  ✅ 新留痕（4 个）里没有易变字段
+
+==========================================================================
+结果：33 项通过 / 0 项失败
+✅ 全部通过 —— AI 判定规则可以拿去现场了
+==========================================================================
+
+> check-ui
+> node check-ui.js
+
+
+[① 降雨看板] 刻度与触发线必须指同一个地方
+  [OK] 填充公式是 v / (阈值 × 2) × 100
+  [OK] 触发线 .bar::after 在 left:50%
+  [OK] 触发线标签 .bar::before 在 calc(50% + 6px)
+
+  阈值 50mm，条子满格 = 100mm，触发线在 50%：
+    武汉   24 mm  → 填  24%   
+    上海   34 mm  → 填  34%   
+    北京    0 mm  → 填   0%   
+    广州   50 mm  → 填  50%   ← 正好压在触发线上
+    成都  120 mm  → 填 100%   （冲过触发线）
+  [OK] 50mm 的填充比例 == 触发线位置 50%
+  [OK] 24mm 明显在触发线左侧
+  [OK] 120mm 顶满条子
+  [OK] 没有区域被算成负数
+
+[② 保障时长] 静态脚手架只能是主网现行 v3 的两档（12/24），某层实际卖哪几档由链上 hoursAllowed 说了算
+  [OK] hoursInput 是 <select> 不是自由输入框
+  [OK] 静态脚手架只有 12 / 24（按顺序；不再摆 v3 已删的 48/72）
+  [OK] 默认选中 24 小时（v3 两档里的长档）
+  [OK] JS 用 .value 读它（select 没有 valueAsNumber）
+  [OK] 档位标签与设计页一致（12 小时 / 24 小时）
+  [OK] 候选只有 12/24，并由链上 hoursAllowed(h) 收窄
+
+[③ DOM 契约] 页面 JS 引用的 id / class 必须真实存在
+  [OK] 05-演示站点/index.html：引用的 56 个 id / 3 个 class 都在
+  [OK] 05-演示站点/verifier.html：引用的 21 个 id / 1 个 class 都在
+  [OK] 06-核验台单文件/汉客松-链上核验台.html：引用的 19 个 id / 1 个 class 都在
+
+[④ 演讲提示] 演示界面里不许出现"讲给我们自己听"的话
+  [OK] 05-演示站点/index.html：没有演讲提示
+  [OK] 05-演示站点/verifier.html：没有演讲提示
+  [OK] 06-核验台单文件/汉客松-链上核验台.html：没有演讲提示
+
+[⑤ 判定口径] 赔付按「投保后的增量」，不是累计雨量
+  [OK] 看板越过阈值时说的是「投保后的增量」
+  [OK] 投保区说明写「新增累计降雨」而不是「累计降雨」
+  [OK] 没有「现在就能申请赔付」这种承诺
+
+[⑥ 窄屏不溢出的静态代理] 长地址 / 长数字必须能换行，否则 390px 下横向滚动
+  [OK] index.html 的栅格子项有 min-width:0（.grid2 > * / .cols > *）
+  [OK] 05-演示站点/index.html：至少一条 min-width:0 守卫
+  [OK] 05-演示站点/verifier.html：至少一条 min-width:0 守卫
+  [OK] 06-核验台单文件/汉客松-链上核验台.html：至少一条 min-width:0 守卫
+  [OK] 05-演示站点/verifier.html：长地址容器有 overflow-wrap:anywhere
+  [OK] 06-核验台单文件/汉客松-链上核验台.html：长地址容器有 overflow-wrap:anywhere
+
+========================================================
+结果：28 项通过 / 0 项失败
+前端契约没被改坏
+========================================================
+
+> check-abi
+> node sync_abi.js --check
+
+05-演示站点\index.html
+  ✅ const ABI     ← RainDeliveryInsuranceV3.abi.json（95 条，逐字节一致）
+  ✅ const ABI_V2  ← RainDeliveryInsuranceV2.abi.json（85 条，逐字节一致）
+05-演示站点\index-v5.html
+  ✅ const ABI     ← RainDeliveryInsuranceV5.abi.json（102 条，逐字节一致）
+
+✅ 通过 3 项 · 失败 0 项（2 个文件 / 共 3 个 ABI 块：内嵌 ABI 与 03-合约 逐字节一致）
+
+> check-page-decode
+> node check-page-decode.js
+
+页面 ABI 输出形状 ⇄ 真链返回（05-演示站点\index.html）
+
+  ✅ 页面 const ABI（v3）的每一处 outputs 形状都与 03-合约/RainDeliveryInsuranceV3.abi.json 一致（含字段名与顺序）
+  ✅ policies(uint256) 解出 16 个字段
+  ✅ policies(uint256) 字段名与 V3 ABI 逐个一致
+  ✅ policies(uint256) 首尾取值位置正确（首位与末位都与编码哨兵相等）
+  ✅ judgements(uint256) 解出 10 个字段
+  ✅ judgements(uint256) 字段名与 V3 ABI 逐个一致
+  ✅ judgements(uint256) 首尾取值位置正确（首位与末位都与编码哨兵相等）
+  ✅ feedJudgements(uint8) 解出 10 个字段
+  ✅ feedJudgements(uint8) 字段名与 V3 ABI 逐个一致
+  ✅ feedJudgements(uint8) 首尾取值位置正确（首位与末位都与编码哨兵相等）
+  ✅ v3 payload 用 ABI_V2 的 v2 形状解 ≠ v3 结果（正好是 677 上错位解码的那个 bug）
+  ✅ v3 payload 用 ABI_V2 的 v2 形状解 ≠ v3 结果（正好是 677 上错位解码的那个 bug）
+  ✅ v3 payload 用 ABI_V2 的 v2 形状解 ≠ v3 结果（正好是 677 上错位解码的那个 bug）
+  ✅ thresholdOf 同名多参：页面取到的是 v3 的 (uint256,uint8) 重载（selector 0xd8c93818）
+  ✅ thresholdOf 同名多参：v2 那份 (uint256) 是另一个函数（selector 不同），不会被误取
+  ✅ thresholdOf(uint256,uint8) 解出的值等于编码时的哨兵
+  ✅ premiumOf 两个重载都取到且不是同一个（5 参与 2 参 selector 不同）
+  ✅ premiumOf 5 参重载解出的值等于编码时的哨兵
+  ✅ 快照 48 条调用 >= 40 且带返回的 46 条全都能按页面 ABI_V3 解出（解出 46 条）
+  ℹ️ 快照里的结构体读法（policies/judgements/feedJudgements）共 0 条；形状覆盖靠上面 ① 的合成 payload
+
+✅ check-page-decode：19 项通过 / 0 项失败
+
+> check-feed-verify
+> node check-feed-verify.js
+
+
+feed-verify 判定规则（离线用例）
+  ✅ 模型 id 顺序 = ecmwf_ifs025 / gfs_seamless / icon_seamless
+  ✅ 三个一致 → agree / 92 / 源 3 / mm=42
+  ✅ 一个离群 → majority / 84 / 源 2 / mm=10
+  ✅ 离群模型被点名
+  ✅ 三个都离群 → diverge / 拒收 / mm=null / 置信 40
+  ✅ 两个可用且一致 → agree / 88 / 源 2
+  ✅ 只剩一个模型 → insufficient / 拒收
+  ✅ 没有公共日期 → no-overlap / 拒收
+  ✅ 极差超容差但都在中位数附近 → agree（不是 majority）
+  ✅ 离群列表为空、说明里不出现「离群」
+  ✅ 小雨 0.2/0.4 → agree（容差地板 1mm）
+  ✅ 只比公共日期（不把 10-03 的 99mm 算进来）
+
+承保复核判定（hook-watch.js 的 reviewPolicy，纯函数）
+  ✅ 窗口/基线/喂价/三模型都过 → REVIEW_OK
+  ✅ 喂价 25 小时前 → stale-feed 标红
+  ✅ 三模型 diverge → models-not-agreeing 标红
+  ✅ 链上 120mm vs 中位数 6.5mm → 背离 1746.15% 且标红
+  ✅ 喂价未知 + 三模型未取数 → REVIEW_PARTIAL（既不误报通过、也不误报存疑）
+  ✅ 投保时 50mm > 链上现值 30mm → baseline-above-onchain 标红
+  ✅ 窗口 12h → window-out-of-range 标红
+
+✅ feed-verify 判定 + 承保复核判定：19 项通过 / 0 项失败
+
+> check-pricing-grid
+> node check-pricing-grid.js
+
+
+定价网格维度绑定 · pricing-engine.json ↔ 03-合约/RainDeliveryInsuranceV3.sol
+========================================================================
+  ✅ 网格形状 = 40 格（5 城 × 2 时长 × 4 段）；批量档只在平台代付渠道展开
+  ✅ meta.thresholdsMm = 国标两档（12→30/70、24→50/100）
+  ✅ 每一格的 thresholdsMm 等于它自己 hours 那一行（维度绑定，防串档）
+  ✅ hours 只有 12 / 24（v3 的 hoursAllowed；48/72 已退役）
+  ✅ segId ↔ (riderTier, channel) 与 meta.segments 的定义逐格一致
+  ✅ 每格 costFloorEth ≤ premiumRetailEth ≤ premiumCapEth（0.002）
+       → 逐格区间 83.7× ～ 325.7×（均值 177.6×）
+  ✅ 平台代付渠道逐格摊薄倍数 ≥ 80（审计实测区间 83.7×～325.7×）
+  ✅ V3 合约常量与定价引擎口径一致（MIN_PREMIUM / 两档 / 时长）
+  ✅ V3 ABI 里 v3 新增入口都在（buyFor / refundPolicy / pricingModule / openPoliciesOf）
+  ℹ️  锚点（只报不判，供对外材料引用时连维度一起写）：
+       零售价 min 0.00028（beijing 12h t2c1）
+       零售价 max 0.00105（wuhan 24h t0c0）  = 上限的 1/1.905
+       cells[0]（wuhan 12h t2c1）摊薄 197.8× —— 「198×」是这一格，不是全表
+========================================================================
+结果：9 项通过 / 0 项失败
+
+
+> check-v3-prices:offline
+> node check-v3-prices.js --offline
+
+对照表：07-测试工具/fixtures/pricing-engine-deployed-968.json
+payload：60 行（57 可售 / 3 不卖）
+payload 自身不变量：✅ 通过
+
+--offline：只做上面的离线自证，不读链。
+
+> check-event-topics
+> node check-event-topics.js
+
+
+事件 topic0 核验  ·  核验台手写 16 条 / verifier 内嵌 16 条
+
+  ✅ 核验台 16 条：每条 topic0 = keccak256(注释里的签名)
+  ✅ 核验台每条：注释签名与合约 ABI 里的同名事件一致
+  ✅ 核验台每条：topic0 与 ABI 实算值逐字节相同
+  ✅ 核验台没有漏掉 ABI 里的 v1/v2 事件（现在是全量超集）
+  ✅ verifier.html 内嵌 16 条 ABI：每条与合约 ABI 的同名事件签名一致
+  ✅ verifier.html 每条：topic0 与 ABI 实算值相同（页面解码靠它）
+  ✅ 两份手写清单：同一事件的 topic0 逐字节相同（解码出来必须是同一个名字）
+
+✅ 事件 topic0 核验：7 项通过 / 0 项失败
+
+> check-rmb-grid
+> node check-rmb-grid.js
+
+  ✅ 数表 12h/24h 两段各解析出 5 行  12h=5 行 · 24h=5 行
+  ✅ 10 格逐格一致（GRID ↔ 数表众包自助列）  10 格核对
+  ✅ GRID 值域合理（100–1000 分 = 1–10 元，且 < 满额 10000）
+============================================================
+通过 3 项 / 失败 0 项
+
+> check-v5-bytecode
+> node check-v5-bytecode.js
+
+================================================================
+v5 字节码一致性门禁（源码 ↔ 产物 ↔ 链上）
+================================================================
+  ✅ 源码重编译 == 仓库 bytecode.txt  20112 字节
+  ✅ 源码重编译 == 仓库 abi.json  102 条目
+  ✅ runtime-size.txt 与实际一致  19841 字节
+  ✅ runtime < 24576 字节（EIP-170）  19841 / 24576
+  ⏭  链上比对（--onchain 才跑，节点不可达时不影响离线门禁）
+================================================================
+通过 4 项 / 失败 0 项
+================================================================
+
+> check-html-syntax
+> node check-html-syntax.js
+
+OK   index.html script#1  (120389 字符)
+OK   index.html script#2  (3992 字符)
+OK   index.html script#3  (2563 字符)
+OK   index-v5.html script#1  (140857 字符)
+OK   index-v5.html script#2  (4108 字符)
+OK   index-v5.html script#3  (2639 字符)
+OK   rider.html script#1  (41433 字符)
+OK   console.html script#1  (41497 字符)
+OK   verifier.html script#1  (38934 字符)
+OK   verifier.html script#2  (3602 字符)
+OK   汉客松-链上核验台.html script#1  (26572 字符)
+OK   verify-v5.html script#1  (11843 字符)
+OK   注入面：2 个链上 string 字段（modelVersion, name）进模板时全部过 esc()
+OK   index.html 的 esc() 对 < > & " 都做了转义
+OK   index-v5.html 的 esc() 对 < > & " 都做了转义
+SKIP rider.html 不调用 esc（纯静态页）
+OK   console.html 的 esc() 对 < > & " 都做了转义
+OK   verifier.html 的 esc() 对 < > & " 都做了转义
+OK   汉客松-链上核验台.html 的 esc() 对 < > & " 都做了转义
+OK   verify-v5.html 的 esc() 对 < > & " 都做了转义
+SKIP terms.html 不调用 esc（纯静态页）
+OK   三个页面的 <script src> 全是同目录本地文件（11 处）
+
+✅ 三个页面的内联脚本语法全部通过
+
+> check-cities
+> node check-cities.js
+
+
+[① 数据源与页面加载件必须同一份]
+  ✅ cn-cities.js 能解析出 window.CN_CITIES = …
+  ✅ cn-cities.js 与 cn-cities.json 完全一致（改了 JSON 必须重生成 JS）
+
+[② 区划码形状（页面换算规则的前提）]
+  ✅ 31 个省 / 自治区 / 直辖市
+  ✅ 342 个地级市
+  ✅ 3056 个县级单位（含直筒子市的镇街）
+  ✅ 地级市代码全部 4 位（4 位 + "00" 才是链上 6 位 regionId）
+  ✅ 县级单位只有 6 位（真区划）与 9 位（镇街，不进候选）
+  ✅ 省直辖伪地级市恰为 4190 / 4290 / 4690 / 6590（不能 +"00"）
+
+[③ 演示城市与链上 regionId 对得上]
+  ✅ 武汉 420100 能在区划表里找到
+  ✅ 上海 310100 能在区划表里找到
+  ✅ 北京 110100 能在区划表里找到
+  ✅ 广州 440100 能在区划表里找到
+  ✅ 成都 510100 能在区划表里找到
+  ✅ 义乌 330782 能在区划表里找到
+  ✅ 县级 6 位码里确实包含义乌 330782
+
+[④ 页面加载方式]
+  ✅ index-v5.html 首次打开弹层时动态注入 cn-cities.js（file:// 下也能用，且不拖慢首屏）
+  ✅ 保留 cn-cities.json 的 fetch 兜底（脚本缺失但 JSON 在的 HTTP 环境仍可用）
+
+======================================================================
+✅ 通过 17 项 / 失败 0 项
+
+> check-cadence
+> node check-cadence.js
+
+OK   README.md 无 4 小时旧口径
+OK   02-作战与答辩/运营手册-初版-2026-10-25.md 无 4 小时旧口径
+OK   02-作战与答辩/部署-2C2G-生产手册-2026-10-27.md 无 4 小时旧口径
+OK   02-作战与答辩/本轮改动与遗留风险-2026-10-26.md 无 4 小时旧口径
+OK   02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md 无 4 小时旧口径
+OK   04-脚本/push-rainfall-v5.js：用法示例 --watch=30
+OK   04-脚本/warning-watch.js：用法示例 --watch=30
+OK   04-脚本/keeper.js：--interval 默认值（秒） = 1800 秒（30 分钟）
+OK   04-脚本/push-rainfall-v5.js 有非法值校验
+OK   04-脚本/push-rainfall-v5.js：--watch 同时认 = 与空格两种写法
+OK   04-脚本/warning-watch.js 有非法值校验
+OK   04-脚本/warning-watch.js：--watch 同时认 = 与空格两种写法
+OK   04-脚本/keeper.js 有非法值校验
+OK   04-脚本/hook-watch.js 有非法值校验
+OK   计划任务 RainProof-Feed = PT30M
+OK   122 区划 × 48 轮 = 5856 次/日，占免费额度 58.6%
+
+轮询口径一致：全仓 30 分钟一轮
+
+> e2e
+> node e2e_contract.js
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_win32_x64_137.node'
+Require stack:
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\node_modules\@trufflesuite\uws-js-unofficial\src\uws.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\dist\node\core.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\e2e_contract.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+==============================================================================
+本地链全流程演练 · RainDeliveryInsurance
+==============================================================================
+
+[0] 部署
+  ✅ 部署成功  0xD3DF774971E66969FaBFBcC1817F0A7Cc22bd2ea
+     operator = 0x2037dd155834f299ba6ba3b0bb3f4727a943e8d4
+     骑手 A   = 0x36d921a6337dd35f60b01e94d3fdc4652abd812d
+  ✅ 部署后链上代码长度 = 10758 字节（与 Sepolia 11155111 实测值一致）  实测 10758 字节
+     PREMIUM=0.001  PAYOUT=0.01  THRESHOLD=50mm  MIN_CONFIDENCE=60
+  ✅ MIN_CONFIDENCE 常量 = 60  60
+
+[1] 资金池 —— ★ 教科书骨架版的致命 bug 就在这
+     注资前余额 = 0.0 ETH
+  ✅ 池子空的，claim 会被拒绝  已拒绝（insurance pool empty）
+     ↑ 骨架版 PREMIUM=0.001 / PAYOUT=0.01，收 1 份保费就想赔 10 倍 —— 第 1 笔就挂
+  ✅ 团队注资 0.1 ETH（池子余额真的等于 0.1）  池子 0.1 ETH
+
+[2] 投保
+  ✅ 保费金额不对要拒绝  已拒绝（premium mismatch）
+  ✅ 超长保单要拒绝  已拒绝（hours out of range）
+  ✅ 0 小时保单要拒绝  已拒绝（hours out of range）
+  ✅ 非法区域要拒绝  已拒绝（bad region）
+  ✅ 区域 0 要拒绝  已拒绝（bad region）
+  ✅ 骑手 A 买了 2 张保单  nextPolicyId = 2
+  ✅ policiesOf() 列出自己的保单号（正好是 0 和 1）  [0, 1]
+     policy0: region=1 快照=0mm 状态=active
+     池子 0.102 ETH（0.1 + 2×0.001）
+  ✅ premiumOf() 未设定时回退到 PREMIUM  0.001 ETH
+
+[3] 喂价（operator 专属）+ AI 喂价验收
+  ✅ 非 operator 喂价要拒绝  已拒绝（not operator）
+  ✅ 武汉累计降雨推到 30mm
+  ✅ 累计值倒退要拒绝  已拒绝（must not decrease）
+  ✅ 置信度低于 MIN_CONFIDENCE 要拒收  已拒绝（feed confidence too low）
+  ✅ 喂价缺少证据哈希要拒绝  已拒绝（evidence required）
+  ✅ 喂价验收：置信度 59 被合约真拒收（不是只写在文档里）  未改动链上 rainfall
+  ✅ 被拒收的喂价确实没有改动 rainfall  仍为 30mm
+  ✅ feedJudgements[1] 记录了本次验收  decision=PAY confidence=90 sources=3
+  ✅ rejectFeed 不改动 rainfall  仍为 0mm
+  ✅ rejectFeed 写入 DECISION_DENY 判定  confidence=40 sources=3
+  ✅ rejectFeed 置信度越界要拒绝  已拒绝（confidence out of range）
+     武汉保单状态 = active   还差 20 mm 才赔
+  ✅ 未达阈值不能赔  已拒绝（threshold not met）
+  ✅ 武汉累计降雨推到 80mm  保单期间增量 = 80 − 0 = 80 ≥ 50
+     武汉保单状态 = pending_judgement   还差 0 mm
+     policy2 快照降雨 = 80mm（=买入时的累计值）
+  ✅ 新买的保单不能白吃之前的雨（增量口径生效）  已拒绝（threshold not met）
+  ✅ 增量口径正确：保单只认「投保之后」下的雨  policy2 的快照被钉在投保当刻的 80mm（所以上面那条 claim 才会 revert）
+
+[4] AI 损失判定（拼上链的最后一块）
+  ✅ 没有 AI 判定不能赔  已拒绝（no AI judgement）
+  ✅ policyStatus 把「雨量够但没判定」显出来  pending_judgement
+  ✅ 非 operator 不能提交判定  已拒绝（not operator）
+  ✅ 对不存在的保单不能判定  已拒绝（no such policy）
+  ✅ decision 越界要拒绝  已拒绝（bad decision）
+  ✅ confidence 越界要拒绝  已拒绝（confidence out of range）
+  ✅ submitJudgement(DECISION_DENY) 写入成功  decision=0 confidence=95
+  ✅ AI 判定「不赔」时不能赔  已拒绝（AI: no loss confirmed）
+  ✅ policyStatus 显示 denied  denied
+  ✅ AI 置信度不足时不能赔  已拒绝（AI: low confidence）
+  ✅ policyStatus 显示 low_confidence  low_confidence
+  ✅ 同一份保单不能重复判定  已拒绝（judgement already submitted）
+  ✅ judgements[3] 记录写入且未被第二次调用覆盖  exists=true kind=1 decision=0 conf=95
+  ✅ policy0 判定为「确认损失 · 95 分」  decision=1 confidence=95
+  ✅ policyStatus → claimable
+
+[5] 赔付
+  ✅ 资金池精确扣减 PAYOUT  0.01 ETH
+  ✅ 骑手净到账 = PAYOUT − 自付 gas  +0.01 − gas 4608343802155 wei = 9995391656197845 wei
+     gasUsed=49285  gasPrice=93503983 wei
+     池子 0.105 → 0.095 ETH   （差 0.01 = PAYOUT）
+     保单状态 = paid
+  ✅ 同一张保单不能赔两次  已拒绝（already paid）
+  ✅ 上海没下雨不能赔  已拒绝（threshold not met）
+  ✅ 不存在的保单不能赔  已拒绝（no such policy）
+  ✅ 第三方可代为触发赔付  钱只进保单里的 rider（骑手 +0.01 ETH，gas 由代触发者付）
+
+[6] 承保人：精算结论怎么落到链上
+  ✅ 非 operator 不能设定承保参数  已拒绝（not operator）
+  ✅ 风险等级越界要拒绝  已拒绝（bad level）
+  ✅ 区域越界要拒绝  已拒绝（bad region）
+  ✅ 保费等于赔付额要拒绝（零毛利）  已拒绝（premium out of range）
+  ✅ 保费为 0 要拒绝  已拒绝（premium out of range）
+  ✅ 预警加价后 premiumOf 跟着变  0.002 ETH
+  ✅ 加价后按旧保费投保要拒绝  已拒绝（premium mismatch）
+  ✅ 按新保费投保成功  riderB 名下保单 3 张（3/4/5）
+  ✅ 区域 5 被设为拒保（RISK_SUSPENDED）  premiumOf 回退到 0.001 ETH
+  ✅ 被拒保的区域不能再投保  已拒绝（region suspended by underwriter）
+
+[7] 资金池准备金（修掉「注释撒谎」）
+  ✅ setReserve() 把准备金设为当前全部余额  0.087 ETH
+  ✅ 有准备金时不能把池子提空  已拒绝（would break reserve）
+  ✅ 准备金不能超过余额  已拒绝（reserve exceeds balance）
+  ✅ 非 operator 不能设定准备金  已拒绝（not operator）
+  ✅ 准备金可重置为 0
+
+[8] 边界与权限
+  ✅ 非 operator 不能提款  已拒绝（not operator）
+  ✅ 超额提款要拒绝  已拒绝（would break reserve）
+  ✅ 非 operator 不能暂停  已拒绝（not operator）
+  ✅ 非 operator 不能转交权限  已拒绝（not operator）
+  ✅ 暂停后不能投保  已拒绝（contract paused）
+  ✅ 暂停后不能赔付  已拒绝（contract paused）
+  ✅ 解除暂停（paused 回到 false）
+  ✅ operator 可提取多余资金（正好 0.05 ETH）  0.087 → 0.037 ETH
+  ✅ regionName 1/3/9 = wuhan/beijing/unknown  1=wuhan 3=beijing 9=unknown
+  ✅ 只读接口可用（三个 view 都读得出且值对）  poolBalance=0.037  rainfall(1)=200mm  reserve=0
+
+==============================================================================
+结果：74 项通过 / 0 项失败
+✅ 全部通过 —— 这个合约可以拿去 Sepolia 部署了
+==============================================================================
+
+> e2e:v2
+> node e2e_v2.js
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_win32_x64_137.node'
+Require stack:
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\node_modules\@trufflesuite\uws-js-unofficial\src\uws.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\dist\node\core.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\e2e_v2.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+==============================================================================
+本地链全流程演练 · RainDeliveryInsuranceV2
+==============================================================================
+
+[0] 部署
+  ✅ 部署成功  0x29d48775Dd177ae2F14876c158eA12F4FF89D0B8
+     链上代码长度 = 12378 字节（编译报告 12378）
+  ✅ 部署后链上代码长度与编译报告一致  链上 12378 字节 / 编译报告 12378 字节
+     PAYOUT_MAX=0.01  MIN_PREMIUM=0.0002  MIN_CONFIDENCE=60
+  ✅ THRESHOLD_PER_24H = 50（国标暴雨下限）  50
+  ✅ MAX_FEED_AGE = 24 小时  86400
+  ✅ coolingPeriod 默认 = 3 天（259200 秒）  259200
+  ✅ eligibleRequired 默认 = false（演示不拦人）  false
+  ✅ 限购常量：3 笔 / 0.02 ETH 在保敞口  3 笔 / 0.02 ETH
+
+[1] A7 赔付分档 —— 国标三级 × 窗口缩放，纯链上函数
+  ✅ thresholdOf(24) = 50  got=50 / want=50
+  ✅ thresholdOf(48) = 100  got=100 / want=100
+  ✅ thresholdOf(72) = 150  got=150 / want=150
+  ✅ 49mm/24h 未达档  got=255 / want=255
+  ✅ 50mm/24h = 暴雨档  got=0 / want=0
+  ✅ 99mm/24h 仍是暴雨档  got=0 / want=0
+  ✅ 100mm/24h = 大暴雨档  got=1 / want=1
+  ✅ 249mm/24h 仍是大暴雨  got=1 / want=1
+  ✅ 250mm/24h = 特大暴雨档  got=2 / want=2
+  ✅ 100mm/48h = 暴雨档  got=0 / want=0
+  ✅ 150mm/72h = 暴雨档  got=0 / want=0
+  ✅ 300mm/72h = 大暴雨档  got=1 / want=1
+  ✅ 750mm/72h = 特大暴雨档  got=2 / want=2
+  ✅ 50mm/72h 不达档（期限套利已封）  got=255 / want=255
+  ✅ 档位赔付比例 = 50% / 75% / 100%  5000 / 7500 / 10000
+  ✅ hoursAllowed：只放 24/48/72（v2 口径）  24=true 48=true 72=true 36=false
+
+[2] A4b 喂价新鲜度 —— 没喂过价不许投保（真链上踩过的坑）
+  ✅ 没喂过价就投保要拒绝  已拒绝（stale feed）
+  ✅ 先喂一次价（哪怕 0mm）  (1, 0mm) 已上链：feedJudgements[1] 从无到有
+  ✅ 喂价后投保成功  policy #0
+  ✅ 喂价超过 24h 后投保要拒绝（基线会陈旧）  已拒绝（stale feed）
+  ✅ 重新喂价后又可以投保  policy #1
+
+[3] A4 冷静期 —— 生效前不许索赔，状态显示 pending
+  ✅ 冷静期内状态 = pending  pending
+  ✅ 冷静期内索赔要拒绝  已拒绝（not yet effective）
+  ✅ operator 把冷静期改成 0（演示口径）  coolingPeriod=0
+  ✅ 非 operator 改冷静期要拒绝  已拒绝（not operator）
+  ✅ 冷静期 0 时新保单立刻 active  active
+
+[4] A1 保费网格（区域 × 时长）+ 保费地板
+  ✅ 未设网格时回退到 PREMIUM_DEFAULT  0.001 ETH / PREMIUM_DEFAULT=0.001 ETH
+  ✅ setPremiumGrid 后 24h 档 = 0.0008  0.0008 ETH（72h 档仍未设 → 仍走区域基准价）
+  ✅ 低于保费地板的网格价要拒绝  已拒绝（premium out of range）
+  ✅ 非 24/48/72 的网格价要拒绝  已拒绝（hours must be 24/48/72）
+  ✅ 非 operator 设网格价要拒绝  已拒绝（not operator）
+  ✅ 区域价低于地板时抬到 MIN_PREMIUM  0.0002 ETH / MIN_PREMIUM=0.0002 ETH
+  ✅ 保费金额不对要拒绝  已拒绝（premium mismatch）
+  ✅ 非 24/48/72 的时长要拒绝  已拒绝（hours must be 24/48/72）
+  ✅ 非法区域要拒绝  已拒绝（bad region）
+  ✅ 被承保人拒保的区域要拒绝  已拒绝（region suspended）
+
+[5] A7 分档赔付 —— 三档各走一遍真赔付
+  ✅ 注资 0.1 ETH  池子 0.103 ETH（+0.1）
+  ✅ 武汉 50mm/24h（暴雨档 50%）：档位 = 0  wantTier=0
+  ✅ 武汉 50mm/24h（暴雨档 50%）：payoutOf = 0.005 ETH  实得 0.005 ETH
+  ✅ 武汉 50mm/24h（暴雨档 50%）：骑手净到账 = 赔付额（gas 由触发者出）  +0.005 ETH
+  ✅ 武汉 50mm/24h（暴雨档 50%）：状态 = paid  paid
+  ✅ 广州 100mm/24h（大暴雨档 75%）：档位 = 1  wantTier=1
+  ✅ 广州 100mm/24h（大暴雨档 75%）：payoutOf = 0.0075 ETH  实得 0.0075 ETH
+  ✅ 广州 100mm/24h（大暴雨档 75%）：骑手净到账 = 赔付额（gas 由触发者出）  +0.0075 ETH
+  ✅ 广州 100mm/24h（大暴雨档 75%）：状态 = paid  paid
+  ✅ 成都 250mm/24h（特大暴雨档 100%）：档位 = 2  wantTier=2
+  ✅ 成都 250mm/24h（特大暴雨档 100%）：payoutOf = 0.01 ETH  实得 0.01 ETH
+  ✅ 成都 250mm/24h（特大暴雨档 100%）：骑手净到账 = 赔付额（gas 由触发者出）  +0.01 ETH
+  ✅ 成都 250mm/24h（特大暴雨档 100%）：状态 = paid  paid
+
+[6] 未达最低档 / AI 三关
+  ✅ 雨量未达国标线不许赔  已拒绝（below threshold）
+  ✅ 未达档时 currentTier = 255  255
+  ✅ 未达档时 payoutOf = 0  0.0 ETH
+  ✅ shortfall() 算出还差 1mm  1mm
+  ✅ rainfallDuring() = 49mm  49mm
+  ✅ 达档 + PAY 判定 → claimable  claimable
+  ✅ 未达档那条恢复到达档后可以赔（id 6）  D 到账 +0.0075 ETH
+  ✅ 没有 AI 判定时不许赔  已拒绝（no AI judgement）
+  ✅ AI 判定 DENY 时不许赔  已拒绝（AI: no loss confirmed）
+  ✅ AI 判定 DENY → 状态 = denied（合约把判定结论直接映射成状态）  denied
+  ✅ AI 置信度不足不许赔  已拒绝（AI: low confidence）
+  ✅ 低置信度状态 = low_confidence  low_confidence
+  ✅ 同一保单判定不能写两次  已拒绝（already submitted）
+  ✅ 非 operator 写判定要拒绝  已拒绝（not operator）
+  ✅ 给不存在的保单写判定要拒绝  已拒绝（no such policy）
+
+[7] A5 sources 真的写进链上（v1 里恒为 0）
+  ✅ judgements().sources = 3（链上真值）  kind=1 decision=1 conf=88 sources=3
+  ✅ feedJudgements 同样记录 sources  sources=3 conf=90
+
+[8] A3 限购 / A6 在保敞口账本
+     当前全部在保敞口 = 0.06 ETH
+  ✅ 骑手维度的在保敞口在累加  0.02 ETH（两笔 0.01 之和）
+  ✅ 笔数上限（3 笔/人，终身计数）要拒绝第 4 笔  已拒绝（too many policies）
+  ✅ 新骑手 e 买到 2 笔，敞口正好顶到上限  0.02 ETH
+  ✅ 在保敞口上限（0.02 ETH/人）要拒绝第 3 笔  已拒绝（open exposure cap exceeded）
+  ✅ reserveOf() = max(operator 下限, 在保敞口)  0.1 ETH ≥ 在保敞口 0.06 ETH
+  ✅ 提款击穿准备金要拒绝  已拒绝（would break reserve）
+  ✅ 池子余额已被准备金全部占用 → 无可提款额（这本身就是 A6 要表达的事）  0.081 ≤ 0.1
+  ✅ 未到期就结算要拒绝  已拒绝（policy not expired yet）
+  ✅ settleExpired 把到期的敞口从账本里减掉  0.1 → 0.03 ETH
+  ✅ 骑手 D 的在保敞口清零  0.0 ETH
+  ✅ 过期保单不能赔  已拒绝（policy expired）
+  ✅ 结算后 d 仍然买不了（笔数闸门是终身的）  已拒绝（too many policies）
+
+[9] A8 骑手白名单（生产开关，演示默认关）
+  ✅ 打开白名单后未登记地址不能投保  已拒绝（not an eligible rider）
+  ✅ 登记后同一地址可以投保  policy #14
+  ✅ 撤销登记后又不能投保  已拒绝（not an eligible rider）
+  ✅ 关掉白名单开关，任何人可投保（演示口径）
+
+[10] 暂停、权限与只读接口
+  ✅ 暂停后不能投保  已拒绝（contract paused）
+  ✅ 恢复后可以投保  paused 回到 false
+  ✅ 非 operator 喂价要拒绝  已拒绝（not operator）
+  ✅ 累计值倒退要拒绝  已拒绝（must not decrease）
+  ✅ 置信度低于 MIN_CONFIDENCE 要拒收  已拒绝（feed confidence too low）
+  ✅ rejectFeed 不改动 rainfall（丰台 0mm 仍为 0）  丰台 0mm（喂价前 0mm），武汉仍 271mm
+  ✅ rejectFeed 写入 DENY 判定留证  exists=true decision=0 conf=40
+  ✅ regionName 映射正确  1=wuhan 3=beijing 9=unknown
+  ✅ policiesOf() 列出骑手 A 的保单  [0, 3, 7]
+  ✅ Policy.productId = 1（A9 参数化占位）  1
+  ✅ Policy 存了时长与国标线  24h / 50mm
+  ✅ 暂停中的合约不能索赔  已拒绝（contract paused）
+
+==============================================================================
+通过 101 项 / 失败 0 项
+
+最终池子余额 = 0.0818 ETH   剩余敞口 = 0.04 ETH
+==============================================================================
+
+> e2e:multisig
+> node e2e_multisig.js
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_win32_x64_137.node'
+Require stack:
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\node_modules\@trufflesuite\uws-js-unofficial\src\uws.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\dist\node\core.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\e2e_multisig.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+==============================================================================
+本地链演练 · OperatorMultisig（2/3 多签） + RainDeliveryInsuranceV2 集成
+==============================================================================
+
+[1] 部署 OperatorMultisig（owners = 3 个地址，threshold = 2）
+  ✅ 部署成功  0x74F1853e5b82cFE97202B09554c15f98089239C4
+     链上代码长度 = 4746 字节（编译报告 4746）
+  ✅ 部署后链上代码长度与编译报告一致  4746 / 编译报告 4746
+  ✅ getOwners() = 3 个 owner 且顺序保持  [0xdaddB1EbDaf344C713C02ecd968a4Af0051Ddf90, 0xe58eb635729AC9480Fa0385CBe7f8a26a2df5EDA, 0x2AE894597bC4cfC0C89D177cA9ec2B1cdb08D179]
+  ✅ threshold() = 2  2
+  ✅ txCount() 初始 = 0  0
+  ✅ isOwner()：3 个 owner 为 true，非 owner 为 false
+
+[2] 构造参数守卫（owner 去重 / 非零 / threshold 区间）
+  ✅ owners 为空要拒绝  已拒绝（no owners）
+  ✅ threshold = 0 要拒绝  已拒绝（bad threshold）
+  ✅ threshold > owners 数要拒绝  已拒绝（bad threshold）
+  ✅ owner 含零地址要拒绝  已拒绝（zero owner）
+  ✅ owner 重复要拒绝  已拒绝（duplicate owner）
+
+[3] receive()：多签能持有 BOT（执行时带 value / 收 gas 补贴）
+  ✅ 多签余额 = 0.1 ETH  0.1 ETH
+
+[4] 部署 RainDeliveryInsuranceV2，并把 operator 交给多签
+  ✅ 部署成功  0x53104339957d0D081daC53C8dF766464BeBbE238
+  ✅ 部署时 operator = 部署者 EOA（这就是原来的单点）  0xf0ebeD400Ae42Aca52B34072196D4902C7081Ca4
+  ✅ transferOperator(multisig) 生效：operator() 已指向多签  0x74F1853e5b82cFE97202B09554c15f98089239C4
+
+[5] 原单私钥直连 operator 函数 → 全部 not operator（本任务要消掉的单点）
+  ✅ 原 EOA 直接 setPaused(true) 被拒  已拒绝（not operator）
+  ✅ 原 EOA 直接 updateRainfall 被拒  已拒绝（not operator）
+  ✅ 原 EOA 直接 setReserve 被拒  已拒绝（not operator）
+  ✅ 原 EOA 直接 withdrawPool 被拒  已拒绝（not operator）
+  ✅ 原 EOA 直接 transferOperator 被拒  已拒绝（not operator）
+
+[6] 多签 2 票通过：setPaused(true)
+  ✅ submit 后自动 1 票、未执行  confirmations=1 executed=false
+  ✅ 只有 1 票时目标状态没变（paused 仍 false）  paused=false
+  ✅ isConfirmed() 逐地址可查
+  ✅ 同一 owner 重复 confirm 被拒  已拒绝（already confirmed）
+  ✅ 票数不足时 execute 被拒  已拒绝（not enough confirmations）
+  ✅ 第 2 票到位 → 立即执行（confirmations=2, executed=true）  confirmations=2 executed=true
+  ✅ 链上状态真的变了：paused() == true  paused=true
+  ✅ 已执行的交易不能再 execute  已拒绝（already executed）
+  ✅ 已执行的交易不能再 confirm  已拒绝（already executed）
+  ✅ 已执行的交易不能再 revoke  已拒绝（already executed）
+  ✅ 给不存在的 txId 投票要拒绝  已拒绝（no such tx）
+
+[7] 多签 2 票通过：updateRainfall（五城雨量计数器）+ 带 value 调 fundPool
+  ✅ 通过多签喂价成功：rainfall(1) 变了  0 → 80 mm
+  ✅ 执行时把 0.05 ETH 带进资金池  0.05 ETH
+  ✅ 多签余额同步减少  0.1 → 0.05 ETH
+
+[8] 非 owner 调 submit / confirm / revoke / execute → 全部 not owner
+  ✅ 非 owner submit 被拒  已拒绝（not owner）
+  ✅ 非 owner confirm 被拒  已拒绝（not owner）
+  ✅ 非 owner revoke 被拒  已拒绝（not owner）
+  ✅ 非 owner execute 被拒  已拒绝（not owner）
+
+[9] 目标 revert → 整笔回滚（不标记 executed、不吞失败、钱不动）
+  ✅ 目标 revert 的原因被原样冒泡（eth_call 复现）  已拒绝（cumulative must not decrease）
+     [gas 兜底] 估算失败：missing revert data
+  ✅ 第 2 票触发执行、目标 revert → confirm 整笔回滚  交易失败并回滚（transaction execution reverted）
+  ✅ executed 仍为 false
+  ✅ 票数回到第 2 票之前（confirm 整笔回滚）  confirmations=1
+  ✅ rB 的确认没有被记下
+  ✅ 目标状态没变：rainfall(1) 仍 80mm  80mm
+  ✅ 对失败的待执行交易也能 revoke（票数清零）  confirmations=0
+     [gas 兜底] 估算失败：missing revert data
+  ✅ 带 value 调非 payable 目标 → 执行失败并回滚  交易失败并回滚（transaction execution reverted）
+  ✅ 该笔 executed 仍为 false
+  ✅ 多签资产没变（0.01 ETH 没出去）  0.05 ETH
+  ✅ 目标合约余额没变  0.05 ETH
+  ✅ 目标状态也没变：rainfall(1) 仍 80mm  80mm
+
+[10] revoke：执行前可撤票，撤票后重投有效
+  ✅ 提交换来 1 票  confirmations=1
+  ✅ 撤票后票数降到 0  confirmations=0
+  ✅ 没投过票的人 revoke 被拒  已拒绝（not confirmed）
+  ✅ 撤票后重新 confirm 能再记 1 票  confirmations=1
+  ✅ 第 2 票到位 → setPaused(false) 执行成功  paused=false
+
+[11] 治理（换 owner / 改 threshold）只能由多签自己发起，没有 owner 直连后门
+  ✅ owner 直连 setThreshold 被拒  已拒绝（only self）
+  ✅ owner 直连 addOwner 被拒  已拒绝（only self）
+  ✅ owner 直连 removeOwner 被拒  已拒绝（only self）
+  ✅ 多签自己调 setThreshold(3) 生效  threshold=3
+  ✅ 直接调 setThreshold 传非法值也要拒（onlySelf 之外还有区间校验）  已拒绝（only self）
+  ✅ threshold=3 后 2 票不够，addOwner 没有执行（owner 仍 3 个）  executed=false owners=3
+  ✅ removeOwner 会让人凑不齐 threshold → 第 3 票执行时被拒（eth_call 复现）  已拒绝（threshold too high）
+     [gas 兜底] 估算失败：missing revert data
+  ✅ 第 3 票真实上链 → 整笔回滚  交易失败并回滚（transaction execution reverted）
+  ✅ 被拒后 owner 集合与交易状态都没变  executed=false owners=3
+  ✅ 第 3 票到位 → addOwner(rD) 执行，owner 变 4 个  4 个
+  ✅ 3 票通过 removeOwner(rD)：owner 回到 3 个  3 个
+
+[12] execute 补触发：票数够了但还没执行时的兜底入口（真的能走通）
+  ✅ ms2（3/3）上 K 攒到 2 票仍未执行
+  ✅ ms2 通过 3 票把 threshold 降到 1  threshold=1
+  ✅ K 仍是未执行状态（票数已够）
+  ✅ execute(K) 补触发成功：addOwner(rD) 执行，owner 变 4 个  executed=true owners=4
+  ✅ 补触发过的交易再 execute 会拒绝  已拒绝（already executed）
+  ✅ 同一 payload 再 submit = 新 txId 并独立执行，老交易不会被二次执行  老 id 0(executed=true, 票=2) / 新 id 2
+  ✅ 老交易不能被当成新交易再跑一遍（没有重复执行的缝）  已拒绝（already executed）
+
+==============================================================================
+通过 73 项 / 失败 0 项
+==============================================================================
+
+> e2e:v3
+> node e2e_v3.js
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_win32_x64_137.node'
+Require stack:
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\node_modules\@trufflesuite\uws-js-unofficial\src\uws.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\dist\node\core.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\e2e_v3.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+==============================================================================
+本地链全流程演练 · RainDeliveryInsuranceV3
+==============================================================================
+
+[0] 部署 + v3 常量
+  ✅ 部署成功  0x0652D941dd26381d0B0581CcC0a1beedb01275e4
+  ✅ 部署后链上代码长度与编译报告一致  15823 字节
+  ✅ A-5① MIN_PREMIUM = 0.00002（v2 的 0.0002 降了 10 倍）  0.00002
+  ✅ A-5③ 时长区间 = 12~24 小时  12/24
+  ✅ A-5③ 档位数 = 2（国标只有暴雨/大暴雨两档）  2
+  ✅ PAYOUT_MAX 仍是 0.01（赔付上限口径未动）  0.01
+  ✅ MAX_FEED_AGE = 24 小时（喂价保鲜规则未动）  86400
+  ✅ 限购常量：3 笔 / 0.02 ETH 在保敞口（B 的地盘，本轮未动）  3 笔 / 0.02 ETH
+  ✅ A-5② pricingModule 默认未配置（回退 v2 本地网格口径）  0x0000000000000000000000000000000000000000
+  ✅ 准备金注入 0.05 ETH（后续 claim 才有钱可赔）  0.05 ETH
+
+[1] A-5③ 国标两档查表（GB/T 28592—2012 表 1）
+  ✅ thresholdOf(12, 暴雨) = 30  got=30 / want=30
+  ✅ thresholdOf(12, 大暴雨) = 70  got=70 / want=70
+  ✅ thresholdOf(24, 暴雨) = 50  got=50 / want=50
+  ✅ thresholdOf(24, 大暴雨) = 100  got=100 / want=100
+  ✅ entryThresholdOf(12) = 30  got=30 / want=30
+  ✅ entryThresholdOf(24) = 50  got=50 / want=50
+  ✅ 29mm/12h 未达档  got=255 / want=255
+  ✅ 30mm/12h = 暴雨档  got=0 / want=0
+  ✅ 69mm/12h 仍是暴雨档  got=0 / want=0
+  ✅ 70mm/12h = 大暴雨档  got=1 / want=1
+  ✅ 999mm/12h 顶在最高档（没有第三档）  got=1 / want=1
+  ✅ 49mm/24h 未达档  got=255 / want=255
+  ✅ 50mm/24h = 暴雨档  got=0 / want=0
+  ✅ 99mm/24h 仍是暴雨档  got=0 / want=0
+  ✅ 100mm/24h = 大暴雨档  got=1 / want=1
+  ✅ 999mm/24h 顶在最高档（没有第三档）  got=1 / want=1
+  ✅ 48 小时的阈值要拒绝（旧窗口已停售）  已拒绝（hours must be 12/24）
+  ✅ 不存在的大暴雨档以上档位要拒绝  已拒绝（bad tier）
+  ✅ 两档赔付比例 = 50% / 75%  5000/7500
+  ✅ 已删除的 100% 档要拒绝  已拒绝（bad tier）
+  ✅ hoursAllowed：只放 12/24（v3 口径，24/48/72 那套已作废）  12=true 24=true 36=false 48=false
+
+[2] A4b 喂价新鲜度（v2 保留项，确认没被 v3 改动碰坏）
+  ✅ 没喂过价就投保要拒绝  已拒绝（stale feed）
+  ✅ 喂价后投保成功  policy #0
+  ✅ 喂价超过 24h 后投保要拒绝  已拒绝（stale feed）
+  ✅ 重新喂价后又可以投保  policy #1
+
+[3] A-6 投保人/受益人分离 + 路线图⑥ 冷静期内退保
+     平台代付段报价 quoteOf(1,12,骑手认证,平台代付,1) = 0.001 ETH
+  ✅ buyFor：受益人 = 被保骑手（保单挂在骑手名下）  0x117d10DA1c934C1ed938BB3c861424cf90e35e92
+  ✅ buyFor：付款人 = 出钱的平台账户（A-6 的关键字段）  0x9842148e33375d5411274d4bF3b7B5cA21bF06c1
+  ✅ buyFor：保费 = 五维报价（不是写死的默认价）  0.001
+  ✅ 保单入口闸线 = 国标 12h 暴雨线 30mm  30mm/12h
+  ✅ 路线图③ openPoliciesOf[受益人] = 1  1
+  ✅ 不是付款人也不是 operator 的退保要拒绝  已拒绝（only payer or operator）
+  ✅ 退保从池子支出正好一份保费  -0.001 ETH
+  ✅ 退保把保费退给**付款人**（扣掉他自付 gas 后净 +一份保费）  +0.001 ETH
+  ✅ 受益骑手一分钱没动（退款不经过他）  0.0 ETH
+  ✅ 退保后保单已了结、未赔付  settled=true paid=false
+  ✅ 退保后该骑手的未结清计数与在保敞口都归零  open=0 exp=0.0
+  ✅ 同一份保单不能退两次  已拒绝（already settled）
+  ✅ 退掉的保单不能索赔（这条挡的就是「退保 + 索赔」双拿）  已拒绝（already settled）
+
+[4] 演示口径：把冷静期改成 0（v2 的既有做法，v3 保留）
+  ✅ coolingPeriod = 0  0
+  ✅ 非 operator 改冷静期要拒绝  已拒绝（not operator）
+  ✅ 冷静期 0 时新保单立刻生效（不经过 pending）  active
+  ✅ 冷静期 0 时退保窗口已经关闭（已是生效态）  已拒绝（already effective）
+
+[5] A-5② 五维报价 + v2 兼容重载
+  ✅ 2 参兼容重载 == 5 参默认段（前端不用改）  0.001 ETH
+  ✅ 报价落在 [MIN_PREMIUM, PAYOUT_MAX) 区间内  0.001
+  ✅ quoteOf 返回可售标记（sellable）  0.001 ETH
+  ✅ 不在售的时长报价要拒绝  已拒绝（hours must be 12/24）
+  ✅ 链上不支持一次买多份（count 必须 1）  已拒绝（count must be 1）
+  ✅ 低于地板价的网格价要拒绝  已拒绝（premium out of range）
+  ✅ 48 小时的网格价要拒绝  已拒绝（hours must be 12/24）
+
+[6] 路线图③ 限购只计未结清 + 路线图④ settleExpired 去权限化
+  ✅ 同一骑手第 2 份：在保敞口正好顶到 0.02  0.02 ETH
+  ✅ 同一骑手第 3 份要拒绝（敞口闸先于笔数闸生效）  已拒绝（open exposure cap exceeded）
+  ✅ 未结清计数 = 2  2
+  ✅ 新买一份还没到期的保单（试结算闸门用）  policy #5
+  ✅ 还没到期的保单不能被结算  已拒绝（policy not expired yet）
+  ✅ 非 operator 也能结算到期保单（路线图④：只减敞口、不付款）  gasUsed=49655
+  ✅ 结算后未结清计数 2 → 1  1
+  ✅ 结算不产生任何转账（只是账本归零）  0.0 ETH
+  ✅ 结算后同一骑手可以再买（v2 的终身计数已改成只计未结清）  policy #6
+
+[7] A-5④ 判定快照：claim 用 AI 判定当时的读数，不用申请那一刻的读数
+  ✅ 快照测试用新保单：投保基线 = 链上此刻读数  300mm
+  ✅ 链上累计降雨已推到 500mm（此刻相对基线 = 200mm，够大暴雨档）  500mm
+  ✅ 判定读数低于投保基线要拒绝  已拒绝（judged reading below buy baseline）
+  ✅ 判定读数超过链上此刻读数要拒绝（不许凭空发明降水）  已拒绝（judged reading ahead of chain）
+  ✅ 非 operator 提交判定要拒绝  已拒绝（not operator）
+  ✅ 判定写入成功（快照 = 基线 + 30mm）  rainfallAtJudgement = 330mm
+  ✅ rainfallDuring 用快照（30mm），而不是链上此刻的 200mm  30mm
+  ✅ 档位按快照算 = 暴雨档 0（若按 200mm 会是 1）  0
+  ✅ 可赔金额 = 0.005 ETH（50% 档，不是 200mm 对应的 0.0075）  0.005
+  ✅ shortfall = 0（快照已达标）  0
+  ✅ 索赔按快照赔付 0.005 ETH 并了结  paid=true settled=true payout=0.005 ETH
+  ✅ 赔款到账 = 受益骑手（gas 由触发者付，受益人净得全款）  +0.005 ETH
+  ✅ 赔付后未结清计数与在保敞口归零（路线图③在 claim 里也生效）  open=0 exp=0.0
+  ✅ 同一份保单不能判两次  已拒绝（judgement already submitted）
+  ✅ 已结清/退过保的保单不能再写判定  已拒绝（already settled）
+
+[8] A-5② setPricingModule：接上/更换/摘掉定价模块
+  ✅ 非 operator 接定价模块要拒绝  已拒绝（not operator）
+  ✅ pricingModule 已指向新地址  0x336B47cec1DDb80aA3C389955fD60680f06D03c3
+  ✅ 指向一个非合约地址时报价会失败（证明模块真的被调用，不是摆设）  已拒绝（execution reverted (no data present; likely require(false) occurred | ）
+  ✅ 摘掉模块后回退本地网格口径  0.001 ETH
+
+==============================================================================
+通过 87 项 / 失败 0 项
+==============================================================================
+
+> e2e:v4
+> node e2e_v4_token.js
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_win32_x64_137.node'
+Require stack:
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\node_modules\@trufflesuite\uws-js-unofficial\src\uws.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\dist\node\core.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\e2e_v4_token.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+[1] 基础
+  ✅ token decimals=2（1 raw=1 分）
+  ✅ PAYOUT_MAX=10000 分（=100 元）
+  ✅ MIN_PREMIUM=100 分（=1 元）
+  ✅ v4.token 指向 RainToken
+[2] 网格（人民币分口径）
+  ✅ premiumOf(武汉,12h)=110（1.10 元）
+[3] 注资（approve + fundPool）
+  ✅ 池子=500000 分（5000 元）
+  ✅ 原生币余额=0（资金全走代币）
+[4] 投保（approve + buyPolicy）
+  ✅ 保单0：保费110 / 档线30 / 基线100
+  ✅ 骑手代币余额 10000-110
+  ✅ 合约代币余额 500000+110
+  ✅ 在保敞口=10000
+  ✅ 没额度再买要拒（insufficient allowance）  已拒绝（insufficient allowance）
+[5] 判定与赔付（tier0）
+  ✅ 判定快照=145 / payoutOf=5000（50 元）
+  ✅ 骑手到账 +5000 → 9890+5000
+  ✅ 保单0 状态 paid / tier0
+  ✅ 重复理赔要拒  已拒绝（already paid）
+[6] DENY 路径
+  ✅ 雨量达标但 AI 判 DENY → 不赔  已拒绝（AI: no loss confirmed）
+  ✅ 保单1 状态 denied
+[7] 冷静期退保（钱回付款人）
+  ✅ 冷静期内状态 pending
+  ✅ 退保后保费原路回骑手 → 14780（14890-110(DENY单)-110(本单)+110(退回)）
+[8] 平台代付（buyFor）与 tier1
+  ✅ 保单3 payer=平台 / rider=骑手 / 保费880
+  ✅ tier1 赔 7500（75 元）给骑手
+  ✅ 平台没拿赔付（只出了保费）
+[9] 到期结算（免权限）与敞口清零
+  ✅ 保单1 结算后 openExposure=0
+[10] 提款与准备金
+  ✅ 敞口清零后可提空池子
+  ✅ 运营方收到全部池款
+======================================================================
+通过 26 项 / 失败 0 项
+
+> e2e:v5
+> node e2e_v5.js
+
+This version of µWS is not compatible with your Node.js build:
+
+Error: Cannot find module '../binaries/uws_win32_x64_137.node'
+Require stack:
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\node_modules\@trufflesuite\uws-js-unofficial\src\uws.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\node_modules\ganache\dist\node\core.js
+- C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof\07-测试工具\e2e_v5.js
+Falling back to a NodeJS implementation; performance may be degraded.
+
+
+[1] 区域注册（运营方）
+  ✅ regionCount=3（含县级市）
+  ✅ regions(义乌).active=true
+[2] 未注册区域三处全挡
+  ✅ 未注册区域投保拒  已拒绝（region not available）
+  ✅ 未注册区域喂价拒  已拒绝（region not available）
+  ✅ 未注册区域设价拒  已拒绝（region not available）
+[3] 批量喂价
+  ✅ 批量后 义乌=12mm
+  ✅ 批量后 上海=172mm
+  ✅ 批量里有一格倒退 → 整笔回滚  已拒绝（cumulative must not decrease）
+[4] 县级市投保 + 批量判定 + 理赔
+  ✅ 保单0：义乌 24h · 保费500分 · 档线50mm
+  ✅ 批量判定后 payoutOf=5000（50 元）
+  ✅ 骑手到账 5000 分
+  ✅ 批量判定同一保单第二次要拒  已拒绝（judgement already submitted）
+[5] 长度不齐防护
+  ✅ 批量喂价数组长度不齐要拒  已拒绝（array length mismatch）
+  ✅ 批量判定数组长度不齐要拒  已拒绝（array length mismatch）
+[6] 喂价的脏数据守卫
+  ✅ 置信度低于 MIN_CONFIDENCE 的喂价要拒  已拒绝（feed confidence too low）
+  ✅ 证据哈希为 0 的喂价要拒  已拒绝（evidence required）
+[7] 保单状态机：未判定 / 判不赔 / 低置信 都不能 claim
+  ✅ 新保单状态 = active（冷却期已置 0）
+  ✅ 未判定的保单 claim 要拒  已拒绝（no AI judgement）
+  ✅ 低置信判定确实写进了 judgements（置信 10）
+  ✅ 低置信判定的 claim 要拒  已拒绝（AI: low confidence）
+[8] 冷却期 > 0 时买完是 pending，冷却期内可退款
+  ✅ 冷却期内状态 = pending
+  ✅ 买入后敞口增加
+  ✅ 冷却期内 claim 要拒  已拒绝（not yet effective）
+  ✅ 退款后 settled=true（policyStatus 仍是 pending —— v6 待修）
+  ✅ 退款后敞口收回
+[9] 喂价过期后不再接单（MAX_FEED_AGE 硬门禁）
+  ✅ 喂价过期后 buyPolicy 要拒  已拒绝（stale feed）
+  ✅ 同值保鲜后又能接单（cumulative 不降即可）
+[10] 到期结算释放敞口
+  ✅ 未到期不能结算  已拒绝（policy not expired yet）
+  ✅ 到期后状态 = expired
+  ✅ 结算后敞口释放 100 元
+[11] premiumOf 参数口径（v5 已知限制：批发三参数未实现）
+  ✅ premiumOf(2 参) == premiumOf(5 参)  500 / 500
+  ✅ riderTier/channel/count 不改变价格（v6 才实现批发价）  500 / 500
+  ✅ quoteOf 与 premiumOf 同价且可承保
+  ✅ 档位比例 tierBps(0)=50% / (1)=75%
+  ✅ 不存在的档位 tierBps(2) 要拒  已拒绝（bad tier）
+  ✅ 档线阈值 12h: 30/70mm
+  ✅ 档线阈值 24h: 50/100mm
+======================================================================
+通过 37 项 / 失败 0 项
+
+> check-replay
+> node ../04-脚本/replay-judgement.js --all
+
+发现 5 份判定留痕：#0 #1 #2 #4 #5
+
+===== 重放保单 #0 =====
+  ✅ ① 快照 inputHash 可复算一致  0x9b7e32f6dc4e0724…
+  ✅ ② 判定结论一致  重放 0 / 留痕 0
+  ✅ ② 置信度一致  95
+  ✅ ② 指标逐项一致
+  ✅ ③ outputHash 可复算一致  重放 0x253cc3c398ccf589… / 留痕 0x253cc3c398ccf589…
+  结论 0 · 置信 95 · 依据：链上官方增量 0mm < 阈值 30mm，雨量未达标。
+
+===== 重放保单 #1 =====
+  ✅ ① 快照 inputHash 可复算一致  0xb4b00fa335e12043…
+  ✅ ② 判定结论一致  重放 1 / 留痕 1
+  ✅ ② 置信度一致  94
+  ✅ ② 指标逐项一致
+  ℹ 旧 schema 留痕（decidedAt/rationale 曾在哈希面内）：按留痕自身口径重放
+  ✅ ③ outputHash 可复算一致  重放 0xb727695c247b9a52… / 留痕 0xb727695c247b9a52…
+  结论 1 · 置信 94 · 依据：⚠️ 本快照为演示用合成数据（simulated=true），不是真实气象观测。；链上官方增量 114mm ≥ 阈值 50mm，且 3/3 个独立模型一致支持。；模型窗口增量 114 / 107.16 / 118.56 mm（中位数 114mm，离散度 11.4mm），与链上数字相符。
+
+===== 重放保单 #2 =====
+  ✅ ① 快照 inputHash 可复算一致  0x39088a651fdf4d66…
+  ✅ ② 判定结论一致  重放 1 / 留痕 1
+  ✅ ② 置信度一致  94
+  ✅ ② 指标逐项一致
+  ✅ ③ outputHash 可复算一致  重放 0x1a8a61fd9f0976b9… / 留痕 0x1a8a61fd9f0976b9…
+  结论 1 · 置信 94 · 依据：⚠️ 本快照为演示用合成数据（simulated=true），不是真实气象观测。；链上官方增量 153mm ≥ 阈值 50mm，且 3/3 个独立模型一致支持。；模型窗口增量 153 / 143.82 / 159.12 mm（中位数 153mm，离散度 15.3mm），与链上数字相符。
+
+===== 重放保单 #4 =====
+  ✅ ① 快照 inputHash 可复算一致  0x0085479e9c98af02…
+  ✅ ② 判定结论一致  重放 1 / 留痕 1
+  ✅ ② 置信度一致  94
+  ✅ ② 指标逐项一致
+  ✅ ③ outputHash 可复算一致  重放 0xa5411daabb21d29e… / 留痕 0xa5411daabb21d29e…
+  结论 1 · 置信 94 · 依据：⚠️ 本快照为演示用合成数据（simulated=true），不是真实气象观测。；链上官方增量 103mm ≥ 阈值 50mm，且 3/3 个独立模型一致支持。；模型窗口增量 103 / 96.82 / 107.12 mm（中位数 103mm，离散度 10.3mm），与链上数字相符。
+
+===== 重放保单 #5 =====
+  ✅ ① 快照 inputHash 可复算一致  0x69bf6eccf6a1e316…
+  ✅ ② 判定结论一致  重放 1 / 留痕 1
+  ✅ ② 置信度一致  94
+  ✅ ② 指标逐项一致
+  ✅ ③ outputHash 可复算一致  重放 0x7a24c1d804d36667… / 留痕 0x7a24c1d804d36667…
+  结论 1 · 置信 94 · 依据：⚠️ 本快照为演示用合成数据（simulated=true），不是真实气象观测。；链上官方增量 103mm ≥ 阈值 50mm，且 3/3 个独立模型一致支持。；模型窗口增量 103 / 96.82 / 107.12 mm（中位数 103mm，离散度 10.3mm），与链上数字相符。
+================================================================
+通过 25 项 / 失败 0 项

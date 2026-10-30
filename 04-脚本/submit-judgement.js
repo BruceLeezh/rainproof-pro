@@ -23,12 +23,13 @@
  *   node submit-judgement.js 0
  */
 
-try { require("dotenv").config(); } catch (_) { /* dotenv 可选 */ }
+try { require("dotenv").config({path:require("path").join(__dirname,".env")}); } catch (_) { /* dotenv 可选 */ }
 const fs = require("fs");
 const path = require("path");
 const { JsonRpcProvider, Wallet, Contract } = require("ethers");
 const { evidenceHashOf } = require("./canonical");
 
+const ACTIVE = require("./active-deployment").applyDeployment();
 const RPC = process.env.SEPOLIA_RPC || process.env.RPC_URL || "http://127.0.0.1:8545";
 const ADDR = process.env.CONTRACT_ADDRESS || "";
 const KEY = process.env.PRIVATE_KEY || "";
@@ -102,17 +103,39 @@ function throwIfNetErr(kind, e) {
   }
   const isV2 = kind === "v2";
 
-  const operator = (await c.operator()).toLowerCase();
-  if (wallet.address.toLowerCase() !== operator) {
-    console.error(`💥 这把私钥不是 operator。\n   operator = ${operator}\n   本私钥   = ${wallet.address.toLowerCase()}`);
-    process.exit(1);
-  }
-
+  // ★ 重复判定守卫必须在 operator 早退之前：
+  //   v5 的 operator 是多签，永远走下面那条「打印两票命令」的早退分支；
+  //   若把 exists 检查放在早退之后，对已判过的保单仍会打印一条照抄必 revert 的命令
+  //   （judgement already submitted 会把唯一那张保单的证据链烧掉）。
   const before = await c.judgements(policyId);
   if (before.exists) {
     console.error(`💥 保单 #${policyId} 已有判定（合约规定一份保单只判一次），不重复提交。`);
-    process.exit(1);
+    console.error(`   链上既有判定：decision=${before.decision} confidence=${before.confidence} sources=${before.sources} judgedAt=${new Date(Number(before.judgedAt) * 1000).toLocaleString("zh-CN")}`);
+    console.error(`   outputHash   ${before.outputHash}`);
+    process.exit(0);   // 不是错误：状态本来就该是这样
   }
+
+  const operator = (await c.operator()).toLowerCase();
+  if (wallet.address.toLowerCase() !== operator) {
+    // v5 起 operator 是 2/3 多签（0x21C8…0d98），单私钥直发必然 revert。
+    // 这里不写链：把已经算好的参数整理成一条两票命令，交给 07-测试工具/multisig-call.js 执行。
+    console.log("=".repeat(74));
+    console.log("operator 是多签 " + operator + "，本工具不再单键直发（会 revert）。");
+    console.log("请用下面这条命令走两票（默认干跑，加 --send 才真正上链）：");
+    console.log("");
+    console.log("  node 07-测试工具/multisig-call.js submitJudgement " + policyId +
+      " " + judgement.decision + " " + judgement.confidence + " " + judgement.sources +
+      " " + snapshot.oracle.cumulativeMm + " " + snapHash + " " + outputHash +
+      " " + JSON.stringify(judgement.judgeVersion) + " --send");
+    console.log("");
+    console.log("（密钥取仓库外 密钥-本地/owner-keys-2026-10-24.json，工具会先校验 owner 身份）");
+    console.log("=".repeat(74));
+    console.log("结论      " + judgement.decisionLabel + "  置信度 " + judgement.confidence + "  版本 " + judgement.judgeVersion);
+    console.log("inputHash  " + snapHash);
+    console.log("outputHash " + outputHash);
+    process.exit(0);
+  }
+
   const statusBefore = await c.policyStatus(policyId);
 
   console.log("=".repeat(74));

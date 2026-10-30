@@ -30,13 +30,14 @@
  *                                        # 明确标记 simulated=true（不撒谎）
  */
 
-try { require("dotenv").config(); } catch (_) { /* dotenv 可选 */ }
+try { require("dotenv").config({path:require("path").join(__dirname,".env")}); } catch (_) { /* dotenv 可选 */ }
 const fs = require("fs");
 const path = require("path");
 const { JsonRpcProvider, Contract } = require("ethers");
-const { REGION_BY_ID, RAIN_EPOCH, assertRegionsMatchContract } = require("./regions");
+const { REGION_BY_ID, RAIN_EPOCH, assertRegionsMatchContract, regionOf } = require("./regions");
 const { evidenceHashOf } = require("./canonical");
 
+const ACTIVE = require("./active-deployment").applyDeployment();
 const RPC = process.env.SEPOLIA_RPC || process.env.RPC_URL || "http://127.0.0.1:8545";
 const ADDR = process.env.CONTRACT_ADDRESS || "";
 const OUT_DIR = process.env.AI_OUT_DIR || path.join(__dirname, "..", "09-AI判定留痕");
@@ -58,6 +59,7 @@ const ABI_DIR = path.join(__dirname, "..", "03-合约");
 const ABI_V1 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsurance.abi.json"), "utf8"));
 const ABI_V2 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsuranceV2.abi.json"), "utf8"));
 const ABI_V3 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsuranceV3.abi.json"), "utf8"));
+const ABI_V5 = JSON.parse(fs.readFileSync(path.join(ABI_DIR, (ACTIVE.version === "V6" ? "RainDeliveryInsuranceV6.abi.json" : "RainDeliveryInsuranceV5.abi.json")), "utf8"));
 
 const ARGV = process.argv.slice(2);
 const POLICY_ID = Number(ARGV.find((a) => /^\d+$/.test(a)));
@@ -247,23 +249,31 @@ if (require.main === module) (async () => {
   const provider = new JsonRpcProvider(RPC);
   // 按链上有没有 v2 的 thresholdOf() 选 ABI：968 / 677 走 v2，
   // Sepolia 的 v1 与 2024 武汉暴雨回放链走 v1（两边的 Policy 结构体不同，不能混用）。
-  // 按链上有的「版本指纹」选 ABI：v3 entryThresholdOf(uint256)｜v2 thresholdOf(uint256)｜v1 THRESHOLD()。
-  // 探测顺序必须从新到旧：v3 的 thresholdOf 是 2 参，拿 v2 的 1 参签名去问会失败、退回 v1 反而更糟。
-  let c = new Contract(ADDR, ABI_V3, provider);
-  let kind = "v3";
-  try { await c.entryThresholdOf(24); }
+  // 按链上有的「版本指纹」选 ABI：v5 regionCount()｜v3 entryThresholdOf(uint256)｜v2 thresholdOf(uint256)｜v1 THRESHOLD()。
+  // 探测顺序必须从新到旧：拿旧 ABI 去问新合约，ethers 只会报「这不是合约函数」，分不清版本。
+  // 注意 ABI 与合约必须成套：v5 的 policies() 字段顺序与 v3 不同（v5 第 3 位是 productId，
+  // 且多出 effectiveFrom/thresholdMm/tier/payout/settled），拿 v3 ABI 解 v5 会整体错位。
+  let c = new Contract(ADDR, ABI_V5, provider);
+  let kind = "v5";
+  try { await c.regionCount(); }
   catch (e) {
-    throwIfNetErr("v3", e);
-    kind = "v2";
-    c = new Contract(ADDR, ABI_V2, provider);
-    try { await c.thresholdOf(24); }
-    catch (e2) { throwIfNetErr("v2", e2); kind = "v1"; c = new Contract(ADDR, ABI_V1, provider); }
+    throwIfNetErr("v5", e);
+    kind = "v3";
+    c = new Contract(ADDR, ABI_V3, provider);
+    try { await c.entryThresholdOf(24); }
+    catch (e2) {
+      throwIfNetErr("v3", e2);
+      kind = "v2";
+      c = new Contract(ADDR, ABI_V2, provider);
+      try { await c.thresholdOf(24); }
+      catch (e3) { throwIfNetErr("v2", e3); kind = "v1"; c = new Contract(ADDR, ABI_V1, provider); }
+    }
   }
-  await assertRegionsMatchContract(c);   // 区域表对不上就别往下走
+  await assertRegionsMatchContract(c);   // v5 走 regions(uint32)：名字 + active 双校   // 区域表对不上就别往下走
 
   const p = await c.policies(POLICY_ID);
   if (!p.exists) { console.error(`保单 #${POLICY_ID} 不存在`); process.exit(2); }
-  const region = REGION_BY_ID[Number(p.regionId)];
+  const region = regionOf(p.regionId);   // v5 传区划码、老版本传 1..5，regionOf 两套都认
   if (!region) { console.error(`区域 #${p.regionId} 不在区域表里`); process.exit(2); }
 
   const startDate = shDate(p.startTime);
@@ -280,9 +290,10 @@ if (require.main === module) (async () => {
   // 所以 12h 那行在 v2 上永远走不到。
   // v3 上 hours 只允许 12/24（hoursAllowed），阈值走国标两档表的入口线 = thresholdOf(hours, 0)。
   const thresholdMm = Number(
-    kind === "v3" ? await c.entryThresholdOf(p.windowHours)
-      : kind === "v2" ? await c.thresholdOf(p.windowHours)
-        : await c.THRESHOLD());
+    kind === "v5" ? await c.entryThresholdOf(p.windowHours)   // v5 与 v3 同名同义：国标入口线
+      : kind === "v3" ? await c.entryThresholdOf(p.windowHours)
+        : kind === "v2" ? await c.thresholdOf(p.windowHours)
+          : await c.THRESHOLD());
   const minConfidence = Number(await c.MIN_CONFIDENCE());
 
   // 证据窗口的上界：窗口结束日与今天取小（见 sliceModelSeries ③）。
@@ -336,7 +347,7 @@ if (require.main === module) (async () => {
   const inputHash = evidenceHashOf(snapshot);
   // collectedAt 放在被哈希对象【之外】：它每次采集都不一样，一旦进了 snapshot，
   // 同一份数据重跑就会得到不同的 inputHash，「第三方独立复算」当场不成立。
-  fs.writeFileSync(file, JSON.stringify({ snapshot, collectedAt: new Date().toISOString(), inputHash }, null, 2));
+  fs.writeFileSync(file, JSON.stringify({ snapshot, collectedAt: new Date().toISOString(), inputHash }, null, 2), {flag:"wx"});
 
   const inc = models.map((m) => m.inWindowMm);
   console.log("=".repeat(74));

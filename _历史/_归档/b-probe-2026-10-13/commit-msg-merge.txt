@@ -1,0 +1,37 @@
+[B] 合并 A 的两笔（e8fb677 + 6c6f283）：页面与门禁取 A 的接口，B 侧特性重新移植
+
+用户 2026-10-12 授权「能修正的全部修正」（m11051）。A 在我推上《全仓扫描-三类清单-第二轮》
+后并行修了同一批问题（E1/E3/E7/B12/B13），push 被拒 ⇒ 先合并，再把 B 侧特性按 A 的接口重做一遍。
+
+一、取 A 的（A 拥有页面与门禁接口）
+- 05-演示站点/index.html：内嵌 ABI 拆两块（const ABI = V3 95 条、const ABI_V2 = V2 85 条）+ abiFor()
+  + #warnBar（B12 降级常驻提示 / B13 喂价过期前置提示）+ 右栏「五城一览」「这一屏的读数从哪来」
+  + V4 hash 路由（首页 + 5 内页）。
+- 07-测试工具/sync_abi.js、make-verify-pack.js、package.json：沿用 A 的块名与结构
+  （BLOCKS = [{varName:"ABI" → V3}, {varName:"ABI_V2" → V2}]）。
+
+二、B 侧特性重新移植到 A 的 index.html（脚本 _b_probe/port_live.py，19 处替换，每处断言命中次数）
+- 实时雨量面板：第三个按钮「实时 · 现网直连」、#liveBoard、LIVE_COORDS、fetchLive()、renderLive()、
+  ?rain=live 深链、两处重画钩子。读 Open-Meteo 现网，页脚明写「未上链」；拉取失败时 role=alert
+  说清原因，绝不拿快照冒充实时；链上读数不受影响。
+- 事件描述改按 ABI 字段名取值（evArg）：A 侧仍有 23 处 d.args[N] 硬编码，而 v2/v3 同名事件字段位不同
+  （JudgementSubmitted 在 v3 多一个 rainfallAtJudgement）—— 写死下标正是 677 上解错的原因。
+- ABI 形状自检（shapeOk / ABI_SHAPE / shapeStopHTML，v3 16/10/10，v2 15/9/9）：形状不符就停止解析该栏，
+  不渲染错位的假数字；judgements 读取区分「这条链没这个 getter」与「这次没读到」。
+- 无障碍：模式按钮与城市/时长片 aria-pressed（press()），toast 按 kind 切 role=alert/status。
+- E12 文案改链上真值（最低档 0.00053 BOT、10 格 0.00053–0.00105、MIN_PREMIUM 0.00002 BOT），
+  静态档位 select 加 disabled。
+
+三、门禁
+- test 链回到 17 道 = A 的 15 道 + B 的两道（check-page-decode、check-v3-prices:offline），
+  静态门禁在前、e2e 在后。
+- check-page-decode.js（新）：用真值 ABI 合成哨兵 payload、再用页面 ABI 解，断言 policies 16 字段、
+  judgements/feedJudgements 10 字段、同名多参取到 v3 重载；有牙证明 = 同一份 v3 payload 用 v2 形状解必须不同。
+- make-verify-pack.js：保留 A 的「内容不变就不写盘」，补上「校验失败一个字节都不写」（失败时原清单留作证据）。
+- 文档不再写死门禁计数（只用 `cd 07-测试工具 && npm test`）；DESIGN.md 里 A 侧新写的「十五道 483 项」
+  改为「当时十五道（B 侧同日再接入两道后为十七道）」。
+
+四、合并后实测
+- `cd 07-测试工具 && npm test`：17 道 · 0 失败 · exit 0（日志 _b_probe/gates_merge2.log）。
+- 事件字段名核对（临时脚本，已删）：index.html 用到的 17 个事件、40+ 字段名在 V3 ABI 里全部存在；
+  仅 rainfallAtJudgement 在 v2 里没有，代码已按存在性兜底。

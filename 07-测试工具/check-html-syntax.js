@@ -6,8 +6,17 @@ const fs = require("fs"), vm = require("vm"), path = require("path");
 const ROOT = path.join(__dirname, "..");
 const FILES = [
   "05-演示站点/index.html",
+  "05-演示站点/index-v5.html",
+  "05-演示站点/index-v6.html",
+  "05-演示站点/verify-v6.html",
+  "05-演示站点/index-v4.html",
+  "05-演示站点/insurance.html",
+  "05-演示站点/rider.html",
+  "05-演示站点/console.html",
   "05-演示站点/verifier.html",
-  "06-核验台单文件/汉客松-链上核验台.html",
+  "06-核验台单文件/雨证-链上核验台.html",
+  "05-演示站点/verify-v5.html",
+  "05-演示站点/terms.html",
 ].map((f) => path.join(ROOT, f));
 
 let bad = 0;
@@ -44,7 +53,14 @@ for (const f of FILES) {
   for (const m of html.matchAll(/\$\{[^{}]*\}/g)) {
     const rest = stripEsc(m[0]);
     for (const name of strFields) {
-      if (!new RegExp('A\\("' + name + '"\\)|\\b[A-Za-z_$][\\w$]*\\.' + name + '\\b').test(rest)) continue;
+      const pat = new RegExp('A\\("' + name + '"\\)|\\b[A-Za-z_$][\\w$]*\\.' + name + '\\b', "g");
+      if (!pat.test(rest)) continue;
+      // 键位豁免（2026-10-26，v5 RegionRegistered(string name) 引入 name 后必要）：
+      // 字段只作对象取键（X[A("name")] / X[obj.name]）时，进入模板的是静态映射的常量值，
+      // 不是链上字符串本身 —— 不是注入面。全部出现皆为键位才豁免；只要还有一处文本
+      // 插值（如 ${obj.name}）就仍按未转义处理。
+      const keyUse = new RegExp('\\w+\\[(?:A\\("' + name + '"\\)|[A-Za-z_$][\\w$]*\\.' + name + ')\\]', "g");
+      if (rest.replace(keyUse, "").indexOf(name) === -1) continue;
       holes++;
       console.log("FAIL " + path.basename(f) + ":" + (html.slice(0, m.index).split("\n").length) +
         " 链上 string 字段 " + name + " 没经 esc() 就进了模板 -> " + m[0].trim().slice(0, 120));
@@ -70,10 +86,13 @@ if (!strFields.size) {
   let escBad = 0;
   for (const f of FILES) {
     if (!fs.existsSync(f)) continue;
-    const m = fs.readFileSync(f, "utf8").match(/const\s+esc\s*=\s*([^\n]*?);\s*$/m);
+    const src = fs.readFileSync(f, "utf8");
+    // 纯静态页压根不调用 esc，就不要求它定义 esc（terms.html 这种）
+    if (src.indexOf("esc(") < 0) { console.log("SKIP " + path.basename(f) + " 不调用 esc（纯静态页）"); continue; }
+    const m = src.match(/const\s+esc\s*=\s*([^\n]*?);\s*$/m);
     if (!m) { escBad++; console.log("FAIL " + path.basename(f) + " 找不到 `const esc = …;` 定义（B15 依赖它）"); continue; }
     let esc;
-    try { esc = new vm.Script("(" + m[1] + ")").runInThisContext(); }
+    try { esc = new vm.Script("(" + m[1] + ")").runInNewContext({RainproofRuntime: require("../05-演示站点/runtime.js")}); }
     catch (e) { escBad++; console.log("FAIL " + path.basename(f) + " 的 esc 定义无法求值 -> " + e.message); continue; }
     const wrong = CASES.filter(([i, o]) => esc(i) !== o);
     if (wrong.length || esc(SAMPLE) !== WANT) {

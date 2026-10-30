@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>雨证 · v5 核验台 — 链上事实逐条自证</title>
+<meta name="description" content="雨证 v5 核验台：浏览器直接读链，逐条核对合约状态、六城区划码、喂价证据哈希与保单台账。无需登录、无后端。">
+<style>
+  :root{
+    --bg:#070b10; --panel:#0d141c; --line:#1c2836; --ink:#e8eef5; --dim:#8a9aab;
+    --measure:#45e0c8; --money:#f2c14e; --ok:#4ade80; --bad:#f87171; --wait:#94a3b8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.65 -apple-system,"Segoe UI","Noto Sans SC",system-ui,sans-serif;
+       -webkit-font-smoothing:antialiased;padding:0 20px 80px}
+  .wrap{max-width:960px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+         padding:22px 0 18px;border-bottom:1px solid var(--line);margin-bottom:26px}
+  .mark{width:34px;height:34px;border:1px solid var(--measure);border-radius:8px;
+        display:grid;place-items:center;color:var(--measure);font-weight:700}
+  h1{font-size:19px;margin:0;letter-spacing:.02em}
+  .sub{color:var(--dim);font-size:12.5px;margin-top:2px}
+  .badges{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--dim)}
+  .badges b{color:var(--ink);font-family:ui-monospace,Consolas,monospace}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--wait);margin-right:6px;vertical-align:1px}
+  .dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+  .dot.err{background:var(--bad)}
+  .bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+  button{background:transparent;color:var(--ink);border:1px solid var(--line);
+         padding:8px 16px;border-radius:9px;font:inherit;cursor:pointer}
+  button:hover{border-color:var(--measure);color:var(--measure)}
+  button:disabled{opacity:.45;cursor:default}
+  .score{margin-left:auto;font-size:13px;color:var(--dim)}
+  .score b{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .rows{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+  .row{display:grid;grid-template-columns:26px 1fr;gap:12px;background:var(--panel);
+       border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .row.ok{border-left:3px solid var(--ok)}
+  .row.bad{border-left:3px solid var(--bad)}
+  .row.wait{border-left:3px solid var(--wait)}
+  .st{font-size:16px;line-height:1.4;color:var(--wait)}
+  .row.ok .st{color:var(--ok)} .row.bad .st{color:var(--bad)}
+  .t{font-weight:600;font-size:14.5px}
+  .why{color:var(--dim);font-size:12.8px;margin-top:3px}
+  .kv{font-family:ui-monospace,Consolas,monospace;font-size:12.4px;color:var(--measure);
+      margin-top:7px;word-break:break-all}
+  .kv .k{color:var(--dim)}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);
+         color:var(--dim);font-size:12.6px}
+  footer b{color:var(--ink)}
+  code{font-family:ui-monospace,Consolas,monospace;background:#101a24;padding:1px 5px;border-radius:4px;font-size:12px;
+       overflow-wrap:anywhere}
+  a{color:var(--measure)}
+  .mono{font-family:ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+  .row>div{min-width:0}
+  @media(max-width:640px){
+    body{padding:0 12px 60px}
+    .kv{font-size:11.5px}
+    h1{font-size:17px}
+    .badges{margin-left:0;width:100%}
+  }
+</style>
+<script src="runtime.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="mark">雨</div>
+  <div>
+    <h1>v5 核验台 · 链上事实逐条自证</h1>
+    <div class="sub">本页没有任何后端：下面每一行都是你的浏览器直接问链要来的答案，改不了、也不用信我。</div>
+  </div>
+  <div class="badges">
+    <span><i class="dot" id="chainDot"></i><b id="chainName">连接中…</b></span>
+    <span>合约 <b id="addrShort">0xFE3D…e136</b></span>
+  </div>
+</header>
+
+<div class="bar">
+  <button id="run">重新核验</button>
+  <span class="score">通过 <b id="pass">—</b> / <span id="total">8</span></span>
+</div>
+
+<div class="rows" id="rows"></div>
+
+<footer>
+  <b>这一页想证明什么：</b>「可复算」不是口号。第 6 条用你浏览器里的 SubtleCrypto，把
+  <code>evidence/archive-wuhan-420100-20261001_20261025.json</code> 现算一个 SHA-256，
+  再去比对链上存的那个 bytes32——两边一致，说明任何人只要拿到同一份证据文件，都能算出同一个值，
+  也就能独立复核武汉那 84mm 是怎么写进去的。<br><br>
+  <b>链上地址：</b>承保合约 <span class="mono" id="addrFull"></span>｜
+  链 BOT Chain 测试网 968（<span class="mono">rpc.bohr.life</span>）｜
+  计价 RDROP 与人民币 1:1，链上以「分」记账。<br>
+  <b>一句话免责：</b>本页读的是测试网，RDROP 是演示计价单位，不构成任何真实保险要约。
+  ｜ <a href="index-v5.html">← 回看板</a>　<a href="console-v5.html">控制台</a>
+</footer>
+
+</div>
+
+<script src="./ethers.umd.min.js"></script>
+<script src="evidence/wuhan-evidence-inline.js"></script>
+<script>
+(function(){
+  "use strict";
+  const V5   = "0xFE3D9f897CE3038B75b876923D843F9F6752e136";
+  const MS   = "0x21c8520d486be3805cf3faa7ccab896241410d98";   // 2/3 多签，小写比较
+  const CITY = {420100:"武汉",310100:"上海",110100:"北京",440100:"广州",510100:"成都"};
+  const EVID = "evidence/archive-wuhan-420100-20261001_20261025.json";
+  const QS   = new URLSearchParams(location.search);
+  const RPC  = QS.get("rpc") || "https://rpc.bohr.life";
+
+  // 只用得着的签名，人类可读 ABI；每个 topic0 都由 ethers 现算，不写死——写死正是上一版的事件盲区来源
+  const ABI = [
+    "function regionCount() view returns (uint256)",
+    "function regions(uint32) view returns (string name, bool active)",
+    "function rainfall(uint32) view returns (uint256)",
+    "function lastFeedAt(uint32) view returns (uint64)",
+    "function feedJudgements(uint32) view returns (uint8 kind,uint8 decision,uint8 confidence,uint8 sources,uint64 judgedAt,uint256 rainfallAtJudgement,bool exists,bytes32 inputHash,bytes32 outputHash,string modelVersion)",
+    "function policies(uint256) view returns (address rider,address payer,uint8 productId,uint32 regionId,uint256 premium,uint256 startTime,uint256 effectiveFrom,uint256 endTime,uint256 windowHours,uint256 thresholdMm,uint256 rainfallAtBuy,uint8 tier,uint256 payout,bool paid,bool settled,bool exists)",
+    "function poolBalance() view returns (uint256)",
+    "function coolingPeriod() view returns (uint64)",
+    "function operator() view returns (address)",
+    "function paused() view returns (bool)",
+    // indexed 标记不能省：省了 topic0 照样算得对，但解析日志时按位置读会 BUFFER_OVERRUN
+    "event PoolFunded(address indexed from,uint256 amount,uint256 newBalance)",
+    "event PolicyBought(uint256 indexed policyId,address indexed rider,uint32 indexed regionId,uint256 effectiveFrom,uint256 endTime)",
+    "event ClaimPaid(uint256 indexed policyId,address indexed rider,uint256 amount,uint8 tier)",
+    // 第 6 条历史命中要读它：regionId 与 reporter 是 indexed，其余在 data 里
+    "event RainfallUpdated(uint32 indexed regionId,uint256 cumulativeMm,bytes32 evidenceHash,uint8 confidence,address indexed reporter)"
+  ];
+
+  const $ = id => document.getElementById(id);
+  // 进 innerHTML 的异常文本来自 RPC，属不可信来源 —— 一律转义
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const rows = $("rows");
+  const short = a => a.slice(0,6) + "…" + a.slice(-4);
+  const fen2yuan = n => (Number(n)/100).toFixed(2);
+  const nowSec = () => Math.floor(Date.now()/1000);
+
+  function paint(i, state, title, why, kv){
+    let el = rows.children[i];
+    if(!el){ el = document.createElement("div"); rows.appendChild(el); }
+    el.className = "row " + state;
+    const icon = state === "ok" ? "✓" : state === "bad" ? "✕" : "·";
+    el.innerHTML =
+      '<div class="st">'+icon+'</div>' +
+      '<div><div class="t">'+(i+1)+'. '+title+'</div>' +
+      '<div class="why">'+why+'</div>' +
+      (kv ? '<div class="kv">'+kv+'</div>' : '') + '</div>';
+    return el;
+  }
+  const kvline = o => Object.keys(o).map(k => '<span class="k">'+k+'</span> '+o[k]).join('　');
+
+  let pass = 0, done = 0;
+  function settle(state){ done++; if(state === "ok") pass++; $("pass").textContent = pass; }
+
+  async function sha256Hex(buf){
+    const d = await crypto.subtle.digest("SHA-256", buf);
+    return "0x" + [...new Uint8Array(d)].map(b => b.toString(16).padStart(2,"0")).join("");
+  }
+
+  async function run(){
+    rows.innerHTML = ""; pass = 0; done = 0;
+    $("pass").textContent = "—";
+    $("run").disabled = true;
+    $("addrFull").textContent = V5;
+    for(let i=0;i<8;i++) paint(i, "wait", "…", "读取中");
+
+    // 不要 staticNetwork：写死 968 等于自己证明自己，节点不通时第 1 条也会打勾（前端审计 A7）。
+    const provider = RainproofRuntime.provider(ethers,RPC);
+    const c = new ethers.Contract(V5, ABI, provider);
+
+    // 1 · 链
+    try{
+      const net = await provider.getNetwork();
+      const ok = Number(net.chainId) === 968;
+      $("chainName").textContent = ok ? "BOT Chain 测试网 968" : ("chainId " + net.chainId);
+      $("chainDot").className = "dot " + (ok ? "on" : "err");
+      paint(0, ok?"ok":"bad", "这条链接的是 BOT Chain 测试网 968",
+        "链不是随便哪条都算数：页面读的数据必须来自申请材料里写的那条链。",
+        kvline({ chainId: net.chainId }));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(0,"bad","读链失败", esc(e.message), ""); settle("bad"); }
+
+    // 2 · 合约有代码
+    try{
+      const code = await provider.getCode(V5);
+      const ok = code && code !== "0x";
+      paint(1, ok?"ok":"bad", "合约地址上确实有字节码",
+        "地址写对了不等于部署成功；链上没代码的地址读出来永远是空。",
+        kvline({ 字节码长度: (code||"").length + " 字符" }));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(1,"bad","读代码失败", esc(e.message), ""); settle("bad"); }
+
+    // 3 · 治理与开关
+    try{
+      const [op, paused] = await Promise.all([c.operator(), c.paused()]);
+      const opOk = op.toLowerCase() === MS;
+      const ok = opOk && !paused;
+      paint(2, ok?"ok":"bad", "治理在多签手里，合约未暂停",
+        "写数权不在某一个人的私钥上：operator 是 2/3 多签，任何一笔喂价或判定都要两把钥匙。",
+        kvline({ operator: short(op), 是2of3多签: opOk ? "是" : "否", paused: String(paused) }));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(2,"bad","读治理失败", esc(e.message), ""); settle("bad"); }
+
+    // 4 · 冷却期
+    try{
+      const cp = await c.coolingPeriod();
+      const ok = String(cp) === "0";
+      paint(3, ok?"ok":"bad", "冷却期为 0：买入即生效",
+        "原本设了 3 天冷静期，演示阶段已由两票改成 0，否则窗口还没开始就结束了。",
+        kvline({ coolingPeriod: String(cp) + " 秒" }));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(3,"bad","读冷却期失败", esc(e.message), ""); settle("bad"); }
+
+    // 5 · 六城
+    try{
+      const n = Number(await c.regionCount());
+      const codes = Object.keys(CITY).map(Number);
+      const info = await Promise.all(codes.map(k => c.regions(k)));
+      const ok = n >= codes.length && info.every((r,i) => r[1] && r[0].includes(CITY[codes[i]]));
+      paint(4, ok?"ok":"bad", "动态区划注册正常，五城全部可用",
+        "城市不是写死在合约里的名单；每加一个城市＝多签注册一个民政部区划码。实时注册数见下方读数。喂价注册表目前覆盖湖北 118 个区划及沪京穗蓉，共 122 个区划。" +
+        "（链上 setRegionActive 可以停售区划；注册数与喂价名单属于不同统计口径。）",
+        info.map((r,i) => CITY[codes[i]] + " " + codes[i] + " " + (r[1]?"可用":"停用")).join("　"));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(4,"bad","读城区失败", esc(e.message), ""); settle("bad"); }
+
+    // 6 · 证据可复算（本页的核心）
+    try{
+      const f = await c.feedJudgements(420100);
+      // file:// 下 fetch 本地 JSON 会被 CORS 拦（与 v5 城市选择器同一个坑）：
+      // 优先用同目录同步引入的证据原文，HTTP 环境再退回 fetch。
+      let buf, local;
+      if (window.WUHAN_EVIDENCE_TEXT) {
+        buf = new TextEncoder().encode(window.WUHAN_EVIDENCE_TEXT).buffer;
+        local = await sha256Hex(buf);
+      } else {
+        const res = await fetch(EVID, { cache: "no-store" });
+        if(!res.ok) throw new Error("证据文件读不到（" + res.status + "）");
+        buf = await res.arrayBuffer();
+        local = await sha256Hex(buf);
+      }
+      const latestHit = f.inputHash.toLowerCase() === local.toLowerCase();
+      // 后续喂价会覆盖 feedJudgements 里的「最新」哈希，但事件流不会说谎：
+      // 只要历史某次 RainfallUpdated 的 evidenceHash 与这份报文一致，就证明这 84mm 当初是它写进去的。
+      let hitBlock = null;
+      if(!latestHit){
+        const iface = new ethers.Interface(ABI);
+        const logs = await provider.getLogs({ address: V5, fromBlock: 0, toBlock: "latest",
+                                              topics: [iface.getEvent("RainfallUpdated").topicHash] });
+        for(const lg of logs){
+          let pl = null; try { pl = iface.parseLog(lg); } catch(_) { continue; }
+          if(pl && Number(pl.args.regionId) === 420100 && pl.args.evidenceHash.toLowerCase() === local.toLowerCase()){
+            hitBlock = lg.blockNumber; break;
+          }
+        }
+      }
+      const ok = latestHit || hitBlock !== null;
+      paint(5, ok?"ok":"bad", "武汉 84mm 的证据哈希 = 这份 JSON 现算出来的哈希",
+        latestHit
+          ? "链上只存 32 字节；把同一份原始报文再算一次，必须得到同一个值。这一步走通了，才谈得上「你自己验」。"
+          : "链上「最新喂价」已被后续更新覆盖，但喂价事件流里有一条记录的证据哈希与这份报文完全一致 —— 说明这 84mm 当初就是由它写进去的，事后也改不了。",
+        latestHit
+          ? kvline({ 链上: short(f.inputHash), 本地算: short(local), 证据文件: Math.round(buf.byteLength/1024) + " KB" })
+          : kvline({ 命中区块: String(hitBlock), 本地算: short(local), 当前最新: short(f.inputHash), 证据文件: Math.round(buf.byteLength/1024) + " KB" }));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(5,"bad","证据核验失败", esc(e.message), ""); settle("bad"); }
+
+    // 7 · 保单 #0
+    try{
+      const p = await c.policies(0);
+      const age = nowSec() - Number(await c.lastFeedAt(310100));
+      // 文案说「喂价新鲜度也在检查里」，那就真的要检查：超 MAX_FEED_AGE(24h) 这一条就该红。
+      const fresh = age <= 86400;
+      const ok = fresh && String(p.premium) === "420" && String(p.thresholdMm) === "30"
+              && String(p.rainfallAtBuy) === "172" && p.payer.toLowerCase() !== p.rider.toLowerCase();
+      paint(6, ok?"ok":"bad", "保单 #0：上海 12h、阈值 30mm、基线 172mm、保费 4.20 元",
+        "这是平台代付的一张真保单（付款人和被保险人不是同一个地址）。喂价新鲜度也在检查里：超 24h 合约会拒绝新保单。",
+        kvline({ 被保险人: short(p.rider), 付款方: short(p.payer), 保费: fen2yuan(p.premium)+" 元",
+                 基线: p.rainfallAtBuy + " mm", 喂价已过: (age/3600).toFixed(1) + " h",
+                 喂价状态: fresh ? "未过期（≤24h）" : "已过期 —— 此刻新单会被合约拒绝" }));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(6,"bad","读保单失败", esc(e.message), ""); settle("bad"); }
+
+    // 8 · 台账
+    try{
+      const iface = new ethers.Interface(ABI);
+      // 现金流五类，缺一类这个等式就不成立了（前端审计 A10）：
+      // 注资 + 保费 + 退回 − 赔付 − 提款 = 池子
+      const topicsOf = n => { const ev = iface.getEvent(n); return ev ? [ev.topicHash] : null; };
+      const [funded, bought, paid] = await Promise.all([
+        provider.getLogs({ address: V5, fromBlock: 0, toBlock: "latest", topics: topicsOf("PoolFunded") }),
+        provider.getLogs({ address: V5, fromBlock: 0, toBlock: "latest", topics: topicsOf("PolicyBought") }),
+        provider.getLogs({ address: V5, fromBlock: 0, toBlock: "latest", topics: topicsOf("ClaimPaid") })
+      ]);
+      const withdrawn = topicsOf("PoolWithdrawn")
+        ? await provider.getLogs({ address: V5, fromBlock: 0, toBlock: "latest", topics: topicsOf("PoolWithdrawn") }) : [];
+      const refunded = topicsOf("PolicyRefunded")
+        ? await provider.getLogs({ address: V5, fromBlock: 0, toBlock: "latest", topics: topicsOf("PolicyRefunded") }) : [];
+      let taizhang = 0n;
+      const plog = (l) => { try { return iface.parseLog(l); } catch(_) { return null; } };
+      funded.forEach(l => { const q = plog(l); if (q) taizhang += q.args.amount; });
+      // 保费不在事件里，按保单号读回来补
+      for(const l of bought){
+        const q = plog(l); if (!q) continue;
+        const pp = await c.policies(q.args.policyId);
+        taizhang += pp.premium;
+      }
+      paid.forEach(l => { const q = plog(l); if (q) taizhang -= q.args.amount; });
+      // PoolWithdrawn(to,amount) 与 PolicyRefunded(policyId,payer,amount) 都叫 amount；
+      // 千万别用「第一个 uint256」—— PolicyRefunded 的第一个是 policyId，会把 0 号保单算成 0 元。
+      const minusAmount = l => { try { return iface.parseLog(l).args.amount; } catch(_) { return 0n; } };
+      withdrawn.forEach(l => { taizhang -= minusAmount(l); });
+      refunded.forEach(l => { taizhang -= minusAmount(l); });
+      const onchain = await c.poolBalance();
+      const ok = taizhang === onchain;
+      paint(7, ok?"ok":"bad", "台账逐分等于链上池子余额",
+        "把「注资 + 已收保费 − 已赔」自己加一遍，必须与合约里的池子一分不差；差一分就是有笔钱没记账。",
+        kvline({ 台账推算: fen2yuan(taizhang)+" 元", 链上: fen2yuan(onchain)+" 元",
+                 注资: funded.length+" 笔", 已买: bought.length+" 单", 已赔: paid.length+" 笔",
+                 已提款: withdrawn.length+" 笔", 已退款: refunded.length+" 笔" }));
+      settle(ok?"ok":"bad");
+    }catch(e){ paint(7,"bad","台账核验失败", esc(e.message), ""); settle("bad"); }
+
+    $("run").disabled = false;
+  }
+
+  $("run").addEventListener("click", run);
+  run();
+})();
+</script>
+</body>
+</html>

@@ -472,6 +472,26 @@ async function main() {
   const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
   const contract = new Contract(address, ABI, wallet);
 
+  /* ---- 版本闸门：v5 起区域用 32 位区划码，本脚本是 v2 口径，硬顶上去只会白烧 gas ---- */
+
+  {
+    const v5 = new Contract(address, JSON.parse(fs.readFileSync(
+      path.join(__dirname, "..", "03-合约", "RainDeliveryInsuranceV5.abi.json"), "utf8")), provider);
+    let isV5 = false;
+    try { await v5.regionCount(); isV5 = true; } catch (_) { /* 不是 v5 */ }
+    if (isV5) {
+      console.error([
+        C.r("❌ 这个脚本是 v2 口径，对不上 v5 合约。"),
+        `   合约 ${address} 有 regionCount() —— 它是 v5（区划码 uint32 + 分计价）。`,
+        `   本脚本的 ABI 是 v2（区域 1..5 + wei），无参运行会直接发交易，然后 revert。`,
+        "",
+        "   喂价请用： " + C.b("node 04-脚本/push-rainfall-v5.js --send") + "   （已注册计划任务，每 30 分钟一次）",
+        "   只看现状： " + C.b("node 04-脚本/push-rainfall-v5.js"),
+      ].join("\n"));
+      process.exit(1);
+    }
+  }
+
   /* ---- 前置检查：权限 / 池子 ---- */
 
   const [onchainOperator, paused, pool, payout, threshold, regionCount, minConfidence, balance] = await Promise.all([
@@ -675,7 +695,7 @@ async function main() {
 
   if (ok.length) {
     console.log("\n" + C.b("链上核验（不依赖任何在线浏览器）："));
-    console.log("   双击桌面  汉客松-链上核验台.html");
+    console.log("   双击桌面  雨证-链上核验台.html");
     for (const x of ok) console.log(`   ${x.r.name}：${x.hash}`);
     console.log(C.dim("   （不要用 sepolia.otterscan.io —— 它的后端节点 10/4 起挂了，页面永远转圈）"));
   }

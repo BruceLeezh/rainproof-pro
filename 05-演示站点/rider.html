@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>骑手保障中心 · 雨证 RainProof</title>
+<meta name="description" content="雨证骑手端：选城市选时长、保费按链上价实时算，雨量过线赔付自动到账 —— 免报案、免定损。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 253 253'%3E%3Crect width='253' height='253' rx='40' fill='%2308121c'/%3E%3Crect x='6.5' y='6.5' width='239' height='239' rx='22' fill='none' stroke='%237cb0f9' stroke-width='13'/%3E%3Cpath d='M116.5 62.5L60.5 155.5M171.5 47.5L124.5 123.5M189.5 89.5L150.5 155.5' fill='none' stroke='%23b9e0f8' stroke-width='13' stroke-linecap='round'/%3E%3Cpath d='M42 189.5h170' fill='none' stroke='%23fec459' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E">
+<script src="./ethers.umd.min.js"></script>
+<link rel="stylesheet" href="styles/rider.css">
+<script src="runtime.js"></script>
+<script src="deployment.js"></script>
+<link rel="stylesheet" href="styles/site.css">
+<script src="site.js" defer></script>
+<meta name="theme-color" content="#080f17">
+</head>
+<body class="rp-app rp-rider">
+<a class="rp-skip" href="#rp-main">跳转到主要内容</a>
+<div class="rp-topbar"><div class="rp-container rp-topbar-inner">
+ <a class="rp-brand" href="insurance.html" aria-label="雨证 RainProof 首页"><svg viewBox="0 0 253 253" fill="none" aria-hidden="true"><rect x="6.5" y="6.5" width="239" height="239" rx="22" stroke="#7cb0f9" stroke-width="13"/><path d="M116.5 62.5L60.5 155.5M171.5 47.5L124.5 123.5M189.5 89.5L150.5 155.5" stroke="#b9e0f8" stroke-width="13" stroke-linecap="round"/><path d="M42 189.5h170" stroke="#fec459" stroke-width="10" stroke-linecap="round"/></svg><span class="rp-brand-copy"><strong>雨证</strong><span>RainProof</span></span></a>
+ <button class="rp-menu-toggle" type="button" aria-label="展开或收起导航" aria-expanded="false" aria-controls="rp-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+ <nav class="rp-menu" id="rp-menu" aria-label="主导航"><a href="insurance.html">首页</a><a href="index-v6.html#dashboard">技术看板</a><a href="rider.html" aria-current="page">骑手保障</a><a href="console.html">平台控制台</a><a href="verify-v6.html">证据核验</a></nav>
+ <span class="rp-env"><i aria-hidden="true"></i>技术原型 · 模拟资金</span>
+</div></div>
+<div class="wrap" id="rp-main" role="main" tabindex="-1">
+
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 253 253" fill="none"><rect x="6.5" y="6.5" width="239" height="239" rx="22" stroke="#7cb0f9" stroke-width="13"/><path d="M116.5 62.5L60.5 155.5M171.5 47.5L124.5 123.5M189.5 89.5L150.5 155.5" stroke="#b9e0f8" stroke-width="13" stroke-linecap="round"/><path d="M42 189.5h170" stroke="#fec459" stroke-width="10" stroke-linecap="round"/></svg>
+      </div>
+      <h1>骑手保障中心<span>选择一份保障，查看保单进度与每一次判定依据。</span></h1>
+      <div class="chainbar"><span><i class="dot" id="netdot"></i><b id="netv">连接中</b></span><span>测试网 968 · 模拟资金 RDROP</span></div>
+    </div>
+    <div class="rail">
+      <div class="rail-i"><span class="rl">资金池</span><b class="money" id="poolv">—</b></div>
+      <div class="rail-i"><span class="rl">当前城市累计降雨</span><b id="rainv">—</b></div>
+      <div class="rail-i"><span class="rl">触发档线</span><b id="thv">—</b></div>
+      <div class="rail-i"><span class="rl">额度基数</span><b class="money">100 元</b></div>
+    </div>
+  </header>
+
+  <section class="sec lead">
+    <h2>投保<em>选区域 · 看报价 · 连接钱包体验</em></h2>
+    <p class="note" style="margin-top:6px">这是<b>骑手端体验页</b>：真实业务里保费由平台/众包服务商批量采购后代付（B2B2C），骑手零成本；页面上的「连接钱包投保」是为了把一笔保障亲手跑通。</p>
+    <div class="panel">
+      <div class="cfg">
+        <select id="city" aria-label="配送城市">
+          <option value="1">武汉</option><option value="2" selected>上海</option>
+          <option value="3">北京</option><option value="4">广州</option><option value="5">成都</option>
+        </select>
+        <select id="hours" aria-label="保障时长">
+          <option value="12">保障 12 小时</option><option value="24">保障 24 小时</option>
+        </select>
+      </div>
+      <div class="row" style="margin-top:18px;align-items:baseline;justify-content:space-between">
+        <span class="k" style="margin:0">本单模拟保费（链上报价）</span>
+        <span class="tag" id="feedtag">喂价待确认</span>
+      </div>
+      <div class="metric" id="quote" style="margin-top:6px">—<u>元 / 份</u></div>
+      <p class="note" style="margin-top:10px">档线取国标 GB/T 28592—2012：<b>12h</b> 新增 ≥30mm 赔 50 元、≥70mm 赔 75 元；<b>24h</b> ≥50mm 赔 50 元、≥100mm 赔 75 元。赔付按保障窗口内的<b>新增</b>降雨计算。</p>
+      <button class="btn primary block" id="buy">投保（平台代付 · 连接钱包体验）</button>
+      <div class="row" style="margin-top:10px">
+        <label class="row" style="gap:6px;margin:0;cursor:pointer"><input type="checkbox" id="bigApprove" style="accent-color:var(--measure)">
+          <span class="k" style="margin:0">大额授权：一次授权 100 份额度，之后每笔投保只签一笔交易</span></label>
+      </div>
+      <div class="k" id="allowLine" style="margin-top:6px">授权余额：连接钱包后显示</div>
+      <button class="btn block" id="wallet">连接钱包（测试网 968）</button>
+      <details class="note" style="margin-top:12px"><summary>如何连接钱包并投保？</summary><p>在装有浏览器钱包的 Edge / Chrome 中打开本页并解锁钱包，点击“连接钱包”，按提示连接账户并添加或切换到 BOT Chain 测试网 968。钱包需要少量测试 BOT 支付 gas，以及足够的模拟 RDROP 支付保费；RDROP 由项目方发放，本页不售卖代币。</p><p>选择城市与保障时长后点击“投保”。首次一般需要依次确认“授权保费”和“投保”两笔交易；已有足够授权时只需确认投保。交易确认后可在“我的保单”查看。测试资金不可兑换人民币。</p></details>
+      <div class="err" id="buyerr"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>我的保单<em id="who">演示骑手（免钱包可浏览）</em></h2>
+    <div id="policies"><span class="loading">读取链上保单</span></div>
+    <p class="note">状态由链上 <code style="font-family:var(--mono)">policyStatus()</code> 直读：pending（冷静期）→ active（保障中）→ pending_judgement（已过线待判定）→ claimable（可赔付）→ paid（已到账）。雨量达标但数据不可信时如实判 <b>denied</b>；退款与到期结算以链上 <code style="font-family:var(--mono)">settled</code> 事实为准，显示 <b>已退款</b> / <b>已结算</b>。</p>
+  </section>
+
+  <section class="sec">
+    <h2>理赔记录<em id="claimsWho">判了什么 · 为什么 · 钱到哪</em></h2>
+    <div id="claims"><span class="loading">读取链上判定</span></div>
+    <div id="appealBox" hidden style="margin-top:12px">
+      <div class="panel">
+        <div class="k">复核申请 · <span id="appealPid" class="mono"></span>（说明你认为该赔的理由，如：当时本地雨量明显更大 / 判定读数存疑）</div>
+        <textarea id="appealReason" style="width:100%;height:76px;margin-top:8px;background:#0A1521;border:1px solid var(--hair-2);border-radius:var(--r-sm);color:var(--ink);font-size:13px;padding:10px" placeholder="填写复核理由（必填，将随保单与判定数据一起打包）"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary sm" id="appealCopy">生成并复制复核文本</button>
+          <button class="btn sm" id="appealDl">下载复核 JSON</button>
+          <button class="btn sm" id="appealCancel">取消</button>
+        </div>
+        <p class="note" style="margin-top:8px">复核材料 = 你的理由 + 链上判定数据（自动附上）。运营按《运营手册》§九 复核并在留痕目录回填结论——全程留痕可查。</p>
+      </div>
+    </div>
+    <p class="note">判定由链上确定性规则给出：窗口增量 = 判定时链上读数 − 投保基线。未达国标档线判「不赔」（R1）；数据核验未通过也判「不赔」（R2/R4：三机构模型分歧）。拒绝同样留痕上链——不赔也要说清为什么。</p>
+  </section>
+  <footer>
+    <p>判定依据三气象机构模型交叉核验（ECMWF / GFS / ICON），规则链上公开、任何人可复算；演示用模拟数据带 <code>simulated</code> 标记永久留痕。</p>
+    <p>演示网：BOT Chain 测试网 968 · RDROP 为模拟记账单位，不可兑换人民币（链上以「分」记账）· 合约 <code>0xcDe1…C61F</code> · 治理 2/3 多签。</p>
+    <p><a href="terms.html">服务与赔付条款</a> · 档线、判定规则、不赔情形、申领时效与数据说明都在那一页。</p>
+  <p><a href="rider-v5.html">查看V5历史保单</a> · <a href="verify-v6.html">核验V6</a></p></footer>
+</div>
+<div role="status" aria-live="polite" id="toast"></div>
+
+<script>
+// ?rpc=<节点> 可临时换节点（现场节点抖了就不用改文件）；不传就用默认
+const RPC=new URLSearchParams(location.search).get("rpc")||"https://rpc.bohr.life", CHAIN=968;
+const V6=RAINPROOF_DEPLOYMENT.contract;
+const TOK="0x23e928922711903607031378005DFe29D9b730bD";
+const DEMO_RIDER="0x6F0A73BCA4805950130D01069ebEb187C0f3DAb5";
+const CITY=["","武汉","上海","北京","广州","成都"];
+const CITY_CODE=[0,420100,310100,110100,440100,510100];
+const CITY_NAME={420100:"武汉",310100:"上海",110100:"北京",440100:"广州",510100:"成都"};
+const cityName=c=>CITY_NAME[Number(c)]||("区划码 "+c);
+const V6_ADDR=RAINPROOF_DEPLOYMENT.contract, MS_ADDR="0x21C8520D486be3805Cf3FaA7cCab896241410d98";
+const shortA=a=>String(a).slice(0,8)+"…"+String(a).slice(-4);
+const fmtT=u=>new Date(Number(u)*1000).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+const THR2={12:[30,70],24:[50,100]};
+/* G1 保单凭证：数据全部来自链上读数；文本版可复制转发 */
+function certHTML(id,p,st){
+  const [lab]=STAG[st]||[st]; const t=THR2[Number(p.windowHours)]||[0,0];
+  return '<details class="certbox" id="cert-'+id+'"><summary>保单凭证 · Policy certificate</summary><div class="panel cert">'
+    +'<div class="srcrow"><span class="k">保单号 / 状态</span><span class="v"><b>#'+id+'</b> · '+lab+'</span></div>'
+    +'<div class="srcrow"><span class="k">被保险人</span><span class="v mono">'+shortA(p.rider)+(p.payer!==p.rider?'（付款 '+shortA(p.payer)+'）':'')+'</span></div>'
+    +'<div class="srcrow"><span class="k">保障区域 / 时长</span><span class="v">'+cityName(p.regionId)+'（#'+p.regionId+'）· '+p.windowHours+'h</span></div>'
+    +'<div class="srcrow"><span class="k">保障窗口</span><span class="v">'+fmtT(p.effectiveFrom)+' → '+fmtT(p.endTime)+'</span></div>'
+    +'<div class="srcrow"><span class="k">触发条件</span><span class="v">新增 ≥'+t[0]+'mm 赔 50 元 · ≥'+t[1]+'mm 赔 75 元（国标）</span></div>'
+    +'<div class="srcrow"><span class="k">投保基线</span><span class="v">累计 '+p.rainfallAtBuy+'mm（链上可查）</span></div>'
+    +'<div class="srcrow"><span class="k">保费 / 赔付</span><span class="v"><b class="money">'+yuan(p.premium)+'</b> 元 · '+(p.paid?'已赔 <b class="money">'+yuan(p.payout)+'</b> 元':'未结算')+'</span></div>'
+    +'<div class="srcrow"><span class="k">链上核验</span><span class="v"><a href="https://scan.bohr.life/address/'+V6_ADDR+'" target="_blank" rel="noopener">scan.bohr.life（968）</a></span></div>'
+    +'<div class="row" style="margin-top:10px"><button class="btn sm" data-copy="'+id+'">复制凭证文本</button>'
+    +'<span class="k" style="margin:0">RDROP 演示计价 1:1 人民币 · 非真实保险要约</span></div>'
+    +'</div></details>';
+}
+function certText(id,p,st){
+  const [lab]=STAG[st]||[st]; const t=THR2[Number(p.windowHours)]||[0,0];
+  return ["【雨证 RainProof · 参数化降雨保障凭证（演示）】","保单号：#"+id+"　状态："+lab,
+    "被保险人："+shortA(p.rider)+(p.payer!==p.rider?"（付款："+shortA(p.payer)+"）":""),
+    "保障区域："+cityName(p.regionId)+"（区划码 "+p.regionId+"）· 保障时长 "+p.windowHours+" 小时",
+    "保障窗口："+fmtT(p.effectiveFrom)+" → "+fmtT(p.endTime),
+    "触发条件：窗口内新增降雨 ≥"+t[0]+"mm 赔 50 元；≥"+t[1]+"mm 赔 75 元（国标 GB/T 28592—2012；满额 100 元）",
+    "投保基线：自雨季起点累计 "+p.rainfallAtBuy+"mm",
+    "保费："+yuan(p.premium)+" 元（RDROP 演示计价 1:1 人民币，非真实保险要约）",
+    p.paid?"赔付："+yuan(p.payout)+" 元 · 已自动到账":"赔付：未结算（触发即自动打款，无需报案）",
+    "判定数据：ECMWF/GFS/ICON 三机构模型链上累计，交叉核验、全程留痕",
+    "链上核验：BOT Chain 测试网 968 · 合约 "+V6_ADDR,
+    "浏览器：https://scan.bohr.life/address/"+V6_ADDR,"治理：2/3 多签 "+MS_ADDR].join("\n");
+}
+const {ethers:E}=window;
+const V6ABI=[{"inputs":[{"internalType":"contract IERC20","name":"token_","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint8","name":"tier","type":"uint8"}],"name":"ClaimPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"CoolingPeriodSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"required","type":"bool"}],"name":"EligibleRequiredSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"who","type":"address"},{"indexed":false,"internalType":"bool","name":"ok","type":"bool"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"EligibleSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"openExposure","type":"uint256"}],"name":"ExposureSettled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint32","name":"regionId","type":"uint32"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"FeedRejected","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"uint8","name":"kind","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"decision","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":false,"internalType":"uint8","name":"sources","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"indexed":false,"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"indexed":false,"internalType":"string","name":"modelVersion","type":"string"}],"name":"JudgementSubmitted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"OperatorChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"bool","name":"paused","type":"bool"}],"name":"PausedSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"rider","type":"address"},{"indexed":true,"internalType":"uint32","name":"regionId","type":"uint32"},{"indexed":false,"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"endTime","type":"uint256"}],"name":"PolicyBought","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"policyId","type":"uint256"},{"indexed":true,"internalType":"address","name":"payer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PolicyRefunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newBalance","type":"uint256"}],"name":"PoolFunded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"PoolWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint32","name":"regionId","type":"uint32"},{"indexed":false,"internalType":"uint256","name":"windowHours","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"PremiumSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"module","type":"address"}],"name":"PricingModuleSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint32","name":"regionId","type":"uint32"},{"indexed":false,"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"indexed":false,"internalType":"uint8","name":"confidence","type":"uint8"},{"indexed":true,"internalType":"address","name":"reporter","type":"address"}],"name":"RainfallUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint32","name":"code","type":"uint32"},{"indexed":false,"internalType":"bool","name":"active","type":"bool"}],"name":"RegionActiveSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint32","name":"code","type":"uint32"},{"indexed":false,"internalType":"string","name":"name","type":"string"},{"indexed":false,"internalType":"uint256","name":"regionCount","type":"uint256"}],"name":"RegionRegistered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReserveSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint32","name":"regionId","type":"uint32"},{"indexed":false,"internalType":"uint8","name":"level","type":"uint8"},{"indexed":false,"internalType":"uint256","name":"premium","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"UnderwritingDecision","type":"event"},{"inputs":[],"name":"CLAIM_GRACE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECISION_DENY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DECISION_PAY","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_FEED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"KIND_LOSS","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_FEED_AGE","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_FEED_INCREMENT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_OPEN_EXPOSURE_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_POLICIES_PER_RIDER","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_CONFIDENCE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_HOURS","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_PREMIUM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PAYOUT_MAX","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PREMIUM_DEFAULT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"PRODUCT_RAIN","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_LOADED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_NORMAL","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"RISK_SUSPENDED","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER_COUNT","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TIER_NONE","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"","type":"uint32"}],"name":"aiPremium","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"beneficiary","type":"address"},{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"buyFor","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"buyPolicy","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32[]","name":"codes","type":"uint32[]"},{"internalType":"string[]","name":"names","type":"string[]"},{"internalType":"uint256[]","name":"price12","type":"uint256[]"},{"internalType":"uint256[]","name":"price24","type":"uint256[]"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"configureRegions","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"coolingPeriod","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"currentTier","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"eligible","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"eligibleRequired","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"entryThresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint32","name":"","type":"uint32"}],"name":"feedJudgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"fundPool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"hoursAllowed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"judgements","outputs":[{"internalType":"uint8","name":"kind","type":"uint8"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint64","name":"judgedAt","type":"uint64"},{"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"internalType":"bool","name":"exists","type":"bool"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"","type":"uint32"}],"name":"lastFeedAt","outputs":[{"internalType":"uint64","name":"","type":"uint64"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextPolicyId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"openExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"openPoliciesOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"operator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"payoutOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"pendingExposureOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"policies","outputs":[{"internalType":"address","name":"rider","type":"address"},{"internalType":"address","name":"payer","type":"address"},{"internalType":"uint8","name":"productId","type":"uint8"},{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"uint256","name":"startTime","type":"uint256"},{"internalType":"uint256","name":"effectiveFrom","type":"uint256"},{"internalType":"uint256","name":"endTime","type":"uint256"},{"internalType":"uint256","name":"windowHours","type":"uint256"},{"internalType":"uint256","name":"thresholdMm","type":"uint256"},{"internalType":"uint256","name":"rainfallAtBuy","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"},{"internalType":"uint256","name":"payout","type":"uint256"},{"internalType":"bool","name":"paid","type":"bool"},{"internalType":"bool","name":"settled","type":"bool"},{"internalType":"bool","name":"exists","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"rider","type":"address"}],"name":"policiesOf","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"policyStatus","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"poolBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"","type":"uint32"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"premiumGrid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"premiumOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"premiumOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pricingModule","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"riderTier","type":"uint8"},{"internalType":"uint8","name":"channel","type":"uint8"},{"internalType":"uint256","name":"count","type":"uint256"}],"name":"quoteOf","outputs":[{"internalType":"uint256","name":"price","type":"uint256"},{"internalType":"bool","name":"sellable","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"","type":"uint32"}],"name":"rainfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"rainfallDuring","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"refundPolicy","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"regionCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"","type":"uint32"}],"name":"regions","outputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"bool","name":"active","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"code","type":"uint32"},{"internalType":"string","name":"name","type":"string"}],"name":"registerRegion","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"rejectFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"reserve","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserveOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"riderExposure","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint32","name":"","type":"uint32"}],"name":"riskLevel","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint64","name":"seconds_","type":"uint64"}],"name":"setCoolingPeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"who","type":"address"},{"internalType":"bool","name":"ok","type":"bool"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setEligible","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setEligibleRequired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bool","name":"v","type":"bool"}],"name":"setPaused","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setPremiumGrid","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"module","type":"address"}],"name":"setPricingModule","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"code","type":"uint32"},{"internalType":"bool","name":"active_","type":"bool"}],"name":"setRegionActive","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"setReserve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint8","name":"level","type":"uint8"},{"internalType":"uint256","name":"premium","type":"uint256"},{"internalType":"bytes32","name":"reasonHash","type":"bytes32"}],"name":"setUnderwriting","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"policyIds","type":"uint256[]"}],"name":"settleExpired","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"}],"name":"shortfall","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"policyId","type":"uint256"},{"internalType":"uint8","name":"decision","type":"uint8"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"},{"internalType":"uint256","name":"rainfallAtJudgement","type":"uint256"},{"internalType":"bytes32","name":"inputHash","type":"bytes32"},{"internalType":"bytes32","name":"outputHash","type":"bytes32"},{"internalType":"string","name":"modelVersion","type":"string"}],"name":"submitJudgement","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"policyIds","type":"uint256[]"},{"internalType":"uint8[]","name":"decisions","type":"uint8[]"},{"internalType":"uint8[]","name":"confidences","type":"uint8[]"},{"internalType":"uint8[]","name":"sourcesArr","type":"uint8[]"},{"internalType":"uint256[]","name":"rainfalls","type":"uint256[]"},{"internalType":"bytes32[]","name":"inputHashes","type":"bytes32[]"},{"internalType":"bytes32[]","name":"outputHashes","type":"bytes32[]"},{"internalType":"string[]","name":"modelVersions","type":"string[]"}],"name":"submitJudgements","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"hours_","type":"uint256"},{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"thresholdOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"tierBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"uint256","name":"duringMm","type":"uint256"},{"internalType":"uint256","name":"hours_","type":"uint256"}],"name":"tierOf","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"token","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"next","type":"address"}],"name":"transferOperator","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32","name":"regionId","type":"uint32"},{"internalType":"uint256","name":"cumulativeMm","type":"uint256"},{"internalType":"bytes32","name":"evidenceHash","type":"bytes32"},{"internalType":"uint8","name":"confidence","type":"uint8"},{"internalType":"uint8","name":"sources","type":"uint8"}],"name":"updateRainfall","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint32[]","name":"regionIds","type":"uint32[]"},{"internalType":"uint256[]","name":"cumulativeMm","type":"uint256[]"},{"internalType":"bytes32[]","name":"evidenceHashes","type":"bytes32[]"},{"internalType":"uint8[]","name":"confidences","type":"uint8[]"},{"internalType":"uint8[]","name":"sourcesArr","type":"uint8[]"}],"name":"updateRainfallBatch","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawPool","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const TOKABI=["function balanceOf(address) view returns (uint256)","function approve(address,uint256) returns (bool)","function allowance(address,address) view returns (uint256)"];
+const esc = RainproofRuntime.esc;
+const yuan=fen=>(Number(fen)/100).toFixed(2);
+const $=id=>document.getElementById(id);
+const toast=(m,cls)=>{const t=$("toast");t.textContent=m;t.className=cls||"";t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600)};
+let provider=RainproofRuntime.provider(E,RPC);
+const v6=new E.Contract(V6,V6ABI,provider), tok=new E.Contract(TOK,TOKABI,provider);
+const STAG={paid:["已赔付","ok"],denied:["判定不赔","red"],claimable:["可赔付","gold"],pending:["冷静期","warn"],
+  active:["保障中",""],pending_judgement:["待判定","warn"],low_confidence:["置信不足","warn"],expired:["领取期结束或缺少及时判定","warn"],
+  refunded:["已退款","warn"],settled:["已结算","warn"]};
+
+async function refreshNet(){
+  try{
+    const cid=Number((await provider.getNetwork()).chainId);
+    $("netv").textContent=`测试网 ${cid}`;$("netdot").className="dot on";
+    const c=CITY_CODE[+$("city").value];   // 选框值 1..6 → 区划码
+    $("rainv").textContent=(await v6.rainfall(c))+" mm";
+    $("thv").textContent=(+$("hours").value===12?"30 / 70":"50 / 100")+" mm";
+    $("poolv").textContent=yuan(await v6.poolBalance())+" 元";
+    const ageH=Math.floor((Date.now()/1000-Number(await v6.lastFeedAt(c)))/3600);
+    const ft=$("feedtag");
+    if(ageH>24){ft.textContent="喂价超 24h · 暂不可投保";ft.className="tag red"}
+    else if(ageH>20){ft.textContent=`喂价 ${ageH}h · 临近保鲜期`;ft.className="tag warn"}
+    else{ft.textContent=`喂价 ${ageH}h 前`;ft.className="tag gold"}
+  }catch(e){$("netv").textContent="连接失败";$("netdot").className="dot err"}
+}
+async function refreshQuote(){
+  try{const q=await v6.premiumOf(CITY_CODE[+$("city").value],+$("hours").value);
+  $("quote").innerHTML=yuan(q)+"<u>元 / 份</u>";}catch(e){$("quote").textContent="报价读取失败，请稍后重试";}
+}
+async function refreshPolicies(){
+  const who=$("who").dataset.addr||DEMO_RIDER;
+  try{
+    const ids=await v6.policiesOf(who);
+    const box=$("policies");
+    if(!ids.length){box.innerHTML='<span class="empty">暂无保单 —— 上方选城市即可投保</span>';return}
+    let h="";
+    for(const id of ids){
+      const p=await v6.policies(id), raw=await v6.policyStatus(id);
+      // policyStatus() 没有 refunded / settled 分支（v6 待修）：已退款的单会仍返回 "pending"，
+      // 到期结算过的仍返回 "active/expired"。这里按链上 settled 事实覆盖显示，避免"退过款还显示待生效"。
+      const st=raw;
+      POLICY_CACHE[id]={p,st};   // 状态一起缓存：复制凭证/申诉都要用「已按 settled 覆盖过」的 st
+      const [lab,cls]=STAG[st]||[st,""];
+      const d=new Date(Number(p.effectiveFrom)*1000).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+      h+=`<div class="pol ${st}">
+        <div class="pid"><span class="tag ${cls}">${lab}</span><br>保单 <span class="mono">#${id}</span> · ${cityName(p.regionId)} ${p.windowHours}h</div>
+        <div class="pmeta">生效 ${d}<br>档线 ${p.thresholdMm}mm · 基线 ${p.rainfallAtBuy}mm${p.payer!==p.rider?"<br>平台代付":""}</div>
+        <div class="pai">保费 <b class="money">${yuan(p.premium)}</b> 元<br>${p.paid?`赔付 <b class="money">${yuan(p.payout)}</b> 元 · 已到账`:"赔付 — 未结算"}</div>
+      </div>` + certHTML(id,p,st);
+    }
+    box.innerHTML=h;
+  }catch(e){$("policies").innerHTML=`<span class="err">读取失败：${esc((e.message||e).toString().slice(0,90))}</span>`}
+}
+let POLICY_CACHE={};   // 复制凭证时按 id 取链上读数
+$("policies").addEventListener("click",async(e)=>{
+  const b=e.target.closest&&e.target.closest("[data-copy]"); if(!b)return;
+  const id=Number(b.dataset.copy), rec=POLICY_CACHE[id];
+  if(!rec)return toast("凭证数据还没读到，稍后再试","err");
+  try{await navigator.clipboard.writeText(certText(id,rec.p,rec.st));toast("凭证文本已复制","ok")}
+  catch(err){toast("复制失败：浏览器未授权剪贴板","err")}
+});
+/* G2 理赔记录：每张保单 → 判定结果 + 可推导的原因 + 到账交易 */
+const TOPIC_CLAIM = ethers.id("ClaimPaid(uint256,address,uint256,uint8)");
+const TOPIC_JUDGE = ethers.id("JudgementSubmitted(uint256,uint8,uint8,uint8,uint8,uint256,bytes32,bytes32,string)");
+const padId = id => "0x" + BigInt(id).toString(16).padStart(64, "0");
+function denyReason(p, j){
+  const during = Number(j.rainfallAtJudgement) - Number(p.rainfallAtBuy);
+  const thr = Number(p.thresholdMm);
+  if (during < thr) return "R1 未达档线：窗口增量 " + during + "mm < " + thr + "mm（国标暴雨线）";
+  return "链上记录为 DENY，增量 " + during + "mm；具体命中规则须查原始判定留痕，不能仅从链上读数推断。";
+}
+/* G9 申诉通道：拒赔可复核——生成文本 + JSON 凭据（本地下载/复制，运营侧回填结论） */
+let APPEAL = null;   // {id, p, j}
+function appealData(){
+  const { id, p, j } = APPEAL;
+  const reason = $("appealReason").value.trim();
+  return { schema: "rainproof/appeal@1", policyId: Number(id), chainId: 968, contract: V6_ADDR,
+    rider: p.rider, region: { code: Number(p.regionId), name: cityName(p.regionId) }, windowHours: Number(p.windowHours),
+    judgement: { decision: Number(j.decision), confidence: Number(j.confidence), sources: Number(j.sources),
+      rainfallAtJudgement: Number(j.rainfallAtJudgement), rainfallAtBuy: Number(p.rainfallAtBuy),
+      thresholdMm: Number(p.thresholdMm), judgedAt: Number(j.judgedAt) },
+    derivedDenyReason: denyReason(p, j), reason,
+    generatedAt: new Date().toISOString() };
+}
+function appealText(){
+  const d = appealData();
+  return ["【雨证 · 判定复核申请】", "保单 #" + d.policyId + " · " + d.region.name + " " + d.windowHours + "h",
+    "判定：" + (d.judgement.decision === 1 ? "PAY" : "DENY") + "（置信 " + d.judgement.confidence + "（自评口径：多源一致性，非统计置信区间） · 源 " + d.judgement.sources + "）",
+    "链上读数：判定时 " + d.judgement.rainfallAtJudgement + "mm · 基线 " + d.judgement.rainfallAtBuy + "mm · 档线 " + d.judgement.thresholdMm + "mm",
+    "系统给出的拒赔原因：" + d.derivedDenyReason, "申请人理由：" + (d.reason || "（未填写）"),
+    "核验：" + d.contract + "（BOT Chain 测试网 968）· 申请人 " + d.rider, "生成时间：" + d.generatedAt].join("\n");
+}
+async function loadClaims(){
+  const box = $("claims"); if (!box) return;
+  try {
+    const who = $("who").dataset.addr || DEMO_RIDER;
+    $("claimsWho").textContent = who.slice(0, 10) + "… 的判定与到账";
+    const ids = await v6.policiesOf(who);
+    if (!ids.length) { box.innerHTML = '<span class="empty">暂无保单，也就没有理赔记录</span>'; return; }
+    let h = "";
+    for (const id of ids) {
+      const rawP = POLICY_CACHE[id] ? POLICY_CACHE[id].p : await v6.policies(id);
+      const rawSt = await v6.policyStatus(id);
+      // 与「我的保单」同一口径：policyStatus() 没有 refunded/settled 分支，按 settled 事实覆盖
+      const st = rawSt;
+      POLICY_CACHE[id] = { p: rawP, st };
+      const p = rawP;
+      const j = await v6.judgements(id);
+      // 读不到就说读不到：以前 catch 成 [[]]，页面会渲染出 "undefined…" 这种字样
+      let paidLog = null;
+      try { const ls = await provider.getLogs({ address: V6_ADDR, fromBlock: 0, toBlock: "latest", topics: [TOPIC_CLAIM, padId(id)] }); paidLog = ls[0] || null; } catch (e) { paidLog = null; }
+      const [lab, cls] = STAG[st] || [st, ""];
+      h += '<div class="pol ' + st + '">';
+      if (j.exists) {
+        h += '<div class="pid"><span class="tag ' + (Number(j.decision) === 1 ? "ok" : "red") + '">' + (Number(j.decision) === 1 ? "判定 PAY" : "判定 DENY") + '</span><br>保单 <span class="mono">#' + id + '</span> · ' + cityName(p.regionId) + ' ' + p.windowHours + 'h</div>';
+        h += '<div class="pmeta">判定 ' + fmtT(j.judgedAt) + '<br>置信 ' + j.confidence + ' <span class="cnf" title="置信度为判定层的多源一致性自评（三模型落在中位数容差内的比例 + 与链上读数相符程度），不是统计置信区间/概率">自评口径</span> · 源 ' + j.sources + '<br>判定时读数 ' + j.rainfallAtJudgement + 'mm（基线 ' + p.rainfallAtBuy + 'mm）</div>';
+        h += '<div class="pai">' + (Number(j.decision) === 1
+          ? (p.paid ? '已赔 <b class="money">' + yuan(p.payout) + '</b> 元' + (paidLog ? '<br><span class="mono">' + String(paidLog.transactionHash).slice(0, 14) + '…</span>' : '<br><span class="dim">（打款凭证读取失败，稍后刷新）</span>') : (st === "expired" || st === "settled" ? "已过领取期限，请联系演示方复核" : "待触发打款"))
+          : "未赔付") + '</div></div>';
+        if (Number(j.decision) === 0) h += '<div class="clr-reason">不赔原因：' + denyReason(p, j) + '</div>' +
+          '<div style="grid-column:1/-1;padding-top:6px"><button class="btn sm" data-appeal="' + id + '">申请复核这份判定</button></div>';
+      } else {
+        h += '<div class="pid"><span class="tag ' + cls + '">' + lab + '</span><br>保单 <span class="mono">#' + id + '</span> · ' + cityName(p.regionId) + ' ' + p.windowHours + 'h</div>';
+        h += '<div class="pmeta">尚未判定</div><div class="pai">—</div></div>';
+      }
+    }
+    box.innerHTML = h || '<span class="empty">暂无判定记录</span>';
+  } catch (e) { box.innerHTML = '<span class="err">理赔记录读取失败：' + esc((e.message || e).toString().slice(0, 80)) + '</span>'; }
+}
+async function connectWallet(){
+  if(!window.ethereum){toast("未检测到钱包，请用装有浏览器钱包的 Edge / Chrome 打开本页并解锁钱包");return}
+  try{
+    const signer=await RainproofRuntime.wallet(E,window.ethereum,RPC);
+    const acc=[await signer.getAddress()];
+    $("who").textContent=acc[0].slice(0,10)+"…（我的钱包）";
+    $("who").dataset.addr=acc[0];
+    refreshPolicies();loadClaims();refreshAllowance();toast("钱包已连接","ok");
+  }catch(e){toast("连接取消")}
+}
+async function refreshAllowance(){
+  const el=$("allowLine"); if(!el)return;
+  try{
+    const who=$("who").dataset.addr;
+    if(!who){el.textContent="授权余额：连接钱包后显示";return}
+    const a=await tok.allowance(who,V6);
+    el.textContent="授权余额："+yuan(a)+" 元"+(a>=10000n?" · 足够直接投保（单笔）":a>0n?" · 不足一单时仍需授权":"");
+  }catch(e){el.textContent="授权余额：读取失败"}
+}
+async function buy(){
+  if($("buy").disabled)return;
+  $("buyerr").textContent="";
+  if(!window.ethereum){$("buyerr").textContent="投保需要钱包（点「连接钱包」）；浏览与查询不需要。";return}
+  try{
+    $("buy").disabled=true;
+    const city=CITY_CODE[+$("city").value], hours=+$("hours").value;
+    const s=await RainproofRuntime.wallet(E,window.ethereum,RPC);
+    const me=await s.getAddress();
+    const t=new E.Contract(TOK,TOKABI,s), v=new E.Contract(V6,V6ABI,s);
+    const premium=await v.premiumOf(city,hours);   // G12 修复：报价必须走区划码
+    const alw=await t.allowance(me,V6);
+    if(alw<premium){
+      const amt=$("bigApprove").checked?premium*100n:premium;   // 大额授权：一次 100 份，后续投保免二次签名
+      toast("第一步：授权保费"+($("bigApprove").checked?"（100 份额度）":"")+"…");
+      await (await t.approve(V6,amt)).wait();
+    }else{
+      toast("授权余额足够，单笔投保…");
+    }
+    toast("投保上链…");
+    await (await v.buyPolicy(city,hours)).wait();
+    $("who").dataset.addr=me;$("who").textContent=me.slice(0,10)+"…（我的钱包）";
+    await refreshPolicies();toast("投保成功","ok");
+    refreshAllowance();
+    loadClaims();
+    try{const ids=await v6.policiesOf(me),nid=ids[ids.length-1];
+      const det=document.getElementById("cert-"+nid);
+      if(det){det.open=true;det.scrollIntoView({behavior:"smooth",block:"center"})}}catch(e){}
+  }catch(e){$("buyerr").textContent=(e.shortMessage||e.reason||e.message||"").toString().slice(0,160)}finally{$("buy").disabled=false;}
+}
+$("claims").addEventListener("click",(e)=>{
+  const b=e.target.closest&&e.target.closest("[data-appeal]");
+  if(!b)return;
+  const id=b.dataset.appeal, p=(POLICY_CACHE[id]||{}).p;
+  if(!p)return toast("保单数据未缓存，稍后再试","err");
+  v6.judgements(id).then(j=>{ if(!j.exists)return toast("该保单尚无判定，无需复核","err");
+    APPEAL={id,p,j}; $("appealPid").textContent="#"+id; $("appealBox").hidden=false;
+    $("appealReason").value=""; $("appealBox").scrollIntoView({behavior:"smooth",block:"center"}); }).catch(e=>toast("判定读取失败，请稍后重试","err"));
+});
+$("appealCancel").onclick=()=>{ $("appealBox").hidden=true; APPEAL=null; };
+$("appealCopy").onclick=async()=>{
+  if(!$("appealReason").value.trim())return toast("请先填写复核理由","err");
+  try{ await navigator.clipboard.writeText(appealText()); toast("复核文本已复制；尚未提交，请交现场演示人员","ok"); }
+  catch(e){ toast("复制失败：浏览器未授权剪贴板","err"); }
+};
+$("appealDl").onclick=()=>{
+  if(!$("appealReason").value.trim())return toast("请先填写复核理由","err");
+  const d=appealData();
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:"application/json"}));
+  a.download="appeal-"+d.policyId+"-"+d.generatedAt.replace(/[-:T]/g,"").slice(0,12)+".json";
+  a.click(); URL.revokeObjectURL(a.href);
+  toast("已下载复核凭据；尚未提交，请交现场演示人员","ok");
+};
+$("city").onchange=()=>{refreshNet();refreshQuote()};
+$("hours").onchange=()=>{refreshNet();refreshQuote()};
+$("wallet").onclick=connectWallet;
+$("buy").onclick=buy;
+refreshNet();refreshQuote();refreshPolicies();loadClaims();
+/* G14 轮询：标签页隐藏时停轮询（省电省流量，也避免后台打满共享节点），回到前台立即刷新一次 */
+let _poll=null;
+function startPoll(){ if(_poll!==null) return; _poll=setInterval(()=>{ if(document.hidden) return; refreshNet(); },30000); }
+function stopPoll(){ if(_poll!==null){ clearInterval(_poll); _poll=null; } }
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){ stopPoll(); } else { startPoll(); refreshNet(); refreshAllowance(); }
+});
+startPoll();
+if(window.ethereum&&window.ethereum.on){
+ window.ethereum.on("accountsChanged",()=>location.reload());
+ window.ethereum.on("chainChanged",()=>location.reload());
+}
+</script>
+</body>
+</html>

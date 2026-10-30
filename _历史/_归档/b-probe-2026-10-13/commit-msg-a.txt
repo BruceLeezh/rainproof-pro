@@ -1,0 +1,45 @@
+[B] 修第二轮全仓扫描的代码类缺陷（用户 2026-10-12 授权："能修正的全部修正全部改"）
+
+契约不变：本轮一处合约源码都没改 —— 改已部署源码会破坏"字节码 = 链上"这条证据链。
+E4/E5/E6 这类链上硬事（定价兜底 500× 杠杆、结算三连、policyStatus 谎报）写成
+02-作战与答辩/实时雨量-链上排期交给A-2026-10-12.md 交 A 在链上处理，不动链。
+
+演示页 index.html（E1/E2/E8/E12 + 优化 14/15 + B13）：
+- E1 内嵌 ABI 由 v2∪v3 并集拆成逐字节的 ABI_V2(85 条) / ABI_V3(95 条) 两份副本，
+  运行时按链版本选一份建合约。原来 677 上拿 v2 形状解 v3 的 policies 会整串错移一位
+  （rider 之后 productId←payer…），judgements 抛错被空 catch 吞成"尚未登记 AI 判定"
+- E2 事件取值改按 d.fragment.inputs 的字段名（原来的 args[3..7] 只对 v2 成立）
+- 加 ABI 形状自检（v3 16/10/10、v2 15/9/9），不符即停止解析、一个数字都不渲染
+- E8 快照诚实化：isReal:false + 横幅/页脚/报价凭据写"离线快照（非实时）"
+- E12 档位不再硬编码 24/48/72 默认 72，按链上 hoursAllowed 重建（v3 = 12/24）
+- 新增"实时雨量"现网直连面板（Open-Meteo；明确标注未上链、绝不拿快照冒充实时）
+- 喂价过期前置告警：677 末次喂价 2026-10-09，MAX_FEED_AGE=86400 ⇒ 现场投保必 revert
+  "stale feed"；现在读 lastFeedAt 提前醒目告警并禁用买入
+- 无障碍：地址输入 aria-label、筛选/档位片 aria-pressed、toast 按 kind 切 role
+
+门禁 07-测试工具（E3/E7/E18/E19 + 优化 2/4）：test 链 14 → 17 道
+- 新增 check-abi：sync_abi.js 重写为校验页面两份 ABI 与 03-合约/*.abi.json 逐字节一致
+  （E3 的 --check 原来必然 exit 1，因为页面存的是并集）
+- 新增 check-page-decode（19 项）：用真值 ABI 造哨兵 payload 再用页面 ABI 解，
+  断言 policies 16 / judgements 10 / feedJudgements 10 字段；把页面 ABI_V3 换回 v2 形状即红
+- 新增 check-v3-prices:offline
+- E7 make-verify-pack 失败不写盘、内容没变不写盘（原来无条件重写被跟踪的 verify-manifest.json）
+- gates.yml 不再写死步数与断言数（数字只在 07-测试工具/package.json 的 test 链里定义）
+
+04-脚本（E20–E25 + 优化 17/18）：keeper 币种符号按链取 + 结算前查 payoutOf、
+push-rainfall 加 --seed 与失败退出码、hook-watch 加 --force-refresh 与 require.main 守卫、
+set-premium 按版本选 ABI + 认链闸 + 写后回读断言、check-chain 读 .env 的 RPC、
+.env.example 补 KEEPER_KEY / V2_OPERATOR / PRICING_V3_RPC / PRICING_V3_ADDR。
+
+核验台与节点代理（E11 + B12/B14 + 优化 13）：
+- 06-核验台 默认链改主网 677 并明写"本页没有离线快照兜底"；968 标测试网历史留痕
+- verifier.html 加七态层徽章（probe/direct/proxy/testnet/snapshot/custom/fake）
+- frozen-node.js 拆出 readingsBlockNumber / eventsObservedAtBlock（logs 真实区间
+  25,921,072–25,922,010，只有 OperatorChanged/RainfallUpdated/FeedRejected/PoolFunded，
+  没有 PolicyBought/ClaimPaid/PolicyRefunded）；make-frozen-node 改分页 getLogs，不再 fromBlock:0
+- 11-节点代理 加进程内令牌桶（60/min）+ 429/Retry-After，上游异常状态如实透传
+
+验证：cd 07-测试工具; npm.cmd test = 17 道全绿、exit 0（2026-10-12 实测；
+含 e2e 74 / e2e:v2 101 / e2e:multisig 73 / e2e:v3 87）
+
+Co-authored-by: A（juice-butterfly）的门禁与脚本原始设计

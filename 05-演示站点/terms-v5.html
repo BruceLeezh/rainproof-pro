@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>雨证 · 服务与赔付条款（演示环境）</title>
+<meta name="description" content="雨证 RainProof 演示环境的服务条款、赔付规则、免责与数据处理说明：档线、判定规则、不赔情形、申领时效、退款、个人信息与投诉渠道。">
+<style>
+  :root{
+    --bg:#070b10; --panel:#0d141c; --panel2:#101922; --line:#1c2836; --ink:#e8eef5; --dim:#8a9aab;
+    --measure:#45e0c8; --money:#f2c14e; --ok:#4ade80; --bad:#f87171; --wait:#94a3b8;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Cascadia Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  :focus-visible{outline:2px solid var(--measure);outline-offset:3px}
+  table{display:block;overflow-x:auto}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.85 system-ui,-apple-system,"Microsoft YaHei","PingFang SC",sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--measure);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:12.5px;color:var(--dim);background:var(--panel2);
+    padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+  .wrap{max-width:880px;margin:0 auto;padding:34px 22px 80px}
+  header{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);
+    padding-bottom:16px;margin-bottom:26px}
+  .mark{width:30px;height:30px;border:2px solid #7cb0f9;border-radius:6px;position:relative;flex:none}
+  .mark:before{content:"";position:absolute;left:7px;right:7px;bottom:7px;height:2px;background:var(--money)}
+  h1{font-size:21px;margin:0;letter-spacing:.3px}
+  .sub{color:var(--dim);font-size:12.5px}
+  .meta{margin-left:auto;color:var(--dim);font-size:12px;text-align:right;line-height:1.7}
+  .callout{border-left:3px solid var(--money);background:rgba(242,193,78,.07);border-radius:0 6px 6px 0;
+    padding:13px 16px;margin:0 0 26px;font-size:13.5px;line-height:1.8}
+  .callout b{color:#f6d489}
+  h2{font-size:16px;margin:34px 0 10px;padding-top:6px;border-top:1px solid var(--line);letter-spacing:.2px}
+  h2 span{color:var(--dim);font-weight:400;font-size:12.5px;margin-left:8px}
+  p{margin:0 0 11px;color:#cfd9e4}
+  ul,ol{margin:0 0 12px;padding-left:22px;color:#cfd9e4}
+  li{margin:4px 0}
+  table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:13.5px}
+  th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{color:var(--dim);font-weight:600;font-size:12.5px}
+  td b{color:var(--ink)}
+  .num{font-family:var(--mono);font-size:13px;white-space:nowrap}
+  .fill{color:var(--bad);font-weight:600}
+  footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px;line-height:1.9}
+  @media(max-width:640px){.wrap{padding:24px 16px 60px}h1{font-size:18px}.meta{text-align:left;margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="mark" aria-hidden="true"></div>
+  <div>
+    <h1>服务与赔付条款</h1>
+    <div class="sub">雨证 RainProof · 参数化降雨保障 · 演示环境版本 v1.0（2026-10-26）</div>
+  </div>
+  <div class="meta">
+    <a href="index-v5.html">← 返回首页</a><br>
+    <a href="verify-v5.html">链上核验台</a>
+  </div>
+</header>
+
+<div class="callout">
+  <b>先读这一句：</b>本页描述的是<b>演示与试点环境</b>，不是一份保险合同，也不构成对外经营承诺。
+  雨证不承保、不收取真实保费；本环境下的“保费”与“赔付”一律用<b>演示计价单位 RDROP</b> 记账（与人民币 1:1 仅用于演示换算）。
+  面向骑手的正式保障由持牌保险机构承保，雨证提供技术与核验服务。
+</div>
+
+<h2>一、保障对象与触发逻辑 <span>what is covered</span></h2>
+<p>本环境提供的是<b>参数化赔付</b>：不查勘、不定损、不要求被保险人举证。赔付需要同时满足雨量达标、PAY 判定、置信度门槛、有效领取时限及资金池余额要求，其中雨量条件是：
+<b>保障区域内、保障窗口内的链上累计降雨增量是否达到档线</b>。</p>
+<ul>
+  <li>保障窗口：<b>12 小时</b>或 <b>24 小时</b>（合约只接受这两档）。</li>
+  <li>降雨读数：自公开气象数据取数、经三方交叉核验后写入；每一次喂价都带证据哈希，<b>同一天气源可被任何人复算</b>。</li>
+  <li>增量口径：<span class="num">判定时链上累计读数 − 投保时基线读数</span>。基线在投保瞬间固定，之后降雨再多也不改变该保单的基线。</li>
+</ul>
+
+<h2>二、档线与赔付比例 <span>tiers</span></h2>
+<table>
+  <thead><tr><th>窗口</th><th>档线（按 GB/T 28592—2012 分档下限）</th><th>赔付比例</th><th>以 100 元额度基数计（最高实赔 75 元）</th></tr></thead>
+  <tbody>
+    <tr><td>12 小时</td><td>新增 ≥ 30 mm</td><td>50%</td><td class="num">50 元</td></tr>
+    <tr><td>12 小时</td><td>新增 ≥ 70 mm</td><td>75%</td><td class="num">75 元</td></tr>
+    <tr><td>24 小时</td><td>新增 ≥ 50 mm</td><td>50%</td><td class="num">50 元</td></tr>
+    <tr><td>24 小时</td><td>新增 ≥ 100 mm</td><td>75%</td><td class="num">75 元</td></tr>
+  </tbody>
+</table>
+<p>保额（满额）在本环境固定为 <b>100 元</b>，不支持按单定制。<b>同一被保险人</b>同时未了结的敞口上限为 200 元，
+因此实际最多同时持有 2 张满额保单，第 3 张会被合约拒绝。</p>
+
+<h2>三、判定规则 <span>deterministic, not discretionary</span></h2>
+<p>判定是<b>确定性规则链</b>，同一份输入快照重跑必然得到同一个结论；输入快照与输出结论各取一个哈希写入链上，第三方可逐字节复核：</p>
+<ul>
+  <li><b>R1</b> 链上增量低于档线 → 不赔。</li>
+  <li><b>R2</b> 链上读数与多模型中位数背离超过容差 → 不赔（先拒数据，再谈赔付）。</li>
+  <li><b>R3</b> 达标模型数不足 → 不赔。</li>
+  <li><b>R4</b> 模型间离散度过大 → 置信度被压到阈值以下 → 不赔。</li>
+  <li><b>R5</b> 以上均通过 → 判赔。</li>
+</ul>
+<p>大模型只负责撰写说明文字，<b>不参与</b>“赔不赔”的决定。判定置信度低于合约阈值时，即使结论是“赔”，领取也会被合约拒绝。</p>
+
+<h2>四、不赔的情形 <span>exclusions</span></h2>
+<ul>
+  <li>窗口内新增降雨未达对应档线（最常见）。</li>
+  <li>数据未通过核验：单源缺数、三模型分歧超容差、证据哈希不一致、置信度低于阈值。</li>
+  <li>发生不可抗力导致取数源整体不可用，且窗口内无法取得可用替代观测。</li>
+  <li>未达到准入资格、单人限购或敞口上限时，新单会被拒绝承保；这些投保校验不构成已售保单的拒赔理由。</li>
+  <li>v5 演示合约到期后无法领取；即使曾有 PAY 判定，也可能因未及时触发而错过赔付。</li>
+</ul>
+<p>被拒绝时也必须说明原因：不赔的判定同样上链，并给出具体是哪一条规则、当时的读数与基线。</p>
+
+<h2>五、申领与时效 <span>claim window</span></h2>
+<ul>
+  <li>判赔后必须由任一地址触发领取（<b>任何人都可以代触发</b>），资金只转给被保险人地址本身。</li>
+  <li>申领必须发生在保障窗口<b>结束之前</b>（合约以到期时间为界）。到期后再触发会被合约拒绝。</li>
+  <li>演示方不另收申领服务费；发起交易的账户仍需支付测试网 gas。自动触发依赖外部脚本在线，不能保证到账时间。</li>
+</ul>
+
+<h2>六、退款与冷静期 <span>refund</span></h2>
+<ul>
+  <li>保障生效前（冷静期内）可申请全额退款：<span class="num">refundPolicy</span>。</li>
+  <li>当前演示环境把冷静期设为 <b>0 秒</b>（买入即生效），因此实际不提供退款窗口；当前合约以投保时雨量为基线，开启非零冷静期会把冷静期降雨算入赔付；修正基线前不能直接照搬为正式产品。</li>
+  <li>一旦保障生效，保费不退还；判定为不赔时也不退保费。</li>
+</ul>
+
+<h2>七、计价与资金 <span>pricing &amp; funds</span></h2>
+<ul>
+  <li>本环境以 RDROP 记账，链上以“分”为单位；页面上的“元”是按 1:1 换算的展示值。</li>
+  <li>保费按区域与窗口分档定价，价格表写入链上，<b>改价需运营方两把私钥共同签名</b>。</li>
+  <li>赔付资金来自合约资金池；资金池余额与每一笔流入流出都对公众开放，可用核验台逐分核对。</li>
+  <li>未开设网格价的区域按合约默认价兜底承保；<b>演示喂价注册表覆盖 122 个区划；具体是否在售及当前保费，以目标区划的实时链上读取为准</b>。</li>
+</ul>
+
+<h2>八、数据与个人信息 <span>privacy</span></h2>
+<ul>
+  <li>页面不设置访问分析埋点；浏览器会向公开 RPC 请求数据，节点服务商可能记录 IP 与请求。运营脚本会保存气象报文、判定与执行留痕。</li>
+  <li>不采集姓名、手机号、证件号、位置轨迹；页面只与你自己的钱包地址交互。</li>
+  <li>链上数据（地址、投保记录、判定记录）<b>公开可查且不可删除</b>，这是可核验性的代价，请勿使用包含个人身份信息的地址。</li>
+  <li>正式产品的个人信息处理将遵循《个人信息保护法》单独授权与最小必要原则；本演示环境未接入任何真实个人信息。</li>
+</ul>
+
+<h2>九、风险披露 <span>the honest part</span></h2>
+<ul>
+  <li><b>基差风险</b>：赔付按区域降雨读数计算，不等于你的实际接单损失。城市边缘、短时强降水落区偏差都可能让“你觉得淋透了”却未达档线，反之亦然。这是参数化的固有局限，不是执行瑕疵。</li>
+  <li><b>数据源风险</b>：本环境取数依赖公开气象聚合接口与三家数值模型，存在单点依赖与延迟；已用证据哈希与三模型交叉核验降低，但不能消除。</li>
+  <li><b>合约风险</b>：本环境为测试网演示，合约源码公开但未经过第三方安全审计，请勿投入真实价值。</li>
+  <li><b>演示标记</b>：部分历史留痕使用合成数据，页面上会明确标注 <code>simulated</code>。</li>
+</ul>
+
+<h2>十、投诉与争议 <span>complaints</span></h2>
+<ul>
+  <li>对本环境的判定结果有异议：在理赔记录里点“申请复核这份判定”，并附上你认为应采信的观测证据。</li>
+  <li>演示复核渠道：在骑手页下载复核 JSON，交给现场演示人员。该下载仅生成本地文件，<b>不代表已提交或受理</b>；正式服务渠道须由持牌合作方上线前提供。</li>
+  <li>涉及正式保障的争议，由承保的持牌保险机构按其条款与监管投诉渠道处理；雨证配合提供技术与数据核验。</li>
+  <li>本页条款如与链上合约行为不一致，<b>以链上合约的实际行为为准</b>，并请立即报给我们修正。</li>
+</ul>
+
+<h2>十一、变更与生效 <span>changes</span></h2>
+<ul>
+  <li>版本：v1.1 · 2026-10-28。任何实质性修改都会更新版本号与本页日期。</li>
+  <li>已生效保单适用其投保时的档线与规则，不因后续改价或改条款而变更。</li>
+</ul>
+
+<footer>
+  雨证 RainProof · 参数化降雨保障（演示环境）· 本页不构成保险合同，不承保、不收取真实保费。<br>
+  演示计价单位 RDROP 与人民币 1:1 仅用于演示换算 · 页面读取公开节点；气象数据来自同一聚合平台的三个模型，并非三个独立观测渠道。
+</footer>
+
+</div>
+</body>
+</html>

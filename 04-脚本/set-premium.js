@@ -31,7 +31,9 @@
  *   node set-premium.js            只算不算，打印派生表（默认，安全）
  *   node set-premium.js --apply    真的发交易（写上链后逐区域回读断言，对不上就报错退出）
  *   node set-premium.js --apply --yes-mainnet   主网 677 必须额外确认这一次（与 deploy.js 同一道闸）
- *   node set-premium.js --hours=48 换窗口看看（只影响本次计算，链上仍应保持 72h）
+ *   ⚠️ 与 v5 不兼容：v5 的金额单位是「分」、网格是 setPremiumGrid(uint32,uint256,uint256,bytes32)，
+ *      本脚本算的是 ETH 浮点表。改价请走 07-测试工具/multisig-call.js setPremiumGrid。
+ *   默认窗口 24h（v5 只接受 12 / 24）。
  *
  * 【环境变量】.env：SEPOLIA_RPC / CONTRACT_ADDRESS / PRIVATE_KEY
  */
@@ -50,12 +52,14 @@ const ABI_BY_KIND = {
   v1: path.join(ROOT, "03-合约", "RainDeliveryInsurance.abi.json"),
   v2: path.join(ROOT, "03-合约", "RainDeliveryInsuranceV2.abi.json"),
   v3: path.join(ROOT, "03-合约", "RainDeliveryInsuranceV3.abi.json"),
+  // v5 只用来做版本指纹（v5 的保费单位是「分」，不走本脚本的 ETH 浮点表）
+  v5: path.join(ROOT, "03-合约", "RainDeliveryInsuranceV5.abi.json"),
 };
 const ACTUARY_FILE = path.join(ROOT, "10-金融与定价", "actuary-output.json");
 
 const ARGV = process.argv.slice(2);
 const APPLY = ARGV.includes("--apply");
-const HOURS = (ARGV.find((a) => a.startsWith("--hours=")) || "").split("=")[1] || "72";
+const HOURS = (ARGV.find((a) => a.startsWith("--hours=")) || "").split("=")[1] || "24";
 // --v1/--v2/--v3 显式钉版本；不给就问链（见 pickKind）。留在 ARGV 里不参与 plan()，只影响读链。
 const FORCED_KIND = (ARGV.find((a) => /^--v[123]$/.test(a)) || "").slice(2) || null;
 
@@ -125,13 +129,30 @@ function netErr(kind, e) {
   return err;
 }
 
-/** 选版本：给了 --v1/--v2/--v3 就用它，否则从新到旧问链（v3 entryThresholdOf / v2 thresholdOf / v1 兜底） */
+/** 选版本：给了 --v1/--v2/--v3 就用它，否则从新到旧问链（v5 regions/regionCount · v3 entryThresholdOf · v2 thresholdOf · v1 兜底）
+ *  ★ v5 必须先认：v5 也有 entryThresholdOf(uint256)，不先问 regions(uint32) 就会被误认成 v3，
+ *    再拿 1..5 的旧区划号去读价/写价 —— 对 v5 是 "region not available"，或者更糟：写错区域。 */
 async function pickKind(provider) {
   if (FORCED_KIND) return FORCED_KIND;
   const probe = (kind, fn) => {
     const c = new ethers.Contract(process.env.CONTRACT_ADDRESS, JSON.parse(fs.readFileSync(ABI_BY_KIND[kind], "utf8")), provider);
     return c[fn](24);
   };
+  let isV5 = false;
+  try {
+    const c5 = new ethers.Contract(process.env.CONTRACT_ADDRESS, JSON.parse(fs.readFileSync(ABI_BY_KIND.v5, "utf8")), provider);
+    await c5.regionCount();
+    isV5 = true;
+  } catch (e) {
+    if (!isMissingFunction(e)) throw netErr("v5", e);
+  }
+  if (isV5) {
+    throw new Error(
+      "检测到 v5 合约（有 regionCount() / regions(uint32)）—— 本脚本只算 ETH 口径的 v1/v2/v3 定价表。\n" +
+      "  v5 的保费单位是「分」（RDROP 1:1 人民币），改价走 07-测试工具/multisig-call.js setPremiumGrid，" +
+      "且需要多签两票；用 1..5 旧区划号在这里写价会写错区域，已拒绝继续。"
+    );
+  }
   try { await probe("v3", "entryThresholdOf"); return "v3"; } catch (e) { if (!isMissingFunction(e)) throw netErr("v3", e); }
   try { await probe("v2", "thresholdOf"); return "v2"; } catch (e) { if (!isMissingFunction(e)) throw netErr("v2", e); }
   return "v1";

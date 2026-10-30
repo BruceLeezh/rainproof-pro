@@ -34,7 +34,7 @@
  *   node hook-watch.js --once              扫最近 N 个区块里的 PolicyBought，逐个复核后退出
  *   node hook-watch.js --blocks=5000       改扫描深度（默认 10000；publicnode 的 eth_getLogs 上限 50000）
  *   node hook-watch.js --from=11855930     从指定区块开始扫（含）
- *   node hook-watch.js --watch=20          常驻，每 20 秒扫一次，只在新保单出现时干活
+ *   node hook-watch.js --watch=1800        常驻，每 1800 秒（30 分钟）扫一次，只在新保单出现时干活
  *   node hook-watch.js --dry-run           只打印，不写留痕文件
  *   node hook-watch.js --no-models         跳过三模型取数（离线 / 无代理时用）
  *   node hook-watch.js --force             已复核过的保单也重做
@@ -411,6 +411,13 @@ async function main() {
   const dry = has("--dry-run");
   const force = has("--force") || has("--force-refresh");   // --force-refresh：同义别名（口头/文档里都用过这个说法）
   const watchSec = numArg("--watch", 0);
+  /* 单位陷阱（2026-10-28）：本脚本 --watch 是**秒**，而 push-rainfall-v5.js / warning-watch.js 的
+     --watch 是**分钟**。同一个名字两种单位，照另一个脚本的习惯敲 `--watch=30` 会变成「每 30 秒扫一次」，
+     静默把 RPC 调用量放大 60 倍。不改正名（改单位会悄悄改掉现有调用方的行为），改成显式拦一道。 */
+  if (watchSec > 0 && watchSec < 60) {
+    throw new Error(`--watch= 这里是**秒**，收到 ${watchSec}（≈每 ${watchSec} 秒扫一次，比预期密 60 倍）。` +
+      `要 30 分钟请写 --watch=1800；要每 ${watchSec} 秒扫，请确认 RPC 额度后再显式写 --watch=${watchSec}`);
+  }
   const once = has("--once") || !watchSec;
 
   const provider = new JsonRpcProvider(process.env.SEPOLIA_RPC || process.env.RPC_URL);

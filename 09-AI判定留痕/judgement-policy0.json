@@ -3,16 +3,15 @@
     "schema": "rainproof/judgement@1",
     "judgeVersion": "ai-judge-v1",
     "policyId": 0,
-    "decidedAt": "2026-10-06T12:39:43.192Z",
     "decision": 0,
     "decisionLabel": "DENY",
     "confidence": 95,
     "sources": 3,
     "simulated": false,
     "metrics": {
-      "thresholdMm": 50,
+      "thresholdMm": 30,
       "minConfidence": 60,
-      "officialIncrementMm": 34,
+      "officialIncrementMm": 0,
       "modelIncrementsMm": [
         0,
         0,
@@ -21,14 +20,15 @@
       "medianMm": 0,
       "spreadMm": 0,
       "agreeCount": 0,
-      "divergencePct": 100
+      "divergencePct": 0
     },
     "reasons": [
-      "链上官方增量 34mm < 阈值 50mm，雨量未达标。"
+      "链上官方增量 0mm < 阈值 30mm，雨量未达标。"
     ],
-    "rationale": "保单 #0（上海，窗口自 2026-10-06 起）：链上官方累计增量 34mm，阈值 50mm；独立复核取了 ECMWF IFS025、GFS、ICON 三家模型，窗口增量分别为 0 / 0 / 0 mm。结论：DENY，置信度 95。",
-    "rationaleSource": "deterministic",
-    "inputHash": "0x5a10121e258355411a16b7569effce1ec2b4a5f7471edf3c7c20c7d1f00b03f7"
+    "inputHash": "0x9b7e32f6dc4e07247df7177b5d34f74083ea8fa617117aae471ec6a5fd85d1ad"
   },
-  "outputHash": "0xc43c4eca60f2f81abc7dce4db9e5e371021987134e817c84b14020cae0aabad7"
+  "decidedAt": "2026-10-26T12:02:07.953Z",
+  "rationale": "保单 #0（上海，窗口自 2026-10-26 起）：链上官方累计增量 0mm，阈值 30mm；独立复核取了 ECMWF IFS025、GFS、ICON 三家模型，窗口增量分别为 0 / 0 / 0 mm。结论：DENY，置信度 95。",
+  "rationaleSource": "deterministic",
+  "outputHash": "0x253cc3c398ccf589b3f7bac09df7e1626f477c55bf48d0ebb352d85f5106ec3e"
 }

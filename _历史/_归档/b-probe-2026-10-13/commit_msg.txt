@@ -1,0 +1,23 @@
+[B] 第三轮清单落地实施：门禁假绿/静默通过 4 处加固、04-脚本 8 处修复、演示页 19 处交互与文案修复
+
+按第三轮全仓扫描清单（新增 02-作战与答辩/全仓扫描-第三轮-2026-10-12.md）动手修，全链 18 道门禁复跑 exit 0。
+
+门禁与测试工具（假绿/静默通过）：
+- check-v3-prices.js:48,117-123 加 60 行硬断言（空/59 行 fixture 均 exit 1；--spec= 覆盖时豁免）
+- check-public-repo.js:22,82-120 跳过项单列（不再混进"通过"），反查扩到 04-脚本/.env*（排除 .example）
+- make-verify-pack.js:34,37-53,214-228 新增 --check：清单漂移时 exit 1 且不再写盘
+- check-html-syntax.js:55-63 strFields 为空即失败；:64-88 断言三页 esc() 对 < > & " 的四个映射
+- check-feed-verify.js 删死计数、--live 补 .catch()；check-ai.js:56-57 断言归位（合成数据不再免检背离）
+- check-pricing-grid.js 增引擎绑定项；.github/workflows/gates.yml:69-83 末步加 git diff --exit-code
+
+04-脚本：
+- push-rainfall.js:102-107,402-419,803,816 ABI 改读 03-合约/*.abi.json + 按 entryThresholdOf(24) 探针认版本（F15）；--watch 数值校验（F16）
+- feed-verify.js:78-84 缺测过滤（null/空串/非有限值），:213-231 全区失败置退出码 1
+- hook-watch.js:75-84,194-199,279,410-422 数值参数校验、payoutWei 改 payoutOf(id) 并移入 observed（schema @3）
+- keeper.js 失败置退出码 1；ai-judge.js 去掉 !snap.simulated 旁路、sources 只数取到数的源；deploy-multisig.js 估 gas 失败即中止（--force 可越过）
+
+演示站点与核验台：
+- index.html 19 处：离线快照禁写 + 交易重入守卫、买按钮就绪门、实时面板失败退避（止住 12 秒重打网）、阈值不猜、保费失败拦住交易、aria-pressed/aria-label、封面元信息与雨幕刻度按链上重算、事件统计按 ABI 字段名取、切链 4001 提示
+- README.md 符号引用改为可 grep 的锚点；verifier.html 与单文件核验台的地址输入补 aria-label
+
+未改：03-合约/*.sol（已部署冻结，动了会破坏"链上字节码=源码"证据链，另立 v3.1）；J10/J11 静态档位（check-ui 当正确口径保护，要改得同时改门禁契约）。
