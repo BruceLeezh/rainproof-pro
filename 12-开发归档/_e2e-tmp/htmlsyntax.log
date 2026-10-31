@@ -1,0 +1,40 @@
+OK   index.html script#1  (120389 字符)
+OK   index.html script#2  (3992 字符)
+OK   index.html script#3  (2563 字符)
+OK   index-v5.html script#1  (138999 字符)
+OK   index-v5.html script#2  (3992 字符)
+OK   index-v5.html script#3  (2563 字符)
+OK   index-v6.html script#1  (140425 字符)
+OK   index-v6.html script#2  (4108 字符)
+OK   index-v6.html script#3  (2639 字符)
+OK   index-v4.html script#1  (121358 字符)
+OK   index-v4.html script#2  (3992 字符)
+OK   index-v4.html script#3  (2563 字符)
+OK   rider.html script#1  (42037 字符)
+OK   console.html script#1  (42121 字符)
+OK   verifier.html script#1  (38934 字符)
+OK   verifier.html script#2  (3602 字符)
+OK   雨证-链上核验台.html script#1  (2175 字符)
+OK   雨证-链上核验台.html script#2  (950 字符)
+OK   雨证-链上核验台.html script#3  (25863 字符)
+OK   雨证-链上核验台.html script#4  (2355 字符)
+OK   雨证-链上核验台.html script#5  (526550 字符)
+OK   雨证-链上核验台.html script#6  (46380 字符)
+OK   雨证-链上核验台.html script#7  (5043 字符)
+OK   verify-v5.html script#1  (11608 字符)
+OK   注入面：2 个链上 string 字段（modelVersion, name）进模板时全部过 esc()
+OK   index.html 的 esc() 对 < > & " 都做了转义
+OK   index-v5.html 的 esc() 对 < > & " 都做了转义
+OK   index-v6.html 的 esc() 对 < > & " 都做了转义
+SKIP verify-v6.html 不调用 esc（纯静态页）
+OK   index-v4.html 的 esc() 对 < > & " 都做了转义
+SKIP insurance.html 不调用 esc（纯静态页）
+OK   rider.html 的 esc() 对 < > & " 都做了转义
+OK   console.html 的 esc() 对 < > & " 都做了转义
+OK   verifier.html 的 esc() 对 < > & " 都做了转义
+OK   verify-v5.html 的 esc() 对 < > & " 都做了转义
+SKIP terms.html 不调用 esc（纯静态页）
+OK   三个页面的 <script src> 全是同目录本地文件（34 处）
+OK   单文件核验台与在线页同步（621 KB，零外链）
+
+✅ 三个页面的内联脚本语法全部通过

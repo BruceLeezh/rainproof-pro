@@ -46,8 +46,8 @@
     <div class="panel">
       <div class="cfg">
         <select id="city" aria-label="配送城市">
-          <option value="1">武汉</option><option value="2" selected>上海</option>
-          <option value="3">北京</option><option value="4">广州</option><option value="5">成都</option>
+          <option value="420100">武汉</option><option value="310100" selected>上海</option>
+          <option value="110100">北京</option><option value="440100">广州</option><option value="510100">成都</option>
         </select>
         <select id="hours" aria-label="保障时长">
           <option value="12">保障 12 小时</option><option value="24">保障 24 小时</option>
@@ -108,10 +108,10 @@ const RPC=new URLSearchParams(location.search).get("rpc")||"https://rpc.bohr.lif
 const V6=RAINPROOF_DEPLOYMENT.contract;
 const TOK="0x23e928922711903607031378005DFe29D9b730bD";
 const DEMO_RIDER="0x6F0A73BCA4805950130D01069ebEb187C0f3DAb5";
-const CITY=["","武汉","上海","北京","广州","成都"];
-const CITY_CODE=[0,420100,310100,110100,440100,510100];
-const CITY_NAME={420100:"武汉",310100:"上海",110100:"北京",440100:"广州",510100:"成都"};
-const cityName=c=>CITY_NAME[Number(c)]||("区划码 "+c);
+// 122 个在售区划（04-脚本/v5-regions.json 生成；链上 regionCount 同源）
+const REGIONS=[["110100","北京"],["310100","上海"],["420100","武汉"],["420102","江岸区"],["420103","江汉区"],["420104","硚口区"],["420105","汉阳区"],["420106","武昌区"],["420107","青山区"],["420111","洪山区"],["420112","东西湖区"],["420113","汉南区"],["420114","蔡甸区"],["420115","江夏区"],["420116","黄陂区"],["420117","新洲区"],["420200","黄石市"],["420202","黄石港区"],["420203","西塞山区"],["420204","下陆区"],["420205","铁山区"],["420222","阳新县"],["420281","大冶市"],["420300","十堰市"],["420302","茅箭区"],["420303","张湾区"],["420304","郧阳区"],["420322","郧西县"],["420323","竹山县"],["420324","竹溪县"],["420325","房县"],["420381","丹江口市"],["420500","宜昌市"],["420502","西陵区"],["420503","伍家岗区"],["420504","点军区"],["420505","猇亭区"],["420506","夷陵区"],["420525","远安县"],["420526","兴山县"],["420527","秭归县"],["420528","长阳土家族自治县"],["420529","五峰土家族自治县"],["420581","宜都市"],["420582","当阳市"],["420583","枝江市"],["420600","襄阳市"],["420602","襄城区"],["420606","樊城区"],["420607","襄州区"],["420624","南漳县"],["420625","谷城县"],["420626","保康县"],["420682","老河口市"],["420683","枣阳市"],["420684","宜城市"],["420700","鄂州市"],["420702","梁子湖区"],["420703","华容区"],["420704","鄂城区"],["420800","荆门市"],["420802","东宝区"],["420804","掇刀区"],["420822","沙洋县"],["420881","钟祥市"],["420882","京山市"],["420900","孝感市"],["420902","孝南区"],["420921","孝昌县"],["420922","大悟县"],["420923","云梦县"],["420981","应城市"],["420982","安陆市"],["420984","汉川市"],["421000","荆州市"],["421002","沙市区"],["421003","荆州区"],["421022","公安县"],["421024","江陵县"],["421071","荆州经济技术开发区"],["421081","石首市"],["421083","洪湖市"],["421087","松滋市"],["421088","监利市"],["421100","黄冈市"],["421102","黄州区"],["421121","团风县"],["421122","红安县"],["421123","罗田县"],["421124","英山县"],["421125","浠水县"],["421126","蕲春县"],["421127","黄梅县"],["421171","龙感湖管理区"],["421181","麻城市"],["421182","武穴市"],["421200","咸宁市"],["421202","咸安区"],["421221","嘉鱼县"],["421222","通城县"],["421223","崇阳县"],["421224","通山县"],["421281","赤壁市"],["421300","随州市"],["421303","曾都区"],["421321","随县"],["421381","广水市"],["422800","恩施土家族苗族自治州"],["422801","恩施市"],["422802","利川市"],["422822","建始县"],["422823","巴东县"],["422825","宣恩县"],["422826","咸丰县"],["422827","来凤县"],["422828","鹤峰县"],["429004","仙桃市"],["429005","潜江市"],["429006","天门市"],["429021","神农架林区"],["440100","广州"],["510100","成都"]];
+const REGION_NAME=new Map(REGIONS.map(([c,n])=>[String(c),n]));
+const cityName=c=>REGION_NAME.get(String(c))||("区划码 "+c);
 const V6_ADDR=RAINPROOF_DEPLOYMENT.contract, MS_ADDR="0x21C8520D486be3805Cf3FaA7cCab896241410d98";
 const shortA=a=>String(a).slice(0,8)+"…"+String(a).slice(-4);
 const fmtT=u=>new Date(Number(u)*1000).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
@@ -163,7 +163,7 @@ async function refreshNet(){
   try{
     const cid=Number((await provider.getNetwork()).chainId);
     $("netv").textContent=`测试网 ${cid}`;$("netdot").className="dot on";
-    const c=CITY_CODE[+$("city").value];   // 选框值 1..6 → 区划码
+    const c=Number($("city").value);   // 选框值就是链上 regionId
     $("rainv").textContent=(await v6.rainfall(c))+" mm";
     $("thv").textContent=(+$("hours").value===12?"30 / 70":"50 / 100")+" mm";
     $("poolv").textContent=yuan(await v6.poolBalance())+" 元";
@@ -175,7 +175,7 @@ async function refreshNet(){
   }catch(e){$("netv").textContent="连接失败";$("netdot").className="dot err"}
 }
 async function refreshQuote(){
-  try{const q=await v6.premiumOf(CITY_CODE[+$("city").value],+$("hours").value);
+  try{const q=await v6.premiumOf(Number($("city").value),+$("hours").value);
   $("quote").innerHTML=yuan(q)+"<u>元 / 份</u>";}catch(e){$("quote").textContent="报价读取失败，请稍后重试";}
 }
 async function refreshPolicies(){
@@ -303,7 +303,7 @@ async function buy(){
   if(!window.ethereum){$("buyerr").textContent="投保需要钱包（点「连接钱包」）；浏览与查询不需要。";return}
   try{
     $("buy").disabled=true;
-    const city=CITY_CODE[+$("city").value], hours=+$("hours").value;
+    const city=Number($("city").value), hours=+$("hours").value;
     const s=await RainproofRuntime.wallet(E,window.ethereum,RPC);
     const me=await s.getAddress();
     const t=new E.Contract(TOK,TOKABI,s), v=new E.Contract(V6,V6ABI,s);
@@ -355,6 +355,15 @@ $("city").onchange=()=>{refreshNet();refreshQuote()};
 $("hours").onchange=()=>{refreshNet();refreshQuote()};
 $("wallet").onclick=connectWallet;
 $("buy").onclick=buy;
+// 常用 5 城之外，把 122 个区划全部挂进同一个下拉（湖北 118 个县区都能投保）
+(function fillRegions(){
+  const sel=$("city"), have=new Set([...sel.options].map(o=>o.value));
+  const rest=REGIONS.filter(([c])=>!have.has(String(c)));
+  if(!rest.length) return;
+  const g=document.createElement("optgroup"); g.label="全部 "+REGIONS.length+" 个在售区划（湖北 118 县区）";
+  g.innerHTML=rest.map(([c,n])=>`<option value="${c}">${esc(n)} · #${c}</option>`).join("");
+  sel.appendChild(g);
+})();
 refreshNet();refreshQuote();refreshPolicies();loadClaims();
 /* G14 轮询：标签页隐藏时停轮询（省电省流量，也避免后台打满共享节点），回到前台立即刷新一次 */
 let _poll=null;
