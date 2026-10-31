@@ -25,11 +25,14 @@ const { ethers } = require("ethers");
 
 const R = path.join(__dirname, "..");
 const VERIFIER = path.join(R, "05-演示站点", "verifier.html");
-const EXPLORER = path.join(R, "06-核验台单文件", "雨证-链上核验台.html");
+// 2026-10-31：单文件核验台已从 v3 版换成 V6 生成物，`EVENT_SIG` 表随之消失。
+// 现行页面上唯一手写事件签名的地方是 console.html 的 TOPICS（E.id("签名") 运行时算 topic0）。
+const CONSOLE = path.join(R, "05-演示站点", "console.html");
 const ABI_FILES = {
   v1: path.join(R, "03-合约", "RainDeliveryInsurance.abi.json"),
   v2: path.join(R, "03-合约", "RainDeliveryInsuranceV2.abi.json"),
   v3: path.join(R, "03-合约", "RainDeliveryInsuranceV3.abi.json"),
+  v6: path.join(R, "03-合约", "RainDeliveryInsuranceV6.abi.json"),
   multisig: path.join(R, "03-合约", "OperatorMultisig.abi.json"),
 };
 
@@ -49,15 +52,18 @@ function eventsOfAbi(abiPath) {
   return out;
 }
 
-/** 核验台手写表 → [{topic0, name, sig}] */
-function parseExplorerTable() {
-  const src = fs.readFileSync(EXPLORER, "utf8");
-  const m = src.match(/const EVENT_SIG = \{([\s\S]*?)\n\};/);
-  assert.ok(m, "核验台里找不到 EVENT_SIG 表（结构变了？）");
-  const rows = [];
-  const re = /"(0x[0-9a-fA-F]{64})":\s*"([A-Za-z0-9_]+)"\s*,?\s*\/\/\s*([A-Za-z0-9_]+\([^)]*\))/g;
-  let x;
-  while ((x = re.exec(m[1]))) rows.push({ topic0: x[1].toLowerCase(), name: x[2], sig: x[3].replace(/\s+/g, "") });
+/** console.html 的 TOPICS → [{name, sig, topic0}]（签名手写，topic0 由 ethers.id 实算） */
+function parseConsoleTopics() {
+  const src = fs.readFileSync(CONSOLE, "utf8");
+  const m = src.match(/const TOPICS=\{([\s\S]*?)\};/);
+  assert.ok(m, "console.html 里找不到 TOPICS 表（结构变了？）");
+  const re = /E\.id\("([A-Za-z0-9_]+\([^)]*\))"/g;
+  let x; const rows = [];
+  while ((x = re.exec(m[1]))) {
+    const sig = x[1].replace(/\s+/g, "");
+    rows.push({ name: sig.slice(0, sig.indexOf("(")), sig, topic0: ethers.id(sig).toLowerCase() });
+  }
+  assert.ok(rows.length > 0, "console.html 的 TOPICS 里没解析到任何 E.id(签名)");
   return rows;
 }
 
@@ -84,7 +90,7 @@ const t = (name, fn) => {
 };
 
 const abis = Object.fromEntries(Object.entries(ABI_FILES).map(([k, p]) => [k, eventsOfAbi(p)]));
-const explorer = parseExplorerTable();
+const explorer = parseConsoleTopics();
 const verifier = parseVerifierAbi();
 
 /** 事件名 → 所有 ABI 里出现过的定义（同一名字在 v1/v2/v3 可能是不同签名） */
@@ -98,40 +104,38 @@ for (const [kind, m] of Object.entries(abis)) {
 
 console.log(`\n事件 topic0 核验  ·  核验台手写 ${explorer.length} 条 / verifier 内嵌 ${verifier.size} 条\n`);
 
-t(`核验台 ${explorer.length} 条：每条 topic0 = keccak256(注释里的签名)`, () => {
+t(`console ${explorer.length} 条：每条签名能算出 topic0`, () => {
   const bad = explorer.filter((r) => ethers.id(r.sig).toLowerCase() !== r.topic0);
   assert.deepStrictEqual(bad.map((r) => `${r.name} ${r.topic0}`), [],
-    "手写的哈希与它自己的签名对不上 → 改 " + path.relative(R, EXPLORER) + ":386-403");
+    "签名算不出 topic0 → 改 " + path.relative(R, CONSOLE) + ":164");
 });
 
-t("核验台每条：注释签名与合约 ABI 里的同名事件一致", () => {
+t("console 每条：签名与 V6 合约 ABI 里的同名事件一致", () => {
   const bad = [];
   for (const r of explorer) {
     const defs = byName.get(r.name);
     if (!defs) { bad.push(`${r.name} 在任何 ABI 里都不存在`); continue; }
     if (!defs.some((d) => d.sig === r.sig)) {
-      bad.push(`${r.name}：核验台写 ${r.sig}，ABI 是 ${defs.map((d) => d.kind + ":" + d.sig).join(" / ")}`);
+      bad.push(`${r.name}：console 写 ${r.sig}，ABI 是 ${defs.map((d) => d.kind + ":" + d.sig).join(" / ")}`);
     }
   }
-  assert.deepStrictEqual(bad, [], "改 " + path.relative(R, EXPLORER) + ":386-403");
+  assert.deepStrictEqual(bad, [], "改 " + path.relative(R, CONSOLE) + ":164");
 });
 
-t("核验台每条：topic0 与 ABI 实算值逐字节相同", () => {
+t("console 每条：topic0 与 V6 ABI 实算值逐字节相同", () => {
   const bad = [];
   for (const r of explorer) {
     const defs = byName.get(r.name) || [];
     const hit = defs.find((d) => d.sig === r.sig);
     if (hit && hit.topic0.toLowerCase() !== r.topic0) bad.push(`${r.name}：表里 ${r.topic0}，实算 ${hit.topic0}`);
   }
-  assert.deepStrictEqual(bad, [], "改 " + path.relative(R, EXPLORER) + ":386-403");
+  assert.deepStrictEqual(bad, [], "改 " + path.relative(R, CONSOLE) + ":164");
 });
 
-t("核验台没有漏掉 ABI 里的 v1/v2 事件（现在是全量超集）", () => {
+t("console 没漏掉 V6 的关键事件（赔付/承保/喂价/拒绝/判定）", () => {
   const have = new Set(explorer.map((r) => r.name));
-  const missing = [];
-  for (const kind of ["v1", "v2"]) for (const name of abis[kind].keys()) if (!have.has(name)) missing.push(`${kind}:${name}`);
-  assert.deepStrictEqual(missing, [],
-    "核验台缺事件 → 现场会把它解码成「未知事件」。补进 " + path.relative(R, EXPLORER) + ":386-403");
+  const missing = ["ClaimPaid", "PolicyBought", "RainfallUpdated", "FeedRejected", "JudgementSubmitted"].filter((n) => !have.has(n));
+  assert.deepStrictEqual(missing, [], "console 缺事件 → 演示时事件流会少一类。补进 " + path.relative(R, CONSOLE) + ":164");
 });
 
 t(`verifier.html 内嵌 ${verifier.size} 条 ABI：每条与合约 ABI 的同名事件签名一致`, () => {
@@ -158,14 +162,14 @@ t("verifier.html 每条：topic0 与 ABI 实算值相同（页面解码靠它）
 
 /* 若某天两份清单**故意**挂不同版本的同名事件（现在的例子：v3 的 JudgementSubmitted 加了
    rainfallAtJudgement，topic0 与 v2 不同），把事件名登记到这里，否则「两份不一致」就是红。 */
-const CROSS_VERSION_OK = [];
+const CROSS_VERSION_OK = ["RainfallUpdated", "JudgementSubmitted", "PolicyBought", "FeedRejected"];  // V6 改了这些事件的字段，topic0 必然与 V3 不同
 
-t("两份手写清单：同一事件的 topic0 逐字节相同（解码出来必须是同一个名字）", () => {
+t("console(V6) 与 verifier(V3) 同名事件：topic0 要么相同，要么登记在 CROSS_VERSION_OK", () => {
   const map = new Map(explorer.map((r) => [r.name, r.topic0]));
   const bad = [];
   for (const [name, e] of verifier) {
     const other = map.get(name);
-    if (!other) { bad.push(`${name} 只在内嵌 ABI 里，核验台没有`); continue; }
+    if (!other) continue;  // V6 的 console 只列 5 类，V3 的 verifier 列 11 类，不是同一集合
     if (other.toLowerCase() !== e.topic0.toLowerCase() && !CROSS_VERSION_OK.includes(name)) {
       bad.push(`${name}：核验台 ${other} vs verifier ${e.topic0}`);
     }
@@ -192,12 +196,13 @@ if (process.argv.includes("--self-check")) {
     assert.deepStrictEqual(bad.map(([n]) => n), ["RainfallUpdated"], "核验器放过了签名不一致的副本");
   });
   t("负样本：两份清单挂上不同版本的同一事件 → 必须报错", () => {
+    // 用 ClaimPaid：它不在 CROSS_VERSION_OK 里，V6 与 V3 签名相同，任何分歧都是真漂移。
     const fake = new Map(verifier);
-    const e = fake.get("RainfallUpdated");
-    fake.set("RainfallUpdated", { ...e, topic0: ethers.id("RainfallUpdated(uint8,uint256)") });
+    const e = fake.get("ClaimPaid");
+    fake.set("ClaimPaid", { ...e, topic0: ethers.id("ClaimPaid(uint8)") });
     const map = new Map(explorer.map((r) => [r.name, r.topic0]));
-    const bad = [...fake].filter(([n, x]) => map.has(n) && map.get(n).toLowerCase() !== x.topic0.toLowerCase());
-    assert.deepStrictEqual(bad.map(([n]) => n), ["RainfallUpdated"], "核验器没抓住两份清单的分歧");
+    const bad = [...fake].filter(([n, x]) => map.has(n) && !CROSS_VERSION_OK.includes(n) && map.get(n).toLowerCase() !== x.topic0.toLowerCase());
+    assert.deepStrictEqual(bad.map(([n]) => n), ["ClaimPaid"], "核验器没抓住两份清单的分歧");
   });
 }
 

@@ -29,18 +29,18 @@
 > - 门禁：`cd 07-测试工具 && npm test`（29 组、596 项断言）
 > - 权威现状仍是 [交接文档](02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md)；本页下方内容保留作演进记录。
 
-[![Gates](https://github.com/juice-butterfly/rainproof/actions/workflows/gates.yml/badge.svg)](https://github.com/juice-butterfly/rainproof/actions/workflows/gates.yml)
-[![Deploy demo site](https://github.com/juice-butterfly/rainproof/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/juice-butterfly/rainproof/actions/workflows/deploy-demo.yml)
+[![Gates](https://github.com/BruceLeezh/rainproof-pro/actions/workflows/gates.yml/badge.svg)](https://github.com/BruceLeezh/rainproof-pro/actions/workflows/gates.yml)
+[![Deploy demo site](https://github.com/BruceLeezh/rainproof-pro/actions/workflows/deploy-demo.yml/badge.svg)](https://github.com/BruceLeezh/rainproof-pro/actions/workflows/deploy-demo.yml)
 
 > **可验证的 AI 参数化配送险** —— 把「你信不信我」换成「你自己验」。
 
 汉客松 S1 & ETH Wuhan 2026 参赛作品 · 赛程 2026-10-06 20:00 → 2026-10-08 12:00
-队名：**神麻** · 仓库：https://github.com/juice-butterfly/rainproof
+队名：**神麻** · 仓库：https://github.com/BruceLeezh/rainproof-pro
 
 ---
 
 > **接手本项目请先读**：[02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md](02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md)
-> 该文件是当前真相（v5/968 栈、29 组门禁、链上地址、18 条踩坑点、上手第一天 6 步）；本 README 保留为历史演进记录，含大量 v1/v2/v3 与 677 主网时代的过时描述，冲突时以交接文档为准。
+> 该文件是 2026-10-26 的现状（v5/968 栈、链上地址、18 条踩坑点、上手 6 步）；**2026-10-29 已切 V6（`0xcDe1Bb9b8d61E55e194f18B6836fF1DBd49bC61F`、122 区划 / 244 格、29 组 596 项门禁），2026-10-30 已合并为单项目**，V6 之后的真相以 [V6 切换与验收](02-作战与答辩/V6切换与验收-2026-10-29.md) 与 [项目合并与精简](02-作战与答辩/项目合并与精简-2026-10-30.md) 为准。本 README 下半部分保留 v1→v3 / 677 主网演进记录，冲突时以上述文档为准。
 
 
 ## 最新状态（2026-10-12）

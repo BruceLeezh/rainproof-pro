@@ -70,10 +70,13 @@ console.log("\n[② 保障时长] 静态脚手架只能是主网现行 v3 的两
 
 console.log("\n[③ DOM 契约] 页面 JS 引用的 id / class 必须真实存在");
 {
+  // 06-核验台单文件 是 build-single-verifier.js 的生成物：它把 verify-v6.js 与跨页共用的
+  // site.js 一起内联，site.js 里为 rider/insurance 页写的 `$("quote")` / `$("rp-rule-announcement")`
+  // 在这些页面上本就不存在（调用处有 null 守卫），从这里扫只会得到假阳性。
+  // 生成物与在线页的逐字节一致性由 check-html-syntax.js 的同步断言负责。
   const files = [
     ["05-演示站点/index.html", path.join(DEMO, "index.html")],
     ["05-演示站点/verifier.html", path.join(DEMO, "verifier.html")],
-    ["06-核验台单文件/雨证-链上核验台.html", path.join(__dirname, "..", "06-核验台单文件", "雨证-链上核验台.html")],
   ];
   for (const [name, p] of files) {
     const src = fs.readFileSync(p, "utf8");

@@ -32,16 +32,27 @@ function gitExe() {
 }
 const GIT = gitExe();
 // 命中返回 stdout；git grep 无命中时退出码是 1，这不是错误
-function gitGrep(args) {
-  const r = spawnSync(GIT, ["-C", ROOT, "grep", ...args], { encoding: "utf8" });
+function gitGrep(args, extra = []) {
+  const r = spawnSync(GIT, ["-C", ROOT, "grep", ...extra, ...args], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  if (r.error) throw new Error(`git grep 无法执行：${r.error.message}`);
   if (r.status === 1 && !r.stdout) return "";
-  if (r.status !== 0 && r.status !== 1) throw new Error((r.stderr || "").trim() || "git grep 失败");
+  if (r.status !== 0 && r.status !== 1) throw new Error((r.stderr || "").trim() || `git grep 失败（status=${r.status}）`);
   return r.stdout || "";
 }
 
 // 手机号/身份证：前后不能紧邻数字或拉丁字母（这样哈希、小数、长数字串里的片段都不算）
 const RE_PHONE = /(?<![\dA-Za-z])(1[3-9]\d{9})(?![\dA-Za-z])/;
 const RE_IDCARD = /(?<![\dA-Za-z.])(\d{17}[\dXx])(?![\dA-Za-z])/;
+// 18 位数字不都是身份证：新闻站文章 ID、时间戳串也长这样（2026-10-31 被 202503223353155775 误报过）。
+// 按 GB 11643 的 ISO 7064 MOD 11-2 校验位判定，只有真校验位通过才算身份证。
+const ID_W = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+const ID_MAP = "10X98765432";
+function isIdCard(s) {
+  if (!/^\d{17}[\dXx]$/.test(s)) return false;
+  let sum = 0;
+  for (let i = 0; i < 17; i++) sum += Number(s[i]) * ID_W[i];
+  return ID_MAP[sum % 11] === s[17].toUpperCase();
+}
 
 const tracked = execFileSync(GIT, ["-C", ROOT, "ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 console.log(`\n[公开仓库自检] 被跟踪文件 ${tracked.length} 个\n`);
@@ -72,11 +83,23 @@ console.log("\n[② 私钥赋值]");
 // ③ 个人信息（手机号 / 身份证），排除更长 token 里的片段
 console.log("\n[③ 个人信息]");
 {
-  const out = gitGrep(["-I", "-n", "-E", "1[3-9][0-9]{9}|[0-9]{17}[0-9Xx]"]);
-  const lines = out.split("\n").filter(Boolean);
-  const real = lines.filter(l => RE_PHONE.test(l) || RE_IDCARD.test(l));
+  // 先用 git grep -l 只取文件名（输出与命中行数无关，不会撑爆缓冲区），再在本地逐行套严格正则。
+  // 2026-10-31 实测：直接 -n 输出已 2.2 MB，超过 spawnSync 默认 1 MB maxBuffer 会让整条门禁报「git grep 失败」。
+  const hitFiles = gitGrep(["-I", "-E", "1[3-9][0-9]{9}|[0-9]{17}[0-9Xx]"], ["-l"]).split("\n").filter(Boolean);
+  let coarse = 0;
+  const real = [];
+  for (const f of hitFiles) {
+    let text;
+    try { text = fs.readFileSync(path.join(ROOT, f), "utf8"); } catch { continue; }
+    text.split("\n").forEach((line, i) => {
+      if (!/1[3-9][0-9]{9}|[0-9]{17}[0-9Xx]/.test(line)) return;
+      coarse++;
+      const idHits = [...line.matchAll(/(?<![\dA-Za-z.])(\d{17}[\dXx])(?![\dA-Za-z])/g)].filter(m => isIdCard(m[1]));
+      if (RE_PHONE.test(line) || idHits.length) real.push(`${f}:${i + 1}  ${line.trim().slice(0, 160)}`);
+    });
+  }
   ok("被跟踪的文本文件里没有手机号 / 身份证号", real.length === 0, real.slice(0, 3).join("\n            "));
-  if (real.length === 0) console.log(`  （粗筛命中 ${lines.length} 行，都属于十六进制串/长小数的一部分，已按 token 边界排除）`);
+  if (real.length === 0) console.log(`  （粗筛命中 ${coarse} 行 / ${hitFiles.length} 个文件，都属于十六进制串/长小数的一部分，已按 token 边界排除）`);
 }
 
 // ④ 用 .env 里的真值反查（最硬的一条）

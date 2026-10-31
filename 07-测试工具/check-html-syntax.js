@@ -19,6 +19,11 @@ const FILES = [
   "05-演示站点/terms.html",
 ].map((f) => path.join(ROOT, f));
 
+// 06-核验台单文件 是上面这堆源文件内联生成的产物：语法要查（内含全部内联脚本），
+// 但 B15 注入面与 esc 定义只看手写页 —— ethers UMD 里成百个 ${…} 会被当成模板注入误报。
+const GENERATED = path.join(ROOT, "06-核验台单文件", "雨证-链上核验台.html");
+const HANDWRITTEN = FILES.filter((f) => f !== GENERATED);
+
 let bad = 0;
 for (const f of FILES) {
   if (!fs.existsSync(f)) { bad++; console.log("FAIL 缺文件 " + f); continue; }
@@ -47,7 +52,7 @@ for (const n of fs.readdirSync(path.join(ROOT, "03-合约")).filter((x) => x.end
 }
 const stripEsc = (s) => { let o = s; for (;;) { const t = o.replace(/esc\((?:[^()]|\([^()]*\))*\)/g, ""); if (t === o) return o; o = t; } };
 let holes = 0;
-for (const f of FILES) {
+for (const f of HANDWRITTEN) {
   if (!fs.existsSync(f)) continue;
   const html = fs.readFileSync(f, "utf8");
   for (const m of html.matchAll(/\$\{[^{}]*\}/g)) {
@@ -84,7 +89,7 @@ if (!strFields.size) {
   const SAMPLE = 'a<b>c&d"e';
   const WANT = "a&lt;b&gt;c&amp;d&quot;e";
   let escBad = 0;
-  for (const f of FILES) {
+  for (const f of HANDWRITTEN) {
     if (!fs.existsSync(f)) continue;
     const src = fs.readFileSync(f, "utf8");
     // 纯静态页压根不调用 esc，就不要求它定义 esc（terms.html 这种）
@@ -123,6 +128,25 @@ if (!strFields.size) {
   }
   if (!srcBad) console.log("OK   三个页面的 <script src> 全是同目录本地文件（" + srcN + " 处）");
   bad += srcBad;
+}
+
+/* ---- 单文件核验台必须与在线页同步（2026-10-31）：06-核验台单文件 是现场断网的兜底，
+   改完 verify-v6.html 却忘了重新生成时，兜底会悄悄停在旧版本（本轮实锤：它还停在 v3/677 时代）。 */
+{
+  const { build, OUT } = require("./build-single-verifier");
+  try {
+    const want = build();
+    const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : "";
+    if (have !== want) {
+      bad++;
+      console.log("FAIL 06-核验台单文件/雨证-链上核验台.html 与 05-演示站点/verify-v6.html 不一致 —— 跑 node 07-测试工具/build-single-verifier.js 重新生成");
+    } else {
+      console.log(`OK   单文件核验台与在线页同步（${(Buffer.byteLength(want) / 1024).toFixed(0)} KB，零外链）`);
+    }
+  } catch (e) {
+    bad++;
+    console.log("FAIL 单文件核验台生成失败 -> " + e.message);
+  }
 }
 
 console.log(bad ? "\n❌ " + bad + " 处问题（内联脚本语法错误，或链上 string 字段没转义就进模板）" : "\n✅ 三个页面的内联脚本语法全部通过");
