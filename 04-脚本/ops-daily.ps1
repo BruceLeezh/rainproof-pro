@@ -4,7 +4,7 @@
 # 任务动作（2026-10-30 起）：wscript.exe "..\04-脚本\_silent\opsdaily.vbs"，隐藏窗口运行。
 #   本 .ps1 只放业务逻辑，不要再把 powershell.exe 直接登记成任务动作 —— 那样每天 09:00 会弹控制台窗口。
 # 重建任务（每天 09:00，失败不重试、错过下次再跑）：
-#   $a = New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\wscript.exe" -Argument '"C:\Users\lenovo\Desktop\汉客松\雨证\04-脚本\_silent\opsdaily.vbs"'
+#   $a = New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\wscript.exe" -Argument '"C:\Users\lenovo\Desktop\雨证\04-脚本\_silent\opsdaily.vbs"'
 #   $t = New-ScheduledTaskTrigger -Daily -At 09:00
 #   Register-ScheduledTask -TaskName "RainProof-OpsDaily" -Action $a -Trigger $t
 # 卸载：Unregister-ScheduledTask -TaskName "RainProof-OpsDaily" -Confirm:$false
