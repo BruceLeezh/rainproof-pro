@@ -34,8 +34,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
         # 注：不能用 enablement: true 自开通——该选项明确要求 GITHUB_TOKEN 以外的
-        # token（PAT 或 GitHub App），GITHUB_TOKEN 会被拒。首次开通只能在仓库
-        # Settings→Pages→Source 选 GitHub Actions，一次性动作。
+        # token（PAT 或 GitHub App），GITHUB_TOKEN 会被拒。Pages 已于 2026-11-02
+        # 在 Settings→Pages 手动开通（Source=GitHub Actions），一次性动作。
       - name: 构建保险创业赛默认入口并保留历史页
         run: node 07-测试工具/build-site.js
       - uses: actions/upload-pages-artifact@v3
