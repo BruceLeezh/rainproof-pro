@@ -19,6 +19,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  administration: write # configure-pages 开通 Pages 需要它
 
 concurrency:
   group: pages
@@ -33,6 +34,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true # Pages 尚未开通时用 GITHUB_TOKEN 自动开通（Source=GitHub Actions）
       - name: 构建保险创业赛默认入口并保留历史页
         run: node 07-测试工具/build-site.js
       - uses: actions/upload-pages-artifact@v3
