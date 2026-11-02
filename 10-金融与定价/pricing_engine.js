@@ -935,6 +935,16 @@ function emitMarkdown(rep, outPath) {
 }
 
 if (require.main === module) {
+  // 无缓存环境（CI / 新克隆）跳过自检：cache/ 被刻意不入库（node actuary.js --refresh 可重建），
+  // 五城 ERA5 各约 2MB，门禁不该联网拉数据。沿用 check-public-repo 的 [SKIP] 惯例：不算失败，也不算通过。
+  if (process.argv.slice(2).includes('--self-check')) {
+    let cacheCount = 0;
+    try { cacheCount = fs.readdirSync(path.join(__dirname, 'cache')).filter((f) => f.endsWith(`-${A.DATA_START}_${A.DATA_END}.json`)).length; } catch { }
+    if (cacheCount < 5) {
+      console.log(`[SKIP] 定价引擎自检需要 ERA5 本地缓存（cache/ 不入库），现有 ${cacheCount}/5 —— 先 node actuary.js --refresh 补。本环境跳过本组：不算失败，也不算通过`);
+      process.exit(0);
+    }
+  }
   const rep = main({ write: !process.argv.includes('--self-check') });
   if (process.argv.slice(2).includes('--self-check')) {
     const fails = selfCheck(rep);
