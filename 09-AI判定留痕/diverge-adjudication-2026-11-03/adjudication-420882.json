@@ -1,0 +1,28 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-02T16:16:58.702Z",
+  "code": 420882,
+  "name": "京山市",
+  "chainVal": 173,
+  "fromIso": "2026-10-31T12:00",
+  "toIso": "2026-11-02T23:00",
+  "gateModels": [
+    12.600000000000003,
+    18.7,
+    26.399999999999995
+  ],
+  "gateMedian": 18.7,
+  "extraModels": [
+    10.6,
+    15.9,
+    12.1
+  ],
+  "extraMedian": 12.1,
+  "corroborated": false,
+  "decision": "hold",
+  "target": null,
+  "evidenceHash": null,
+  "confidence": null,
+  "sources": 6,
+  "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+}

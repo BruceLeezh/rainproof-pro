@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-02T16:16:57.955Z",
+  "code": 420526,
+  "name": "兴山县",
+  "chainVal": 76,
+  "fromIso": "2026-11-01T00:00",
+  "toIso": "2026-11-02T23:00",
+  "gateModels": [
+    15.599999999999998,
+    19.499999999999993,
+    27.100000000000005
+  ],
+  "gateMedian": 19.499999999999993,
+  "extraModels": [
+    19.7,
+    18.6,
+    22.5
+  ],
+  "extraMedian": 19.7,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 95,
+  "evidenceHash": "0x232624657dae7fedb0bf712be7e05e15d541675ff67c09b22118cb6abd79878c",
+  "confidence": 79,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 420526 95mm window(2026-11-01T00:00→2026-11-02T23:00) gate-models=[15.599999999999998,19.499999999999993,27.100000000000005] gate-median=19.499999999999993 extra-models=[19.7,18.6,22.5] extra-median=19.7 gate-raw-sha256=26450e9bc26c07ca3aed67137ce8eeaf55508d5c03e0c2c6c6cbeb4c0f1ecb74 extra-raw-sha256=fe9a2ec09d4be29ef6ba6dbfb2ae38e57ea954cf1b100a894742ce858c2ddee1 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420526-202611022315-ff03eb8c-db38-4c4c-af69-ebca8c3e4baf.json",
+    "gateRawSha256": "26450e9bc26c07ca3aed67137ce8eeaf55508d5c03e0c2c6c6cbeb4c0f1ecb74",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420526.json",
+    "extraRawSha256": "fe9a2ec09d4be29ef6ba6dbfb2ae38e57ea954cf1b100a894742ce858c2ddee1"
+  }
+}

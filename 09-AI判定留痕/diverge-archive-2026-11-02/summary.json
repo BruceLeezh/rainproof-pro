@@ -1,6 +1,6 @@
 {
   "schema": "rainproof/diverge-archive@1",
-  "generatedAt": "2026-11-02T15:30:35.027Z",
+  "generatedAt": "2026-11-02T16:12:27.597Z",
   "note": "只读复核：固定 ERA5 archive 对照三模型窗口增量。archive 延迟数日，missingHours>0 即证据不完整，total=null 只给 partialTotal 参考。本文件不构成裁决，采信与否及上链操作另行走治理流程。",
   "rows": [
     {
@@ -27,10 +27,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.315342&longitude=109.717196&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "a13821f26c67b7aced0e36a07164e371eb37d4be4f42c9b8a818583d04097330",
+        "httpStatus": 200,
+        "sha256": "e38329cacfbc53376256933f89aeddd0dd99f66f4487b1b743ec5cca0ed87834",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 46,
+        "missingHours": 46,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 32.25,
+        "gridLon": 109.75
       }
     },
     {
@@ -57,10 +62,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.059626&longitude=111.64331&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "286c49b81bfb793899636e4ebdc6ed49cf6c2000d40cf7f02bc2b1d472578381",
+        "httpStatus": 200,
+        "sha256": "0b744fc1b37e8062303dd7c259e3171ec6f4b9afd549f01f71ca8e9ddf54f778",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 59,
+        "missingHours": 59,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 31,
+        "gridLon": 111.75
       }
     },
     {
@@ -87,10 +97,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.34795&longitude=110.754499&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "a13821f26c67b7aced0e36a07164e371eb37d4be4f42c9b8a818583d04097330",
+        "httpStatus": 200,
+        "sha256": "5d6872d3db77520d5fdf2054e50e5330f37e6923855b739b4d325046fe5185b4",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 47,
+        "missingHours": 47,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 31.25,
+        "gridLon": 110.75
       }
     },
     {
@@ -117,10 +132,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.823908&longitude=110.976785&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "a13821f26c67b7aced0e36a07164e371eb37d4be4f42c9b8a818583d04097330",
+        "httpStatus": 200,
+        "sha256": "5cbf0443042be1e9a8600d975d96c19be98d0dac9f0a039e42b53c6a14c8ca15",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 59,
+        "missingHours": 59,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.75,
+        "gridLon": 111
       }
     },
     {
@@ -147,10 +167,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.022457&longitude=113.114595&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "a13821f26c67b7aced0e36a07164e371eb37d4be4f42c9b8a818583d04097330",
+        "httpStatus": 200,
+        "sha256": "617dd809c6626254c443bc2b422953862f8940322865e5b4d5b689d20fdaab0f",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 59,
+        "missingHours": 59,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 31,
+        "gridLon": 113
       }
     },
     {
@@ -177,10 +202,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.781679&longitude=115.398984&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "a13821f26c67b7aced0e36a07164e371eb37d4be4f42c9b8a818583d04097330",
+        "httpStatus": 200,
+        "sha256": "2b24e6253e8b4ade457610d6c521f75ee957a5e4462dafc50cc6ca2c2d7f6921",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 34,
+        "missingHours": 34,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.75,
+        "gridLon": 115.5
       }
     },
     {
@@ -207,10 +237,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.854246&longitude=113.301384&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "286c49b81bfb793899636e4ebdc6ed49cf6c2000d40cf7f02bc2b1d472578381",
+        "httpStatus": 200,
+        "sha256": "5765c8a0eff83291019e366c2b29b53da11da039437d0bbce1b17ecd978e23fe",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 59,
+        "missingHours": 59,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 31.75,
+        "gridLon": 113.25
       }
     },
     {
@@ -236,7 +271,16 @@
         "sources": 3
       },
       "archive": {
-        "error": "fetch failed"
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=29.506945&longitude=109.408328&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "3141fb1b4e5f53035127546b156368f0073b61175c7bc7ae9e6a9b909fb090e8",
+        "model": "era5",
+        "expectedHours": 36,
+        "missingHours": 36,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 29.5,
+        "gridLon": 109.5
       }
     },
     {
@@ -263,10 +307,15 @@
       },
       "archive": {
         "url": "https://archive-api.open-meteo.com/v1/archive?latitude=29.887298&longitude=110.033699&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 503,
-        "sha256": "286c49b81bfb793899636e4ebdc6ed49cf6c2000d40cf7f02bc2b1d472578381",
+        "httpStatus": 200,
+        "sha256": "cab6a40160737e9aa4bb681a36dc167a4a28a2fd4257d7324ecb25f37db17d6c",
         "model": "era5",
-        "error": "HTTP 503"
+        "expectedHours": 46,
+        "missingHours": 46,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30,
+        "gridLon": 110
       }
     }
   ]

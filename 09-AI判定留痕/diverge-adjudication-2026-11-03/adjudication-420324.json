@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-02T16:16:57.215Z",
+  "code": 420324,
+  "name": "竹溪县",
+  "chainVal": 128,
+  "fromIso": "2026-11-01T01:00",
+  "toIso": "2026-11-02T23:00",
+  "gateModels": [
+    5.800000000000002,
+    15.000000000000002,
+    20.500000000000004
+  ],
+  "gateMedian": 15.000000000000002,
+  "extraModels": [
+    10.5,
+    7.3,
+    11.5
+  ],
+  "extraMedian": 10.5,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 143,
+  "evidenceHash": "0x5f4c172da028dca59f9d3bce4d6df3bc5972911bda760e0b92975e3223fbe464",
+  "confidence": 75,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 420324 143mm window(2026-11-01T01:00→2026-11-02T23:00) gate-models=[5.800000000000002,15.000000000000002,20.500000000000004] gate-median=15.000000000000002 extra-models=[10.5,7.3,11.5] extra-median=10.5 gate-raw-sha256=e0c8ad4c3adbba01c8783d4d136c46a2b76c0250e1a7faefaeccee06c02c508e extra-raw-sha256=a4d68806a3b2edd5492eff21440e61e0f0ee821250e913d539dfdb0b6114e088 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420324-202611022315-43de48df-2830-4970-8ba0-f546997454ea.json",
+    "gateRawSha256": "e0c8ad4c3adbba01c8783d4d136c46a2b76c0250e1a7faefaeccee06c02c508e",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420324.json",
+    "extraRawSha256": "a4d68806a3b2edd5492eff21440e61e0f0ee821250e913d539dfdb0b6114e088"
+  }
+}

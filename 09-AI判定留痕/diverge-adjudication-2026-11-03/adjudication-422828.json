@@ -1,0 +1,28 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-02T16:17:00.192Z",
+  "code": 422828,
+  "name": "鹤峰县",
+  "chainVal": 195,
+  "fromIso": "2026-11-01T01:00",
+  "toIso": "2026-11-02T23:00",
+  "gateModels": [
+    32.900000000000006,
+    37.800000000000004,
+    52.4
+  ],
+  "gateMedian": 37.800000000000004,
+  "extraModels": [
+    29.4,
+    53.1,
+    21.1
+  ],
+  "extraMedian": 29.4,
+  "corroborated": false,
+  "decision": "hold",
+  "target": null,
+  "evidenceHash": null,
+  "confidence": null,
+  "sources": 6,
+  "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+}
