@@ -1,0 +1,47 @@
+{
+  "schema": "rainproof/pricing-research@1",
+  "status": "proposal-not-onchain",
+  "currency": "CNY-scenario",
+  "hours": [12, 24],
+  "startHours": [0, 6, 12, 18],
+  "thresholdsMm": {"12": [30, 70], "24": [50, 100]},
+  "assumptions": {
+    "benefitMode": "fixed-v6",
+    "fixedTiersFen": [5000, 7500],
+    "incomeYuanPerHour": 20,
+    "insuredWorkHours": {"12": 6, "24": 10},
+    "incomeReplacement": 0.5,
+    "tierFractions": [0.5, 0.75],
+    "perPolicyCostFen": 30,
+    "perBatchCostFen": 30,
+    "batchSize": 100,
+    "claimHandlingFen": 20,
+    "annualFixedCostYuan": 60000,
+    "plannedAnnualPolicies": 200000,
+    "variableExpenseRatio": 0.08,
+    "targetProfitRatio": 0.15,
+    "annualCapitalCostRatio": 0.08,
+    "capitalHoldExtraHours": 168,
+    "minPremiumFen": 100,
+    "maxPremiumFen": 2500,
+    "premiumTickFen": 10
+  },
+  "estimation": {
+    "trainEndExclusive": "2023-10-01T00:00",
+    "validationEndExclusive": "2024-10-01T00:00",
+    "testEndExclusive": "2026-10-01T00:00",
+    "minTrainingYears": 8,
+    "credibilityPriorDays": 120,
+    "bootstrapReps": 1500,
+    "bootstrapQuantile": 0.975,
+    "climateStressMultiplier": 1.25,
+    "minimumStressEventProbabilities": [0.005, 0.001]
+  },
+  "channel": "calendar-batch-precommitted",
+  "notes": [
+    "Income, work hours, replacement, costs, volume, risk floors and stress loading are editable design assumptions, not measured rider losses or a sales forecast.",
+    "Historical climate prices apply to precommitted calendar batches only; instant weather-selected retail requires separately validated conditional risk forecasts.",
+    "The year-block bootstrap quantile is an estimation diagnostic, not a guaranteed confidence bound or a guarantee of future profit.",
+    "Existing archive caches did not pin the source model; they are reproducible research inputs, not verified homogeneous ERA5 or station observations."
+  ]
+}

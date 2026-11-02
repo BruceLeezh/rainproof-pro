@@ -1,0 +1,523 @@
+{
+  "modelId": "9a069bc878961d03cd160dc9f8040db45ccef89e03707f7abfedde2bec358f9f",
+  "coveredRegions": 122,
+  "totalCells": 11712,
+  "quotedCells": 11712,
+  "minPremiumYuan": 1.5,
+  "maxPremiumYuan": 10.6,
+  "examples": [
+    {
+      "code": 420100,
+      "name": "武汉",
+      "month": 1,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0,
+      "expectedProfitYuan": 0.6126164383561644,
+      "stressProfitYuan": 0.2676164383561644,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 420100,
+      "name": "武汉",
+      "month": 1,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0,
+      "expectedProfitYuan": 0.6016575342465754,
+      "stressProfitYuan": 0.2566575342465754,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 420100,
+      "name": "武汉",
+      "month": 7,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0.02622063464235624,
+        0.0018627279102384293
+      ],
+      "upper": [
+        0.06972902787517532,
+        0.0069852296633941095
+      ],
+      "premiumYuan": 5.8,
+      "expectedLossYuan": 1.3575999298737726,
+      "expectedProfitYuan": 3.205772381553921,
+      "stressProfitYuan": 0.8935884974375108,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 420100,
+      "name": "武汉",
+      "month": 7,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0.038295494389901825,
+        0.01154891304347826
+      ],
+      "upper": [
+        0.11521519985974754,
+        0.04330842391304348
+      ],
+      "premiumYuan": 10,
+      "expectedLossYuan": 2.2034975455820476,
+      "expectedProfitYuan": 6.210500889786549,
+      "stressProfitYuan": 1.5551439034611618,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 310100,
+      "name": "上海",
+      "month": 1,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0.00032871669004207573,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0.016435834502103785,
+      "expectedProfitYuan": 0.5961148605160522,
+      "stressProfitYuan": 0.2676164383561644,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 310100,
+      "name": "上海",
+      "month": 1,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0,
+      "expectedProfitYuan": 0.6016575342465754,
+      "stressProfitYuan": 0.2566575342465754,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 310100,
+      "name": "上海",
+      "month": 7,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0.016808380084151472,
+        0.0004930750350631136
+      ],
+      "upper": [
+        0.04562313727208976,
+        0.0018490313814866761
+      ],
+      "premiumYuan": 4.1,
+      "expectedLossYuan": 0.8527458800841514,
+      "expectedProfitYuan": 2.1485088822551823,
+      "stressProfitYuan": 0.6681091627600911,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 310100,
+      "name": "上海",
+      "month": 7,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0.026363078541374475,
+        0.0006574333800841515
+      ],
+      "upper": [
+        0.06851003681626928,
+        0.002465375175315568
+      ],
+      "premiumYuan": 5.6,
+      "expectedLossYuan": 1.3345897615708273,
+      "expectedProfitYuan": 3.0337951569674737,
+      "stressProfitYuan": 0.872819306686969,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 110100,
+      "name": "北京",
+      "month": 1,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0,
+      "expectedProfitYuan": 0.6126164383561644,
+      "stressProfitYuan": 0.2676164383561644,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 110100,
+      "name": "北京",
+      "month": 1,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0,
+      "expectedProfitYuan": 0.6016575342465754,
+      "stressProfitYuan": 0.2566575342465754,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 110100,
+      "name": "北京",
+      "month": 7,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0.026439779102384292,
+        0.003648755259467041
+      ],
+      "upper": [
+        0.05544354838709677,
+        0.01340890164796634
+      ],
+      "premiumYuan": 5.1,
+      "expectedLossYuan": 1.4132078366058907,
+      "expectedProfitYuan": 2.5061206459297973,
+      "stressProfitYuan": 0.8061277681247487,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 110100,
+      "name": "北京",
+      "month": 7,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0.03618075035063113,
+        0.004032258064516129
+      ],
+      "upper": [
+        0.07539939077840112,
+        0.015120967741935484
+      ],
+      "premiumYuan": 6.5,
+      "expectedLossYuan": 1.90984396914446,
+      "expectedProfitYuan": 3.2845774150319893,
+      "stressProfitYuan": 1.0385839236224519,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 440100,
+      "name": "广州",
+      "month": 1,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0.004415760869565218,
+        0
+      ],
+      "upper": [
+        0.016559103260869564,
+        0.00125
+      ],
+      "premiumYuan": 2.2,
+      "expectedLossYuan": 0.2207880434782609,
+      "expectedProfitYuan": 1.0349452427039905,
+      "stressProfitYuan": 0.3940994546605124,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 440100,
+      "name": "广州",
+      "month": 1,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0.006968793828892005,
+        0.00005478611500701262
+      ],
+      "upper": [
+        0.026132976858345022,
+        0.00125
+      ],
+      "premiumYuan": 2.8,
+      "expectedLossYuan": 0.3498093443197756,
+      "expectedProfitYuan": 1.4464544311610212,
+      "stressProfitYuan": 0.4545320959576554,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 440100,
+      "name": "广州",
+      "month": 7,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0.011110624123422161,
+        0
+      ],
+      "upper": [
+        0.032132056451612906,
+        0.00125
+      ],
+      "premiumYuan": 3.2,
+      "expectedLossYuan": 0.5555312061711081,
+      "expectedProfitYuan": 1.6188631073603719,
+      "stressProfitYuan": 0.5323372044851967,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 440100,
+      "name": "广州",
+      "month": 7,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0.01775070126227209,
+        0
+      ],
+      "upper": [
+        0.04567792338709678,
+        0.00125
+      ],
+      "premiumYuan": 4.1,
+      "expectedLossYuan": 0.8875350631136045,
+      "expectedProfitYuan": 2.1025723308805158,
+      "stressProfitYuan": 0.6693757802143169,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 510100,
+      "name": "成都",
+      "month": 1,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0,
+      "expectedProfitYuan": 0.6126164383561644,
+      "stressProfitYuan": 0.2676164383561644,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 510100,
+      "name": "成都",
+      "month": 1,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0,
+        0
+      ],
+      "upper": [
+        0.00625,
+        0.00125
+      ],
+      "premiumYuan": 1.5,
+      "expectedLossYuan": 0,
+      "expectedProfitYuan": 0.6016575342465754,
+      "stressProfitYuan": 0.2566575342465754,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 510100,
+      "name": "成都",
+      "month": 7,
+      "startHour": 12,
+      "h": 12,
+      "q": [
+        0.02226507713884993,
+        0.0005478611500701263
+      ],
+      "upper": [
+        0.044527414971949515,
+        0.002054479312762973
+      ],
+      "premiumYuan": 4,
+      "expectedLossYuan": 1.1269503856942498,
+      "expectedProfitYuan": 1.7812130372341446,
+      "stressProfitYuan": 0.6259782239452244,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    },
+    {
+      "code": 510100,
+      "name": "成都",
+      "month": 7,
+      "startHour": 12,
+      "h": 24,
+      "q": [
+        0.03623553646563815,
+        0.00642093267882188
+      ],
+      "upper": [
+        0.07498849491584852,
+        0.019859966690042072
+      ],
+      "premiumYuan": 6.6,
+      "expectedLossYuan": 1.9723001402524547,
+      "expectedProfitYuan": 3.3141102867009926,
+      "stressProfitYuan": 1.032735922219928,
+      "payoutYuan": [
+        50,
+        75
+      ],
+      "quoted": true
+    }
+  ],
+  "negativeTestRegionYears": [],
+  "annualIllustration": {
+    "mix": "training exposure-weighted calendar quote cells; assumed mix, not a sales forecast",
+    "meanPremiumYuan": 2.370190660577874,
+    "meanContributionBeforeAnnualFixedCostYuan": 1.3895623136196766,
+    "minimumPoliciesForStrictlyPositiveProfit": 43180,
+    "scenarios": [
+      {
+        "policies": 0,
+        "expectedProfitYuan": -60000
+      },
+      {
+        "policies": 20000,
+        "expectedProfitYuan": -32208.75372760647
+      },
+      {
+        "policies": 100000,
+        "expectedProfitYuan": 78956.23136196766
+      },
+      {
+        "policies": 200000,
+        "expectedProfitYuan": 217912.4627239353
+      }
+    ]
+  },
+  "test": {
+    "policies": 711748,
+    "premiumFen": 168763520,
+    "claimsFen": 20585000,
+    "costFen": 68589718.32876718,
+    "profitFen": 79588801.67123283,
+    "averageProfitYuan": 1.1182160212776548
+  }
+}

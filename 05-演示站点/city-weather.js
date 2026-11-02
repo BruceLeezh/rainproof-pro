@@ -43,14 +43,16 @@
     for (let t = start; t <= end; t += HOUR) {
       const key = new Date(t).toISOString().slice(0, 16), v = values.get(key);
       if (typeof v !== 'number' || !Number.isFinite(v) || v < 0) throw new Error('雨量缺测或时间窗口不完整（' + key + '）');
-      sum += v;
+      sum += Math.round(v * 1000);
     }
-    return Math.round(sum * 100) / 100;
+    return Math.round(sum / 10) / 100;
   }
   function windowFor(options, now) {
     if (options.mode === 'real') {
-      const start = Date.parse(options.epoch + 'T00:00:00Z');
-      const end = Date.parse(options.until + 'T23:00:00Z');
+      // API labels are local wall-clock hours. Include all hours of both calendar days:
+      // precipitation at 00:00 is the previous hour; use first-day 01:00 through next-day 00:00.
+      const start = Date.parse(options.epoch + 'T00:00:00Z') + HOUR;
+      const end = Date.parse(options.until + 'T00:00:00Z') + 24 * HOUR;
       if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) throw new Error('历史区间无效');
       return { start, end };
     }
@@ -61,7 +63,7 @@
   }
   async function read(city, options) {
     const now = Date.now(), range = windowFor(options, now);
-    const key = [city.code, options.mode, range.start, range.end].join(':');
+    const key = [city.code, options.mode, options.mode === 'real' ? 'era5-calendar-v2' : 'forecast', range.start, range.end].join(':');
     const old = cache.get(key);
     if (old?.pending) return old.pending;
     if (!options.force && old && now < old.expires) {
@@ -76,7 +78,9 @@
         let endpoint;
         if (options.mode === 'real') {
           endpoint = 'https://archive-api.open-meteo.com/v1/archive';
-          params.set('start_date', options.epoch); params.set('end_date', options.until);
+          params.set('start_date', options.epoch);
+          params.set('end_date', new Date(range.end).toISOString().slice(0,10));
+          params.set('models', 'era5');
         } else {
           endpoint = 'https://api.open-meteo.com/v1/forecast';
           params.set('past_days', '2'); params.set('forecast_days', '1');
@@ -84,6 +88,7 @@
         const url = endpoint + '?' + params;
         const data = await json(url);
         const value = { mm: sumHourly(data, range.start, range.end), at: Date.now(), lat, lon, url,
+          model: options.mode === 'real' ? 'ERA5' : 'Forecast', gridLat:data.latitude, gridLon:data.longitude,
           start: new Date(range.start).toISOString().slice(0,16), end: new Date(range.end).toISOString().slice(0,16) };
         entry.value = value; entry.expires = Date.now() + (options.mode === 'real' ? 86400000 : 600000);
         return value;

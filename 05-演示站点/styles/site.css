@@ -170,13 +170,16 @@ body.rp-dashboard.v3 .sec.lead {padding-top:32px}
 .rp-dashboard .weather-status b {font-weight:500;color:var(--ink)}
 .rp-dashboard .weather-status span {color:var(--ink-2);overflow-wrap:anywhere}
 .rp-dashboard .weather-status.is-error {border-color:var(--line-2)}
-.rp-dashboard .pbar.is-rejected {background:repeating-linear-gradient(135deg,rgba(175,189,201,.34) 0,rgba(175,189,201,.34) 3px,rgba(175,189,201,.10) 3px,rgba(175,189,201,.10) 9px);border:1px solid var(--ink-3)}
-.rp-dashboard .weather-flag {font-size:10px;font-weight:400;color:var(--ink-2);border:1px solid var(--line-2);border-radius:4px;padding:1px 4px;margin-left:6px}
-.rp-dashboard .weather-rejected-key {background:repeating-linear-gradient(135deg,var(--ink-3) 0,var(--ink-3) 2px,transparent 2px,transparent 5px);border:1px solid var(--ink-3)}
-.rp-dashboard .weather-table-flag {display:block;font:11px/1.7 var(--f-ui);color:var(--ink-2);margin-top:4px}
-.rp-dashboard .weather-gate-note {align-items:flex-start;line-height:1.9;margin-top:20px}
-.rp-dashboard .weather-gate-note span {flex-basis:100%}
 .rp-dashboard .weather-table-label {font-size:12px;color:var(--ink-3);margin:0;padding:12px 16px;border-bottom:1px solid var(--line)}
+.rp-dashboard .history-readline {margin-top:26px;gap:22px 28px}
+.rp-dashboard .history-bar {border:0}
+.rp-dashboard .history-bar .below {border-radius:5px 5px 0 0}
+.rp-dashboard .weather-provenance {margin-top:22px;border-top:1px solid var(--line);padding-top:16px;color:var(--ink-3);font-size:12px;line-height:1.9}
+.rp-dashboard .weather-provenance summary {cursor:pointer;color:var(--ink-2)}
+.rp-dashboard .weather-provenance p {margin:12px 0;overflow-wrap:anywhere}
+.rp-dashboard .weather-source-links {display:flex;gap:12px 24px;flex-wrap:wrap}
+.rp-dashboard .weather-source-links a {color:var(--measure)}
+.rp-dashboard .weather-source-hash {font:11px/1.9 var(--f-num);overflow-wrap:anywhere}
 .rp-dashboard .crow b small {display:block;font-size:10px;color:var(--ink-3);font-weight:400;margin-top:3px}
 .rp-dashboard .readline {gap:16px 22px;align-items:flex-start;flex-wrap:wrap}
 .rp-dashboard .readline .hero-lb {line-height:1.8;max-width:34ch}

@@ -1,11 +1,11 @@
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 from urllib.parse import urlsplit,parse_qs
 from playwright.sync_api import sync_playwright
 
 ROOT=Path(__file__).resolve().parent.parent
-OUT=ROOT/'08-截图存证/2026-10-29-城市三模式与排版'
+OUT=ROOT/'08-截图存证/2026-11-02-历史口径统一'
 OUT.mkdir(exist_ok=True)
 BASE='http://127.0.0.1:8096/'
 report=[]
@@ -27,7 +27,7 @@ with sync_playwright() as p:
     if 'start_date' in q:start=datetime.fromisoformat(q['start_date'][0]);end=datetime.fromisoformat(q['end_date'][0])+timedelta(hours=23)
     else:
      # Match the page's injected Date.now; include both midnight crossings and future values.
-     current=datetime.utcfromtimestamp(1793249100000/1000)+timedelta(hours=8)
+     current=datetime.fromtimestamp(1793249100000/1000,timezone.utc).replace(tzinfo=None)+timedelta(hours=8)
      start=current.replace(hour=0,minute=0,second=0,microsecond=0)-timedelta(days=2);end=start+timedelta(days=4)
     count=int((end-start).total_seconds()/3600)+1
     return route.fulfill(json={'hourly_units':{'precipitation':'mm'},'hourly':{'time':[(start+timedelta(hours=i)).isoformat(timespec='minutes') for i in range(count)],'precipitation':[1.25]*count}})
@@ -38,18 +38,24 @@ with sync_playwright() as p:
   assert page.locator('#realBoard .foot5 [data-region="330782"]').count()==1
   assert page.locator('#regionSel').input_value()=='330782'
   assert '历史气象累计' in page.locator('#cityTable').inner_text()
-  # A historical gate failure is visible without deleting or hollowing the rain bar.
+  # One historical source/window, independent of another period's feed gate.
   chengdu=page.locator('#realBoard .colwrap[data-region="510100"]')
-  assert chengdu.locator('.pbar.is-rejected').count()==1
+  assert chengdu.locator('.pbar.is-rejected').count()==0
+  assert chengdu.locator('.pbar .below').count()==1
   assert chengdu.locator('.above').count()==0
-  assert '173' in chengdu.inner_text()
-  assert '历史核验分歧' in page.locator('#cityTable [data-region="510100"]').inner_text()
+  assert '168.0' in chengdu.inner_text()
+  assert '168.0' in page.locator('#cityTable [data-region="510100"]').inner_text()
+  assert '历史核验分歧' not in page.locator('#cityTable').inner_text()
+  assert page.locator('#realBoard .thr').count()==0
   page.evaluate('selectRegion(510100)')
   page.wait_for_function('WEATHER_VIEW.real && !WEATHER_VIEW.real.loading')
-  assert '最近 14 天' in page.locator('#realBoard .weather-gate-note').inner_text()
+  assert '168.0' in page.locator('#realBoard .hero').inner_text()
+  assert 'ERA5' in page.locator('#realBoard .weather-provenance').text_content()
+  assert 'models=era5' in page.locator('#realBoard .weather-source-links a').first.get_attribute('href')
+  assert page.locator('#realBoard .weather-source-links a[download]').count()==2
   if width in [1440,390]:
-   page.locator('#realBoard .weather-gate-note').scroll_into_view_if_needed()
-   page.screenshot(path=str(OUT/f'成都历史核验说明-{width}.png'))
+   page.locator('#realBoard').scroll_into_view_if_needed()
+   page.screenshot(path=str(OUT/f'成都统一历史来源-{width}.png'))
   page.evaluate('selectRegion(330782)')
   page.locator('[data-mode="live"]').click()
   page.wait_for_function("WEATHER_VIEW.live && !WEATHER_VIEW.live.loading")

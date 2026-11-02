@@ -1,0 +1,1646 @@
+{
+  "schema": "rainproof/pricing-model@1",
+  "generatedAt": "2026-11-02T13:02:01.145Z",
+  "config": {
+    "schema": "rainproof/pricing-research@1",
+    "status": "proposal-not-onchain",
+    "currency": "CNY-scenario",
+    "hours": [
+      12,
+      24
+    ],
+    "startHours": [
+      0,
+      6,
+      12,
+      18
+    ],
+    "thresholdsMm": {
+      "12": [
+        30,
+        70
+      ],
+      "24": [
+        50,
+        100
+      ]
+    },
+    "assumptions": {
+      "incomeYuanPerHour": 20,
+      "insuredWorkHours": {
+        "12": 6,
+        "24": 10
+      },
+      "incomeReplacement": 0.5,
+      "tierFractions": [
+        0.5,
+        0.75
+      ],
+      "perPolicyCostFen": 30,
+      "perBatchCostFen": 30,
+      "batchSize": 100,
+      "claimHandlingFen": 20,
+      "annualFixedCostYuan": 60000,
+      "plannedAnnualPolicies": 200000,
+      "variableExpenseRatio": 0.08,
+      "targetProfitRatio": 0.15,
+      "annualCapitalCostRatio": 0.08,
+      "capitalHoldExtraHours": 168,
+      "minPremiumFen": 100,
+      "maxPremiumFen": 2500,
+      "premiumTickFen": 10
+    },
+    "estimation": {
+      "trainEndExclusive": "2023-10-01T00:00",
+      "validationEndExclusive": "2024-10-01T00:00",
+      "testEndExclusive": "2026-10-01T00:00",
+      "minTrainingYears": 8,
+      "credibilityPriorDays": 120,
+      "bootstrapReps": 1500,
+      "bootstrapQuantile": 0.975,
+      "climateStressMultiplier": 1.25,
+      "minimumStressEventProbabilities": [
+        0.005,
+        0.001
+      ]
+    },
+    "channel": "calendar-batch-precommitted",
+    "notes": [
+      "Income, work hours, replacement, costs, volume, risk floors and stress loading are editable design assumptions, not measured rider losses or a sales forecast.",
+      "Historical climate prices apply to precommitted calendar batches only; instant weather-selected retail requires separately validated conditional risk forecasts.",
+      "The year-block bootstrap quantile is an estimation diagnostic, not a guaranteed confidence bound or a guarantee of future profit.",
+      "Existing archive caches did not pin the source model; they are reproducible research inputs, not verified homogeneous ERA5 or station observations."
+    ]
+  },
+  "regions": [
+    {
+      "code": 420100,
+      "name": "武汉",
+      "source": {
+        "file": "10-金融与定价/cache-hubei/420100.json.gz",
+        "sha256": "5f554b00880c4fb3d7ff202ee168e9752bf8452168815c4da9e50a3187adb7b2",
+        "model": "archive-default-not-pinned",
+        "url": null
+      },
+      "quality": {
+        "missing": 0,
+        "gaps": 0,
+        "hours": 96432,
+        "first": "2015-10-01T00:00",
+        "last": "2026-09-30T23:00"
+      },
+      "cells": {
+        "12": [
+          {
+            "month": 1,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 1,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 1,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 1,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 2,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 2,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 2,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 2,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 3,
+            "startHour": 0,
+            "q": [
+              0.0015887973352033662,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 3,
+            "startHour": 6,
+            "q": [
+              0.0015887973352033662,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 3,
+            "startHour": 12,
+            "q": [
+              0.009740971248246844,
+              0
+            ],
+            "upper": [
+              0.02850247633239832,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 3,
+            "startHour": 18,
+            "q": [
+              0.009740971248246844,
+              0
+            ],
+            "upper": [
+              0.03251555925666199,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 4,
+            "startHour": 0,
+            "q": [
+              0.018692129629629628,
+              0
+            ],
+            "upper": [
+              0.03927951388888889,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 4,
+            "startHour": 6,
+            "q": [
+              0.007581018518518519,
+              0
+            ],
+            "upper": [
+              0.01779513888888889,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 4,
+            "startHour": 12,
+            "q": [
+              0.007581018518518519,
+              0
+            ],
+            "upper": [
+              0.018952546296296294,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 4,
+            "startHour": 18,
+            "q": [
+              0.02146990740740741,
+              0
+            ],
+            "upper": [
+              0.04427083333333333,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 5,
+            "startHour": 0,
+            "q": [
+              0.025924789621318375,
+              0
+            ],
+            "upper": [
+              0.05188245091164095,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 5,
+            "startHour": 6,
+            "q": [
+              0.015055224403927068,
+              0
+            ],
+            "upper": [
+              0.030406293828892005,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 5,
+            "startHour": 12,
+            "q": [
+              0.023207398316970548,
+              0
+            ],
+            "upper": [
+              0.05178657521037868,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 5,
+            "startHour": 18,
+            "q": [
+              0.023207398316970548,
+              0
+            ],
+            "upper": [
+              0.04777349228611501,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 6,
+            "startHour": 0,
+            "q": [
+              0.028935185185185182,
+              0.003935185185185185
+            ],
+            "upper": [
+              0.058738425925925916,
+              0.013454861111111112
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 6,
+            "startHour": 6,
+            "q": [
+              0.017824074074074076,
+              0.006712962962962962
+            ],
+            "upper": [
+              0.03884548611111111,
+              0.01707175925925926
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 6,
+            "startHour": 12,
+            "q": [
+              0.017824074074074076,
+              0.003935185185185185
+            ],
+            "upper": [
+              0.03428819444444445,
+              0.013165509259259259
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 6,
+            "startHour": 18,
+            "q": [
+              0.017824074074074076,
+              0.0011574074074074076
+            ],
+            "upper": [
+              0.034215856481481476,
+              0.003399884259259259
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 7,
+            "startHour": 0,
+            "q": [
+              0.03709019985974754,
+              0.007297510518934082
+            ],
+            "upper": [
+              0.10246373159186535,
+              0.027365664446002802
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 7,
+            "startHour": 6,
+            "q": [
+              0.02622063464235624,
+              0.007297510518934082
+            ],
+            "upper": [
+              0.07467347475455821,
+              0.027365664446002802
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 7,
+            "startHour": 12,
+            "q": [
+              0.02622063464235624,
+              0.0018627279102384293
+            ],
+            "upper": [
+              0.06972902787517532,
+              0.0069852296633941095
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 7,
+            "startHour": 18,
+            "q": [
+              0.02622063464235624,
+              0.007297510518934082
+            ],
+            "upper": [
+              0.07426257889200562,
+              0.027365664446002802
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 0,
+            "q": [
+              0.01050797685834502,
+              0
+            ],
+            "upper": [
+              0.0299406118513324,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 6,
+            "q": [
+              0.013225368162692847,
+              0
+            ],
+            "upper": [
+              0.04067869039270687,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 12,
+            "q": [
+              0.002355802945301543,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 18,
+            "q": [
+              0.002355802945301543,
+              0
+            ],
+            "upper": [
+              0.006437368513323984,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 9,
+            "startHour": 0,
+            "q": [
+              0.007005335189051264,
+              0
+            ],
+            "upper": [
+              0.020333159359777316,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 9,
+            "startHour": 6,
+            "q": [
+              0.007005335189051264,
+              0
+            ],
+            "upper": [
+              0.020399305555555556,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 9,
+            "startHour": 12,
+            "q": [
+              0.0014538180168759192,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 239,
+            "trainingYears": 8,
+            "credibility": 0.6657381615598886
+          },
+          {
+            "month": 9,
+            "startHour": 18,
+            "q": [
+              0.004239333337210181,
+              0
+            ],
+            "upper": [
+              0.013426009385849116,
+              0.00125
+            ],
+            "n": 239,
+            "trainingYears": 8,
+            "credibility": 0.6657381615598886
+          },
+          {
+            "month": 10,
+            "startHour": 0,
+            "q": [
+              0.00027393057503506316,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 10,
+            "startHour": 6,
+            "q": [
+              0.00027393057503506316,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 10,
+            "startHour": 12,
+            "q": [
+              0.0029913218793828893,
+              0
+            ],
+            "upper": [
+              0.011217457047685835,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 10,
+            "startHour": 18,
+            "q": [
+              0.00027393057503506316,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 11,
+            "startHour": 0,
+            "q": [
+              0.0030671296296296293,
+              0
+            ],
+            "upper": [
+              0.011501736111111112,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 11,
+            "startHour": 6,
+            "q": [
+              0.0002893518518518519,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 11,
+            "startHour": 12,
+            "q": [
+              0.0002893518518518519,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 11,
+            "startHour": 18,
+            "q": [
+              0.0002893518518518519,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 12,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 12,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 12,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 12,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          }
+        ],
+        "24": [
+          {
+            "month": 1,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 1,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 1,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 1,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 2,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 2,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 2,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 2,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 226,
+            "trainingYears": 8,
+            "credibility": 0.653179190751445
+          },
+          {
+            "month": 3,
+            "startHour": 0,
+            "q": [
+              0.00043828892005610097,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 3,
+            "startHour": 6,
+            "q": [
+              0.00043828892005610097,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 3,
+            "startHour": 12,
+            "q": [
+              0.003155680224403927,
+              0
+            ],
+            "upper": [
+              0.011833800841514726,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 3,
+            "startHour": 18,
+            "q": [
+              0.00043828892005610097,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 4,
+            "startHour": 0,
+            "q": [
+              0.013715277777777778,
+              0
+            ],
+            "upper": [
+              0.03240740740740741,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 4,
+            "startHour": 6,
+            "q": [
+              0.0109375,
+              0
+            ],
+            "upper": [
+              0.026403356481481483,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 4,
+            "startHour": 12,
+            "q": [
+              0.022048611111111113,
+              0
+            ],
+            "upper": [
+              0.05049189814814815,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 4,
+            "startHour": 18,
+            "q": [
+              0.019270833333333334,
+              0
+            ],
+            "upper": [
+              0.046079282407407406,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 5,
+            "startHour": 0,
+            "q": [
+              0.01341164095371669,
+              0
+            ],
+            "upper": [
+              0.031406140427769985,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 5,
+            "startHour": 6,
+            "q": [
+              0.01341164095371669,
+              0
+            ],
+            "upper": [
+              0.028899675666199158,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 5,
+            "startHour": 12,
+            "q": [
+              0.01884642356241234,
+              0
+            ],
+            "upper": [
+              0.045609440743338,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 5,
+            "startHour": 18,
+            "q": [
+              0.016129032258064516,
+              0
+            ],
+            "upper": [
+              0.0397062368513324,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 6,
+            "startHour": 0,
+            "q": [
+              0.014988425925925926,
+              0.003993055555555555
+            ],
+            "upper": [
+              0.03298611111111112,
+              0.014973958333333334
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 6,
+            "startHour": 6,
+            "q": [
+              0.023321759259259257,
+              0.001215277777777778
+            ],
+            "upper": [
+              0.04701967592592593,
+              0.004557291666666667
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 6,
+            "startHour": 12,
+            "q": [
+              0.023321759259259257,
+              0.003993055555555555
+            ],
+            "upper": [
+              0.04600694444444445,
+              0.014973958333333334
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 6,
+            "startHour": 18,
+            "q": [
+              0.020543981481481483,
+              0.003993055555555555
+            ],
+            "upper": [
+              0.04007523148148148,
+              0.014973958333333334
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 7,
+            "startHour": 0,
+            "q": [
+              0.035578103085554,
+              0.01154891304347826
+            ],
+            "upper": [
+              0.11113363429172511,
+              0.04330842391304348
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 7,
+            "startHour": 6,
+            "q": [
+              0.03286071178120617,
+              0.006114130434782609
+            ],
+            "upper": [
+              0.10176520862552595,
+              0.02292798913043478
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 7,
+            "startHour": 12,
+            "q": [
+              0.038295494389901825,
+              0.01154891304347826
+            ],
+            "upper": [
+              0.11521519985974754,
+              0.04330842391304348
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 7,
+            "startHour": 18,
+            "q": [
+              0.03286071178120617,
+              0.01154891304347826
+            ],
+            "upper": [
+              0.09565655680224404,
+              0.04330842391304348
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 0,
+            "q": [
+              0.00811930224403927,
+              0
+            ],
+            "upper": [
+              0.02180487377279102,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 6,
+            "q": [
+              0.0026845196353436182,
+              0
+            ],
+            "upper": [
+              0.007464608169705469,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 12,
+            "q": [
+              0.010836693548387096,
+              0
+            ],
+            "upper": [
+              0.031789643232819076,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 8,
+            "startHour": 18,
+            "q": [
+              0.00811930224403927,
+              0
+            ],
+            "upper": [
+              0.02348954680925666,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 9,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 239,
+            "trainingYears": 8,
+            "credibility": 0.6657381615598886
+          },
+          {
+            "month": 9,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 239,
+            "trainingYears": 8,
+            "credibility": 0.6657381615598886
+          },
+          {
+            "month": 9,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 239,
+            "trainingYears": 8,
+            "credibility": 0.6657381615598886
+          },
+          {
+            "month": 9,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 239,
+            "trainingYears": 8,
+            "credibility": 0.6657381615598886
+          },
+          {
+            "month": 10,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 10,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 10,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 10,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 11,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 11,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 11,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 11,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 240,
+            "trainingYears": 8,
+            "credibility": 0.6666666666666666
+          },
+          {
+            "month": 12,
+            "startHour": 0,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 12,
+            "startHour": 6,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 12,
+            "startHour": 12,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          },
+          {
+            "month": 12,
+            "startHour": 18,
+            "q": [
+              0,
+              0
+            ],
+            "upper": [
+              0.00625,
+              0.00125
+            ],
+            "n": 248,
+            "trainingYears": 8,
+            "credibility": 0.6739130434782609
+          }
+        ]
+      },
+      "backtest": {
+        "12": {
+          "validation": {
+            "offered": 1462,
+            "excluded": 0,
+            "premiumFen": 284280,
+            "claimsFen": 49500,
+            "costFen": 121995.79452054913,
+            "profitFen": 112784.20547945087,
+            "years": {
+              "2024": {
+                "policies": 1462,
+                "premiumFen": 284280,
+                "claimsFen": 49500,
+                "costFen": 121995.79452054913,
+                "profitFen": 112784.2054794519
+              }
+            }
+          },
+          "test": {
+            "offered": 2918,
+            "excluded": 0,
+            "premiumFen": 567870,
+            "claimsFen": 72000,
+            "costFen": 243450.20547945265,
+            "profitFen": 252419.79452054735,
+            "years": {
+              "2025": {
+                "policies": 1460,
+                "premiumFen": 284070,
+                "claimsFen": 42000,
+                "costFen": 121843.60000000117,
+                "profitFen": 120226.40000000027
+              },
+              "2026": {
+                "policies": 1458,
+                "premiumFen": 283800,
+                "claimsFen": 30000,
+                "costFen": 121606.60547945322,
+                "profitFen": 132193.39452054817
+              }
+            }
+          }
+        },
+        "24": {
+          "validation": {
+            "offered": 1460,
+            "excluded": 0,
+            "premiumFen": 405920,
+            "claimsFen": 87500,
+            "costFen": 140011.60000000158,
+            "profitFen": 178408.39999999842,
+            "years": {
+              "2024": {
+                "policies": 1460,
+                "premiumFen": 405920,
+                "claimsFen": 87500,
+                "costFen": 140011.60000000158,
+                "profitFen": 178408.39999999924
+              }
+            }
+          },
+          "test": {
+            "offered": 2916,
+            "excluded": 0,
+            "premiumFen": 811240,
+            "claimsFen": 65000,
+            "costFen": 279341.3972602718,
+            "profitFen": 466898.6027397282,
+            "years": {
+              "2025": {
+                "policies": 1460,
+                "premiumFen": 405920,
+                "claimsFen": 45000,
+                "costFen": 139891.60000000158,
+                "profitFen": 221028.39999999895
+              },
+              "2026": {
+                "policies": 1456,
+                "premiumFen": 405320,
+                "claimsFen": 20000,
+                "costFen": 139449.79726027555,
+                "profitFen": 245870.20273972477
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "modelId": "347596897f3612842c22d4e7a5c33361a09704698cfea11e4f00d3e65e8bd7db",
+  "totals": {
+    "validation": {
+      "policies": 2922,
+      "premiumFen": 690200,
+      "claimsFen": 137000,
+      "costFen": 262007.3945205507,
+      "profitFen": 291192.60547944927
+    },
+    "test": {
+      "policies": 5834,
+      "premiumFen": 1379110,
+      "claimsFen": 137000,
+      "costFen": 522791.60273972445,
+      "profitFen": 719318.3972602756
+    }
+  }
+}

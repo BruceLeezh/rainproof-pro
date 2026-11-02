@@ -59,7 +59,8 @@
       </div>
       <div class="metric" id="quote" style="margin-top:6px">—<u>元 / 份</u></div>
       <p class="note" style="margin-top:10px">档线取国标 GB/T 28592—2012：<b>12h</b> 新增 ≥30mm 赔 50 元、≥70mm 赔 75 元；<b>24h</b> ≥50mm 赔 50 元、≥100mm 赔 75 元。赔付按保障窗口内的<b>新增</b>降雨计算。</p>
-      <button class="btn primary block" id="buy">投保（平台代付 · 连接钱包体验）</button>
+      <p class="note" id="offerNote" role="status" aria-live="polite">正在确认当前区划的链上报价与喂价状态…</p>
+      <button class="btn primary block" id="buy" disabled>核对投保条件中…</button>
       <div class="row" style="margin-top:10px">
         <label class="row" style="gap:6px;margin:0;cursor:pointer"><input type="checkbox" id="bigApprove" style="accent-color:var(--measure)">
           <span class="k" style="margin:0">大额授权：一次授权 100 份额度，之后每笔投保只签一笔交易</span></label>
@@ -159,24 +160,47 @@ const STAG={paid:["已赔付","ok"],denied:["判定不赔","red"],claimable:["�
   active:["保障中",""],pending_judgement:["待判定","warn"],low_confidence:["置信不足","warn"],expired:["领取期结束或缺少及时判定","warn"],
   refunded:["已退款","warn"],settled:["已结算","warn"]};
 
+let netSequence=0;
 async function refreshNet(){
+  const sequence=++netSequence, c=Number($("city").value), hours=+$("hours").value;
+  $("rainv").textContent="读取中…";
+  $("thv").textContent=(hours===12?"30 / 70":"50 / 100")+" mm";
   try{
-    const cid=Number((await provider.getNetwork()).chainId);
+    const [network,rain,pool]=await Promise.all([provider.getNetwork(),v6.rainfall(c),v6.poolBalance()]);
+    if(sequence!==netSequence)return;
+    const cid=Number(network.chainId);
+    if(cid!==CHAIN)throw new Error("请连接测试网 968");
     $("netv").textContent=`测试网 ${cid}`;$("netdot").className="dot on";
-    const c=Number($("city").value);   // 选框值就是链上 regionId
-    $("rainv").textContent=(await v6.rainfall(c))+" mm";
-    $("thv").textContent=(+$("hours").value===12?"30 / 70":"50 / 100")+" mm";
-    $("poolv").textContent=yuan(await v6.poolBalance())+" 元";
-    const ageH=Math.floor((Date.now()/1000-Number(await v6.lastFeedAt(c)))/3600);
-    const ft=$("feedtag");
-    if(ageH>24){ft.textContent="喂价超 24h · 暂不可投保";ft.className="tag red"}
-    else if(ageH>20){ft.textContent=`喂价 ${ageH}h · 临近保鲜期`;ft.className="tag warn"}
-    else{ft.textContent=`喂价 ${ageH}h 前`;ft.className="tag gold"}
-  }catch(e){$("netv").textContent="连接失败";$("netdot").className="dot err"}
+    $("rainv").textContent=rain+" mm";
+    $("poolv").textContent=yuan(pool)+" 元";
+  }catch(e){if(sequence!==netSequence)return;$("netv").textContent="连接失败";$("netdot").className="dot err";$("rainv").textContent="暂不可用";}
+}
+let offerSequence=0, buying=false, offerReady=false;
+function syncBuyButton(){
+  $("buy").disabled=buying||!offerReady;
+  $("city").disabled=buying;$("hours").disabled=buying;$("bigApprove").disabled=buying;
+  $("buy").textContent=buying?"请在钱包中确认交易…":offerReady?"投保（连接钱包体验）":"当前暂不可投保";
 }
 async function refreshQuote(){
-  try{const q=await v6.premiumOf(Number($("city").value),+$("hours").value);
-  $("quote").innerHTML=yuan(q)+"<u>元 / 份</u>";}catch(e){$("quote").textContent="报价读取失败，请稍后重试";}
+  const sequence=++offerSequence, city=Number($("city").value), hours=+$("hours").value;
+  offerReady=false;syncBuyButton();
+  $("feedtag").textContent="喂价待确认";$("feedtag").className="tag";
+  $("quote").textContent="读取中…";
+  $("offerNote").textContent="正在确认当前区划的链上报价与喂价状态…";
+  try{
+    const [q,state]=await Promise.all([v6.premiumOf(city,hours),RainproofRuntime.feedStatus(v6,city)]);
+    if(sequence!==offerSequence)return;
+    $("quote").innerHTML=yuan(q)+"<u>元 / 份</u>";
+    $("feedtag").textContent=state.label;$("feedtag").className="tag "+state.tone;
+    offerReady=state.available;
+    $("offerNote").textContent=state.available?"交易前会再次核验；本页体验由当前钱包支付模拟保费。":state.label+"。可切换其他区划；真实或实时气象对照不会恢复链上投保资格。";
+  }catch(e){
+    if(sequence!==offerSequence)return;
+    $("quote").textContent="报价读取失败，请稍后重试";
+    $("feedtag").textContent="链上状态未确认";$("feedtag").className="tag red";
+    $("offerNote").textContent="节点连接失败，30 秒后自动重试；状态确认前暂停投保。";
+  }
+  if(sequence===offerSequence)syncBuyButton();
 }
 async function refreshPolicies(){
   const who=$("who").dataset.addr||DEMO_RIDER;
@@ -286,15 +310,15 @@ async function connectWallet(){
     $("who").textContent=acc[0].slice(0,10)+"…（我的钱包）";
     $("who").dataset.addr=acc[0];
     refreshPolicies();loadClaims();refreshAllowance();toast("钱包已连接","ok");
-  }catch(e){toast("连接取消")}
+  }catch(e){toast(Number(e.code)===4001?"已取消钱包连接":"钱包连接失败："+(e.shortMessage||e.message||"请重试").slice(0,100),"err")}
 }
 async function refreshAllowance(){
   const el=$("allowLine"); if(!el)return;
   try{
     const who=$("who").dataset.addr;
     if(!who){el.textContent="授权余额：连接钱包后显示";return}
-    const a=await tok.allowance(who,V6);
-    el.textContent="授权余额："+yuan(a)+" 元"+(a>=10000n?" · 足够直接投保（单笔）":a>0n?" · 不足一单时仍需授权":"");
+    const [a,q]=await Promise.all([tok.allowance(who,V6),v6.premiumOf(Number($("city").value),+$("hours").value)]);
+    el.textContent="授权余额："+yuan(a)+" 元"+(a>=q?" · 足够当前保费":" · 当前保费仍需授权");
   }catch(e){el.textContent="授权余额：读取失败"}
 }
 async function buy(){
@@ -302,12 +326,15 @@ async function buy(){
   $("buyerr").textContent="";
   if(!window.ethereum){$("buyerr").textContent="投保需要钱包（点「连接钱包」）；浏览与查询不需要。";return}
   try{
-    $("buy").disabled=true;
+    buying=true;syncBuyButton();
     const city=Number($("city").value), hours=+$("hours").value;
     const s=await RainproofRuntime.wallet(E,window.ethereum,RPC);
     const me=await s.getAddress();
     const t=new E.Contract(TOK,TOKABI,s), v=new E.Contract(V6,V6ABI,s);
+    const state=await RainproofRuntime.feedStatus(v,city);
+    if(!state.available){offerReady=false;throw new Error(state.label);}
     const premium=await v.premiumOf(city,hours);   // G12 修复：报价必须走区划码
+    if(await t.balanceOf(me)<premium)throw new Error("模拟 RDROP 余额不足，请先获取测试代币；尚未发送授权或投保交易。");
     const alw=await t.allowance(me,V6);
     if(alw<premium){
       const amt=$("bigApprove").checked?premium*100n:premium;   // 大额授权：一次 100 份，后续投保免二次签名
@@ -316,6 +343,8 @@ async function buy(){
     }else{
       toast("授权余额足够，单笔投保…");
     }
+    const finalState=await RainproofRuntime.feedStatus(v,city);
+    if(!finalState.available){offerReady=false;throw new Error(finalState.label);}
     toast("投保上链…");
     await (await v.buyPolicy(city,hours)).wait();
     $("who").dataset.addr=me;$("who").textContent=me.slice(0,10)+"…（我的钱包）";
@@ -325,7 +354,7 @@ async function buy(){
     try{const ids=await v6.policiesOf(me),nid=ids[ids.length-1];
       const det=document.getElementById("cert-"+nid);
       if(det){det.open=true;det.scrollIntoView({behavior:"smooth",block:"center"})}}catch(e){}
-  }catch(e){$("buyerr").textContent=(e.shortMessage||e.reason||e.message||"").toString().slice(0,160)}finally{$("buy").disabled=false;}
+  }catch(e){$("buyerr").textContent=(e.shortMessage||e.reason||e.message||"").toString().slice(0,160)}finally{buying=false;syncBuyButton();}
 }
 $("claims").addEventListener("click",(e)=>{
   const b=e.target.closest&&e.target.closest("[data-appeal]");
@@ -351,8 +380,8 @@ $("appealDl").onclick=()=>{
   a.click(); URL.revokeObjectURL(a.href);
   toast("已下载复核凭据；尚未提交，请交现场演示人员","ok");
 };
-$("city").onchange=()=>{refreshNet();refreshQuote()};
-$("hours").onchange=()=>{refreshNet();refreshQuote()};
+$("city").onchange=()=>{refreshNet();refreshQuote();refreshAllowance()};
+$("hours").onchange=()=>{refreshNet();refreshQuote();refreshAllowance()};
 $("wallet").onclick=connectWallet;
 $("buy").onclick=buy;
 // 常用 5 城之外，把 122 个区划全部挂进同一个下拉（湖北 118 个县区都能投保）
@@ -367,10 +396,10 @@ $("buy").onclick=buy;
 refreshNet();refreshQuote();refreshPolicies();loadClaims();
 /* G14 轮询：标签页隐藏时停轮询（省电省流量，也避免后台打满共享节点），回到前台立即刷新一次 */
 let _poll=null;
-function startPoll(){ if(_poll!==null) return; _poll=setInterval(()=>{ if(document.hidden) return; refreshNet(); },30000); }
+function startPoll(){ if(_poll!==null) return; _poll=setInterval(()=>{ if(document.hidden) return; refreshNet();refreshQuote(); },30000); }
 function stopPoll(){ if(_poll!==null){ clearInterval(_poll); _poll=null; } }
 document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){ stopPoll(); } else { startPoll(); refreshNet(); refreshAllowance(); }
+  if(document.hidden){ stopPoll(); } else { startPoll(); refreshNet();refreshQuote();refreshAllowance(); }
 });
 startPoll();
 if(window.ethereum&&window.ethereum.on){

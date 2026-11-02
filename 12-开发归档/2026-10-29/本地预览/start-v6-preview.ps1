@@ -2,8 +2,10 @@
 param([switch]$OpenBrowser)
 
 $ErrorActionPreference = 'Stop'
-$projectRoot = 'C:\Users\lenovo\Desktop\汉客松\雨证·Rainproof'
+$projectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "../../..")).Path
 $siteRoot = Join-Path $projectRoot 'site-dist'
+$runtimeRoot = Join-Path $projectRoot '12-开发归档/2026-11-02/本地预览'
+New-Item -ItemType Directory -Path $runtimeRoot -Force | Out-Null
 $previewUrl = 'http://127.0.0.1:8096/'
 $expectedContract = (Get-Content -LiteralPath (Join-Path $projectRoot 'deployment.json') -Raw -Encoding UTF8 | ConvertFrom-Json).contract
 
@@ -49,7 +51,7 @@ if (-not (Test-V6Preview)) {
     }
 
     $arguments = @('-u', '-m', 'http.server', '8096', '--bind', '127.0.0.1', '--directory', ('"' + $siteRoot + '"'))
-    $server = Start-Process -FilePath $pythonPath -ArgumentList $arguments -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $PSScriptRoot 'preview.stdout.log') -RedirectStandardError (Join-Path $PSScriptRoot 'preview.stderr.log')
+    $server = Start-Process -FilePath $pythonPath -ArgumentList $arguments -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $runtimeRoot 'preview.stdout.log') -RedirectStandardError (Join-Path $runtimeRoot 'preview.stderr.log')
     $healthy = $false
     for ($attempt = 0; $attempt -lt 20; $attempt++) {
         Start-Sleep -Milliseconds 250
@@ -57,7 +59,7 @@ if (-not (Test-V6Preview)) {
         if ($server.HasExited) { break }
     }
     if (-not $healthy) { throw 'Preview did not become ready. See preview.stderr.log in this folder.' }
-    @{ url = $previewUrl; pid = $server.Id; siteRoot = $siteRoot; startedAt = [DateTimeOffset]::Now.ToString('o') } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $PSScriptRoot 'preview-process.json') -Encoding UTF8
+    @{ url = $previewUrl; pid = $server.Id; siteRoot = $siteRoot; startedAt = [DateTimeOffset]::Now.ToString('o') } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $runtimeRoot 'preview-process.json') -Encoding UTF8
 }
 
 Write-Host ('V6 preview ready: ' + $previewUrl)

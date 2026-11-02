@@ -17,6 +17,7 @@ const fs = require("fs");
 require(path.join(__dirname, "node_modules", "dotenv")).config({ path: path.join(__dirname, ".env") });
 const ACTIVE = require("./active-deployment").applyDeployment();
 const { ethers } = require(path.join(__dirname, "node_modules", "ethers"));
+const { withRetry, provider: readProvider } = require("./rpc-read");
 
 const ROOT = path.join(__dirname, "..");
 const SITE = path.join(ROOT, "05-演示站点");
@@ -88,13 +89,14 @@ async function checkChain() {
   const rpc = process.env.SEPOLIA_RPC || "https://rpc.bohr.life";
   const addr = ACTIVE.contract;
   if (!addr) { bad("链", ".env 没有 CONTRACT_ADDRESS(_V5)"); return; }
-  const p = new ethers.JsonRpcProvider(rpc, undefined, { staticNetwork: true });
+  const p = readProvider(ethers, rpc);
+  try {
   const abi = require(path.join(ROOT, "03-合约", (ACTIVE.version === "V6" ? "RainDeliveryInsuranceV6.abi.json" : "RainDeliveryInsuranceV5.abi.json")));
   const c = new ethers.Contract(addr, abi, p);
 
   const t0 = Date.now();
   let net;
-  try { net = await p.getNetwork(); }
+  try { net = await withRetry(() => p.getNetwork()); }
   catch (e) { bad("链", `RPC 连不上（${rpc}）：${e.shortMessage || e.message}`); return; }
   if(net.chainId !== 968n) throw new Error("Expected chain 968");
   ok("链", `RPC ${net.chainId} 可达，${Date.now() - t0} ms`);
@@ -131,7 +133,11 @@ async function checkChain() {
   let oldest = { code: null, h: -1 };
   for (const r of REGIONS) {
     let lf = 0n;
-    try { lf = await c.lastFeedAt(r.code); } catch { continue; }
+    try { lf = await withRetry(() => c.lastFeedAt(r.code)); }
+    catch (error) {
+      bad("喂价", `${r.name}(${r.code}) 读取失败，新鲜度检查不完整：${error.shortMessage || error.message}`);
+      return;
+    }
     if (!lf) { stale.push({ code: r.code, name: r.name, h: Infinity }); continue; }
     const h = (now - Number(lf)) / 3600;
     if (h > oldest.h) oldest = { code: r.code, name: r.name, h };
@@ -140,6 +146,7 @@ async function checkChain() {
   if (oldest.code === null) bad("喂价", "所有区划都没喂过价");
   else if (stale.length) {
     bad("喂价", `${stale.length}/${REGIONS.length} 个区划已超 MAX_FEED_AGE(${maxAgeS / 3600}h)，最老 ${oldest.name} ${oldest.h.toFixed(1)}h —— 这些区划的新保单会被拒`);
+    for (const r of stale) rec("info", "过期区划", `${r.name}(${r.code})：${Number.isFinite(r.h) ? r.h.toFixed(1) + "h" : "从未喂价"}；需核实数据，不能绕过分歧闸门同值续期`);
   } else {
     const left = maxAgeS / 3600 - oldest.h;
     const m = `最老 ${oldest.name}(${oldest.code}) ${oldest.h.toFixed(1)}h，还剩 ${left.toFixed(1)}h`;
@@ -152,13 +159,12 @@ async function checkChain() {
   }
 
   // ── 5. 钱包余额 ──
-  const KEY_FILE = process.env.OWNER_KEY_FILE || path.join(__dirname, "..", "..", "密钥-本地", "owner-keys-2026-10-24.json");
-  if (!fs.existsSync(KEY_FILE)) warn("钱包", `密钥文件不存在：${KEY_FILE}（换机需设 OWNER_KEY_FILE）`);
-  else {
-    const owners = JSON.parse(fs.readFileSync(KEY_FILE, "utf8")).accounts || [];
+  {
+    const ms = new ethers.Contract(ACTIVE.multisig, ["function getOwners() view returns(address[])"], p);
+    const owners = await withRetry(() => ms.getOwners());
     for (let i = 0; i < owners.length; i++) {
-      const a = new ethers.Wallet(owners[i].privateKey).address;
-      const b = await p.getBalance(a);
+      const a = owners[i];
+      const b = await withRetry(() => p.getBalance(a));
       const bot = Number(ethers.formatEther(b));
       if (bot < MIN_WALLET_BOT) bad("钱包", `owner${i} ${a.slice(0, 8)}… 只有 ${bot.toFixed(3)} BOT（两票需要 ≥${MIN_WALLET_BOT}）`);
       // 一次 20 区划批量投票两票各 ~0.064 BOT。0.3 以下只够两批，提前喊；
@@ -173,6 +179,7 @@ async function checkChain() {
     if (b < MIN_WALLET_BOT) bad("钱包", `deployer ${d.slice(0, 8)}… 只有 ${b.toFixed(3)} BOT（补 gas 用）`);
     else ok("钱包", `deployer ${d.slice(0, 8)}… ${b.toFixed(3)} BOT`);
   }
+  } finally { p.destroy(); }
 }
 
 // ── 6. 计划任务 ────────────────────────────────────────────────
@@ -259,7 +266,7 @@ function checkKeeperLog() {
   if (json) {
     console.log(JSON.stringify({ ok: bads.length === 0, bad: bads.length, warn: warns.length, rows }, null, 2));
   } else {
-    const tag = { ok: "✅", warn: "⚠️ ", bad: "❌" };
+    const tag = { ok: "✅", warn: "⚠️ ", bad: "❌", info: "ℹ️ " };
     for (const r of rows) console.log(`${tag[r.level]} [${r.area}] ${r.msg}`);
     console.log("");
     if (bads.length) console.log(`❌ 上场前必须解决 ${bads.length} 项`);

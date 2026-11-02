@@ -42,7 +42,7 @@ async function main() {
   const body = source.slice(source.indexOf("async function buy(){"), source.indexOf('$("claims").addEventListener', source.indexOf("async function buy(){")));
   const els = { buy: { disabled: false }, buyerr: {}, city: { value: "1" }, hours: { value: "12" }, bigApprove: { checked: false }, who: { dataset: {} } };
   const events = []; let mineApprove, mineBuy;
-  const token = { allowance: async () => 0n, approve: async () => {
+  const token = { balanceOf: async () => 5000n, allowance: async () => 0n, approve: async () => {
     events.push("approve-sent"); return { wait: () => new Promise(resolve => { mineApprove = () => { events.push("approve-mined"); resolve(); }; }) };
   } };
   const contract = { premiumOf: async () => 500n, buyPolicy: async () => {
@@ -50,7 +50,8 @@ async function main() {
   } };
   const ctx = { $: id => els[id], window: { ethereum: {} }, CITY_CODE: { 1: 420100 }, TOK: "token", V5: "insurance", V6: "insurance", TOKABI: [], V5ABI: [], V6ABI: [], RPC: "local",
     E: { Contract: function (address) { return address === "token" ? token : contract; } },
-    RainproofRuntime: { wallet: async () => ({ getAddress: async () => a }) },
+    RainproofRuntime: { wallet: async () => ({ getAddress: async () => a }), feedStatus: async () => ({available:true}) },
+    buying:false, offerReady:true, syncBuyButton:()=>{els.buy.disabled=ctx.buying||!ctx.offerReady;},
     toast: text => { if (text === "投保成功") events.push("success"); }, refreshPolicies: async () => {}, refreshAllowance: () => {}, loadClaims: () => {}, v5: { policiesOf: async () => [] }, v6: { policiesOf: async () => [] }, document: { getElementById: () => null } };
   vm.createContext(ctx); vm.runInContext(body, ctx);
   const running = ctx.buy();

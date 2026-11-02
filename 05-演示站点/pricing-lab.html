@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>雨证 · 差异化定价与收益测算</title>
+<meta name="description" content="复核地区、月份、起保时段与保障时长的定价逻辑；查看期望赔付、成本、利润和独立时间回测。研究方案，尚未上链。">
+<link rel="stylesheet" href="styles/site.css"><link rel="stylesheet" href="styles/pricing.css">
+<script src="site.js" defer></script><script src="pricing-next-core.js" defer></script><script src="pricing-next-data.js" defer></script><script src="pricing-lab.js" defer></script>
+</head><body class="rp-app rp-pricing">
+<a class="rp-skip" href="#rp-main">跳转到测算</a>
+<div class="rp-topbar"><div class="rp-container rp-topbar-inner">
+<a class="rp-brand" href="insurance.html"><svg viewBox="0 0 253 253" fill="none" aria-hidden="true"><rect x="7" y="7" width="239" height="239" rx="22" stroke="#7cb0f9" stroke-width="13"/><path d="m116 62-56 93m111-108-47 76m65-34-39 66" stroke="#b9e0f8" stroke-width="13" stroke-linecap="round"/><path d="M42 190h170" stroke="#fec459" stroke-width="10"/></svg><span class="rp-brand-copy"><strong>雨证</strong><span>RainProof</span></span></a>
+<button class="rp-menu-toggle" type="button" aria-label="展开或收起导航" aria-expanded="false" aria-controls="rp-menu"><span aria-hidden="true">☰</span></button>
+<nav class="rp-menu" id="rp-menu" aria-label="主导航"><a href="insurance.html">首页</a><a href="index-v6.html#dashboard">技术看板</a><a href="rider.html">骑手保障</a><a href="console.html">平台控制台</a><a href="verify-v6.html">证据核验</a></nav>
+</div></div>
+<main class="rp-container" id="rp-main" tabindex="-1">
+<header class="pricing-head"><p class="eyebrow">差异化定价 · 可复算研究方案</p><h1>同样的给付，也应该算清每一份保费。</h1><p>先按地区、月份、起保时点和保障时长估计降雨风险，再计算期望赔付、运营成本与利润。主方案维持现行 50／75 元给付。</p></header>
+<p class="pricing-disclosure">本页是独立试算，尚未上链，不会改变现有保单或发起投保。收入、费用、销量与压力参数均为设计假设。模型中期望利润为正，不等于未来实际盈利。</p>
+<div id="pricing-status" role="status" aria-live="polite">正在加载历史统计与模型…</div>
+<form id="pricing-form">
+<section class="pricing-panel" aria-labelledby="selection-title"><div class="pricing-section-head"><h2 id="selection-title">01 · 选择要比较的保障</h2><span>金额单位：人民币情景值</span></div>
+<div class="pricing-fields">
+<label>配送地区<select id="pricing-region" name="region" required></select></label>
+<label>保障月份<select id="pricing-month" name="month"></select></label>
+<label>起保时点（北京时间）<select id="pricing-start" name="start"><option value="0">00:00</option><option value="6">06:00</option><option value="12" selected>12:00</option><option value="18">18:00</option></select></label>
+<label>保障时长<select id="pricing-hours" name="hours"><option value="12">12 小时</option><option value="24">24 小时</option></select></label>
+<label>给付方案<select id="pricing-mode" name="benefitMode"><option value="fixed-v6">A · 固定 50／75 元，保费差异化</option><option value="income-linked">B · 按约定收入调整给付（备选）</option></select></label>
+<label>购买机制<select id="pricing-channel" name="channel"><option value="calendar-batch-precommitted">平台整月提前排班、整批承保</option><option value="instant-retail">临雨即时自助投保（模型未验证）</option></select></label>
+</div>
+<p class="pricing-note">本模型按完整月份、提前承诺的排班组合测算。不得在看到预报后只买高风险班次，再套用历史均价；即时自助需要另行校准条件风险。</p>
+</section>
+<section class="pricing-panel" aria-labelledby="assumptions-title"><div class="pricing-section-head"><h2 id="assumptions-title">02 · 把费用和经营假设摊开</h2><span>修改后即刻重算，不改历史概率</span></div>
+<div class="pricing-fields">
+<label>单份基础费用（元）<input id="pricing-fixed" type="number" value="0.30" min="0" step="0.01" required></label>
+<label>年度固定运营费（元）<input id="pricing-overhead" type="number" value="60000" min="0" step="1000" required></label>
+<label>计划年度保单数（份）<input id="pricing-volume" type="number" value="200000" min="1" step="1000" required></label>
+<label>按保费计提费用率（%）<input id="pricing-expense" type="number" value="8" min="0" max="99" step="1" required></label>
+<label>目标利润率（% 保费）<input id="pricing-margin" type="number" value="15" min="1" max="99" step="1" required></label>
+<label>单份保费上限（元）<input id="pricing-cap" type="number" value="25" min="0.1" step="0.1" required></label>
+</div>
+<details class="pricing-advanced"><summary>展开批量成本、资本成本和备选给付参数</summary><div class="pricing-fields">
+<label>每批固定费用（元，含链上预算）<input id="pricing-batch-cost" type="number" value="0.30" min="0" step="0.01" required></label>
+<label>每批份数<input id="pricing-batch" type="number" value="100" min="1" step="1" required></label>
+<label>每次理赔处理费（元）<input id="pricing-claim-cost" type="number" value="0.20" min="0" step="0.01" required></label>
+<label>资本年成本率（%）<input id="pricing-capital" type="number" value="8" min="0" step="1" required></label>
+<label>小时收入假设（元，仅方案 B）<input id="pricing-income" type="number" value="20" min="1" step="1" required></label>
+<label>收入保障比例（%，仅方案 B）<input id="pricing-replacement" type="number" value="50" min="1" max="100" step="1" required></label>
+<label>12h 约定工作小时（仅方案 B）<input id="pricing-work12" type="number" value="6" min="1" max="12" step="1" required></label>
+<label>24h 约定工作小时（仅方案 B）<input id="pricing-work24" type="number" value="10" min="1" max="24" step="1" required></label>
+</div><p class="pricing-note">收入与工作小时不是气象数据推断出的工资或实际班次；缺少平台核验时只作产品设计假设。资本成本考虑保障期及额外 7 天领取期；方案 A 按 V6 的 100 元敞口基数占用资金。</p></details>
+</section></form>
+<section class="pricing-metrics" aria-label="测算结果">
+<article><span>本单研究保费</span><strong id="pricing-premium">—</strong><small id="pricing-offer">等待计算</small></article>
+<article><span>单份期望赔付 · 点估计</span><strong id="pricing-el">—</strong><small>包含大暴雨档，不重复计算</small></article>
+<article><span>压力情景单份期望利润</span><strong id="pricing-profit">—</strong><small id="pricing-profit-rate">按压力概率与列明费用计算</small></article>
+</section>
+<section class="pricing-panel"><div class="pricing-section-head"><h2>03 · 12 小时和 24 小时，对照来看</h2><span id="pricing-location"></span></div>
+<div class="pricing-table-wrap"><table><thead><tr><th>保障</th><th>暴雨／大暴雨给付</th><th>累计触发概率 q₁／q₂</th><th>期望赔付</th><th>研究保费</th></tr></thead><tbody id="pricing-compare"></tbody></table></div>
+<p class="pricing-note">q₁ 是达到第一档的概率，已经包含第二档；q₂ 是达到第二档的概率。12h 用 30／70 mm，24h 用 50／100 mm。更长时长不直接乘二，是否更贵由实际风险、给付和成本共同决定。</p>
+</section>
+<div class="pricing-two">
+<section class="pricing-panel"><h2>04 · 单份保费是怎样算出来的</h2><dl class="pricing-breakdown" id="pricing-breakdown"></dl><p class="pricing-formula">P = 向上取整至 0.1 元〔(压力期望赔付 + 压力费用) ÷ (1 − 变动费用率 − 目标利润率)〕</p><p class="pricing-note">超过最高愿付保费时停止报价，不把价格截断后继续承保；固定费用随真实销量重新分摊，销量不足会亏损。</p></section>
+<section class="pricing-panel"><h2>05 · 概率不如预期，会发生什么</h2><div class="pricing-table-wrap"><table><thead><tr><th>实际触发概率情景</th><th>单份期望利润</th></tr></thead><tbody id="pricing-stress"></tbody></table></div><dl class="pricing-breakdown" id="pricing-breakeven"></dl><p class="pricing-note">压力表保持已报保费不变；使用点估计、压力概率及压力概率翻倍三个情景（概率最高为 100%）。它是敏感性分析，不是天气预测。未售出任何保单时，年度固定成本仍会发生。</p></section>
+</div>
+<section class="pricing-panel"><div class="pricing-section-head"><h2>06 · 用没有参与定价的数据检验</h2><span>当前参数重算，保费仅由训练期统计决定</span></div><div class="pricing-table-wrap"><table><thead><tr><th>时间划分</th><th>可报价窗口／排除</th><th>平均保费</th><th>平均实际给付</th><th>平均结果（含分摊费用）</th></tr></thead><tbody id="pricing-backtest"></tbody></table></div><p class="pricing-note">训练：2015-10～2023-09；验证：2023-10～2024-09；独立测试：2024-10～2026-09。此处是所选地区、时长、起保时点全年各月的历史窗口重放，不是实际销售或理赔业绩。</p><p id="pricing-negative-years" class="pricing-note"></p></section>
+<section class="pricing-panel"><h2>07 · 证据、假设与复算入口</h2><p id="pricing-evidence" class="pricing-note"></p><p class="pricing-note">按水文年整块自举，保留重叠窗口和暴雨过程的相关性；同月其他时点作可信度补充。97.5% 自举分位、最低压力概率与 1.25 倍气候压力共同用于报价，不能解释为严格覆盖保证。历史默认缓存未固定来源模型，不能称为纯 ERA5 或地面实测。</p><div class="pricing-actions"><button id="pricing-download" type="button">下载本次计算与假设 JSON</button><a href="insurance.html">返回现行 V6 产品</a></div><p class="pricing-note">方法参考：<a href="https://www.casact.org/abstract/basic-ratemaking" target="_blank" rel="noopener">CAS 费率平衡</a>、<a href="https://www.actuarialstandardsboard.org/asops/estimating-future-costs-prospective-propertycasualty-risk-transfer-risk-retention/" target="_blank" rel="noopener">ASOP 53 成本估计</a>、<a href="https://open-meteo.com/en/docs/historical-weather-api" target="_blank" rel="noopener">Open-Meteo 历史数据定义</a>。</p></section>
+</main></body></html>

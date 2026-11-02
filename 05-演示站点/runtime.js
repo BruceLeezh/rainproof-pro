@@ -40,6 +40,28 @@
     request.timeout = 10000;
     return new ethers.JsonRpcProvider(request);
   }
-  root.RainproofRuntime = { esc, addresses, wallet, provider };
+  function feedState(lastFeed, maxAge, now) {
+    const last = Number(lastFeed), max = Number(maxAge), timestamp = Number(now);
+    if (![last, max, timestamp].every(Number.isSafeInteger) || last <= 0 || max <= 0 || timestamp < last) {
+      return { available: false, tone: "red", label: "喂价未确认 · 暂不可投保" };
+    }
+    const age = timestamp - last;
+    if (age > max) return { available: false, tone: "red", label: "喂价已过期 · 暂不可投保" };
+    return { available: true, tone: age > max - 4 * 3600 ? "warn" : "gold",
+      label: `喂价 ${(age / 3600).toFixed(1)}h 前${age > max - 4 * 3600 ? " · 临近保鲜期" : ""}` };
+  }
+  async function feedStatus(contract, regionId) {
+    const reader = contract.runner.provider || contract.runner;
+    const [last, max, block, paused, region, risk] = await Promise.all([
+      contract.lastFeedAt(regionId), contract.MAX_FEED_AGE(), reader.getBlock("latest"),
+      contract.paused(), contract.regions(regionId), contract.riskLevel(regionId)
+    ]);
+    if (!block) throw new Error("无法确认最新区块，请稍后重试");
+    if (paused) return { available: false, tone: "red", label: "投保已暂停，请稍后重试" };
+    if (!region.active) return { available: false, tone: "red", label: "该区划暂未开放投保" };
+    if (Number(risk) === 2) return { available: false, tone: "red", label: "该区划暂停承保" };
+    return feedState(last, max, block.timestamp);
+  }
+  root.RainproofRuntime = { esc, addresses, wallet, provider, feedState, feedStatus };
   if (typeof module !== "undefined") module.exports = root.RainproofRuntime;
 })(typeof window === "undefined" ? globalThis : window);

@@ -342,6 +342,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
 <meta name="theme-color" content="#080f17">
 <script src="weather-coordinates.js"></script>
 <script src="city-weather.js"></script>
+<script src="historical-rainfall.js"></script>
 </head>
 <body class="v3 rp-app rp-dashboard" data-page="home">
 <a class="rp-skip" href="#rp-main">跳转到主要内容</a>
@@ -547,7 +548,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
       </div>
       <div class="rain-toolbar"><div class="filters" id="rainMode" role="group" aria-label="降雨数据模式">
         <button class="f on" data-mode="chain" aria-pressed="true">演示值 · 链上<span class="eni">Demo (on-chain)</span></button>
-        <button class="f" data-mode="real" aria-pressed="false">真值 · 历史气象<span class="eni">Historical rainfall</span></button>
+        <button class="f" data-mode="real" aria-pressed="false">历史 · 统一来源<span class="eni">Historical · ERA5</span></button>
         <button class="f" data-mode="live" aria-pressed="false">实时 · 气象直连<span class="eni">Live rainfall</span></button>
       </div><button class="btn sm" id="ucBtn" title="选择城市或县区，在三种模式下查看对应数据">＋ 我的城市<span class="eni">My city</span></button>
       </div>
@@ -602,7 +603,7 @@ body[data-page="p2"] .rcol > .sec:first-child{padding-top:0}
 
     <section class="sec" data-dom="evi">
       <div class="hd">
-        <h2>这一屏的读数从哪来<span class="en">Where these numbers come from</span></h2>
+        <h2>链上连接与来源<span class="en">On-chain connection</span></h2>
         <span class="n">eth_call · 页首那行小字就是它</span>
       </div>
       <div class="panel">
@@ -1576,8 +1577,39 @@ async function loadRegions() {
 
 /* 看板 HTML 的唯一出处：链上读数（#rainBoard）与真值快照（#realBoard）共用同一套柱子、刻度、图例 ——
    两个面板一个像图、一个像表格，看着就像换了套东西。meas 每项：
-   { id, label, v, pct, belowPct, hit, capped, bad, tag }（bad = 闸门拒收，柱子画淡、不画越线高亮）。 */
+   { id, label, v, pct, belowPct, hit, capped, tag }。历史对照使用独立的统一来源比例图。 */
+function historyPeriod(){
+  const r=RainproofCityWeather.windowFor({mode:'real',epoch:REAL_RAIN.epoch,until:REAL_RAIN.until},Date.now());
+  const hours=(r.end-r.start)/3600000+1;
+  return {hours,days:hours/24,endExclusive:new Date(r.end).toISOString().slice(0,10)};
+}
+function historicalBoardHTML(meas,sel){
+  const cur=meas.find(m=>m.id===sel)||meas[0];if(!cur)return '<div class="empty">暂无完整历史降水数据。</div>';
+  const max=Math.max(10,...meas.map(m=>m.v)),base=Math.pow(10,Math.floor(Math.log10(max/4)));
+  const step=[1,2,2.5,5,10].find(x=>x>=max/4/base)*base,scale=step*4;
+  const ticks=[0,1,2,3,4].map(i=>`<span class="tick" style="bottom:${i*25}%">${Number((step*i).toFixed(2))}</span>`).join('');
+  const pretty=v=>Number(v).toFixed(1),period=historyPeriod();
+  return '<div class="chips">'+meas.map(m=>`<button class="chip${m.id===cur.id?' on':''}" aria-pressed="${m.id===cur.id}" data-region="${m.id}" title="${esc(m.label)} · ERA5 历史累计 ${pretty(m.v)} mm"><span class="dotq"></span>${esc(m.label)}</button>`).join('')+'</div>'
+    +'<div class="readline history-readline"><div><div class="hero-lb">'+esc(cur.label)+' · 历史区间累计</div><div class="hero">'+pretty(cur.v)+'<u>mm</u></div></div>'
+    +'<div class="kvbox"><span class="k">统计窗口</span><span class="v">'+period.days+'<small>天 / '+period.hours+' 小时</small></span></div>'
+    +'<div class="kvbox"><span class="k">统一来源</span><span class="tag measure">ERA5 再分析</span></div>'
+    +'<div class="kvbox"><span class="k">纵轴上限</span><span class="v">'+scale+'<small>mm</small></span></div></div>'
+    +'<div class="gauge"><div class="axis">'+ticks+'</div><div class="plot"><div class="cols5'+(meas.length>5?' cols6':'')+'">'
+    +meas.map(m=>{const pct=m.v/scale*100;return `<div class="colwrap${m.id===cur.id?' on':''}" data-region="${m.id}" title="${esc(m.label)} · ${pretty(m.v)} mm"><div class="colv" style="bottom:calc(${pct}% + 6px)">${pretty(m.v)}</div><div class="pbar history-bar" style="height:${pct}%"><div class="below" style="height:100%"></div></div></div>`;}).join('')
+    +'</div></div></div><div class="foot5'+(meas.length>5?' cols6':'')+'">'+meas.map(m=>`<div class="c${m.id===cur.id?' on':''}" data-region="${m.id}"><b>${esc(m.label)}</b><span>#${m.id}</span></div>`).join('')+'</div>'
+    +'<div class="legend"><span class="sw"><span class="sq m"></span>同一模型、同一统计区间；柱高按累计值比例绘制</span><span class="sp">这是参考网格点的历史降水，不是全市平均或地面雨量站实测。历史总量不与 12/24h 赔付阈值比较。</span></div>';
+}
+function historySourceHTML(row){
+  if(!row)return '';
+  const period=historyPeriod();
+  const when=row.at?new Date(row.at).toLocaleString('zh-CN',{hour12:false,timeZone:'Asia/Shanghai'}):REAL_RAIN.generatedAt;
+  return '<details class="weather-provenance"><summary>数据来源与复核</summary><p>模型：ERA5 · 时区：Asia/Shanghai · 区间：'+esc(REAL_RAIN.epoch)+' 00:00 至 '+period.endExclusive+' 00:00（完整 '+period.days+' 天）。降水时间戳对应前一小时。</p>'
+    +'<p>'+esc(row.name)+' · 请求坐标 '+Number(row.lat).toFixed(4)+', '+Number(row.lon).toFixed(4)+(Number.isFinite(row.gridLat)&&Number.isFinite(row.gridLon)?' · 返回网格 '+row.gridLat+', '+row.gridLon:'')+' · 获取于 '+esc(when)+'</p>'
+    +'<div class="weather-source-links"><a href="'+esc(row.url)+'" target="_blank" rel="noopener">打开原始 API 查询 ↗</a>'+(row.csvFile?'<a href="'+esc(row.csvFile)+'" download>下载统计窗口 CSV</a>':'')+(row.rawFile?'<a href="'+esc(row.rawFile)+'" download>下载已留存逐小时报文</a>':'')+'</div>'
+    +(row.sha256?'<p class="weather-source-hash">原始报文 SHA-256：'+esc(row.sha256)+'</p>':'')+'</details>';
+}
 function boardHTML(meas, sel, thr, hours, opt = {}) {
+  if(opt.real)return historicalBoardHTML(meas,sel);
   const cur = meas.find(m => m.id === sel) || meas[0];
   if (!cur) return '<div class="empty">暂无完整雨量数据，请查看上方状态并重试。</div>';
   const ticks = [0, 1, 2, 3, 4].map(i =>
@@ -1586,19 +1618,15 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
     ? `<span class="sw"><span class="sq m"></span>阈值线以下：气象对照值</span>
        <span class="sw"><span class="sq y"></span>越过参考阈值的部分，不代表已满足赔付条件</span>
        <span class="sp">这是本页<b>此刻</b>从 Open-Meteo 现网拉来的读数；<b>不是链上读到的数，也不写进链上</b></span>`
-    : opt.real
-    ? `<span class="sw"><span class="sq m"></span>阈值线以下：历史气象累计</span>
-       <span class="sw"><span class="sq y"></span>越过参考阈值的部分，不代表已满足赔付条件</span>
-       <span class="sp">历史区间 ${esc(opt.epoch || "")} → ${esc(opt.until || "")}；固定五城保留原快照，自选城市按同区间查询 Archive。历史再分析不是地面逐站实测，也不是本合约的写链凭证</span>`
     : `<span class="sw"><span class="sq m"></span>阈值线以下：已记录，未进入结算</span>
        <span class="sw"><span class="sq y"></span>越过参考阈值的部分，不代表已满足赔付条件</span>
        <span class="sp">触发赔的是<b>投保后的增量</b>（基线 = 投保当刻的链上读数）；越线 ≠ 现在投保就能赔</span>`;
   return `
         <div class="chips">
-          ${meas.map(m => `<button class="chip${m.id === cur.id ? " on" : ""}${m.hit && !m.bad ? " over" : ""}${m.bad ? " is-flagged" : ""}"
+          ${meas.map(m => `<button class="chip${m.id === cur.id ? " on" : ""}${m.hit ? " over" : ""}"
              aria-pressed="${m.id === cur.id}"
-             data-region="${m.id}" title="${esc(m.label)} · ${opt.live ? "现网" : opt.real ? "真值" : "累计"} ${m.v} mm（#${m.id}）${m.bad ? ' · 历史核验分歧，雨量仍按原快照显示' : ''}"
-             ><span class="dotq"></span>${esc(m.label)}${m.bad ? '<span class="weather-flag">分歧</span>' : ''}</button>`).join("")}
+             data-region="${m.id}" title="${esc(m.label)} · ${opt.live ? "现网" : "累计"} ${m.v} mm（#${m.id}）"
+             ><span class="dotq"></span>${esc(m.label)}</button>`).join("")}
         </div>
         <div class="readline" style="margin-top:var(--s5)">
           <div>
@@ -1610,7 +1638,6 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
           <div class="kvbox"><span class="k">满量程</span><span class="v">${thr * 2}<small>mm</small></span></div>
           <div class="kvbox" style="margin-left:auto"><span class="k">${opt.real ? "数据来源" : "背景雨幕"}</span><span class="tag measure">${opt.live ? "Open-Meteo 现网" : opt.real ? "Open-Meteo Archive" : "由此行驱动"}</span></div>
         </div>
-        ${cur.bad ? '<div class="weather-status weather-gate-note" role="note"><b>'+esc(cur.label)+'：历史核验有分歧</b><span>'+cur.v+' mm 是历史区间累计；分歧标记来自原快照中另一个“最近 14 天”三模型核验窗口。它不代表零雨量，也不代表当前城市或 V6 链上数据无效。斜线柱保留原雨量高度，不使用金色越线高亮。</span></div>' : ''}
         <div class="gauge">
           <div class="axis">${ticks}</div>
           <div class="plot">
@@ -1619,9 +1646,9 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
               ${meas.map(m => `<div class="colwrap${m.id === cur.id ? " on" : ""}" data-region="${m.id}"
                  title="${esc(m.label)} · #${m.id} · ${m.v} mm">
                  <div class="colv" style="bottom:calc(${m.pct}% + 6px)">${m.v}</div>
-                 <div class="pbar${m.bad ? " is-rejected" : ""}" style="height:${m.pct}%">
-                   ${m.hit && !m.bad ? `<div class="above" style="bottom:${m.belowPct}%;height:${100 - m.belowPct}%"></div>` : ""}
-                   ${!m.bad ? `<div class="below" style="height:${m.belowPct}%"></div>` : ''}
+                 <div class="pbar" style="height:${m.pct}%">
+                   ${m.hit ? `<div class="above" style="bottom:${m.belowPct}%;height:${100 - m.belowPct}%"></div>` : ""}
+                   <div class="below" style="height:${m.belowPct}%"></div>
                    ${m.capped ? '<div class="spill" style="top:2px"></div>' : ""}
                  </div></div>`).join("")}
             </div>
@@ -1633,7 +1660,6 @@ function boardHTML(meas, sel, thr, hours, opt = {}) {
         </div>
         <div class="legend">
           ${legend}
-          ${meas.some(m=>m.bad) ? '<span class="sw"><span class="sq weather-rejected-key"></span>斜线柱：历史核验存在分歧，保留累计雨量；不是零值或当前判定</span>' : ''}
         </div>`;
 }
 
@@ -1652,18 +1678,14 @@ function selectRegion(id) {
   s.dispatchEvent(new Event("change"));
 }
 
-/* ---------------- 真值面板：真实观测值 vs 链上演示值 ----------------
-   链上那组也可能是模拟暴雨（968 演示链上就是：五城 101/287/109/303/227 mm，快照与链上事件都标 simulated = true）；677 主网这组是真值。
-   这一栏显示同一时刻的**真实观测**：Open-Meteo Archive 的三个数值模型各自算一遍「epoch → 今天」的累计，
-   再由 04-脚本/feed-verify.js 那把闸门判定「三模型是否一致、能不能上链」。
-   数据不在运行时联网取：快照由本地生成脚本产出后内嵌进本文件（不依赖当时网络、
-   也不依赖 FlClash 代理），面板上写明纪元、区间与抓取时刻。 */
-const REAL_RAIN = {"schema":"rainproof/real-rainfall@1","generatedAt":"2026-10-08 10:21:12 +0800","epoch":"2026-09-01","until":"2026-10-08","source":"Open-Meteo Archive API · ECMWF / GFS / ICON","note":"mm = Open-Meteo archive 自 epoch 起的真实累计，窗口 2026-09-01 → 2026-10-08；gateMm 是 feed-verify 闸门在最近 14 天三模型上的核验值，status/confidence/sources 是那份核验的判定 —— 只有不是 diverge 的才写得进链。链上读数由历次喂价累加，起点可能早于本窗口（合约只增不减），所以对照看趋势与相对大小，不要求逐毫米相等。","regions":[{"id":1,"key":"wuhan","name":"武汉","nameEn":"Wuhan","mm":67,"gateMm":25.9,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":25.9,"toleranceMm":5.2,"spreadMm":20.9,"perModel":[]},{"id":2,"key":"shanghai","name":"上海","nameEn":"Shanghai","mm":128,"gateMm":67.2,"gateDays":14,"status":"agree","confidence":92,"sources":3,"medianMm":67.2,"toleranceMm":13.4,"spreadMm":8.5,"perModel":[]},{"id":3,"key":"beijing","name":"北京","nameEn":"Beijing","mm":39,"gateMm":40,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":40,"toleranceMm":8,"spreadMm":23.9,"perModel":[]},{"id":4,"key":"guangzhou","name":"广州","nameEn":"Guangzhou","mm":162,"gateMm":65.1,"gateDays":14,"status":"majority","confidence":84,"sources":2,"medianMm":65.1,"toleranceMm":13,"spreadMm":42.7,"perModel":[]},{"id":5,"key":"chengdu","name":"成都","nameEn":"Chengdu","mm":173,"gateMm":null,"gateDays":14,"status":"diverge","confidence":40,"sources":3,"medianMm":16,"toleranceMm":3.2,"spreadMm":13,"perModel":[]}]};
+/* Historical comparison: fixed ERA5, grid coordinates and complete calendar-day window.
+   The original mixed-period display is archived under 12-开发归档/2026-11-02/历史口径修正. */
+const REAL_RAIN = window.RAINPROOF_HISTORICAL_RAINFALL || {epoch:"2026-09-01",until:"2026-10-08",regions:[],generatedAt:"未加载"};
 
 /* ---------------- 实时面板：现网直连（**未上链**） ----------------
    和另外两个面板的区别：
      · 演示值（#rainBoard）—— 链上读到的数；
-     · 真值快照（#realBoard）—— 2026-10-08 烘进本文件的 archive 累计；
+     · 历史对照（#realBoard）—— 统一 ERA5 来源、同一完整日界的参考网格累计；
      · 本面板 —— 浏览器**此刻**直接问 Open-Meteo forecast 接口，取五城最近 N 小时（N = 当前时长档）的累计降水。
    它不写链、也不是链上读数。链上没有定时器：链上数据要变新，必须有人（或定时任务）跑 04-脚本/push-rainfall.js。
    拉不到就如实说拉不到 —— 绝不拿快照冒充实时。 */
@@ -1679,22 +1701,22 @@ function weatherMetric(row, thr) {
   const v=row.mm;
   return {id:row.code,label:ucShort(row.name),v,pct:Math.min(100,Math.round(v/(thr*2)*100)),
     belowPct:Math.min(100,Math.round(thr/Math.min(Math.max(v,thr),thr*2)*100)),hit:v>=thr,capped:v>thr*2,
-    bad:row.status==='diverge',tag:(userCity()?.code===row.code?'我的城市 · ':'')+(row.snapshot?'内嵌历史快照':'浏览器查询 · 未上链')+(row.status==='diverge'?' · 历史核验分歧':'')};
+    tag:(userCity()?.code===row.code?'我的城市 · ':'')+(row.snapshot?'统一来源历史留存':'浏览器查询 · 未上链')};
 }
 function drawWeather(mode, state) {
   const box=$(mode==='real'?'realBoard':'liveBoard'), hours=Number($('hoursInput').value)||24;
   const thr=hours===12?30:50, sel=Number($('regionSel').value)||firstRegionId();
   const ready=state.rows.filter(r=>Number.isFinite(r.mm)), pending=state.rows.filter(r=>r.pending), errors=state.rows.filter(r=>r.error);
   const meas=ready.map(r=>weatherMetric(r,thr));
-  const title=mode==='real'?'历史气象对照':'实时气象对照';
+  const title=mode==='real'?'历史降水对照 · ERA5':'实时气象对照';
   const period=mode==='real'?REAL_RAIN.epoch+' → '+REAL_RAIN.until:'最近 '+hours+' 小时（截至当前整点）';
   const notices=state.rows.filter(r=>r.pending||r.error).map(r=>'<div class="weather-status'+(r.error?' is-error':'')+'"><b>'+esc(ucShort(r.name))+'</b><span>'+esc(r.error||'正在查询气象数据…')+'</span></div>').join('');
-  box.innerHTML='<div class="weather-heading"><div><b>'+title+'</b><span>'+esc(period)+'</span></div><button type="button" class="btn sm" data-weather-retry="'+mode+'"'+(state.loading?' disabled':'')+'>'+(state.loading?'查询中…':errors.length?'重试缺失数据':'刷新数据')+'</button></div>'
-    +'<p class="weather-disclaimer">参考阈值 '+thr+' mm / '+hours+'h。'+(mode==='real'?'历史区间累计与保障窗口时长不同，不能直接用历史总量认定赔付。':'Forecast API 提供气象模型数据，不是独立雨量站实测。')+' 所有气象数据仅供查看，不写链、不触发赔付。</p>'
+  box.innerHTML='<div class="weather-heading"><div><b>'+title+'</b><span>'+esc(period)+'</span></div><button type="button" class="btn sm" data-weather-retry="'+mode+'"'+(state.loading?' disabled':'')+'>'+(state.loading?'查询中…':errors.length?'重试缺失数据':mode==='real'?'在线复核当前城市':'刷新数据')+'</button></div>'
+    +'<p class="weather-disclaimer">'+(mode==='real'?'五城与自选城市均使用 ERA5 和同一完整日界。图中展示 '+historyPeriod().days+' 天累计，仅供历史对照，不写链、不触发赔付。':'参考阈值 '+thr+' mm / '+hours+'h。Forecast API 提供气象模型数据，不是独立雨量站实测。所有气象数据仅供查看，不写链、不触发赔付。')+'</p>'
     +notices+(meas.length?boardHTML(meas,sel,thr,hours,{real:mode==='real',live:mode==='live',epoch:REAL_RAIN.epoch,until:REAL_RAIN.until}):'<div class="empty">'+(pending.length?'正在加载所选城市…':'暂未取得完整雨量，请重试。')+'</div>')
     +(sel&&!ready.some(r=>r.code===sel)?'<p class="weather-disclaimer">所选城市尚无可用读数，下方主读数暂显示其他已加载城市。</p>':'')
-    +'<p class="weather-disclaimer">'+(mode==='real'?'固定五城快照抓取于 '+esc(REAL_RAIN.generatedAt)+'；自选城市为同一历史区间的独立查询，不代表已通过三模型喂价闸门。':'最近窗口逐小时数据必须完整；缺测、空值和网络失败均不会当作 0 mm。')+'</p>'
-    +ready.filter(r=>!r.snapshot).map(r=>'<p class="weather-query-meta">'+esc(ucShort(r.name))+' · 查询参考坐标 '+r.lat.toFixed(4)+', '+r.lon.toFixed(4)+' · 查询于 '+esc(new Date(r.at).toLocaleString('zh-CN',{hour12:false}))+'</p>').join('');
+    +(mode==='real'?historySourceHTML(ready.find(r=>r.code===sel)||ready[0]):'<p class="weather-disclaimer">最近窗口逐小时数据必须完整；缺测、空值和网络失败均不会当作 0 mm。</p>')
+    +(mode==='real'?'':ready.filter(r=>!r.snapshot).map(r=>'<p class="weather-query-meta">'+esc(ucShort(r.name))+' · 查询参考坐标 '+r.lat.toFixed(4)+', '+r.lon.toFixed(4)+' · 查询于 '+esc(new Date(r.at).toLocaleString('zh-CN',{hour12:false}))+'</p>').join(''));
   bindBoardClicks(box);
   box.querySelector('[data-weather-retry]').onclick=()=>renderWeather(mode,true);
   if(rainModeNow()===mode){
@@ -1714,9 +1736,9 @@ async function renderWeather(mode, force=false) {
   })};
   WEATHER_VIEW[mode]=state;drawWeather(mode,state);
   await Promise.all(state.rows.map(async (row,i)=>{
-    if(row.snapshot)return;
+    if(row.snapshot&&!(force&&row.code===Number($('regionSel').value)))return;
     try {const data=await RainproofCityWeather.read(row,{mode,hours,epoch:REAL_RAIN.epoch,until:REAL_RAIN.until,force});state.rows[i]={code:row.code,name:row.name,...data};}
-    catch(error){state.rows[i]={code:row.code,name:row.name,error:error.message||String(error)};}
+    catch(error){state.rows[i]=row.snapshot?{...row,error:'在线复核暂不可用，显示已留存原始数据：'+(error.message||String(error))}:{code:row.code,name:row.name,error:error.message||String(error)};}
   }));
   if(WEATHER_VIEW[mode]!==state)return; // A slow response for the former city/window cannot replace the new selection.
   state.loading=false;drawWeather(mode,state);
@@ -1866,9 +1888,8 @@ function renderCityTable() {
     const row=WEATHER_VIEW[mode]?.rows.find(r=>r.code===city.code);
     const v=mode==='chain'?S.rainVals?.[city.code]:row?.mm;
     const missing=typeof v!=='number'||!Number.isFinite(v);
-    const tail=missing?(row?.pending?'查询中':row?.error?'查询失败':'暂无读数'):(v>=thr?'越线 +'+Math.round((v-thr)*100)/100:'距线 '+Math.round((thr-v)*100)/100)+' mm';
-    const flag=mode==='real'&&row?.status==='diverge'?'<small class="weather-table-flag">历史核验分歧</small>':'';
-    return '<button class="crow'+(city.code===sel?' on':'')+'" data-region="'+city.code+'"><b>'+esc(ucShort(city.name))+(userCity()?.code===city.code?'<small>我的城市</small>':'')+'</b><span class="v">'+(missing?'—':v)+'<u>mm</u></span><span class="d">'+esc(tail)+flag+'</span></button>';
+    const tail=missing?(row?.pending?'查询中':row?.error?'查询失败':'暂无读数'):mode==='real'?'ERA5 · '+historyPeriod().days+'天累计':(v>=thr?'越线 +'+Math.round((v-thr)*100)/100:'距线 '+Math.round((thr-v)*100)/100)+' mm';
+    return '<button class="crow'+(city.code===sel?' on':'')+'" data-region="'+city.code+'"><b>'+esc(ucShort(city.name))+(userCity()?.code===city.code?'<small>我的城市</small>':'')+'</b><span class="v">'+(missing?'—':mode==='real'?Number(v).toFixed(1):v)+'<u>mm</u></span><span class="d">'+esc(tail)+'</span></button>';
   }).join('');
   box.querySelectorAll('[data-region]').forEach(el=>el.onclick=()=>selectRegion(Number(el.dataset.region)));
 }
@@ -1904,7 +1925,7 @@ function renderSourceCard(bn, failed) {
   note.innerHTML = frozen
     ? `快照不是实时数据：上面这些数是 <b>${esc(FROZEN.meta.capturedAt || "上一轮")}</b> 读到的原始链上回答。要看直连主网的最新读数，请在能连主网的网络上刷新（或在网址后加 <code>?rpc=&lt;可用节点&gt;</code>）。`
     : (c.chainId === 968 && !RPC_OVERRIDE
-      ? `这一屏读的是 BOT Chain 测试网 968（v6 全国区域版）—— 页首、页脚与这里说的是同一件事。`
+      ? `链上演示模式读取 BOT Chain 测试网 968。历史对照使用 ERA5，来源与逐小时明细见左侧“数据来源与复核”。`
       : `读数由浏览器直接向公共节点 <code>eth_call</code> 取得，不经过任何后端，也不依赖区块浏览器。`);
 }
 

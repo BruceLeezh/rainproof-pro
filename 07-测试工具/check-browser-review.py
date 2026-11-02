@@ -9,7 +9,7 @@ from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-OUT = ROOT / "08-截图存证" / "2026-10-29-城市三模式与排版" / "全站回归"
+OUT = ROOT / "08-截图存证" / "2026-11-02-运行与投保完善" / "全站回归"
 OUT.mkdir(parents=True, exist_ok=True)
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -40,8 +40,9 @@ try:
                 page.goto(base + "/" + name + "?rpc=" + base + "/unavailable", wait_until="domcontentloaded")
                 page.wait_for_timeout(1500)
                 if name == "rider.html":
-                    page.locator("#buy").click()
-                    assert "钱包" in page.locator("#buyerr").inner_text()
+                    assert page.locator("#buy").is_disabled()
+                    page.locator("#wallet").click()
+                    assert "钱包" in page.locator("#toast").inner_text()
                 if name == "console.html":
                     page.locator("#csv").fill("invalid-address")
                     page.locator("#gen").click()

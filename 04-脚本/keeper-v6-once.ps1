@@ -16,6 +16,12 @@ $stamp  = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 # 表头单独写，明确 UTF-8 无 BOM，避免每次 append 又叠一个 BOM
 [IO.File]::AppendAllText($log, "`n===== $stamp 轮询开始 =====`n", (New-Object System.Text.UTF8Encoding($false)))
 
-$line = 'node "{0}" --v6 --once --settle >> "{1}" 2>&1' -f $keeper, $log
-cmd /c $line
-exit $LASTEXITCODE
+[Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+Push-Location $scriptRoot
+try {
+    & node $keeper --v6 --once --settle 2>&1 | ForEach-Object {
+        [IO.File]::AppendAllText($log, [string]$_ + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
+    }
+    $keeperExit = $LASTEXITCODE
+} finally { Pop-Location }
+exit $keeperExit

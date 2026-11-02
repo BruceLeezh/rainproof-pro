@@ -12,6 +12,8 @@ on:
     branches: [main, v6]
     paths:
       - '05-演示站点/**'
+      - 'deployment.json'
+      - '07-测试工具/build-site.js'
       - '.github/workflows/deploy-demo.yml'
   workflow_dispatch:
 

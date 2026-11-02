@@ -3,13 +3,13 @@
  * push-rainfall-v6.js —— v6 全国区域喂价轮询器（2026-10-26）
  *
  * 周期：--watch=N（分钟，与计划任务 RainProof-Feed 的 PT30M 对齐，演示用 30）常驻；不带 --watch 单次干跑后退出。
- * 每轮：对注册表 v6-regions.json 里每个城市
+ * 每轮：对注册表 v5-regions.json 里每个城市（V6 沿用既有区划表）
  *   ① 拉三机构逐小时预报（Open-Meteo，与验真层同源）；
  *   ② 算「上次链上喂价 → 现在」的窗口增量中位数（增量窗口闸门：绝对 ±2.5mm 兜底，长窗 5% 相对）；
  *   ③ 增量 ≥ 阈值 → 进批量；无增量但喂价超 20h → 进保鲜批（同值重喂续 MAX_FEED_AGE）；
  *   ④ 批量非空 → updateRainfallBatch 走多签两票（--send：B1 提交 + B2 确认自动执行）。
  * 分歧城市不喂，打印 rejectFeed 两票命令（拒收是运营决策，不自动上链）。
- * 新城市开通：往 v6-regions.json 加 {code,name,lat,lon}（链上 registerRegion 两票先行）。
+ * 新城市开通：往 v5-regions.json 加 {code,name,lat,lon}（链上 registerRegion 两票先行）。
  *
  * 用法：node push-rainfall-v6.js [--send] [--watch=30] [--city=330782]
  */
@@ -18,6 +18,7 @@ const path = require("path");
 const fs = require("fs");
 require(path.join(__dirname, "node_modules", "dotenv")).config({ path: path.join(__dirname, ".env") });
 const { ethers } = require(path.join(__dirname, "node_modules", "ethers"));
+const { withRetry, provider: readProvider } = require("./rpc-read");
 
 const REG_FILE = path.join(__dirname, "v5-regions.json");
 const { increment, MODELS } = require("./feed-window");
@@ -43,25 +44,10 @@ const watchMin = (() => {
 })();
 
 if (!fs.existsSync(REG_FILE)) {
-  fs.writeFileSync(REG_FILE, JSON.stringify([
-    { code: 420100, name: "武汉", lat: 30.615, lon: 114.251 },
-    { code: 310100, name: "上海", lat: 31.23, lon: 121.474 },
-    { code: 110100, name: "北京", lat: 39.9, lon: 116.407 },
-    { code: 440100, name: "广州", lat: 23.13, lon: 113.264 },
-    { code: 510100, name: "成都", lat: 30.66, lon: 104.066 },
-  ], null, 2));
-  console.log("已生成默认注册表 v6-regions.json（5 城；义乌 330782 已按运营要求下线）");
+  throw new Error("缺少 v5-regions.json；请恢复已核实注册表，不能自动缩减为五城");
 }
 const REGIONS = JSON.parse(fs.readFileSync(REG_FILE, "utf8"));
 
-/** 节点会间歇性断连（限流）：链上读一律走重试包装 */
-async function withRetry(fn, times = 5) {
-  let last;
-  for (let i = 0; i < times; i++) {
-    try { return await fn(); } catch (e) { last = e; await new Promise(r => setTimeout(r, 1500 * (i + 1))); }
-  }
-  throw last;
-}
 async function fetchTO(url, ms = 20000) {
   return fetch(url, { headers: { "User-Agent": "rainproof-v6-feeder/1.0" }, signal: AbortSignal.timeout(ms) });
 }
@@ -136,8 +122,8 @@ async function round(p, v6) {
           raw: saveRaw(r.code, r.name, url, rawText) });
         notes.push(`${r.name} ⚠️ 三模型分歧（窗口 ${inc.windowH.toFixed(0)}h 增量 ${inc.perModel.map(v => v.toFixed(1)).join("/")}，` +
           `离散 ${inc.spread.toFixed(1)}mm > 容差 ${inc.tol.toFixed(1)}mm）→ 不自动喂。` +
-          `人工核：用 archive-api.open-meteo.com 查该窗口实测累计，确认后手动 ` +
-          `node 07-测试工具/multisig-call.js updateRainfall ${r.code} <累计mm> <证据哈希> 90 1 --send`);
+          `人工核：保留三模型原始报文，核对同一窗口；Archive 仅作历史再分析对照。` +
+          `须满足合约至少 2 个来源、置信阈值与证据要求，再审批多签；不得直接同值续期。`);
         skipped.push({ code: r.code, name: r.name, reason: "diverge", windowH: inc.windowH, spread: inc.spread, tol: inc.tol });
         continue;
       }
@@ -213,12 +199,23 @@ async function round(p, v6) {
 }
 
 async function once() {
-  const p = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC || "https://rpc.bohr.life", undefined, { staticNetwork: true });
+  const p = readProvider(ethers, process.env.SEPOLIA_RPC || "https://rpc.bohr.life");
+  try {
   const v6 = new ethers.Contract((process.env.CONTRACT_ADDRESS_V6 || process.env.CONTRACT_ADDRESS), require(path.join(__dirname, "..", "03-合约", "RainDeliveryInsuranceV6.abi.json")), p);
-  if (Number((await p.getNetwork()).chainId) !== 968) throw new Error("v6 feeder requires chain 968");
+  if (Number((await withRetry(() => p.getNetwork())).chainId) !== 968) throw new Error("v6 feeder requires chain 968");
   await withRetry(() => v6.regionCount());   // 连通性探针
   await round(p, v6);
+  } finally { p.destroy(); }
 }
 (async () => {
-  do { await once(); if (watchMin) await new Promise(r => setTimeout(r, watchMin * 60000)); } while (watchMin);
+  do {
+    process.exitCode = 0;
+    try { await once(); }
+    catch (error) {
+      if (!watchMin) throw error;
+      process.exitCode = 1;
+      console.error("本轮失败，等待下一轮：" + (error.shortMessage || error.message));
+    }
+    if (watchMin) await new Promise(r => setTimeout(r, watchMin * 60000));
+  } while (watchMin);
 })().catch(e => { console.error("💥 " + (e.shortMessage || e.message)); process.exit(1); });
