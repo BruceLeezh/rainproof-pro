@@ -1,0 +1,31 @@
+# 裁决执行 2026-11-03 00:28:50
+=== [1/7] node 07-测试工具/multisig-call.js updateRainfall 420324 143 0x5f4c172da028dc...
+调用    : updateRainfall(420324, 143, 0x5f4c172da028dca59f9d3bce4d6df3bc5972911bda760e0b92975e3223fbe464, 75, 6)
+=== [2/7] node 07-测试工具/multisig-call.js updateRainfall 420525 141 0xf90de77fa07bfe...
+调用    : updateRainfall(420525, 141, 0xf90de77fa07bfed1c2afd33b00dec257ae25f1b612923f7cde9abcb2a7c09203, 76, 6)
+=== [3/7] node 07-测试工具/multisig-call.js updateRainfall 420526 95 0x232624657dae7fe...
+调用    : updateRainfall(420526, 95, 0x232624657dae7fedb0bf712be7e05e15d541675ff67c09b22118cb6abd79878c, 79, 6)
+=== [4/7] node 07-测试工具/multisig-call.js updateRainfall 420527 133 0x496058cd0b5f55...
+调用    : updateRainfall(420527, 133, 0x496058cd0b5f55916d5a5564372c245772ab3242e7b9447adef35d912229d55d, 75, 6)
+=== [5/7] node 07-测试工具/multisig-call.js updateRainfall 421123 66 0xf30c90851bd139e...
+调用    : updateRainfall(421123, 66, 0xf30c90851bd139e764cbc699bdf2ea930f85eb2cf165a80319c11d6aab7fcc1b, 72, 6)
+=== [6/7] node 07-测试工具/multisig-call.js updateRainfall 421321 204 0x6f5693268e34a9...
+调用    : updateRainfall(421321, 204, 0x6f5693268e34a9d184171ce8f4e585cd99c7b86ac8263023d0c31508d87eeeb8, 75, 6)
+=== [7/7] node 07-测试工具/multisig-call.js updateRainfall 422827 149 0xbf9bc7b8fb1b16...
+调用    : updateRainfall(422827, 149, 0xbf9bc7b8fb1b16dead1356d71cc6c4756127f171cb27f3e93369f1a872fea82b, 72, 6)
+
+## 执行结果（2026-11-03 00:32 复核）
+7/7 条裁决命令全部上链成功。注：本日志的逐条捕获有缺陷（未抓到「两票上链」哈希行），
+以下结论以链上实测为准（权威证据）：
+- 420324 竹溪县 128→143mm lastFeedAt=11-03 00:28 ✅
+- 420525 远安县 125→141mm 00:29 ✅
+- 420526 兴山县   76→95mm  00:29 ✅
+- 420527 秭归县 118→133mm 00:29 ✅
+- 421123 罗田县   54→66mm  00:29 ✅
+- 421321 随县   189→204mm 00:29 ✅
+- 422827 来凤县 137→149mm 00:29 ✅
+- 420882 京山市 hold 保持 173mm（10-31 12:02）
+- 422828 鹤峰县 hold 保持 195mm（11-01 01:46）
+验证：audit-events-full.js → RainfallUpdated 1097→1111，六项一致性检查全 ✅
+（08-截图存证/2026-11-03-事件全复核/chain-events-audit.json，SHA-256 5703c743…6774）；
+preflight.js → 超期区划 9→2（京山/鹤峰，均为有意 hold）。

@@ -1,6 +1,6 @@
 {
   "schema": "rainproof/diverge-archive@1",
-  "generatedAt": "2026-11-02T16:12:27.597Z",
+  "generatedAt": "2026-11-02T16:33:33.150Z",
   "note": "只读复核：固定 ERA5 archive 对照三模型窗口增量。archive 延迟数日，missingHours>0 即证据不完整，total=null 只给 partialTotal 参考。本文件不构成裁决，采信与否及上链操作另行走治理流程。",
   "rows": [
     {
@@ -8,34 +8,25 @@
       "name": "竹溪县",
       "lat": 32.315342,
       "lon": 109.717196,
-      "fromIso": "2026-11-01T01:00",
-      "toIso": "2026-11-02T23:00",
-      "lastFedAt": 1793466986,
-      "rawEvidence": "raw/v6feed-420324-202611022315-43de48df-2830-4970-8ba0-f546997454ea.json",
-      "rawSha256": "e0c8ad4c3adbba01c8783d4d136c46a2b76c0250e1a7faefaeccee06c02c508e",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "lastFedAt": 1793636934,
+      "rawEvidence": "raw/v6feed-420324-202611030015-0bffdc19-60e5-4693-92cf-2d24c3d0b3e6.json",
+      "rawSha256": "0fdbe4139ab32264492224d99ab7b259c767b54f9eb6a005acbcdc0be1ec8565",
       "modelGate": {
-        "perModel": [
-          5.800000000000002,
-          15.000000000000002,
-          20.500000000000004
-        ],
-        "median": 15.000000000000002,
-        "spread": 14.700000000000003,
+        "perModel": [],
+        "median": null,
+        "spread": 0,
         "tol": 2.5,
-        "windowH": 46,
-        "sources": 3
+        "windowH": 0,
+        "sources": 0
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.315342&longitude=109.717196&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "e38329cacfbc53376256933f89aeddd0dd99f66f4487b1b743ec5cca0ed87834",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=32.315342&longitude=109.717196&start_date=2026-11-03&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "f220619393faa7e10b671d16b13c7f4c38c1ef872abc3d17710a5a40e9b70058",
         "model": "era5",
-        "expectedHours": 46,
-        "missingHours": 46,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 32.25,
-        "gridLon": 109.75
+        "error": "HTTP 400"
       }
     },
     {
@@ -43,34 +34,25 @@
       "name": "远安县",
       "lat": 31.059626,
       "lon": 111.64331,
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "lastFedAt": 1793419301,
-      "rawEvidence": "raw/v6feed-420525-202611022315-571fca83-5c3a-4056-b323-5d8a16b6a3f5.json",
-      "rawSha256": "f749ec12398bdc8053aab5f252db7b35952b46ccb612546355620119a27adccf",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "lastFedAt": 1793636944,
+      "rawEvidence": "raw/v6feed-420525-202611030015-31e486eb-2baa-4b1b-9b89-b15414ecdf56.json",
+      "rawSha256": "0b207799a61be9c8cfc7da180b408b9779598785f55a6eb39f56c4db7cd2a6d3",
       "modelGate": {
-        "perModel": [
-          9.599999999999998,
-          15.900000000000002,
-          22.6
-        ],
-        "median": 15.900000000000002,
-        "spread": 13.000000000000004,
+        "perModel": [],
+        "median": null,
+        "spread": 0,
         "tol": 2.5,
-        "windowH": 59,
-        "sources": 3
+        "windowH": 0,
+        "sources": 0
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.059626&longitude=111.64331&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "0b744fc1b37e8062303dd7c259e3171ec6f4b9afd549f01f71ca8e9ddf54f778",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.059626&longitude=111.64331&start_date=2026-11-03&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "e2d1cd34dfc9321cfa1b0ea7c54a38ea4747d299ff7791e8fc4c215eeed5996d",
         "model": "era5",
-        "expectedHours": 59,
-        "missingHours": 59,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 31,
-        "gridLon": 111.75
+        "error": "HTTP 400"
       }
     },
     {
@@ -78,34 +60,25 @@
       "name": "兴山县",
       "lat": 31.34795,
       "lon": 110.754499,
-      "fromIso": "2026-11-01T00:00",
-      "toIso": "2026-11-02T23:00",
-      "lastFedAt": 1793463371,
-      "rawEvidence": "raw/v6feed-420526-202611022315-ff03eb8c-db38-4c4c-af69-ebca8c3e4baf.json",
-      "rawSha256": "26450e9bc26c07ca3aed67137ce8eeaf55508d5c03e0c2c6c6cbeb4c0f1ecb74",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "lastFedAt": 1793636954,
+      "rawEvidence": "raw/v6feed-420526-202611030015-9650294e-0b81-4782-a590-df14a9d91f6f.json",
+      "rawSha256": "d3e7d11e21d3279e96c1220a45cfe6e31e1faa1a2f5e689258cec7432216c359",
       "modelGate": {
-        "perModel": [
-          15.599999999999998,
-          19.499999999999993,
-          27.100000000000005
-        ],
-        "median": 19.499999999999993,
-        "spread": 11.500000000000007,
+        "perModel": [],
+        "median": null,
+        "spread": 0,
         "tol": 2.5,
-        "windowH": 47,
-        "sources": 3
+        "windowH": 0,
+        "sources": 0
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.34795&longitude=110.754499&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "5d6872d3db77520d5fdf2054e50e5330f37e6923855b739b4d325046fe5185b4",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.34795&longitude=110.754499&start_date=2026-11-03&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "f220619393faa7e10b671d16b13c7f4c38c1ef872abc3d17710a5a40e9b70058",
         "model": "era5",
-        "expectedHours": 47,
-        "missingHours": 47,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 31.25,
-        "gridLon": 110.75
+        "error": "HTTP 400"
       }
     },
     {
@@ -113,34 +86,25 @@
       "name": "秭归县",
       "lat": 30.823908,
       "lon": 110.976785,
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "lastFedAt": 1793419310,
-      "rawEvidence": "raw/v6feed-420527-202611022315-6061a893-6822-4039-8bb2-238828fdf724.json",
-      "rawSha256": "5a21ef2569e0a5661b055521fc7c98f4858ddfdf58403877231a121713d659d6",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "lastFedAt": 1793636969,
+      "rawEvidence": "raw/v6feed-420527-202611030015-5f8fb078-781f-43c9-b34b-f1549598dc3a.json",
+      "rawSha256": "239c75ef1683216846f3ce04c5072bf12c4dbae1ef79e21f0ad1241ca661088f",
       "modelGate": {
-        "perModel": [
-          10.5,
-          14.7,
-          24.000000000000007
-        ],
-        "median": 14.7,
-        "spread": 13.500000000000007,
+        "perModel": [],
+        "median": null,
+        "spread": 0,
         "tol": 2.5,
-        "windowH": 59,
-        "sources": 3
+        "windowH": 0,
+        "sources": 0
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.823908&longitude=110.976785&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "5cbf0443042be1e9a8600d975d96c19be98d0dac9f0a039e42b53c6a14c8ca15",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.823908&longitude=110.976785&start_date=2026-11-03&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "f220619393faa7e10b671d16b13c7f4c38c1ef872abc3d17710a5a40e9b70058",
         "model": "era5",
-        "expectedHours": 59,
-        "missingHours": 59,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 30.75,
-        "gridLon": 111
+        "error": "HTTP 400"
       }
     },
     {
@@ -149,33 +113,28 @@
       "lat": 31.022457,
       "lon": 113.114595,
       "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
+      "toIso": "2026-11-03T00:00",
       "lastFedAt": 1793419320,
-      "rawEvidence": "raw/v6feed-420882-202611022315-1b583c16-93e6-459c-8fe0-73d210053372.json",
-      "rawSha256": "4d9708789611cebbbb987775e031702449cd6bff0d0fab4b21f79e141dccbdb7",
+      "rawEvidence": "raw/v6feed-420882-202611030015-92aed18f-acf4-46cc-8980-9bbc7e342ba7.json",
+      "rawSha256": "9c5306a8570976f4af4cbf46b49d8208c1e815d6f872659f4e1696c13442a6c1",
       "modelGate": {
         "perModel": [
-          12.600000000000003,
+          12.700000000000003,
           18.7,
           26.399999999999995
         ],
         "median": 18.7,
-        "spread": 13.799999999999992,
+        "spread": 13.699999999999992,
         "tol": 2.5,
-        "windowH": 59,
+        "windowH": 60,
         "sources": 3
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.022457&longitude=113.114595&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "617dd809c6626254c443bc2b422953862f8940322865e5b4d5b689d20fdaab0f",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.022457&longitude=113.114595&start_date=2026-10-31&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "6cea349426a3759f02d3cf43185fc182c66b5fd00494ee73d3d5218a4e64fd86",
         "model": "era5",
-        "expectedHours": 59,
-        "missingHours": 59,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 31,
-        "gridLon": 113
+        "error": "HTTP 400"
       }
     },
     {
@@ -183,34 +142,25 @@
       "name": "罗田县",
       "lat": 30.781679,
       "lon": 115.398984,
-      "fromIso": "2026-11-01T13:00",
-      "toIso": "2026-11-02T23:00",
-      "lastFedAt": 1793510200,
-      "rawEvidence": "raw/v6feed-421123-202611022315-8f9dfac3-10ae-44e5-b966-002565460c35.json",
-      "rawSha256": "107c7cd45d66120c85517de096eb60e4b8f1d7a7b68d513091fd41ea7b5b08c3",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "lastFedAt": 1793636974,
+      "rawEvidence": "raw/v6feed-421123-202611030015-23dce461-9d3a-4d0b-b0f1-d9e5c4fc5650.json",
+      "rawSha256": "068517aad8520cab58b5e7f648662720af4ded912f0b87faaf6d11b9a4271d0d",
       "modelGate": {
-        "perModel": [
-          7.300000000000002,
-          12.200000000000001,
-          19.5
-        ],
-        "median": 12.200000000000001,
-        "spread": 12.2,
+        "perModel": [],
+        "median": null,
+        "spread": 0,
         "tol": 2.5,
-        "windowH": 34,
-        "sources": 3
+        "windowH": 0,
+        "sources": 0
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.781679&longitude=115.398984&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "2b24e6253e8b4ade457610d6c521f75ee957a5e4462dafc50cc6ca2c2d7f6921",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.781679&longitude=115.398984&start_date=2026-11-03&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "e2d1cd34dfc9321cfa1b0ea7c54a38ea4747d299ff7791e8fc4c215eeed5996d",
         "model": "era5",
-        "expectedHours": 34,
-        "missingHours": 34,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 30.75,
-        "gridLon": 115.5
+        "error": "HTTP 400"
       }
     },
     {
@@ -218,34 +168,25 @@
       "name": "随县",
       "lat": 31.854246,
       "lon": 113.301384,
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "lastFedAt": 1793419340,
-      "rawEvidence": "raw/v6feed-421321-202611022315-4cc846e2-afda-42c1-99dc-eb03d99d1f2c.json",
-      "rawSha256": "c8ed8ad03b21e89e41011fa89ac493267fc7bc6bb165418b71220daa3616b02a",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "lastFedAt": 1793636986,
+      "rawEvidence": "raw/v6feed-421321-202611030015-cd8700f0-6b5d-4fea-8c28-2d92d5aa454e.json",
+      "rawSha256": "65d356a74652a56c25ef4b698f15bf5c15dc569b4c577fc9a95e1810b6618fd4",
       "modelGate": {
-        "perModel": [
-          11.999999999999998,
-          14.999999999999995,
-          20.100000000000005
-        ],
-        "median": 14.999999999999995,
-        "spread": 8.100000000000007,
+        "perModel": [],
+        "median": null,
+        "spread": 0,
         "tol": 2.5,
-        "windowH": 59,
-        "sources": 3
+        "windowH": 0,
+        "sources": 0
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.854246&longitude=113.301384&start_date=2026-10-31&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "5765c8a0eff83291019e366c2b29b53da11da039437d0bbce1b17ecd978e23fe",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=31.854246&longitude=113.301384&start_date=2026-11-03&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "f220619393faa7e10b671d16b13c7f4c38c1ef872abc3d17710a5a40e9b70058",
         "model": "era5",
-        "expectedHours": 59,
-        "missingHours": 59,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 31.75,
-        "gridLon": 113.25
+        "error": "HTTP 400"
       }
     },
     {
@@ -253,34 +194,25 @@
       "name": "来凤县",
       "lat": 29.506945,
       "lon": 109.408328,
-      "fromIso": "2026-11-01T11:00",
-      "toIso": "2026-11-02T23:00",
-      "lastFedAt": 1793504345,
-      "rawEvidence": "raw/v6feed-422827-202611022316-e67ff5ae-b120-4d05-92a5-9c8021c4a7d8.json",
-      "rawSha256": "4b6289b9b9e92999734df94150a47d93cfa60b33180fba85bc976eb99dd7acf8",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "lastFedAt": 1793636996,
+      "rawEvidence": "raw/v6feed-422827-202611030016-15fb0c15-e426-4837-9505-27ef3e221389.json",
+      "rawSha256": "03522eaaed3a37ce0f4be63fbf6d607516929a20db94bfa08d628330019973d4",
       "modelGate": {
-        "perModel": [
-          6.899999999999998,
-          12.100000000000001,
-          15.1
-        ],
-        "median": 12.100000000000001,
-        "spread": 8.200000000000003,
+        "perModel": [],
+        "median": null,
+        "spread": 0,
         "tol": 2.5,
-        "windowH": 36,
-        "sources": 3
+        "windowH": 0,
+        "sources": 0
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=29.506945&longitude=109.408328&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "3141fb1b4e5f53035127546b156368f0073b61175c7bc7ae9e6a9b909fb090e8",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=29.506945&longitude=109.408328&start_date=2026-11-03&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "e2d1cd34dfc9321cfa1b0ea7c54a38ea4747d299ff7791e8fc4c215eeed5996d",
         "model": "era5",
-        "expectedHours": 36,
-        "missingHours": 36,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 29.5,
-        "gridLon": 109.5
+        "error": "HTTP 400"
       }
     },
     {
@@ -289,33 +221,28 @@
       "lat": 29.887298,
       "lon": 110.033699,
       "fromIso": "2026-11-01T01:00",
-      "toIso": "2026-11-02T23:00",
+      "toIso": "2026-11-03T00:00",
       "lastFedAt": 1793468772,
-      "rawEvidence": "raw/v6feed-422828-202611022316-8efd13ca-5b48-4680-8717-ac219d234fac.json",
-      "rawSha256": "54e7e209b09b3dd431f997cf4944733b9e2b747c78d0cff7999b168f58cdad87",
+      "rawEvidence": "raw/v6feed-422828-202611030016-9b9dd607-dacd-4c8c-bd1f-74fe15cb448a.json",
+      "rawSha256": "84a77c8e752d3a4cadb25e0776a9533248433a92819973b0485fa3b776e1513a",
       "modelGate": {
         "perModel": [
-          32.900000000000006,
+          31.400000000000002,
           37.800000000000004,
-          52.4
+          52.5
         ],
         "median": 37.800000000000004,
-        "spread": 19.499999999999993,
+        "spread": 21.099999999999998,
         "tol": 2.5,
-        "windowH": 46,
+        "windowH": 47,
         "sources": 3
       },
       "archive": {
-        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=29.887298&longitude=110.033699&start_date=2026-11-01&end_date=2026-11-02&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
-        "httpStatus": 200,
-        "sha256": "cab6a40160737e9aa4bb681a36dc167a4a28a2fd4257d7324ecb25f37db17d6c",
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=29.887298&longitude=110.033699&start_date=2026-11-01&end_date=2026-11-03&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 400,
+        "sha256": "6cea349426a3759f02d3cf43185fc182c66b5fd00494ee73d3d5218a4e64fd86",
         "model": "era5",
-        "expectedHours": 46,
-        "missingHours": 46,
-        "total": null,
-        "partialTotal": 0,
-        "gridLat": 30,
-        "gridLon": 110
+        "error": "HTTP 400"
       }
     }
   ]
