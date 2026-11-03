@@ -89,6 +89,8 @@ contract RainDeliveryInsuranceV6 {
         uint256 windowHours;
         uint256 thresholdMm;
         uint256 rainfallAtBuy;
+        uint256 rainfallAtEffective;    // T+1：生效时刻的雨量锚（anchorEffective 钉入）
+        bool    anchored;               // 是否已完成生效锚定
         uint8   tier;
         uint256 payout;         // 实际赔付额（分）
         bool    paid;
@@ -130,6 +132,8 @@ contract RainDeliveryInsuranceV6 {
 
     event PolicyBought(uint256 indexed policyId, address indexed rider, uint32 indexed regionId,
                        uint256 effectiveFrom, uint256 endTime);
+
+    event PolicyAnchored(uint256 indexed policyId, uint256 rainfallAtEffective);
 
     event RainfallUpdated(uint32 indexed regionId, uint256 cumulativeMm,
                           bytes32 evidenceHash, uint8 confidence, address indexed reporter);
@@ -408,6 +412,22 @@ contract RainDeliveryInsuranceV6 {
         emit FeedRejected(regionId, confidence, sources, inputHash, modelVersion);
     }
 
+    // ==================== T+1 生效锚定 ====================
+    // 任何人可调用：把生效时刻的链上雨量钉进保单。骑手自己最有动力第一时间调用
+    //（钉晚了只会让自己的可赔增量变小），无需信任、无需定时器。
+    // 判定与赔付以 rainfallAtEffective 为起点——买入与生效之间的雨不计入，
+    // 堵住「雨中投保」捕捉进行中降雨尾巴的攻击面（已发生风险不可保）。
+    function anchorEffective(uint256 policyId) external {
+        Policy storage p = policies[policyId];
+        require(p.exists,                                   "no such policy");
+        require(!p.anchored,                                "already anchored");
+        require(!p.settled,                                 "already settled");
+        require(block.timestamp >= p.effectiveFrom,         "not yet effective");
+        p.rainfallAtEffective = rainfall[p.regionId];
+        p.anchored = true;
+        emit PolicyAnchored(policyId, p.rainfallAtEffective);
+    }
+
     // ==================== 损失判定写入（与 v3 逐字相同）====================
 
     function submitJudgement(uint256 policyId, uint8 decision, uint8 confidence, uint8 sources,
@@ -451,9 +471,11 @@ contract RainDeliveryInsuranceV6 {
         require(p.exists,                         "no such policy");
         require(!judgements[policyId].exists,     "judgement already submitted");
         require(!p.settled,                       "already settled");
+        require(p.anchored,                       "not anchored: anchor at effectiveFrom");
         require(decision <= DECISION_PAY,         "bad decision");
         require(confidence <= 100,                "confidence out of range");
         require(rainfallAtJudgement >= p.rainfallAtBuy,      "judged reading below buy baseline");
+        require(rainfallAtJudgement >= p.rainfallAtEffective, "judged reading below effective anchor");
         require(rainfallAtJudgement <= rainfall[p.regionId], "judged reading ahead of chain");
 
         Judgement storage j = judgements[policyId];
@@ -488,7 +510,7 @@ contract RainDeliveryInsuranceV6 {
         require(j.decision == DECISION_PAY,          "AI: no loss confirmed");
         require(j.confidence >= MIN_CONFIDENCE,      "AI: low confidence");
 
-        uint256 during = j.rainfallAtJudgement - p.rainfallAtBuy;
+        uint256 during = j.rainfallAtJudgement - p.rainfallAtEffective;
         uint8 t = tierOf(during, p.windowHours);
         require(t != TIER_NONE,                      "below threshold");
 
@@ -589,7 +611,10 @@ contract RainDeliveryInsuranceV6 {
     }
 
     function setCoolingPeriod(uint64 seconds_) external onlyOperator {
-        require(seconds_ == 0, "nonzero cooling requires time-series baseline");
+        // 2026-11-03：原为 require(seconds_ == 0, "time-series baseline")——当时增量锚在买入时刻，
+        // 冷却期内的雨会被计入赔付窗口（雨中投保攻击）。加入 anchorEffective 生效锚定后，
+        // 锚点已搬到生效时刻，非零冷却期（绑定延迟/T+1）重新安全。上限 7 天对齐 CLAIM_GRACE 量级。
+        require(seconds_ <= 7 days, "cooling beyond 7 days rejected");
         coolingPeriod = seconds_;
         emit CoolingPeriodSet(seconds_);
     }
@@ -639,23 +664,28 @@ contract RainDeliveryInsuranceV6 {
         return j.exists ? j.rainfallAtJudgement : rainfall[p.regionId];
     }
 
+    // T+1 基线：已锚定 → 生效时刻雨量；未锚定（冷却期=0 的历史口径）→ 买入时雨量。
+    function _baselineFor(Policy storage p) private view returns (uint256) {
+        return p.anchored ? p.rainfallAtEffective : p.rainfallAtBuy;
+    }
+
     function rainfallDuring(uint256 policyId) external view returns (uint256) {
         Policy storage p = policies[policyId];
         if (!p.exists) return 0;
-        return _readingFor(policyId, p) - p.rainfallAtBuy;
+        return _readingFor(policyId, p) - _baselineFor(p);
     }
 
     function shortfall(uint256 policyId) external view returns (uint256) {
         Policy storage p = policies[policyId];
         if (!p.exists) return entryThresholdOf(MAX_HOURS);
-        uint256 during = _readingFor(policyId, p) - p.rainfallAtBuy;
+        uint256 during = _readingFor(policyId, p) - _baselineFor(p);
         return during >= p.thresholdMm ? 0 : p.thresholdMm - during;
     }
 
     function payoutOf(uint256 policyId) external view returns (uint256) {
         Policy storage p = policies[policyId];
         if (!p.exists) return 0;
-        uint8 t = tierOf(_readingFor(policyId, p) - p.rainfallAtBuy, p.windowHours);
+        uint8 t = tierOf(_readingFor(policyId, p) - _baselineFor(p), p.windowHours);
         if (t == TIER_NONE) return 0;
         return PAYOUT_MAX * tierBps(t) / 10000;
     }
@@ -663,7 +693,7 @@ contract RainDeliveryInsuranceV6 {
     function currentTier(uint256 policyId) external view returns (uint8) {
         Policy storage p = policies[policyId];
         if (!p.exists) return TIER_NONE;
-        return tierOf(_readingFor(policyId, p) - p.rainfallAtBuy, p.windowHours);
+        return tierOf(_readingFor(policyId, p) - _baselineFor(p), p.windowHours);
     }
 
     function policiesOf(address rider) external view returns (uint256[] memory) {
@@ -687,7 +717,7 @@ contract RainDeliveryInsuranceV6 {
         if (block.timestamp > p.endTime + CLAIM_GRACE) return "expired";
         if (block.timestamp > p.endTime && !judgements[policyId].exists) return "expired";
 
-        uint256 during = _readingFor(policyId, p) - p.rainfallAtBuy;
+        uint256 during = _readingFor(policyId, p) - _baselineFor(p);
         if (during < p.thresholdMm)                     return "active";
 
         Judgement storage j = judgements[policyId];

@@ -37,7 +37,10 @@ async function reject(name, fn, reason) { await assert.rejects(fn, error => Stri
     await tx(insurance.configureRegions([310100], ["上海"], [420], [530], H));
     ok("configuration writes region and two prices", (await insurance.regions(310100)).active && await insurance.premiumOf(310100,12) === 420n && await insurance.premiumOf(310100,24) === 530n);
     await tx(insurance.setPaused(false));
-    await reject("cooling baseline cannot include unprotected rain", () => insurance.setCoolingPeriod.staticCall(3600), "time-series baseline");
+    await reject("cooling beyond 7 days rejected", () => insurance.setCoolingPeriod.staticCall(8 * 86400), "cooling beyond 7 days");
+    await tx(insurance.setCoolingPeriod(3600));
+    ok("nonzero cooling allowed with effective anchor", await insurance.coolingPeriod() === 3600n);
+    await tx(insurance.setCoolingPeriod(0));
     await reject("missing quorum rejected", () => insurance.updateRainfall.staticCall(420100, 0, H, 90, 1), "insufficient sources");
     await reject("abnormal increment rejected", () => insurance.updateRainfall.staticCall(420100, 501, H, 90, 3), "increment exceeds guard");
     const receipt = await tx(feed(0));
@@ -47,6 +50,7 @@ async function reject(name, fn, reason) { await assert.rejects(fn, error => Stri
     await reject("new exposure cannot exceed funded capacity", () => r.buyPolicy.staticCall(420100, 12), "underwriting capacity");
     await tx(token.mint(await op.getAddress(), 100000)); await tx(token.approve(target, 100000)); await tx(insurance.fundPool(100000));
     await tx(r.buyPolicy(420100, 12)); await tx(r.buyPolicy(420100, 24));
+    await tx(insurance.anchorEffective(0)); await tx(insurance.anchorEffective(1)); // T+1：冷却期 0 时生效即买入刻，立即锚定
     await tx(feed(30));
     const verdict = await tx(insurance.submitJudgement(0, 1, 90, 3, 30, H, H, "review"));
     ok("single judgement emits one event", logsOf(verdict, "JudgementSubmitted").length === 1);
@@ -64,6 +68,37 @@ async function reject(name, fn, reason) { await assert.rejects(fn, error => Stri
     await chain.request({ method: "evm_increaseTime", params: [8 * 86400] }); await chain.request({ method: "evm_mine", params: [] });
     await tx(insurance.settleExpired([0, 1])); ok("expired unresolved exposure eventually released", await insurance.openExposure() === 0n);
     ok("settled status no longer appears active", await insurance.policyStatus(1) === "settled");
+
+    // ===== T+1 生效锚定：绑定延迟封锁「雨中投保」对进行中降雨尾巴的捕捉 =====
+    await tx(insurance.setCoolingPeriod(86400));
+    ok("T+1 cooling set (24h)", await insurance.coolingPeriod() === 86400n);
+    await tx(feed(70));                                      // 同值刷新：8.5 天未喂，先过 MAX_FEED_AGE 门
+    await tx(r.buyPolicy(420100, 12));                       // policy 2：明天此刻生效
+    ok("pending status while cooling", await insurance.policyStatus(2) === "pending");
+    await reject("anchor before effective rejected", () => insurance.anchorEffective.staticCall(2), "not yet effective");
+    await reject("judge during cooling rejected", () => insurance.submitJudgement.staticCall(2, 1, 90, 3, 70, H, H, "review"), "judgement outside coverage");
+    await tx(feed(115));                                     // 冷却期内又下 45mm——这段雨不得计入保单 2
+    await chain.request({ method: "evm_increaseTime", params: [24 * 3600 + 60] }); await chain.request({ method: "evm_mine", params: [] });
+    await tx(insurance.anchorEffective(2));
+    ok("effective anchor pinned at chain rainfall", (await insurance.policies(2)).rainfallAtEffective === 115n);
+    await reject("double anchor rejected", () => insurance.anchorEffective.staticCall(2), "already anchored");
+    await tx(feed(125));                                     // 生效窗口内只下 10mm
+    await tx(insurance.submitJudgement(2, 1, 90, 3, 125, H, H, "review"));
+    await reject("cooling rain excluded from payout", () => r.claim.staticCall(2), "below threshold");
+    ok("exclusion proven: during = 125 - 115 = 10mm below 30mm threshold", await insurance.payoutOf(2) === 0n);
+    await chain.request({ method: "evm_increaseTime", params: [8 * 86400] }); await chain.request({ method: "evm_mine", params: [] });
+    await tx(insurance.settleExpired([2]));                   // 释放保单 2 的敞口
+    await tx(feed(125));                                     // 同值刷新（策略同上）
+    await tx(r.buyPolicy(420100, 24));                       // policy 3：T+1 正常赔付路径
+    await chain.request({ method: "evm_increaseTime", params: [24 * 3600 + 60] }); await chain.request({ method: "evm_mine", params: [] });
+    await tx(insurance.anchorEffective(3));
+    await tx(feed(180));                                     // 生效窗口内 +55mm ≥ 50mm → tier1
+    await tx(insurance.submitJudgement(3, 1, 90, 3, 180, H, H, "review"));
+    const before3 = await token.balanceOf(await rider.getAddress());
+    await tx(insurance.connect(stranger).claim(3));
+    ok("T+1 policy pays on anchored increment", (await token.balanceOf(await rider.getAddress())) - before3 === 5000n);
+    await tx(insurance.setCoolingPeriod(0));
+
     console.log(`V6 local E2E: ${count} checks passed (isolated chain)`);
   } finally { p.destroy(); await chain.disconnect(); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

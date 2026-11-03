@@ -95,6 +95,33 @@ async function scan(c, provider, dry, doSettle) {
   const statuses = [];
   for (let id = 0; id < n; id++) statuses.push(await c.policyStatus(id));
 
+  // ---- T+1 生效锚定：生效时刻的雨量必须尽快钉上链。任何人可调，骑手自己最有动机
+  //     （钉晚了只会让自己的可赔增量变小），keeper 只是多一道保险。未重部署前链上无此函数、
+  //     且 V6 零保单，本段自然空转。
+  if (VARIANT === "V6") {
+    const block = await provider.getBlock("latest");
+    const toAnchor = [];
+    for (let id = 0; id < n; id++) {
+      if (statuses[id] === "pending") continue;                    // 还没生效
+      const p = await c.policies(id);
+      if (p.exists && !p.anchored && !p.settled && BigInt(block.timestamp) >= p.effectiveFrom) toAnchor.push(id);
+    }
+    if (toAnchor.length) {
+      if (dry) {
+        console.log(`[${ts()}] [dry-run] ${toAnchor.length} 张保单待生效锚定：#${toAnchor.join(" #")}`);
+      } else {
+        for (const id of toAnchor) {
+          try {
+            const txA = await c.anchorEffective(id);
+            const rc = await txA.wait();
+            const p = await c.policies(id);
+            console.log(`[${ts()}] ⚓ 生效锚定 #${id}：rainfallAtEffective=${p.rainfallAtEffective}mm  tx ${txA.hash}  区块 ${rc.blockNumber}`);
+          } catch (e) { console.log(`[${ts()}] ⚠️ 锚定 #${id} 失败：${e.shortMessage || e.message}`); failed++; }
+        }
+      }
+    }
+  }
+
   // ---- 到期未赔 → 结算敞口（A6；只对 block.timestamp > endTime 且未赔未结算的生效）----
   if (doSettle) {
     let expired = statuses.map((st, id) => (st === "expired" ? id : -1)).filter((id) => id >= 0);

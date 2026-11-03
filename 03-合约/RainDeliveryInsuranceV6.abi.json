@@ -251,6 +251,25 @@
         "type": "uint256"
       },
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rainfallAtEffective",
+        "type": "uint256"
+      }
+    ],
+    "name": "PolicyAnchored",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      },
+      {
         "indexed": true,
         "internalType": "address",
         "name": "rider",
@@ -811,6 +830,19 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "policyId",
+        "type": "uint256"
+      }
+    ],
+    "name": "anchorEffective",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "beneficiary",
         "type": "address"
@@ -1357,6 +1389,16 @@
         "internalType": "uint256",
         "name": "rainfallAtBuy",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rainfallAtEffective",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "anchored",
+        "type": "bool"
       },
       {
         "internalType": "uint8",
