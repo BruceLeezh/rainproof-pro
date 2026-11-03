@@ -195,7 +195,7 @@ P("")
 
 H1("0. 一页速览：十二个关键数字")
 TBL(["#", "数字", "含义", "来源"], [
-    ["1", "BOT Chain 968 · 合约 0xcDe1…C61F", "模拟链上唯一的保单与资金入口", "deployment.json + premiumOf 实读"],
+    ["1", "BOT Chain 968 · 合约 0xD61d…0363", "模拟链上唯一的保单与资金入口", "deployment.json + premiumOf 实读"],
     ["2", "122 区划 · 244 价格格", "湖北 122 个行政区划 × 12h/24h 两档，逐格定价", "regionCount() / PremiumSet 事件"],
     ["3", "池子 4,958.40 元 · 保单 0 张", "模拟资金、零真实保单（刻意保持的演示口径）", "poolBalance() / preflight.js"],
     ["4", "档线 12h 30/70 mm · 24h 50/100 mm", "国标 GB/T 28592—2012 唯二时段", "entryThresholdOf() / 合约常量"],
@@ -235,9 +235,9 @@ H1("2. 区块链部分")
 H2("2.1 链与合约身份")
 KVP([
     ["链", "BOT Chain 测试网，chainId 968（rpc.bohr.life）"],
-    ["合约", "RainDeliveryInsuranceV6 @ 0xcDe1Bb9b8d61E55e194f18B6836fF1DBd49bC61F"],
-    ["部署区块", "28,460,066"],
-    ["运行时", "22,012 字节，keccak 0xeb7f…4100（EIP-170 限额 24,576 之内）"],
+    ["合约", "RainDeliveryInsuranceV6 @ 0xD61d4EfF50C3BeFbe555a604280985904Bc00363"],
+    ["部署区块", "29,138,166"],
+    ["运行时", "22,544 字节，keccak 0xdf27…f919（EIP-170 限额 24,576 之内）"],
     ["运营权", "2/3 多签 0x21C8…0d98（任何参数变更需两票，每次留 reasonHash）"],
     ["代币", "模拟 RDROP（不可兑换人民币，仅作经济情景单位）"],
 ])

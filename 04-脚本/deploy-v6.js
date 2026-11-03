@@ -22,7 +22,9 @@ async function main() {
   const provider = new ethers.JsonRpcProvider(request,undefined,{batchMaxCount:15,cacheTimeout:0});
   try {
     if((await provider.getNetwork()).chainId!==968n)throw new Error("Migration is restricted to testnet 968");
-    const source = state.source || process.env.CONTRACT_ADDRESS_V5 || process.env.CONTRACT_ADDRESS;
+    const srcArg = args.find(a => a.startsWith("--source="))?.slice(9);
+    const source = state.source || srcArg || process.env.CONTRACT_ADDRESS_V5 || process.env.CONTRACT_ADDRESS;
+    if (!state.source) { state.source = source; save(); }
     const tokenAddress = process.env.TOKEN_ADDR, msAddress = process.env.MULTISIG_ADDR;
     const old = new ethers.Contract(source,require("../03-合约/RainDeliveryInsuranceV5.abi.json"),provider);
     const token = new ethers.Contract(tokenAddress,tokenAbi,provider), ms = new ethers.Contract(msAddress,msAbi,provider);
