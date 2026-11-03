@@ -1,0 +1,162 @@
+{
+  "schema": "rainproof/conditional-risk@1",
+  "generatedAt": "2026-11-03T04:09:36.526Z",
+  "note": "T+1 残余风险量化。窗口 [t+24h, t+24h+dur)。条件 = 前 24h 降雨 ≥ 阈值。全部来自 cache/ ERA5 逐小时（2015-10 → 2026-09），整数十分位。",
+  "cities": [
+    {
+      "code": "wuhan",
+      "name": "武汉",
+      "hours": 96432,
+      "products": [
+        {
+          "product": "12h",
+          "thresholdMm": 30,
+          "unconditionalPct": 0.851,
+          "rainBuyPct": 1.867,
+          "rainBuyMultiplierVsUncond": 2.19,
+          "heavyRainBuyPct": 3.858,
+          "heavyRainBuyMultiplierVsUncond": 4.53,
+          "legacyNoT1_rainBuyPct": 4.688,
+          "legacyNoT1_multiplierVsUncond": 5.51,
+          "t1RemovalPct": 60.2
+        },
+        {
+          "product": "24h",
+          "thresholdMm": 50,
+          "unconditionalPct": 0.763,
+          "rainBuyPct": 1.896,
+          "rainBuyMultiplierVsUncond": 2.49,
+          "heavyRainBuyPct": 4.198,
+          "heavyRainBuyMultiplierVsUncond": 5.5,
+          "legacyNoT1_rainBuyPct": 3.63,
+          "legacyNoT1_multiplierVsUncond": 4.76,
+          "t1RemovalPct": 47.8
+        }
+      ]
+    },
+    {
+      "code": "shanghai",
+      "name": "上海",
+      "hours": 96432,
+      "products": [
+        {
+          "product": "12h",
+          "thresholdMm": 30,
+          "unconditionalPct": 0.772,
+          "rainBuyPct": 1.62,
+          "rainBuyMultiplierVsUncond": 2.1,
+          "heavyRainBuyPct": 3.279,
+          "heavyRainBuyMultiplierVsUncond": 4.25,
+          "legacyNoT1_rainBuyPct": 4.396,
+          "legacyNoT1_multiplierVsUncond": 5.69,
+          "t1RemovalPct": 63.1
+        },
+        {
+          "product": "24h",
+          "thresholdMm": 50,
+          "unconditionalPct": 0.754,
+          "rainBuyPct": 1.308,
+          "rainBuyMultiplierVsUncond": 1.73,
+          "heavyRainBuyPct": 2.33,
+          "heavyRainBuyMultiplierVsUncond": 3.09,
+          "legacyNoT1_rainBuyPct": 3.844,
+          "legacyNoT1_multiplierVsUncond": 5.1,
+          "t1RemovalPct": 66
+        }
+      ]
+    },
+    {
+      "code": "beijing",
+      "name": "北京",
+      "hours": 96432,
+      "products": [
+        {
+          "product": "12h",
+          "thresholdMm": 30,
+          "unconditionalPct": 0.428,
+          "rainBuyPct": 1.703,
+          "rainBuyMultiplierVsUncond": 3.98,
+          "heavyRainBuyPct": 2.588,
+          "heavyRainBuyMultiplierVsUncond": 6.05,
+          "legacyNoT1_rainBuyPct": 4.968,
+          "legacyNoT1_multiplierVsUncond": 11.62,
+          "t1RemovalPct": 65.7
+        },
+        {
+          "product": "24h",
+          "thresholdMm": 50,
+          "unconditionalPct": 0.438,
+          "rainBuyPct": 1.399,
+          "rainBuyMultiplierVsUncond": 3.19,
+          "heavyRainBuyPct": 1.252,
+          "heavyRainBuyMultiplierVsUncond": 2.86,
+          "legacyNoT1_rainBuyPct": 3.305,
+          "legacyNoT1_multiplierVsUncond": 7.55,
+          "t1RemovalPct": 57.7
+        }
+      ]
+    },
+    {
+      "code": "guangzhou",
+      "name": "广州",
+      "hours": 96432,
+      "products": [
+        {
+          "product": "12h",
+          "thresholdMm": 30,
+          "unconditionalPct": 1.296,
+          "rainBuyPct": 2.975,
+          "rainBuyMultiplierVsUncond": 2.3,
+          "heavyRainBuyPct": 5.275,
+          "heavyRainBuyMultiplierVsUncond": 4.07,
+          "legacyNoT1_rainBuyPct": 4.911,
+          "legacyNoT1_multiplierVsUncond": 3.79,
+          "t1RemovalPct": 39.4
+        },
+        {
+          "product": "24h",
+          "thresholdMm": 50,
+          "unconditionalPct": 1.421,
+          "rainBuyPct": 3.247,
+          "rainBuyMultiplierVsUncond": 2.29,
+          "heavyRainBuyPct": 6.02,
+          "heavyRainBuyMultiplierVsUncond": 4.24,
+          "legacyNoT1_rainBuyPct": 4.747,
+          "legacyNoT1_multiplierVsUncond": 3.34,
+          "t1RemovalPct": 31.6
+        }
+      ]
+    },
+    {
+      "code": "chengdu",
+      "name": "成都",
+      "hours": 96432,
+      "products": [
+        {
+          "product": "12h",
+          "thresholdMm": 30,
+          "unconditionalPct": 0.627,
+          "rainBuyPct": 2.589,
+          "rainBuyMultiplierVsUncond": 4.13,
+          "heavyRainBuyPct": 4.413,
+          "heavyRainBuyMultiplierVsUncond": 7.04,
+          "legacyNoT1_rainBuyPct": 5.231,
+          "legacyNoT1_multiplierVsUncond": 8.35,
+          "t1RemovalPct": 50.5
+        },
+        {
+          "product": "24h",
+          "thresholdMm": 50,
+          "unconditionalPct": 0.595,
+          "rainBuyPct": 2.524,
+          "rainBuyMultiplierVsUncond": 4.24,
+          "heavyRainBuyPct": 5.215,
+          "heavyRainBuyMultiplierVsUncond": 8.77,
+          "legacyNoT1_rainBuyPct": 4.42,
+          "legacyNoT1_multiplierVsUncond": 7.43,
+          "t1RemovalPct": 42.9
+        }
+      ]
+    }
+  ]
+}
