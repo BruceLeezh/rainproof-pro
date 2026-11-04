@@ -99,5 +99,6 @@ const rows = wuhan.map(r => {
 
   const out = path.join(ROOT, "02-作战与答辩/武汉落地素材-2026-11-04.md");
   fs.writeFileSync(out, L.join("\n"), "utf8");
-  console.log("written:", out);
+  fs.writeFileSync(path.join(ROOT, "02-作战与答辩/武汉落地素材.json"), JSON.stringify({ generatedAt: new Date().toISOString(), modelId: model.modelId, regions: rows.map(r => ({ code: r.code, name: r.name, chain12: r.chain12, chain24: r.chain24, m1_12: r["12_1"], m1_24: r["24_1"], m7_12: r["12_7"], m7_24: r["24_7"] })) }, null, 2));
+  console.log("written:", out, "+ JSON");
 })().catch(e => { console.error("💥 " + (e.shortMessage || e.message)); process.exit(1); });
