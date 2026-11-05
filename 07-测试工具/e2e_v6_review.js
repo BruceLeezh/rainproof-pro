@@ -6,12 +6,15 @@
 // 「失败再跑一次」——真有回归时两次都会红。
 const fs = require("fs"), path = require("path"), solc = require("solc"), ganache = require("ganache");
 const assert = require("node:assert/strict"), { ethers } = require("ethers");
+const { spawnSync } = require("node:child_process");
+const { assertV6Payable } = require("../04-脚本/v6-judgement-guard");
+const { submittedTxId } = require("../04-脚本/multisig-receipt");
 const dir = path.join(__dirname, "../03-合约");
 let count = 0;
 const ok = (name, condition) => { assert(condition, name); count++; console.log("OK " + name); };
 async function reject(name, fn, reason) { await assert.rejects(fn, error => String(error).includes(reason)); count++; console.log("OK " + name); }
 (async () => {
-  const sources = Object.fromEntries(["RainDeliveryInsuranceV6.sol", "RainToken.sol"].map(f => [f, { content: fs.readFileSync(path.join(dir, f), "utf8") }]));
+  const sources = Object.fromEntries(["RainDeliveryInsuranceV6.sol", "RainToken.sol", "OperatorMultisig.sol"].map(f => [f, { content: fs.readFileSync(path.join(dir, f), "utf8") }]));
   const output = JSON.parse(solc.compile(JSON.stringify({ language: "Solidity", sources, settings: { optimizer: { enabled: true, runs: 200 }, viaIR: true, evmVersion: "paris", outputSelection: { "*": { "*": ["abi", "evm.bytecode.object", "evm.deployedBytecode.object"] } } } })));
   assert.equal((output.errors || []).filter(e => e.severity === "error").length, 0, JSON.stringify(output.errors));
   const artifact = name => output.contracts[name + ".sol"][name];
@@ -23,7 +26,7 @@ async function reject(name, fn, reason) { await assert.rejects(fn, error => Stri
     const token = await deploy("RainToken"), insurance = await deploy("RainDeliveryInsuranceV6", [await token.getAddress()]);
     const target = await insurance.getAddress(), r = insurance.connect(rider), H = ethers.id("review-evidence");
     const tx = async value => (await value).wait();
-    const feed = mm => insurance.updateRainfall(420100, mm, H, 90, 3);
+    const feed = mm => insurance.updateRainfall(420100, mm, H, 90, 3, { gasLimit: 300000 });
     ok("V6 runtime under EIP-170", artifact("RainDeliveryInsuranceV6").evm.deployedBytecode.object.length / 2 <= 24576);
     await reject("unknown region cannot be activated", () => insurance.setRegionActive.staticCall(654321, true), "unknown region");
     await tx(insurance.registerRegion(420100, "武汉"));
@@ -92,12 +95,36 @@ async function reject(name, fn, reason) { await assert.rejects(fn, error => Stri
     await tx(r.buyPolicy(420100, 24));                       // policy 3：T+1 正常赔付路径
     await chain.request({ method: "evm_increaseTime", params: [24 * 3600 + 60] }); await chain.request({ method: "evm_mine", params: [] });
     await tx(insurance.anchorEffective(3));
+    const judge = (decision, confidence, reading) => [3n, decision, confidence, 3n, reading, H, H, "review"];
+    const check = async args => assertV6Payable(insurance, args.slice(0, 5), await p.getBlock("latest"));
+    await reject("guard blocks the interim DENY", () => check(judge(0n, 95n, 125n)), "仅留痕");
+    await reject("guard blocks PAY below threshold", () => check(judge(1n, 90n, 125n)), "未达给付档线");
+    for (const [fn, flags] of [
+      ["submitJudgement", []],
+      [insurance.interface.getFunction("submitJudgement").selector, ["--send"]],
+    ]) {
+      const cli = spawnSync(process.execPath, [path.join(__dirname, "multisig-call.js"), fn,
+        ...judge(0n, 95n, 125n).map(String), ...flags],
+      { encoding: "utf8", timeout: 4000, env: { ...process.env, SEPOLIA_RPC: "http://127.0.0.1:1" } });
+      ok("multisig CLI rejects DENY before contacting the node (" + fn + ")", cli.status === 1 && cli.stderr.includes("仅留痕"));
+    }
+    ok("interim rejection leaves the on-chain judgement slot empty", !(await insurance.judgements(3)).exists);
     await tx(feed(180));                                     // 生效窗口内 +55mm ≥ 50mm → tier1
-    await tx(insurance.submitJudgement(3, 1, 90, 3, 180, H, H, "review"));
+    await reject("guard blocks low confidence PAY", () => check(judge(1n, 59n, 180n)), "置信度");
+    const payable = judge(1n, 90n, 180n);
+    const ms = await deploy("OperatorMultisig", [[await op.getAddress(), await rider.getAddress(), await stranger.getAddress()], 2]);
+    await tx(insurance.transferOperator(await ms.getAddress()));
+    await check(payable);
+    const data = insurance.interface.encodeFunctionData("submitJudgement", payable);
+    const proposal = submittedTxId(ms, await tx(ms.submit(target, 0, data)), target, data);
+    ok("one signature has not used the judgement slot", !(await insurance.judgements(3)).exists);
+    await check(payable);
+    await tx(ms.connect(stranger).confirm(proposal));
+    ok("later PAY passes both signatures and records a payable decision", (await insurance.judgements(3)).decision === 1n);
     const before3 = await token.balanceOf(await rider.getAddress());
     await tx(insurance.connect(stranger).claim(3));
     ok("T+1 policy pays on anchored increment", (await token.balanceOf(await rider.getAddress())) - before3 === 5000n);
-    await tx(insurance.setCoolingPeriod(0));
+    await reject("guard also blocks an already judged policy", () => check(payable), "可提交判定");
 
     console.log(`V6 local E2E: ${count} checks passed (isolated chain)`);
   } finally { p.destroy(); await chain.disconnect(); }

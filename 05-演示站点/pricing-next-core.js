@@ -10,7 +10,7 @@
     if(!Array.isArray(a.fixedTiersFen)||a.fixedTiersFen.length!==2||!a.fixedTiersFen.every(v=>Number.isSafeInteger(v)&&v>0)||a.fixedTiersFen[1]<=a.fixedTiersFen[0])throw new Error("固定给付须为递增的两个正整数分值");
     for(const key of ["incomeYuanPerHour","batchSize","plannedAnnualPolicies","premiumTickFen","minPremiumFen","maxPremiumFen"])
       number(a[key],key,Number.MIN_VALUE);
-    for(const key of ["perPolicyCostFen","perBatchCostFen","claimHandlingFen","annualFixedCostYuan","annualCapitalCostRatio","capitalHoldExtraHours"])
+    for(const key of ["perPolicyCostFen","perBatchCostFen","claimHandlingFen","annualFixedCostYuan","annualCapitalCostRatio","coolingHours","capitalHoldExtraHours"])
       number(a[key],key);
     for(const key of ["incomeReplacement","variableExpenseRatio","targetProfitRatio"]) number(a[key],key,0,1);
     if(a.incomeReplacement===0 || a.targetProfitRatio===0 || a.variableExpenseRatio+a.targetProfitRatio>=1) throw new Error("保障比例和目标利润须为正，费用率与目标利润率之和须小于 100%");
@@ -53,7 +53,7 @@
     const overheadFen=a.annualFixedCostYuan*100/a.plannedAnnualPolicies;
     // V6 reserves the full 100-yuan exposure basis even though its top payout is 75.
     const reserveFen=a.benefitMode==="fixed-v6"?10000:tiers[1];
-    const capitalFen=reserveFen*a.annualCapitalCostRatio*(Number(hours)+a.capitalHoldExtraHours)/8760;
+    const capitalFen=reserveFen*a.annualCapitalCostRatio*(a.coolingHours+Number(hours)+a.capitalHoldExtraHours)/8760;
     const commonCostFen=fixedFen+overheadFen+capitalFen;
     const upperCostFen=commonCostFen+a.claimHandlingFen*upper[0];
     const requiredFen=(riskLossFen+upperCostFen)/(1-a.variableExpenseRatio-a.targetProfitRatio);
