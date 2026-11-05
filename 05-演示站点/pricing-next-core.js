@@ -57,7 +57,7 @@
     const commonCostFen=fixedFen+overheadFen+capitalFen;
     const upperCostFen=commonCostFen+a.claimHandlingFen*upper[0];
     const requiredFen=(riskLossFen+upperCostFen)/(1-a.variableExpenseRatio-a.targetProfitRatio);
-    let premiumFen=Math.max(a.minPremiumFen,Math.ceil(requiredFen/a.premiumTickFen-1e-12)*a.premiumTickFen);
+    let premiumFen=Math.ceil(Math.max(a.minPremiumFen,requiredFen)/a.premiumTickFen-1e-12)*a.premiumTickFen;
     while(premiumFen*(1-a.variableExpenseRatio-a.targetProfitRatio)+1e-8<riskLossFen+upperCostFen) premiumFen+=a.premiumTickFen;
     const contributionFen=premiumFen*(1-a.variableExpenseRatio)-lossFen-fixedFen-capitalFen-a.claimHandlingFen*q[0];
     const profitFen=contributionFen-overheadFen;

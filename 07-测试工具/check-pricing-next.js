@@ -37,4 +37,15 @@ if(fs.existsSync(dataFile)){
     assert.equal(d.modelId,expected);
   });
 }
+ok("非网格最低保费向上对齐步长，超过上限则拒报",()=>{
+  const b={...a,minPremiumFen:105,annualFixedCostYuan:0,perPolicyCostFen:0,
+    perBatchCostFen:0,annualCapitalCostRatio:0};
+  const zero={q:[0,0],upper:[0,0],trainingYears:8};
+  const aligned=core.quote(b,12,zero);
+  assert.equal(aligned.premiumFen,110);
+  assert.equal(aligned.premiumFen%a.premiumTickFen,0);
+  const capped=core.quote({...b,maxPremiumFen:109},12,zero);
+  assert.equal(capped.premiumFen,110);
+  assert.equal(capped.quoteable,false);
+});
 console.log(`差异化定价回归：${n} 项通过`);
