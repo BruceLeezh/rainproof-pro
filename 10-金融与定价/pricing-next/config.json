@@ -21,6 +21,7 @@
     "variableExpenseRatio": 0.08,
     "targetProfitRatio": 0.15,
     "annualCapitalCostRatio": 0.08,
+    "coolingHours": 24,
     "capitalHoldExtraHours": 168,
     "minPremiumFen": 100,
     "maxPremiumFen": 2500,
@@ -40,6 +41,7 @@
   "channel": "calendar-batch-precommitted",
   "notes": [
     "Income, work hours, replacement, costs, volume, risk floors and stress loading are editable design assumptions, not measured rider losses or a sales forecast.",
+    "Capital duration includes 24 hours from purchase to effect, coverage, and 168 hours of claim grace.",
     "Historical climate prices apply to precommitted calendar batches only; instant weather-selected retail requires separately validated conditional risk forecasts.",
     "The year-block bootstrap quantile is an estimation diagnostic, not a guaranteed confidence bound or a guarantee of future profit.",
     "Existing archive caches did not pin the source model; they are reproducible research inputs, not verified homogeneous ERA5 or station observations."

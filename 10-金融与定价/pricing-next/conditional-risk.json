@@ -1,12 +1,18 @@
 {
-  "schema": "rainproof/conditional-risk@1",
-  "generatedAt": "2026-11-03T04:09:36.526Z",
-  "note": "T+1 残余风险量化。窗口 [t+24h, t+24h+dur)。条件 = 前 24h 降雨 ≥ 阈值。全部来自 cache/ ERA5 逐小时（2015-10 → 2026-09），整数十分位。",
+  "schema": "rainproof/conditional-risk@2",
+  "generatedAt": "2026-11-05T02:40:36.614Z",
+  "note": "前24小时雨量≥10/30 mm 的条件触发频率。T+0、T+24h 各用同口径无条件频率。Open-Meteo Archive 固定缓存；源模型未锁定；窗口采用前一小时总量、排除缺测。",
   "cities": [
     {
       "code": "wuhan",
       "name": "武汉",
       "hours": 96432,
+      "source": {
+        "file": "10-金融与定价/cache-hubei/420100.json.gz",
+        "sha256": "5f554b00880c4fb3d7ff202ee168e9752bf8452168815c4da9e50a3187adb7b2",
+        "model": "archive-default-not-pinned",
+        "url": null
+      },
       "products": [
         {
           "product": "12h",
@@ -16,9 +22,32 @@
           "rainBuyMultiplierVsUncond": 2.19,
           "heavyRainBuyPct": 3.858,
           "heavyRainBuyMultiplierVsUncond": 4.53,
+          "legacyNoT1_unconditionalPct": 0.851,
           "legacyNoT1_rainBuyPct": 4.688,
           "legacyNoT1_multiplierVsUncond": 5.51,
-          "t1RemovalPct": 60.2
+          "t1RemovalPct": 60.2,
+          "counts": {
+            "unconditional": {
+              "trials": 96372,
+              "hits": 820
+            },
+            "ante10": {
+              "trials": 10496,
+              "hits": 196
+            },
+            "ante30": {
+              "trials": 2644,
+              "hits": 102
+            },
+            "legacyAll": {
+              "trials": 96372,
+              "hits": 820
+            },
+            "legacyAnte10": {
+              "trials": 10496,
+              "hits": 492
+            }
+          }
         },
         {
           "product": "24h",
@@ -28,9 +57,32 @@
           "rainBuyMultiplierVsUncond": 2.49,
           "heavyRainBuyPct": 4.198,
           "heavyRainBuyMultiplierVsUncond": 5.5,
+          "legacyNoT1_unconditionalPct": 0.763,
           "legacyNoT1_rainBuyPct": 3.63,
           "legacyNoT1_multiplierVsUncond": 4.76,
-          "t1RemovalPct": 47.8
+          "t1RemovalPct": 47.8,
+          "counts": {
+            "unconditional": {
+              "trials": 96360,
+              "hits": 735
+            },
+            "ante10": {
+              "trials": 10496,
+              "hits": 199
+            },
+            "ante30": {
+              "trials": 2644,
+              "hits": 111
+            },
+            "legacyAll": {
+              "trials": 96360,
+              "hits": 735
+            },
+            "legacyAnte10": {
+              "trials": 10496,
+              "hits": 381
+            }
+          }
         }
       ]
     },
@@ -38,6 +90,12 @@
       "code": "shanghai",
       "name": "上海",
       "hours": 96432,
+      "source": {
+        "file": "10-金融与定价/cache/shanghai-2015-10-01_2026-09-30.json",
+        "sha256": "bed5e262ee0613310b5b97cd8c9b7022876405f6075c8b01933dd228755e7d43",
+        "model": "archive-default-not-pinned",
+        "url": null
+      },
       "products": [
         {
           "product": "12h",
@@ -47,9 +105,32 @@
           "rainBuyMultiplierVsUncond": 2.1,
           "heavyRainBuyPct": 3.279,
           "heavyRainBuyMultiplierVsUncond": 4.25,
+          "legacyNoT1_unconditionalPct": 0.772,
           "legacyNoT1_rainBuyPct": 4.396,
           "legacyNoT1_multiplierVsUncond": 5.69,
-          "t1RemovalPct": 63.1
+          "t1RemovalPct": 63.2,
+          "counts": {
+            "unconditional": {
+              "trials": 96372,
+              "hits": 744
+            },
+            "ante10": {
+              "trials": 11238,
+              "hits": 182
+            },
+            "ante30": {
+              "trials": 2318,
+              "hits": 76
+            },
+            "legacyAll": {
+              "trials": 96372,
+              "hits": 744
+            },
+            "legacyAnte10": {
+              "trials": 11238,
+              "hits": 494
+            }
+          }
         },
         {
           "product": "24h",
@@ -59,9 +140,32 @@
           "rainBuyMultiplierVsUncond": 1.73,
           "heavyRainBuyPct": 2.33,
           "heavyRainBuyMultiplierVsUncond": 3.09,
+          "legacyNoT1_unconditionalPct": 0.754,
           "legacyNoT1_rainBuyPct": 3.844,
           "legacyNoT1_multiplierVsUncond": 5.1,
-          "t1RemovalPct": 66
+          "t1RemovalPct": 66,
+          "counts": {
+            "unconditional": {
+              "trials": 96360,
+              "hits": 727
+            },
+            "ante10": {
+              "trials": 11238,
+              "hits": 147
+            },
+            "ante30": {
+              "trials": 2318,
+              "hits": 54
+            },
+            "legacyAll": {
+              "trials": 96360,
+              "hits": 727
+            },
+            "legacyAnte10": {
+              "trials": 11238,
+              "hits": 432
+            }
+          }
         }
       ]
     },
@@ -69,6 +173,12 @@
       "code": "beijing",
       "name": "北京",
       "hours": 96432,
+      "source": {
+        "file": "10-金融与定价/cache/beijing-2015-10-01_2026-09-30.json",
+        "sha256": "1640271a197b25b653b4a71fb231d81a64fc19ae4907f262f8af3be4da53c8f5",
+        "model": "archive-default-not-pinned",
+        "url": null
+      },
       "products": [
         {
           "product": "12h",
@@ -78,9 +188,32 @@
           "rainBuyMultiplierVsUncond": 3.98,
           "heavyRainBuyPct": 2.588,
           "heavyRainBuyMultiplierVsUncond": 6.05,
+          "legacyNoT1_unconditionalPct": 0.428,
           "legacyNoT1_rainBuyPct": 4.968,
           "legacyNoT1_multiplierVsUncond": 11.62,
-          "t1RemovalPct": 65.7
+          "t1RemovalPct": 65.7,
+          "counts": {
+            "unconditional": {
+              "trials": 96372,
+              "hits": 412
+            },
+            "ante10": {
+              "trials": 4932,
+              "hits": 84
+            },
+            "ante30": {
+              "trials": 1198,
+              "hits": 31
+            },
+            "legacyAll": {
+              "trials": 96372,
+              "hits": 412
+            },
+            "legacyAnte10": {
+              "trials": 4932,
+              "hits": 245
+            }
+          }
         },
         {
           "product": "24h",
@@ -90,9 +223,32 @@
           "rainBuyMultiplierVsUncond": 3.19,
           "heavyRainBuyPct": 1.252,
           "heavyRainBuyMultiplierVsUncond": 2.86,
+          "legacyNoT1_unconditionalPct": 0.438,
           "legacyNoT1_rainBuyPct": 3.305,
           "legacyNoT1_multiplierVsUncond": 7.55,
-          "t1RemovalPct": 57.7
+          "t1RemovalPct": 57.7,
+          "counts": {
+            "unconditional": {
+              "trials": 96360,
+              "hits": 422
+            },
+            "ante10": {
+              "trials": 4932,
+              "hits": 69
+            },
+            "ante30": {
+              "trials": 1198,
+              "hits": 15
+            },
+            "legacyAll": {
+              "trials": 96360,
+              "hits": 422
+            },
+            "legacyAnte10": {
+              "trials": 4932,
+              "hits": 163
+            }
+          }
         }
       ]
     },
@@ -100,6 +256,12 @@
       "code": "guangzhou",
       "name": "广州",
       "hours": 96432,
+      "source": {
+        "file": "10-金融与定价/cache/guangzhou-2015-10-01_2026-09-30.json",
+        "sha256": "23c33bd5683f469f2563754349775d4d3fdd02c90ad340cdd3fe8fbfe270257b",
+        "model": "archive-default-not-pinned",
+        "url": null
+      },
       "products": [
         {
           "product": "12h",
@@ -109,9 +271,32 @@
           "rainBuyMultiplierVsUncond": 2.3,
           "heavyRainBuyPct": 5.275,
           "heavyRainBuyMultiplierVsUncond": 4.07,
+          "legacyNoT1_unconditionalPct": 1.296,
           "legacyNoT1_rainBuyPct": 4.911,
           "legacyNoT1_multiplierVsUncond": 3.79,
-          "t1RemovalPct": 39.4
+          "t1RemovalPct": 39.4,
+          "counts": {
+            "unconditional": {
+              "trials": 96372,
+              "hits": 1249
+            },
+            "ante10": {
+              "trials": 19465,
+              "hits": 579
+            },
+            "ante30": {
+              "trials": 4701,
+              "hits": 248
+            },
+            "legacyAll": {
+              "trials": 96372,
+              "hits": 1249
+            },
+            "legacyAnte10": {
+              "trials": 19465,
+              "hits": 956
+            }
+          }
         },
         {
           "product": "24h",
@@ -121,9 +306,32 @@
           "rainBuyMultiplierVsUncond": 2.29,
           "heavyRainBuyPct": 6.02,
           "heavyRainBuyMultiplierVsUncond": 4.24,
+          "legacyNoT1_unconditionalPct": 1.421,
           "legacyNoT1_rainBuyPct": 4.747,
           "legacyNoT1_multiplierVsUncond": 3.34,
-          "t1RemovalPct": 31.6
+          "t1RemovalPct": 31.6,
+          "counts": {
+            "unconditional": {
+              "trials": 96360,
+              "hits": 1369
+            },
+            "ante10": {
+              "trials": 19465,
+              "hits": 632
+            },
+            "ante30": {
+              "trials": 4701,
+              "hits": 283
+            },
+            "legacyAll": {
+              "trials": 96360,
+              "hits": 1369
+            },
+            "legacyAnte10": {
+              "trials": 19465,
+              "hits": 924
+            }
+          }
         }
       ]
     },
@@ -131,6 +339,12 @@
       "code": "chengdu",
       "name": "成都",
       "hours": 96432,
+      "source": {
+        "file": "10-金融与定价/cache/chengdu-2015-10-01_2026-09-30.json",
+        "sha256": "376b40759c130577998a9bf4177ba5da44354fe1b256c9b87f819520c7524eea",
+        "model": "archive-default-not-pinned",
+        "url": null
+      },
       "products": [
         {
           "product": "12h",
@@ -140,9 +354,32 @@
           "rainBuyMultiplierVsUncond": 4.13,
           "heavyRainBuyPct": 4.413,
           "heavyRainBuyMultiplierVsUncond": 7.04,
+          "legacyNoT1_unconditionalPct": 0.627,
           "legacyNoT1_rainBuyPct": 5.231,
           "legacyNoT1_multiplierVsUncond": 8.35,
-          "t1RemovalPct": 50.5
+          "t1RemovalPct": 50.5,
+          "counts": {
+            "unconditional": {
+              "trials": 96372,
+              "hits": 604
+            },
+            "ante10": {
+              "trials": 7647,
+              "hits": 198
+            },
+            "ante30": {
+              "trials": 1745,
+              "hits": 77
+            },
+            "legacyAll": {
+              "trials": 96372,
+              "hits": 604
+            },
+            "legacyAnte10": {
+              "trials": 7647,
+              "hits": 400
+            }
+          }
         },
         {
           "product": "24h",
@@ -152,9 +389,32 @@
           "rainBuyMultiplierVsUncond": 4.24,
           "heavyRainBuyPct": 5.215,
           "heavyRainBuyMultiplierVsUncond": 8.77,
+          "legacyNoT1_unconditionalPct": 0.595,
           "legacyNoT1_rainBuyPct": 4.42,
           "legacyNoT1_multiplierVsUncond": 7.43,
-          "t1RemovalPct": 42.9
+          "t1RemovalPct": 42.9,
+          "counts": {
+            "unconditional": {
+              "trials": 96360,
+              "hits": 573
+            },
+            "ante10": {
+              "trials": 7647,
+              "hits": 193
+            },
+            "ante30": {
+              "trials": 1745,
+              "hits": 91
+            },
+            "legacyAll": {
+              "trials": 96360,
+              "hits": 573
+            },
+            "legacyAnte10": {
+              "trials": 7647,
+              "hits": 338
+            }
+          }
         }
       ]
     }
