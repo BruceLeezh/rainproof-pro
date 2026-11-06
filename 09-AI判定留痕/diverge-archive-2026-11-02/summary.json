@@ -1,8 +1,393 @@
 {
   "schema": "rainproof/diverge-archive@1",
-  "generatedAt": "2026-11-06T12:12:50.282Z",
+  "generatedAt": "2026-11-06T15:57:21.321Z",
   "note": "只读复核：固定 ERA5 archive 对照三模型窗口增量。archive 延迟数日，missingHours>0 即证据不完整，total=null 只给 partialTotal 参考。本文件不构成裁决，采信与否及上链操作另行走治理流程。",
   "rows": [
+    {
+      "code": 420105,
+      "name": "汉阳区",
+      "lat": 30.549326,
+      "lon": 114.265807,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726174,
+      "rawEvidence": "raw/v6feed-420105-202611062345-1e367366-c8dd-4614-9336-1a0aa5ff7d4d.json",
+      "rawSha256": "f745939151fd31b96950b9470d20397e7b5517020b8ca9f8bd42f6b5027149db",
+      "modelGate": {
+        "perModel": [
+          5.199999999999999,
+          7.999999999999999,
+          11.699999999999998
+        ],
+        "median": 7.999999999999999,
+        "spread": 6.499999999999998,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.549326&longitude=114.265807&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "9cb9878200fe1b77db95054b7a173f2e25f4c7519fd92a9547e646b37fd0b751",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.5,
+        "gridLon": 114.25
+      }
+    },
+    {
+      "code": 420106,
+      "name": "武昌区",
+      "lat": 30.546536,
+      "lon": 114.307344,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726174,
+      "rawEvidence": "raw/v6feed-420106-202611062345-3728da57-efc8-45eb-8e6d-6b1fd41db926.json",
+      "rawSha256": "70c8e353acfb1774099ca90fbe3d34834d7c361ef1fa72d39592e176f628a48f",
+      "modelGate": {
+        "perModel": [
+          5.199999999999999,
+          7.999999999999999,
+          11.699999999999998
+        ],
+        "median": 7.999999999999999,
+        "spread": 6.499999999999998,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.546536&longitude=114.307344&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "8f4d5d3cdb79999e4dd2c90cada736a495041c6df6367acb986f280e63ecce5d",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.5,
+        "gridLon": 114.25
+      }
+    },
+    {
+      "code": 420200,
+      "name": "黄石市",
+      "lat": 30.220074,
+      "lon": 115.077048,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726174,
+      "rawEvidence": "raw/v6feed-420200-202611062345-f07f111b-2dbf-4f5c-9cab-fe663b21edda.json",
+      "rawSha256": "df0c30390bc0dd1d0dbf3fe34d8e1afccea8a8f380bdc1b7823a2cd23245a59b",
+      "modelGate": {
+        "perModel": [
+          8.799999999999997,
+          12.2,
+          21.5
+        ],
+        "median": 12.2,
+        "spread": 12.700000000000003,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.220074&longitude=115.077048&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "5dcd0270b622b89f4f251eb32ebc7740c1a18f8b7e823ddc8834deb047368c99",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.25,
+        "gridLon": 115
+      }
+    },
+    {
+      "code": 420202,
+      "name": "黄石港区",
+      "lat": 30.212086,
+      "lon": 115.090164,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726174,
+      "rawEvidence": "raw/v6feed-420202-202611062345-19827cae-bd3c-40d9-bd66-2719c34c92d3.json",
+      "rawSha256": "8d38a559f37a21dd2e65aa87ffd6e81ba6adf8e6f9536c5f89fa3b258eb08295",
+      "modelGate": {
+        "perModel": [
+          8.799999999999997,
+          12.2,
+          21.5
+        ],
+        "median": 12.2,
+        "spread": 12.700000000000003,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.212086&longitude=115.090164&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "ca020a0fef24e53501b06b5155bb07161ac3c4105f071b39b5924c57d7be8b62",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.25,
+        "gridLon": 115
+      }
+    },
+    {
+      "code": 420203,
+      "name": "西塞山区",
+      "lat": 30.205365,
+      "lon": 115.093354,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726174,
+      "rawEvidence": "raw/v6feed-420203-202611062345-ae9a441c-2b88-45bd-a630-19c7215fcc44.json",
+      "rawSha256": "6298ccb1c7262c28172134956274240670b0d05e9f6188070fcfa56fdd0dc1d6",
+      "modelGate": {
+        "perModel": [
+          8.799999999999997,
+          12.2,
+          21.5
+        ],
+        "median": 12.2,
+        "spread": 12.700000000000003,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.205365&longitude=115.093354&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "f1b53a55c6503926cdbc397120ce5b87a8a63ec5f1410e227e255df1ef475551",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.25,
+        "gridLon": 115
+      }
+    },
+    {
+      "code": 420204,
+      "name": "下陆区",
+      "lat": 30.177845,
+      "lon": 114.975755,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726174,
+      "rawEvidence": "raw/v6feed-420204-202611062345-e2f31b57-bc39-4aa1-a036-da0a0f9d4b72.json",
+      "rawSha256": "b7d39c6632b7f673e51e80ac17a3f296e4f6b8ca5c34681cab4bb33a39125327",
+      "modelGate": {
+        "perModel": [
+          8.799999999999997,
+          13.899999999999997,
+          24.400000000000006
+        ],
+        "median": 13.899999999999997,
+        "spread": 15.600000000000009,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.177845&longitude=114.975755&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "d1062d20fa9eb49eae4e48abb1e5ebc506abb05109f2951fd7742d8c2bd4dc54",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.25,
+        "gridLon": 115
+      }
+    },
+    {
+      "code": 420205,
+      "name": "铁山区",
+      "lat": 30.20601,
+      "lon": 114.901366,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726174,
+      "rawEvidence": "raw/v6feed-420205-202611062345-dbfe94e9-d5bd-486e-980b-2b1c2f4fc7ee.json",
+      "rawSha256": "ca1a0390f8610cb81c874fb1f2a26c4ee18331a05abaea1f1a7bddc04941c724",
+      "modelGate": {
+        "perModel": [
+          8.799999999999997,
+          15.3,
+          21.9
+        ],
+        "median": 15.3,
+        "spread": 13.100000000000001,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.20601&longitude=114.901366&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "778989d727905ac7b428aae8e2a468c19d6086a1e054f6e7dd08bb2f5c018e23",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.25,
+        "gridLon": 115
+      }
+    },
+    {
+      "code": 420281,
+      "name": "大冶市",
+      "lat": 30.098804,
+      "lon": 114.974842,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726184,
+      "rawEvidence": "raw/v6feed-420281-202611062345-28ae2470-216d-4819-b28b-d1c6a0040c72.json",
+      "rawSha256": "111bfee78f09507a88eb2bfec8fcfbb0bced4783c1d0c47b890943b32311d3db",
+      "modelGate": {
+        "perModel": [
+          7.999999999999998,
+          15.699999999999994,
+          24.400000000000006
+        ],
+        "median": 15.699999999999994,
+        "spread": 16.400000000000006,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.098804&longitude=114.974842&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "3f0a1da8accd49b8e2da65c1e6fc5147590ffcb06f8de77d18e983544d178e4f",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30,
+        "gridLon": 115
+      }
+    },
+    {
+      "code": 420700,
+      "name": "鄂州市",
+      "lat": 30.396536,
+      "lon": 114.890593,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726184,
+      "rawEvidence": "raw/v6feed-420700-202611062345-45915373-8024-42f1-abc3-0c1c486c8cc6.json",
+      "rawSha256": "8b88c1835719e531dec810676cab97d0130485c263a7599ab1e927ef3752050c",
+      "modelGate": {
+        "perModel": [
+          6.499999999999998,
+          12.699999999999998,
+          18
+        ],
+        "median": 12.699999999999998,
+        "spread": 11.500000000000002,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.396536&longitude=114.890593&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "f41dd5daddbc1334bd657945f5b9f79db6f80a880e4908bbf5c10b30615f55a9",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.5,
+        "gridLon": 115
+      }
+    },
+    {
+      "code": 420702,
+      "name": "梁子湖区",
+      "lat": 30.098191,
+      "lon": 114.681967,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726184,
+      "rawEvidence": "raw/v6feed-420702-202611062345-5af0a437-08df-4f7b-8fcd-da87e846c404.json",
+      "rawSha256": "ba02bc48f127306faaf39b7bc16e5640bc4fe6f99658551cdc2ebd704e02913f",
+      "modelGate": {
+        "perModel": [
+          8.599999999999998,
+          12.899999999999997,
+          19.2
+        ],
+        "median": 12.899999999999997,
+        "spread": 10.600000000000001,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.098191&longitude=114.681967&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "a38e0bbf20105e52539bc4683f0b04e0bb3e1483103c884cf14216ed58622b81",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30,
+        "gridLon": 114.75
+      }
+    },
+    {
+      "code": 420704,
+      "name": "鄂城区",
+      "lat": 30.39669,
+      "lon": 114.890012,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "lastFedAt": 1793726184,
+      "rawEvidence": "raw/v6feed-420704-202611062345-9fb1c6cf-ca7d-4a47-885e-26d63c2cc420.json",
+      "rawSha256": "6e78506257276190a355ae5cde177ae4e596f63bf30acf0522932b46b3f80ca4",
+      "modelGate": {
+        "perModel": [
+          6.499999999999998,
+          12.699999999999998,
+          18
+        ],
+        "median": 12.699999999999998,
+        "spread": 11.500000000000002,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "archive": {
+        "url": "https://archive-api.open-meteo.com/v1/archive?latitude=30.39669&longitude=114.890012&start_date=2026-11-04&end_date=2026-11-06&hourly=precipitation&timezone=Asia%2FShanghai&models=era5",
+        "httpStatus": 200,
+        "sha256": "f7ad546f5c6a48838900c146fbced0ce8aee24f45cc9eb4544ef9c22b127a060",
+        "model": "era5",
+        "expectedHours": 70,
+        "missingHours": 70,
+        "total": null,
+        "partialTotal": 0,
+        "gridLat": 30.5,
+        "gridLon": 115
+      }
+    },
     {
       "code": 421100,
       "name": "黄冈市",

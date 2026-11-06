@@ -1,28 +1,34 @@
 {
   "schema": "rainproof/feed-adjudication@1",
-  "generatedAt": "2026-11-02T16:16:58.702Z",
+  "generatedAt": "2026-11-06T15:59:33.930Z",
   "code": 420882,
   "name": "京山市",
-  "chainVal": 173,
-  "fromIso": "2026-10-31T12:00",
-  "toIso": "2026-11-02T23:00",
+  "chainVal": 213,
+  "fromIso": "2026-11-03T07:00",
+  "toIso": "2026-11-03T16:00",
   "gateModels": [
-    12.600000000000003,
-    18.7,
-    26.399999999999995
+    2,
+    3.3,
+    3.6
   ],
-  "gateMedian": 18.7,
+  "gateMedian": 3.3,
   "extraModels": [
-    10.6,
-    15.9,
-    12.1
+    1.3,
+    3,
+    2.1
   ],
-  "extraMedian": 12.1,
-  "corroborated": false,
-  "decision": "hold",
-  "target": null,
-  "evidenceHash": null,
-  "confidence": null,
+  "extraMedian": 2.1,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 216,
+  "evidenceHash": "0x099fb839a5f925b8262e3ab42c75052c82fe6d3571e3686198d29b936ecbaf4b",
+  "confidence": 63,
   "sources": 6,
-  "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+  "evidenceCanonical": "v6-feed-manual 420882 216mm window(2026-11-03T07:00→2026-11-03T16:00) gate-models=[2,3.3,3.6] gate-median=3.3 extra-models=[1.3,3,2.1] extra-median=2.1 gate-raw-sha256=dee3ce6297af089505e86027ae3933293820ca3a7b24c98495e6e98f4eff21fb extra-raw-sha256=268106b49560b38b65f2625e8cb4f26449a729ba8c307c833fc90de8601fa31c adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420882-202611031615-88cf73fe-93a5-4d51-9d46-3d87d8652ffa.json",
+    "gateRawSha256": "dee3ce6297af089505e86027ae3933293820ca3a7b24c98495e6e98f4eff21fb",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420882.json",
+    "extraRawSha256": "268106b49560b38b65f2625e8cb4f26449a729ba8c307c833fc90de8601fa31c"
+  }
 }

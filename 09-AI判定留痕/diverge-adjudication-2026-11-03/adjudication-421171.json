@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:28.149Z",
+  "code": 421171,
+  "name": "龙感湖管理区",
+  "chainVal": 92,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T19:00",
+  "gateModels": [
+    6.499999999999998,
+    12.699999999999998,
+    18
+  ],
+  "gateMedian": 12.699999999999998,
+  "extraModels": [
+    15.5,
+    12.5,
+    10.8
+  ],
+  "extraMedian": 12.5,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 105,
+  "evidenceHash": "0xb290da05a54458d37439a358db658c65596d97e358415c500078d6524a6b9567",
+  "confidence": 73,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 421171 105mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=9232642c7a3d6bec394ed0e5aecb3f6ce11f9738ccebd2c10f4d0f803c19bf4b extra-raw-sha256=07070a1cb03bfce7597b7c85efc1d87ab66b33912f080abc8c496d0c533c7afb adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-421171-202611061945-b02b97f6-6e10-42e6-9d29-43747613c1b4.json",
+    "gateRawSha256": "9232642c7a3d6bec394ed0e5aecb3f6ce11f9738ccebd2c10f4d0f803c19bf4b",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421171.json",
+    "extraRawSha256": "07070a1cb03bfce7597b7c85efc1d87ab66b33912f080abc8c496d0c533c7afb"
+  }
+}

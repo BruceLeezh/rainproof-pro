@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:23.962Z",
+  "code": 421100,
+  "name": "黄冈市",
+  "chainVal": 92,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T19:00",
+  "gateModels": [
+    6.499999999999998,
+    12.699999999999998,
+    18
+  ],
+  "gateMedian": 12.699999999999998,
+  "extraModels": [
+    15.5,
+    12.5,
+    10.8
+  ],
+  "extraMedian": 12.5,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 105,
+  "evidenceHash": "0x53147938957a534fb4c8f9ceb61e4935e5b3253477338743290bb7ecfb2acf26",
+  "confidence": 73,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 421100 105mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=747a0892da7eae231d7d9a2987dbdc1b56af695e5c24bf81f9121cb251a49e07 extra-raw-sha256=4445da64203789fb288008de1df8356b6e5c2f9e035d2b0832e6c99e050c52c7 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-421100-202611061945-0a7f752f-08af-4c0d-8962-d913de1d7073.json",
+    "gateRawSha256": "747a0892da7eae231d7d9a2987dbdc1b56af695e5c24bf81f9121cb251a49e07",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421100.json",
+    "extraRawSha256": "4445da64203789fb288008de1df8356b6e5c2f9e035d2b0832e6c99e050c52c7"
+  }
+}

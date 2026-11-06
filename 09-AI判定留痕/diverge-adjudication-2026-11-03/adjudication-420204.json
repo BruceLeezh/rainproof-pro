@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:19.454Z",
+  "code": 420204,
+  "name": "下陆区",
+  "chainVal": 124,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T23:00",
+  "gateModels": [
+    8.799999999999997,
+    13.899999999999997,
+    24.400000000000006
+  ],
+  "gateMedian": 13.899999999999997,
+  "extraModels": [
+    21.3,
+    21.1,
+    13.5
+  ],
+  "extraMedian": 21.1,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 138,
+  "evidenceHash": "0x9348c7910be050301e312bb8e735409a564e0b8e0dcebc07bad4131a64a89d99",
+  "confidence": 74,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 420204 138mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,13.899999999999997,24.400000000000006] gate-median=13.899999999999997 extra-models=[21.3,21.1,13.5] extra-median=21.1 gate-raw-sha256=b7d39c6632b7f673e51e80ac17a3f296e4f6b8ca5c34681cab4bb33a39125327 extra-raw-sha256=5a1612480ee232e5542053c38b7661b6f4a407575f6753684b7b6dd1cc9f39e6 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420204-202611062345-e2f31b57-bc39-4aa1-a036-da0a0f9d4b72.json",
+    "gateRawSha256": "b7d39c6632b7f673e51e80ac17a3f296e4f6b8ca5c34681cab4bb33a39125327",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420204.json",
+    "extraRawSha256": "5a1612480ee232e5542053c38b7661b6f4a407575f6753684b7b6dd1cc9f39e6"
+  }
+}

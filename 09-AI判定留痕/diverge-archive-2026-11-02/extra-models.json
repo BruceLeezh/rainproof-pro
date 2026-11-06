@@ -1,6 +1,6 @@
 {
   "schema": "rainproof/diverge-extra-models@1",
-  "generatedAt": "2026-11-02T16:11:52.249Z",
+  "generatedAt": "2026-11-06T15:57:32.656Z",
   "windowSource": "diverge-archive-2026-11-02/summary.json（与门禁证据同窗口）",
   "extraModels": [
     "gem_seamless",
@@ -10,318 +10,899 @@
   "note": "只读取证：gate 之外的三套独立模型对同窗口的增量。供人工裁决参考，不构成自动喂价依据。",
   "rows": [
     {
-      "code": 420324,
-      "name": "竹溪县",
-      "fromIso": "2026-11-01T01:00",
-      "toIso": "2026-11-02T23:00",
+      "code": 420105,
+      "name": "汉阳区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
       "gate": {
         "perModel": [
-          5.800000000000002,
-          15.000000000000002,
-          20.500000000000004
+          5.199999999999999,
+          7.999999999999999,
+          11.699999999999998
         ],
-        "median": 15.000000000000002,
-        "spread": 14.700000000000003,
+        "median": 7.999999999999999,
+        "spread": 6.499999999999998,
         "tol": 2.5,
-        "windowH": 46,
+        "windowH": 70,
         "sources": 3
       },
       "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=32.315342&longitude=109.717196&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "a4d68806a3b2edd5492eff21440e61e0f0ee821250e913d539dfdb0b6114e088",
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.549326&longitude=114.265807&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "874d1c9df743000d636ba506bf431a5432e374774faa10fb9bef320ff75412ca",
         "httpStatus": 200,
-        "expectedHours": 46,
+        "expectedHours": 70,
         "missingHours": 0,
         "perModel": [
-          10.5,
-          7.3,
-          11.5
+          8.1,
+          13.2,
+          14.6
         ],
-        "median": 10.5,
-        "spread": 4.2,
-        "withinGateRange": true,
-        "sourcesNearGateMedian": 0,
-        "gateTol": 2.5
-      }
-    },
-    {
-      "code": 420525,
-      "name": "远安县",
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gate": {
-        "perModel": [
-          9.599999999999998,
-          15.900000000000002,
-          22.6
-        ],
-        "median": 15.900000000000002,
-        "spread": 13.000000000000004,
-        "tol": 2.5,
-        "windowH": 59,
-        "sources": 3
-      },
-      "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.059626&longitude=111.64331&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "e25469c57e15199d704ce13c83c6346f5ec8b82bca408657457583736f4fb5de",
-        "httpStatus": 200,
-        "expectedHours": 59,
-        "missingHours": 0,
-        "perModel": [
-          15.3,
-          24.3,
-          11.8
-        ],
-        "median": 15.3,
-        "spread": 12.5,
-        "withinGateRange": true,
-        "sourcesNearGateMedian": 2,
-        "gateTol": 2.5
-      }
-    },
-    {
-      "code": 420526,
-      "name": "兴山县",
-      "fromIso": "2026-11-01T00:00",
-      "toIso": "2026-11-02T23:00",
-      "gate": {
-        "perModel": [
-          15.599999999999998,
-          19.499999999999993,
-          27.100000000000005
-        ],
-        "median": 19.499999999999993,
-        "spread": 11.500000000000007,
-        "tol": 2.5,
-        "windowH": 47,
-        "sources": 3
-      },
-      "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.34795&longitude=110.754499&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "fe9a2ec09d4be29ef6ba6dbfb2ae38e57ea954cf1b100a894742ce858c2ddee1",
-        "httpStatus": 200,
-        "expectedHours": 47,
-        "missingHours": 0,
-        "perModel": [
-          19.7,
-          18.6,
-          22.5
-        ],
-        "median": 19.7,
-        "spread": 3.9,
-        "withinGateRange": true,
-        "sourcesNearGateMedian": 3,
-        "gateTol": 2.5
-      }
-    },
-    {
-      "code": 420527,
-      "name": "秭归县",
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gate": {
-        "perModel": [
-          10.5,
-          14.7,
-          24.000000000000007
-        ],
-        "median": 14.7,
-        "spread": 13.500000000000007,
-        "tol": 2.5,
-        "windowH": 59,
-        "sources": 3
-      },
-      "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.823908&longitude=110.976785&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "ac4e5a064ef655d1be1c446b5e405a1cb5fbb248a33fb45c7faa1d87d89dd0c4",
-        "httpStatus": 200,
-        "expectedHours": 59,
-        "missingHours": 0,
-        "perModel": [
-          15.3,
-          18.7,
-          13.2
-        ],
-        "median": 15.3,
-        "spread": 5.5,
-        "withinGateRange": true,
-        "sourcesNearGateMedian": 3,
-        "gateTol": 2.5
-      }
-    },
-    {
-      "code": 420882,
-      "name": "京山市",
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gate": {
-        "perModel": [
-          12.600000000000003,
-          18.7,
-          26.399999999999995
-        ],
-        "median": 18.7,
-        "spread": 13.799999999999992,
-        "tol": 2.5,
-        "windowH": 59,
-        "sources": 3
-      },
-      "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.022457&longitude=113.114595&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "adcf6312e1f003f1439ce0f1bb94e8950363dc4f174f1eb48b51dc01800b87f3",
-        "httpStatus": 200,
-        "expectedHours": 59,
-        "missingHours": 0,
-        "perModel": [
-          10.6,
-          15.9,
-          12.1
-        ],
-        "median": 12.1,
-        "spread": 5.3,
-        "withinGateRange": false,
-        "sourcesNearGateMedian": 0,
-        "gateTol": 2.5
-      }
-    },
-    {
-      "code": 421123,
-      "name": "罗田县",
-      "fromIso": "2026-11-01T13:00",
-      "toIso": "2026-11-02T23:00",
-      "gate": {
-        "perModel": [
-          7.300000000000002,
-          12.200000000000001,
-          19.5
-        ],
-        "median": 12.200000000000001,
-        "spread": 12.2,
-        "tol": 2.5,
-        "windowH": 34,
-        "sources": 3
-      },
-      "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.781679&longitude=115.398984&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "f57604012b1e4358c5fa5de40dc7e74c7f4bb32d5c3c67828e5d4ddd29e61e7b",
-        "httpStatus": 200,
-        "expectedHours": 34,
-        "missingHours": 0,
-        "perModel": [
-          12.1,
-          7.4,
-          16.8
-        ],
-        "median": 12.1,
-        "spread": 9.4,
-        "withinGateRange": true,
-        "sourcesNearGateMedian": 2,
-        "gateTol": 2.5
-      }
-    },
-    {
-      "code": 421321,
-      "name": "随县",
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gate": {
-        "perModel": [
-          11.999999999999998,
-          14.999999999999995,
-          20.100000000000005
-        ],
-        "median": 14.999999999999995,
-        "spread": 8.100000000000007,
-        "tol": 2.5,
-        "windowH": 59,
-        "sources": 3
-      },
-      "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.854246&longitude=113.301384&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "bd16b282bf003e80f13582379ceaf808b2e95765c88c0b72acc857306a0b2435",
-        "httpStatus": 200,
-        "expectedHours": 59,
-        "missingHours": 0,
-        "perModel": [
-          13.3,
-          19.2,
-          12.7
-        ],
-        "median": 13.3,
+        "median": 13.2,
         "spread": 6.5,
-        "withinGateRange": true,
-        "sourcesNearGateMedian": 3,
+        "withinGateRange": false,
+        "sourcesNearGateMedian": 1,
         "gateTol": 2.5
       }
     },
     {
-      "code": 422827,
-      "name": "来凤县",
-      "fromIso": "2026-11-01T11:00",
-      "toIso": "2026-11-02T23:00",
+      "code": 420106,
+      "name": "武昌区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
       "gate": {
         "perModel": [
-          6.899999999999998,
-          12.100000000000001,
-          15.1
+          5.199999999999999,
+          7.999999999999999,
+          11.699999999999998
         ],
-        "median": 12.100000000000001,
-        "spread": 8.200000000000003,
+        "median": 7.999999999999999,
+        "spread": 6.499999999999998,
         "tol": 2.5,
-        "windowH": 36,
+        "windowH": 70,
         "sources": 3
       },
       "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=29.506945&longitude=109.408328&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "d6f5f0c55349967ec923d50cc78a8c14f8e6faedf6b30dc9374a0a1fd2f861b7",
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.546536&longitude=114.307344&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "608e49698894b1359a196263345684003f7f3bc1795db1c22a7d0c24b6fddca4",
         "httpStatus": 200,
-        "expectedHours": 36,
+        "expectedHours": 70,
         "missingHours": 0,
         "perModel": [
-          8.7,
-          13.5,
-          3.2
+          8.1,
+          13.2,
+          14.6
         ],
-        "median": 8.7,
-        "spread": 10.3,
+        "median": 13.2,
+        "spread": 6.5,
+        "withinGateRange": false,
+        "sourcesNearGateMedian": 1,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420200,
+      "name": "黄石市",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          8.799999999999997,
+          12.2,
+          21.5
+        ],
+        "median": 12.2,
+        "spread": 12.700000000000003,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.220074&longitude=115.077048&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "dd0cde6ff98d637168b12efd23b855fc2a83b23736f684536076a8df2677715a",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          21.3,
+          21.1,
+          13.5
+        ],
+        "median": 21.1,
+        "spread": 7.8,
         "withinGateRange": true,
         "sourcesNearGateMedian": 1,
         "gateTol": 2.5
       }
     },
     {
-      "code": 422828,
-      "name": "鹤峰县",
-      "fromIso": "2026-11-01T01:00",
-      "toIso": "2026-11-02T23:00",
+      "code": 420202,
+      "name": "黄石港区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
       "gate": {
         "perModel": [
-          32.900000000000006,
-          37.800000000000004,
-          52.4
+          8.799999999999997,
+          12.2,
+          21.5
         ],
-        "median": 37.800000000000004,
-        "spread": 19.499999999999993,
+        "median": 12.2,
+        "spread": 12.700000000000003,
         "tol": 2.5,
-        "windowH": 46,
+        "windowH": 70,
         "sources": 3
       },
       "extra": {
-        "url": "https://api.open-meteo.com/v1/forecast?latitude=29.887298&longitude=110.033699&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
-        "sha256": "dfc35ed3b6d06b45be43c1f04ab6def47b1ad0073547ebe5c3fc54044c68735a",
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.212086&longitude=115.090164&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "0698630bf824d639d3b3cc0a8d5b6a566c821a90f9285d57bf5006e42bf65c58",
         "httpStatus": 200,
-        "expectedHours": 46,
+        "expectedHours": 70,
         "missingHours": 0,
         "perModel": [
-          29.4,
-          53.1,
-          21.1
+          21.3,
+          21.1,
+          13.5
         ],
-        "median": 29.4,
-        "spread": 32,
-        "withinGateRange": false,
+        "median": 21.1,
+        "spread": 7.8,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 1,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420203,
+      "name": "西塞山区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          8.799999999999997,
+          12.2,
+          21.5
+        ],
+        "median": 12.2,
+        "spread": 12.700000000000003,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.205365&longitude=115.093354&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "a3bc63b5809d3765430ad06228d1713fad5e0b32f5c4c94f08f03195220f353b",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          21.3,
+          21.1,
+          13.5
+        ],
+        "median": 21.1,
+        "spread": 7.8,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 1,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420204,
+      "name": "下陆区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          8.799999999999997,
+          13.899999999999997,
+          24.400000000000006
+        ],
+        "median": 13.899999999999997,
+        "spread": 15.600000000000009,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.177845&longitude=114.975755&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "5a1612480ee232e5542053c38b7661b6f4a407575f6753684b7b6dd1cc9f39e6",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          21.3,
+          21.1,
+          13.5
+        ],
+        "median": 21.1,
+        "spread": 7.8,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 1,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420205,
+      "name": "铁山区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          8.799999999999997,
+          15.3,
+          21.9
+        ],
+        "median": 15.3,
+        "spread": 13.100000000000001,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.20601&longitude=114.901366&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "9df60a68da825ce048c1b33abc142a747191f14f1cd8941c44617cdcaf8088fb",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          20.4,
+          21.1,
+          13.5
+        ],
+        "median": 20.4,
+        "spread": 7.6,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 1,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420281,
+      "name": "大冶市",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          7.999999999999998,
+          15.699999999999994,
+          24.400000000000006
+        ],
+        "median": 15.699999999999994,
+        "spread": 16.400000000000006,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.098804&longitude=114.974842&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "7f5c63c5193bf2db456ab0b3c384664afffb831093219bf9d2dfdec352c26054",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          20.4,
+          21.1,
+          16.1
+        ],
+        "median": 20.4,
+        "spread": 5,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 1,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420700,
+      "name": "鄂州市",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          6.499999999999998,
+          12.699999999999998,
+          18
+        ],
+        "median": 12.699999999999998,
+        "spread": 11.500000000000002,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.396536&longitude=114.890593&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "d0760a84ac6bef9947d14ad004ae1b36e09aeb3f6b565b2614e48e83662587f7",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          15.5,
+          12.5,
+          10.8
+        ],
+        "median": 12.5,
+        "spread": 4.7,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420702,
+      "name": "梁子湖区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          8.599999999999998,
+          12.899999999999997,
+          19.2
+        ],
+        "median": 12.899999999999997,
+        "spread": 10.600000000000001,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.098191&longitude=114.681967&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "2cc59c84cc8449db076642c3fe6e9b76236b7b895e0b1a6e36040bf440748100",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          18.9,
+          18.4,
+          16.8
+        ],
+        "median": 18.4,
+        "spread": 2.1,
+        "withinGateRange": true,
         "sourcesNearGateMedian": 0,
         "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420704,
+      "name": "鄂城区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gate": {
+        "perModel": [
+          6.499999999999998,
+          12.699999999999998,
+          18
+        ],
+        "median": 12.699999999999998,
+        "spread": 11.500000000000002,
+        "tol": 2.5,
+        "windowH": 70,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.39669&longitude=114.890012&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "a703c25972180302ef230c14db452f082006b2484c9ba34029b905d6816ebb79",
+        "httpStatus": 200,
+        "expectedHours": 70,
+        "missingHours": 0,
+        "perModel": [
+          15.5,
+          12.5,
+          10.8
+        ],
+        "median": 12.5,
+        "spread": 4.7,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421100,
+      "name": "黄冈市",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          6.499999999999998,
+          12.699999999999998,
+          18
+        ],
+        "median": 12.699999999999998,
+        "spread": 11.500000000000002,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.447711&longitude=114.879365&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "4445da64203789fb288008de1df8356b6e5c2f9e035d2b0832e6c99e050c52c7",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          15.5,
+          12.5,
+          10.8
+        ],
+        "median": 12.5,
+        "spread": 4.7,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421102,
+      "name": "黄州区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          6.499999999999998,
+          12.699999999999998,
+          18
+        ],
+        "median": 12.699999999999998,
+        "spread": 11.500000000000002,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.447435&longitude=114.878934&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "8fc966f3df2ccecd5c7c6e3171ce970ba9a74571815b564e50dddf8312af4967",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          15.5,
+          12.5,
+          10.8
+        ],
+        "median": 12.5,
+        "spread": 4.7,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421125,
+      "name": "浠水县",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          8.599999999999996,
+          14.499999999999996,
+          20.000000000000004
+        ],
+        "median": 14.499999999999996,
+        "spread": 11.400000000000007,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.454837&longitude=115.26344&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "7d87cb1e98f4341d5e5cd199d284bf5bebdda3e9b5ae46fb157c6a118b77e6ca",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          18.9,
+          19.8,
+          11.6
+        ],
+        "median": 18.9,
+        "spread": 8.2,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 0,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421171,
+      "name": "龙感湖管理区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          6.499999999999998,
+          12.699999999999998,
+          18
+        ],
+        "median": 12.699999999999998,
+        "spread": 11.500000000000002,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.447711&longitude=114.879365&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "07070a1cb03bfce7597b7c85efc1d87ab66b33912f080abc8c496d0c533c7afb",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          15.5,
+          12.5,
+          10.8
+        ],
+        "median": 12.5,
+        "spread": 4.7,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421181,
+      "name": "麻城市",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          2.8,
+          6,
+          8.9
+        ],
+        "median": 6,
+        "spread": 6.1000000000000005,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.177906&longitude=115.02541&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "f410dd2597c91245dac7187e632f941a7315490b9bf9124c0615d09c0c7c99e8",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          7.8,
+          10.6,
+          6.5
+        ],
+        "median": 7.8,
+        "spread": 4.1,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421200,
+      "name": "咸宁市",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          9.4,
+          19.299999999999994,
+          22.000000000000004
+        ],
+        "median": 19.299999999999994,
+        "spread": 12.600000000000003,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=29.832798&longitude=114.328963&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "4dbc89691c157d883a12028eec0daf4454fd41a4ab495b29bd894804d97a92fc",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          26.6,
+          18.4,
+          21.5
+        ],
+        "median": 21.5,
+        "spread": 8.2,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421202,
+      "name": "咸安区",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          9.4,
+          19.299999999999994,
+          22.000000000000004
+        ],
+        "median": 19.299999999999994,
+        "spread": 12.600000000000003,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=29.824716&longitude=114.333894&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "fdd412764f2091354c98b4cb2518c8d0f43f2c4c5287067bd6daa20a04e92dc7",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          26.6,
+          18.4,
+          21.5
+        ],
+        "median": 21.5,
+        "spread": 8.2,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 420324,
+      "name": "竹溪县",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gate": {
+        "perModel": [],
+        "median": null,
+        "spread": 0,
+        "tol": 2.5,
+        "windowH": 0,
+        "sources": 0
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=32.315342&longitude=109.717196&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "d2525ae122d7ac4a2c4599c28ea40844b16f0221bc92a9e0472be567ef203b58",
+        "httpStatus": 200,
+        "expectedHours": 0,
+        "missingHours": 0,
+        "perModel": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "spread": 0
+      }
+    },
+    {
+      "code": 420525,
+      "name": "远安县",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gate": {
+        "perModel": [],
+        "median": null,
+        "spread": 0,
+        "tol": 2.5,
+        "windowH": 0,
+        "sources": 0
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.059626&longitude=111.64331&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "162bacca7c2d551290d896ab032bec2b05cb032d42ffa0671560dc8f75a4a1eb",
+        "httpStatus": 200,
+        "expectedHours": 0,
+        "missingHours": 0,
+        "perModel": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "spread": 0
+      }
+    },
+    {
+      "code": 420526,
+      "name": "兴山县",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gate": {
+        "perModel": [],
+        "median": null,
+        "spread": 0,
+        "tol": 2.5,
+        "windowH": 0,
+        "sources": 0
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.34795&longitude=110.754499&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "ae873c07d6cc4c5da8500c8ada994518d36280914b0ea3e9b4b88c6756a9521f",
+        "httpStatus": 200,
+        "expectedHours": 0,
+        "missingHours": 0,
+        "perModel": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "spread": 0
+      }
+    },
+    {
+      "code": 420527,
+      "name": "秭归县",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gate": {
+        "perModel": [],
+        "median": null,
+        "spread": 0,
+        "tol": 2.5,
+        "windowH": 0,
+        "sources": 0
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.823908&longitude=110.976785&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "8f9b8b8895a32360d4837f0ea2ddc70b64cd0e20e054468177d75361205a58ac",
+        "httpStatus": 200,
+        "expectedHours": 0,
+        "missingHours": 0,
+        "perModel": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "spread": 0
+      }
+    },
+    {
+      "code": 420882,
+      "name": "京山市",
+      "fromIso": "2026-11-03T07:00",
+      "toIso": "2026-11-03T16:00",
+      "gate": {
+        "perModel": [
+          2,
+          3.3,
+          3.6
+        ],
+        "median": 3.3,
+        "spread": 1.6,
+        "tol": 2.5,
+        "windowH": 9,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.022457&longitude=113.114595&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "268106b49560b38b65f2625e8cb4f26449a729ba8c307c833fc90de8601fa31c",
+        "httpStatus": 200,
+        "expectedHours": 9,
+        "missingHours": 0,
+        "perModel": [
+          1.3,
+          3,
+          2.1
+        ],
+        "median": 2.1,
+        "spread": 1.7,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 4,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 421123,
+      "name": "罗田县",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gate": {
+        "perModel": [],
+        "median": null,
+        "spread": 0,
+        "tol": 2.5,
+        "windowH": 0,
+        "sources": 0
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=30.781679&longitude=115.398984&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "aa21db33cd667e9d42442f63b03948656ba1ea57d10697b1442514c990e9c54d",
+        "httpStatus": 200,
+        "expectedHours": 0,
+        "missingHours": 0,
+        "perModel": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "spread": 0
+      }
+    },
+    {
+      "code": 421321,
+      "name": "随县",
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gate": {
+        "perModel": [],
+        "median": null,
+        "spread": 0,
+        "tol": 2.5,
+        "windowH": 0,
+        "sources": 0
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=31.854246&longitude=113.301384&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "cd8629383ab43a69015421f33650df3734d9b51742372c736ca0bff55ea32f5c",
+        "httpStatus": 200,
+        "expectedHours": 0,
+        "missingHours": 0,
+        "perModel": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "spread": 0
+      }
+    },
+    {
+      "code": 422827,
+      "name": "来凤县",
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gate": {
+        "perModel": [
+          1.1,
+          8.299999999999997,
+          12.099999999999998
+        ],
+        "median": 8.299999999999997,
+        "spread": 10.999999999999998,
+        "tol": 2.5,
+        "windowH": 66,
+        "sources": 3
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=29.506945&longitude=109.408328&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "c13b4b978a48b21d3bf0a8eabf355f6f41d6cd6ce949ac54dbe4753e6a2b9cde",
+        "httpStatus": 200,
+        "expectedHours": 66,
+        "missingHours": 0,
+        "perModel": [
+          7.1,
+          9.6,
+          3.4
+        ],
+        "median": 7.1,
+        "spread": 6.2,
+        "withinGateRange": true,
+        "sourcesNearGateMedian": 3,
+        "gateTol": 2.5
+      }
+    },
+    {
+      "code": 422828,
+      "name": "鹤峰县",
+      "fromIso": "2026-11-06T16:00",
+      "toIso": "2026-11-06T16:00",
+      "gate": {
+        "perModel": [],
+        "median": null,
+        "spread": 0,
+        "tol": 2.5,
+        "windowH": 0,
+        "sources": 0
+      },
+      "extra": {
+        "url": "https://api.open-meteo.com/v1/forecast?latitude=29.887298&longitude=110.033699&hourly=precipitation&timezone=Asia%2FShanghai&past_days=4&forecast_days=1&models=gem_seamless,jma_seamless,meteofrance_seamless",
+        "sha256": "d656269bfa42a6203617b85b58c147ad0a22d567334719136405ec154d3f6772",
+        "httpStatus": 200,
+        "expectedHours": 0,
+        "missingHours": 0,
+        "perModel": [
+          0,
+          0,
+          0
+        ],
+        "median": 0,
+        "spread": 0
       }
     }
   ]

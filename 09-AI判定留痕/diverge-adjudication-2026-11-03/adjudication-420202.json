@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:18.169Z",
+  "code": 420202,
+  "name": "黄石港区",
+  "chainVal": 137,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T23:00",
+  "gateModels": [
+    8.799999999999997,
+    12.2,
+    21.5
+  ],
+  "gateMedian": 12.2,
+  "extraModels": [
+    21.3,
+    21.1,
+    13.5
+  ],
+  "extraMedian": 21.1,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 149,
+  "evidenceHash": "0x9844eef732eca3567ce4f5ee6b5c577838613ee42956699a9c3c3812979a51ff",
+  "confidence": 72,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 420202 149mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,12.2,21.5] gate-median=12.2 extra-models=[21.3,21.1,13.5] extra-median=21.1 gate-raw-sha256=8d38a559f37a21dd2e65aa87ffd6e81ba6adf8e6f9536c5f89fa3b258eb08295 extra-raw-sha256=0698630bf824d639d3b3cc0a8d5b6a566c821a90f9285d57bf5006e42bf65c58 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420202-202611062345-19827cae-bd3c-40d9-bd66-2719c34c92d3.json",
+    "gateRawSha256": "8d38a559f37a21dd2e65aa87ffd6e81ba6adf8e6f9536c5f89fa3b258eb08295",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420202.json",
+    "extraRawSha256": "0698630bf824d639d3b3cc0a8d5b6a566c821a90f9285d57bf5006e42bf65c58"
+  }
+}

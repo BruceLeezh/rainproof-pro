@@ -1,0 +1,28 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:16.422Z",
+  "code": 420106,
+  "name": "武昌区",
+  "chainVal": 122,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T23:00",
+  "gateModels": [
+    5.199999999999999,
+    7.999999999999999,
+    11.699999999999998
+  ],
+  "gateMedian": 7.999999999999999,
+  "extraModels": [
+    8.1,
+    13.2,
+    14.6
+  ],
+  "extraMedian": 13.2,
+  "corroborated": false,
+  "decision": "hold",
+  "target": null,
+  "evidenceHash": null,
+  "confidence": null,
+  "sources": 6,
+  "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+}

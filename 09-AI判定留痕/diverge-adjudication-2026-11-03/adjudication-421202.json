@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:31.439Z",
+  "code": 421202,
+  "name": "咸安区",
+  "chainVal": 152,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T19:00",
+  "gateModels": [
+    9.4,
+    19.299999999999994,
+    22.000000000000004
+  ],
+  "gateMedian": 19.299999999999994,
+  "extraModels": [
+    26.6,
+    18.4,
+    21.5
+  ],
+  "extraMedian": 21.5,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 171,
+  "evidenceHash": "0xad6ad982c43b1d4ebc32e5b8ab61d682b3afacacdcb10e75b31d46d79da2afe1",
+  "confidence": 79,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 421202 171mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[9.4,19.299999999999994,22.000000000000004] gate-median=19.299999999999994 extra-models=[26.6,18.4,21.5] extra-median=21.5 gate-raw-sha256=578e9a4bbac4c75daa699c04b69375b9e158f34ac2e021652bbe9d22e35bccd1 extra-raw-sha256=fdd412764f2091354c98b4cb2518c8d0f43f2c4c5287067bd6daa20a04e92dc7 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-421202-202611061945-1e190c82-4b29-4989-8257-6b1e0e952806.json",
+    "gateRawSha256": "578e9a4bbac4c75daa699c04b69375b9e158f34ac2e021652bbe9d22e35bccd1",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421202.json",
+    "extraRawSha256": "fdd412764f2091354c98b4cb2518c8d0f43f2c4c5287067bd6daa20a04e92dc7"
+  }
+}

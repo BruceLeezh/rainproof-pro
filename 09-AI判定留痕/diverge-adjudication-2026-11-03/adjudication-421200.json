@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:29.742Z",
+  "code": 421200,
+  "name": "咸宁市",
+  "chainVal": 138,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T19:00",
+  "gateModels": [
+    9.4,
+    19.299999999999994,
+    22.000000000000004
+  ],
+  "gateMedian": 19.299999999999994,
+  "extraModels": [
+    26.6,
+    18.4,
+    21.5
+  ],
+  "extraMedian": 21.5,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 157,
+  "evidenceHash": "0x74cef285ff73b44b216125e50cef34067273728ce0cd5aaa3310c167b5293fb8",
+  "confidence": 79,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 421200 157mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[9.4,19.299999999999994,22.000000000000004] gate-median=19.299999999999994 extra-models=[26.6,18.4,21.5] extra-median=21.5 gate-raw-sha256=4fddc8ad0940c78be1eaff5c87ae7b7627a420d50584d1a715dbc734c280477a extra-raw-sha256=4dbc89691c157d883a12028eec0daf4454fd41a4ab495b29bd894804d97a92fc adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-421200-202611061945-617e3161-e75e-4c1e-b23e-697b27218220.json",
+    "gateRawSha256": "4fddc8ad0940c78be1eaff5c87ae7b7627a420d50584d1a715dbc734c280477a",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421200.json",
+    "extraRawSha256": "4dbc89691c157d883a12028eec0daf4454fd41a4ab495b29bd894804d97a92fc"
+  }
+}

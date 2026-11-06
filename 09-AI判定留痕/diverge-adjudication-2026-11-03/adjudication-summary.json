@@ -1,152 +1,24 @@
 {
-  "generatedAt": "2026-11-02T16:17:00.448Z",
+  "generatedAt": "2026-11-06T15:59:36.406Z",
   "rows": [
     {
-      "code": 420324,
-      "name": "竹溪县",
-      "chainVal": 128,
-      "fromIso": "2026-11-01T01:00",
-      "toIso": "2026-11-02T23:00",
+      "code": 420105,
+      "name": "汉阳区",
+      "chainVal": 123,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
       "gateModels": [
-        5.800000000000002,
-        15.000000000000002,
-        20.500000000000004
+        5.199999999999999,
+        7.999999999999999,
+        11.699999999999998
       ],
-      "gateMedian": 15.000000000000002,
+      "gateMedian": 7.999999999999999,
       "extraModels": [
-        10.5,
-        7.3,
-        11.5
+        8.1,
+        13.2,
+        14.6
       ],
-      "extraMedian": 10.5,
-      "corroborated": true,
-      "decision": "suggest-feed",
-      "target": 143,
-      "evidenceHash": "0x5f4c172da028dca59f9d3bce4d6df3bc5972911bda760e0b92975e3223fbe464",
-      "confidence": 75,
-      "sources": 6,
-      "evidenceCanonical": "v6-feed-manual 420324 143mm window(2026-11-01T01:00→2026-11-02T23:00) gate-models=[5.800000000000002,15.000000000000002,20.500000000000004] gate-median=15.000000000000002 extra-models=[10.5,7.3,11.5] extra-median=10.5 gate-raw-sha256=e0c8ad4c3adbba01c8783d4d136c46a2b76c0250e1a7faefaeccee06c02c508e extra-raw-sha256=a4d68806a3b2edd5492eff21440e61e0f0ee821250e913d539dfdb0b6114e088 adjudication=2026-11-03",
-      "evidenceFileRefs": {
-        "gateRawEvidence": "raw/v6feed-420324-202611022315-43de48df-2830-4970-8ba0-f546997454ea.json",
-        "gateRawSha256": "e0c8ad4c3adbba01c8783d4d136c46a2b76c0250e1a7faefaeccee06c02c508e",
-        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420324.json",
-        "extraRawSha256": "a4d68806a3b2edd5492eff21440e61e0f0ee821250e913d539dfdb0b6114e088"
-      }
-    },
-    {
-      "code": 420525,
-      "name": "远安县",
-      "chainVal": 125,
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gateModels": [
-        9.599999999999998,
-        15.900000000000002,
-        22.6
-      ],
-      "gateMedian": 15.900000000000002,
-      "extraModels": [
-        15.3,
-        24.3,
-        11.8
-      ],
-      "extraMedian": 15.3,
-      "corroborated": true,
-      "decision": "suggest-feed",
-      "target": 141,
-      "evidenceHash": "0xf90de77fa07bfed1c2afd33b00dec257ae25f1b612923f7cde9abcb2a7c09203",
-      "confidence": 76,
-      "sources": 6,
-      "evidenceCanonical": "v6-feed-manual 420525 141mm window(2026-10-31T12:00→2026-11-02T23:00) gate-models=[9.599999999999998,15.900000000000002,22.6] gate-median=15.900000000000002 extra-models=[15.3,24.3,11.8] extra-median=15.3 gate-raw-sha256=f749ec12398bdc8053aab5f252db7b35952b46ccb612546355620119a27adccf extra-raw-sha256=e25469c57e15199d704ce13c83c6346f5ec8b82bca408657457583736f4fb5de adjudication=2026-11-03",
-      "evidenceFileRefs": {
-        "gateRawEvidence": "raw/v6feed-420525-202611022315-571fca83-5c3a-4056-b323-5d8a16b6a3f5.json",
-        "gateRawSha256": "f749ec12398bdc8053aab5f252db7b35952b46ccb612546355620119a27adccf",
-        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420525.json",
-        "extraRawSha256": "e25469c57e15199d704ce13c83c6346f5ec8b82bca408657457583736f4fb5de"
-      }
-    },
-    {
-      "code": 420526,
-      "name": "兴山县",
-      "chainVal": 76,
-      "fromIso": "2026-11-01T00:00",
-      "toIso": "2026-11-02T23:00",
-      "gateModels": [
-        15.599999999999998,
-        19.499999999999993,
-        27.100000000000005
-      ],
-      "gateMedian": 19.499999999999993,
-      "extraModels": [
-        19.7,
-        18.6,
-        22.5
-      ],
-      "extraMedian": 19.7,
-      "corroborated": true,
-      "decision": "suggest-feed",
-      "target": 95,
-      "evidenceHash": "0x232624657dae7fedb0bf712be7e05e15d541675ff67c09b22118cb6abd79878c",
-      "confidence": 79,
-      "sources": 6,
-      "evidenceCanonical": "v6-feed-manual 420526 95mm window(2026-11-01T00:00→2026-11-02T23:00) gate-models=[15.599999999999998,19.499999999999993,27.100000000000005] gate-median=19.499999999999993 extra-models=[19.7,18.6,22.5] extra-median=19.7 gate-raw-sha256=26450e9bc26c07ca3aed67137ce8eeaf55508d5c03e0c2c6c6cbeb4c0f1ecb74 extra-raw-sha256=fe9a2ec09d4be29ef6ba6dbfb2ae38e57ea954cf1b100a894742ce858c2ddee1 adjudication=2026-11-03",
-      "evidenceFileRefs": {
-        "gateRawEvidence": "raw/v6feed-420526-202611022315-ff03eb8c-db38-4c4c-af69-ebca8c3e4baf.json",
-        "gateRawSha256": "26450e9bc26c07ca3aed67137ce8eeaf55508d5c03e0c2c6c6cbeb4c0f1ecb74",
-        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420526.json",
-        "extraRawSha256": "fe9a2ec09d4be29ef6ba6dbfb2ae38e57ea954cf1b100a894742ce858c2ddee1"
-      }
-    },
-    {
-      "code": 420527,
-      "name": "秭归县",
-      "chainVal": 118,
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gateModels": [
-        10.5,
-        14.7,
-        24.000000000000007
-      ],
-      "gateMedian": 14.7,
-      "extraModels": [
-        15.3,
-        18.7,
-        13.2
-      ],
-      "extraMedian": 15.3,
-      "corroborated": true,
-      "decision": "suggest-feed",
-      "target": 133,
-      "evidenceHash": "0x496058cd0b5f55916d5a5564372c245772ab3242e7b9447adef35d912229d55d",
-      "confidence": 75,
-      "sources": 6,
-      "evidenceCanonical": "v6-feed-manual 420527 133mm window(2026-10-31T12:00→2026-11-02T23:00) gate-models=[10.5,14.7,24.000000000000007] gate-median=14.7 extra-models=[15.3,18.7,13.2] extra-median=15.3 gate-raw-sha256=5a21ef2569e0a5661b055521fc7c98f4858ddfdf58403877231a121713d659d6 extra-raw-sha256=ac4e5a064ef655d1be1c446b5e405a1cb5fbb248a33fb45c7faa1d87d89dd0c4 adjudication=2026-11-03",
-      "evidenceFileRefs": {
-        "gateRawEvidence": "raw/v6feed-420527-202611022315-6061a893-6822-4039-8bb2-238828fdf724.json",
-        "gateRawSha256": "5a21ef2569e0a5661b055521fc7c98f4858ddfdf58403877231a121713d659d6",
-        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420527.json",
-        "extraRawSha256": "ac4e5a064ef655d1be1c446b5e405a1cb5fbb248a33fb45c7faa1d87d89dd0c4"
-      }
-    },
-    {
-      "code": 420882,
-      "name": "京山市",
-      "chainVal": 173,
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gateModels": [
-        12.600000000000003,
-        18.7,
-        26.399999999999995
-      ],
-      "gateMedian": 18.7,
-      "extraModels": [
-        10.6,
-        15.9,
-        12.1
-      ],
-      "extraMedian": 12.1,
+      "extraMedian": 13.2,
       "corroborated": false,
       "decision": "hold",
       "target": null,
@@ -156,119 +28,753 @@
       "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
     },
     {
-      "code": 421123,
-      "name": "罗田县",
-      "chainVal": 54,
-      "fromIso": "2026-11-01T13:00",
-      "toIso": "2026-11-02T23:00",
+      "code": 420106,
+      "name": "武昌区",
+      "chainVal": 122,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
       "gateModels": [
-        7.300000000000002,
-        12.200000000000001,
-        19.5
+        5.199999999999999,
+        7.999999999999999,
+        11.699999999999998
       ],
-      "gateMedian": 12.200000000000001,
+      "gateMedian": 7.999999999999999,
       "extraModels": [
-        12.1,
-        7.4,
-        16.8
+        8.1,
+        13.2,
+        14.6
       ],
-      "extraMedian": 12.1,
+      "extraMedian": 13.2,
+      "corroborated": false,
+      "decision": "hold",
+      "target": null,
+      "evidenceHash": null,
+      "confidence": null,
+      "sources": 6,
+      "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+    },
+    {
+      "code": 420200,
+      "name": "黄石市",
+      "chainVal": 137,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        8.799999999999997,
+        12.2,
+        21.5
+      ],
+      "gateMedian": 12.2,
+      "extraModels": [
+        21.3,
+        21.1,
+        13.5
+      ],
+      "extraMedian": 21.1,
       "corroborated": true,
       "decision": "suggest-feed",
-      "target": 66,
-      "evidenceHash": "0xf30c90851bd139e764cbc699bdf2ea930f85eb2cf165a80319c11d6aab7fcc1b",
+      "target": 149,
+      "evidenceHash": "0xf191c41ea5f944e8bf347285cca895a748c7095b9dd55c16db03d61e37af5403",
       "confidence": 72,
       "sources": 6,
-      "evidenceCanonical": "v6-feed-manual 421123 66mm window(2026-11-01T13:00→2026-11-02T23:00) gate-models=[7.300000000000002,12.200000000000001,19.5] gate-median=12.200000000000001 extra-models=[12.1,7.4,16.8] extra-median=12.1 gate-raw-sha256=107c7cd45d66120c85517de096eb60e4b8f1d7a7b68d513091fd41ea7b5b08c3 extra-raw-sha256=f57604012b1e4358c5fa5de40dc7e74c7f4bb32d5c3c67828e5d4ddd29e61e7b adjudication=2026-11-03",
+      "evidenceCanonical": "v6-feed-manual 420200 149mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,12.2,21.5] gate-median=12.2 extra-models=[21.3,21.1,13.5] extra-median=21.1 gate-raw-sha256=df0c30390bc0dd1d0dbf3fe34d8e1afccea8a8f380bdc1b7823a2cd23245a59b extra-raw-sha256=dd0cde6ff98d637168b12efd23b855fc2a83b23736f684536076a8df2677715a adjudication=2026-11-03",
       "evidenceFileRefs": {
-        "gateRawEvidence": "raw/v6feed-421123-202611022315-8f9dfac3-10ae-44e5-b966-002565460c35.json",
-        "gateRawSha256": "107c7cd45d66120c85517de096eb60e4b8f1d7a7b68d513091fd41ea7b5b08c3",
-        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421123.json",
-        "extraRawSha256": "f57604012b1e4358c5fa5de40dc7e74c7f4bb32d5c3c67828e5d4ddd29e61e7b"
+        "gateRawEvidence": "raw/v6feed-420200-202611062345-f07f111b-2dbf-4f5c-9cab-fe663b21edda.json",
+        "gateRawSha256": "df0c30390bc0dd1d0dbf3fe34d8e1afccea8a8f380bdc1b7823a2cd23245a59b",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420200.json",
+        "extraRawSha256": "dd0cde6ff98d637168b12efd23b855fc2a83b23736f684536076a8df2677715a"
       }
+    },
+    {
+      "code": 420202,
+      "name": "黄石港区",
+      "chainVal": 137,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        8.799999999999997,
+        12.2,
+        21.5
+      ],
+      "gateMedian": 12.2,
+      "extraModels": [
+        21.3,
+        21.1,
+        13.5
+      ],
+      "extraMedian": 21.1,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 149,
+      "evidenceHash": "0x9844eef732eca3567ce4f5ee6b5c577838613ee42956699a9c3c3812979a51ff",
+      "confidence": 72,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420202 149mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,12.2,21.5] gate-median=12.2 extra-models=[21.3,21.1,13.5] extra-median=21.1 gate-raw-sha256=8d38a559f37a21dd2e65aa87ffd6e81ba6adf8e6f9536c5f89fa3b258eb08295 extra-raw-sha256=0698630bf824d639d3b3cc0a8d5b6a566c821a90f9285d57bf5006e42bf65c58 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420202-202611062345-19827cae-bd3c-40d9-bd66-2719c34c92d3.json",
+        "gateRawSha256": "8d38a559f37a21dd2e65aa87ffd6e81ba6adf8e6f9536c5f89fa3b258eb08295",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420202.json",
+        "extraRawSha256": "0698630bf824d639d3b3cc0a8d5b6a566c821a90f9285d57bf5006e42bf65c58"
+      }
+    },
+    {
+      "code": 420203,
+      "name": "西塞山区",
+      "chainVal": 137,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        8.799999999999997,
+        12.2,
+        21.5
+      ],
+      "gateMedian": 12.2,
+      "extraModels": [
+        21.3,
+        21.1,
+        13.5
+      ],
+      "extraMedian": 21.1,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 149,
+      "evidenceHash": "0xa9e21bdd51c66d1f55091b798602eecf23a5c490c475e8210e94ed9f7ae9c194",
+      "confidence": 72,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420203 149mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,12.2,21.5] gate-median=12.2 extra-models=[21.3,21.1,13.5] extra-median=21.1 gate-raw-sha256=6298ccb1c7262c28172134956274240670b0d05e9f6188070fcfa56fdd0dc1d6 extra-raw-sha256=a3bc63b5809d3765430ad06228d1713fad5e0b32f5c4c94f08f03195220f353b adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420203-202611062345-ae9a441c-2b88-45bd-a630-19c7215fcc44.json",
+        "gateRawSha256": "6298ccb1c7262c28172134956274240670b0d05e9f6188070fcfa56fdd0dc1d6",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420203.json",
+        "extraRawSha256": "a3bc63b5809d3765430ad06228d1713fad5e0b32f5c4c94f08f03195220f353b"
+      }
+    },
+    {
+      "code": 420204,
+      "name": "下陆区",
+      "chainVal": 124,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        8.799999999999997,
+        13.899999999999997,
+        24.400000000000006
+      ],
+      "gateMedian": 13.899999999999997,
+      "extraModels": [
+        21.3,
+        21.1,
+        13.5
+      ],
+      "extraMedian": 21.1,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 138,
+      "evidenceHash": "0x9348c7910be050301e312bb8e735409a564e0b8e0dcebc07bad4131a64a89d99",
+      "confidence": 74,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420204 138mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,13.899999999999997,24.400000000000006] gate-median=13.899999999999997 extra-models=[21.3,21.1,13.5] extra-median=21.1 gate-raw-sha256=b7d39c6632b7f673e51e80ac17a3f296e4f6b8ca5c34681cab4bb33a39125327 extra-raw-sha256=5a1612480ee232e5542053c38b7661b6f4a407575f6753684b7b6dd1cc9f39e6 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420204-202611062345-e2f31b57-bc39-4aa1-a036-da0a0f9d4b72.json",
+        "gateRawSha256": "b7d39c6632b7f673e51e80ac17a3f296e4f6b8ca5c34681cab4bb33a39125327",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420204.json",
+        "extraRawSha256": "5a1612480ee232e5542053c38b7661b6f4a407575f6753684b7b6dd1cc9f39e6"
+      }
+    },
+    {
+      "code": 420205,
+      "name": "铁山区",
+      "chainVal": 128,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        8.799999999999997,
+        15.3,
+        21.9
+      ],
+      "gateMedian": 15.3,
+      "extraModels": [
+        20.4,
+        21.1,
+        13.5
+      ],
+      "extraMedian": 20.4,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 143,
+      "evidenceHash": "0x523a4808c43f291da54634017831aa19f41cea4cd046f8b8b5c4a10fccabd010",
+      "confidence": 75,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420205 143mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,15.3,21.9] gate-median=15.3 extra-models=[20.4,21.1,13.5] extra-median=20.4 gate-raw-sha256=ca1a0390f8610cb81c874fb1f2a26c4ee18331a05abaea1f1a7bddc04941c724 extra-raw-sha256=9df60a68da825ce048c1b33abc142a747191f14f1cd8941c44617cdcaf8088fb adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420205-202611062345-dbfe94e9-d5bd-486e-980b-2b1c2f4fc7ee.json",
+        "gateRawSha256": "ca1a0390f8610cb81c874fb1f2a26c4ee18331a05abaea1f1a7bddc04941c724",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420205.json",
+        "extraRawSha256": "9df60a68da825ce048c1b33abc142a747191f14f1cd8941c44617cdcaf8088fb"
+      }
+    },
+    {
+      "code": 420281,
+      "name": "大冶市",
+      "chainVal": 135,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        7.999999999999998,
+        15.699999999999994,
+        24.400000000000006
+      ],
+      "gateMedian": 15.699999999999994,
+      "extraModels": [
+        20.4,
+        21.1,
+        16.1
+      ],
+      "extraMedian": 20.4,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 151,
+      "evidenceHash": "0xd02bdb0cc49578919b398a45648c1f555fcdf24bf4a902daf4938b9268676a7c",
+      "confidence": 76,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420281 151mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[7.999999999999998,15.699999999999994,24.400000000000006] gate-median=15.699999999999994 extra-models=[20.4,21.1,16.1] extra-median=20.4 gate-raw-sha256=111bfee78f09507a88eb2bfec8fcfbb0bced4783c1d0c47b890943b32311d3db extra-raw-sha256=7f5c63c5193bf2db456ab0b3c384664afffb831093219bf9d2dfdec352c26054 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420281-202611062345-28ae2470-216d-4819-b28b-d1c6a0040c72.json",
+        "gateRawSha256": "111bfee78f09507a88eb2bfec8fcfbb0bced4783c1d0c47b890943b32311d3db",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420281.json",
+        "extraRawSha256": "7f5c63c5193bf2db456ab0b3c384664afffb831093219bf9d2dfdec352c26054"
+      }
+    },
+    {
+      "code": 420700,
+      "name": "鄂州市",
+      "chainVal": 105,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        6.499999999999998,
+        12.699999999999998,
+        18
+      ],
+      "gateMedian": 12.699999999999998,
+      "extraModels": [
+        15.5,
+        12.5,
+        10.8
+      ],
+      "extraMedian": 12.5,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 118,
+      "evidenceHash": "0x59f42a5af2b4af98dc9e4aff7be0c86ffca25bbe2da29da9189d5a3ebfdeefc3",
+      "confidence": 73,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420700 118mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=8b88c1835719e531dec810676cab97d0130485c263a7599ab1e927ef3752050c extra-raw-sha256=d0760a84ac6bef9947d14ad004ae1b36e09aeb3f6b565b2614e48e83662587f7 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420700-202611062345-45915373-8024-42f1-abc3-0c1c486c8cc6.json",
+        "gateRawSha256": "8b88c1835719e531dec810676cab97d0130485c263a7599ab1e927ef3752050c",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420700.json",
+        "extraRawSha256": "d0760a84ac6bef9947d14ad004ae1b36e09aeb3f6b565b2614e48e83662587f7"
+      }
+    },
+    {
+      "code": 420702,
+      "name": "梁子湖区",
+      "chainVal": 118,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        8.599999999999998,
+        12.899999999999997,
+        19.2
+      ],
+      "gateMedian": 12.899999999999997,
+      "extraModels": [
+        18.9,
+        18.4,
+        16.8
+      ],
+      "extraMedian": 18.4,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 131,
+      "evidenceHash": "0x537eb33cf2bf7be4f1438c3bf0bf3ecef72b795e0de2bb4be9a5ac4cb97429fc",
+      "confidence": 73,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420702 131mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.599999999999998,12.899999999999997,19.2] gate-median=12.899999999999997 extra-models=[18.9,18.4,16.8] extra-median=18.4 gate-raw-sha256=ba02bc48f127306faaf39b7bc16e5640bc4fe6f99658551cdc2ebd704e02913f extra-raw-sha256=2cc59c84cc8449db076642c3fe6e9b76236b7b895e0b1a6e36040bf440748100 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420702-202611062345-5af0a437-08df-4f7b-8fcd-da87e846c404.json",
+        "gateRawSha256": "ba02bc48f127306faaf39b7bc16e5640bc4fe6f99658551cdc2ebd704e02913f",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420702.json",
+        "extraRawSha256": "2cc59c84cc8449db076642c3fe6e9b76236b7b895e0b1a6e36040bf440748100"
+      }
+    },
+    {
+      "code": 420704,
+      "name": "鄂城区",
+      "chainVal": 105,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T23:00",
+      "gateModels": [
+        6.499999999999998,
+        12.699999999999998,
+        18
+      ],
+      "gateMedian": 12.699999999999998,
+      "extraModels": [
+        15.5,
+        12.5,
+        10.8
+      ],
+      "extraMedian": 12.5,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 118,
+      "evidenceHash": "0x13dff0101b3edbd3c131616926017f794aa80d2e7502c9e1b7e9a8a49055c5e1",
+      "confidence": 73,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420704 118mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=6e78506257276190a355ae5cde177ae4e596f63bf30acf0522932b46b3f80ca4 extra-raw-sha256=a703c25972180302ef230c14db452f082006b2484c9ba34029b905d6816ebb79 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420704-202611062345-9fb1c6cf-ca7d-4a47-885e-26d63c2cc420.json",
+        "gateRawSha256": "6e78506257276190a355ae5cde177ae4e596f63bf30acf0522932b46b3f80ca4",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420704.json",
+        "extraRawSha256": "a703c25972180302ef230c14db452f082006b2484c9ba34029b905d6816ebb79"
+      }
+    },
+    {
+      "code": 421100,
+      "name": "黄冈市",
+      "chainVal": 92,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gateModels": [
+        6.499999999999998,
+        12.699999999999998,
+        18
+      ],
+      "gateMedian": 12.699999999999998,
+      "extraModels": [
+        15.5,
+        12.5,
+        10.8
+      ],
+      "extraMedian": 12.5,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 105,
+      "evidenceHash": "0x53147938957a534fb4c8f9ceb61e4935e5b3253477338743290bb7ecfb2acf26",
+      "confidence": 73,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 421100 105mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=747a0892da7eae231d7d9a2987dbdc1b56af695e5c24bf81f9121cb251a49e07 extra-raw-sha256=4445da64203789fb288008de1df8356b6e5c2f9e035d2b0832e6c99e050c52c7 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-421100-202611061945-0a7f752f-08af-4c0d-8962-d913de1d7073.json",
+        "gateRawSha256": "747a0892da7eae231d7d9a2987dbdc1b56af695e5c24bf81f9121cb251a49e07",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421100.json",
+        "extraRawSha256": "4445da64203789fb288008de1df8356b6e5c2f9e035d2b0832e6c99e050c52c7"
+      }
+    },
+    {
+      "code": 421102,
+      "name": "黄州区",
+      "chainVal": 92,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gateModels": [
+        6.499999999999998,
+        12.699999999999998,
+        18
+      ],
+      "gateMedian": 12.699999999999998,
+      "extraModels": [
+        15.5,
+        12.5,
+        10.8
+      ],
+      "extraMedian": 12.5,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 105,
+      "evidenceHash": "0x7457017c688ce4192a4bd90fb0355f8e09ce0426b0530b037ec954a78280bd42",
+      "confidence": 73,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 421102 105mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=1c7b3591ad458a30adb27bdb1ba2101433c36e0d6f51e5e70291a51acaf6629d extra-raw-sha256=8fc966f3df2ccecd5c7c6e3171ce970ba9a74571815b564e50dddf8312af4967 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-421102-202611061945-77e1a350-eee7-42da-874a-fcd4622475e6.json",
+        "gateRawSha256": "1c7b3591ad458a30adb27bdb1ba2101433c36e0d6f51e5e70291a51acaf6629d",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421102.json",
+        "extraRawSha256": "8fc966f3df2ccecd5c7c6e3171ce970ba9a74571815b564e50dddf8312af4967"
+      }
+    },
+    {
+      "code": 421125,
+      "name": "浠水县",
+      "chainVal": 107,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gateModels": [
+        8.599999999999996,
+        14.499999999999996,
+        20.000000000000004
+      ],
+      "gateMedian": 14.499999999999996,
+      "extraModels": [
+        18.9,
+        19.8,
+        11.6
+      ],
+      "extraMedian": 18.9,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 121,
+      "evidenceHash": "0xb56ced303331371bb37924d47accd34fea2c2080b1a0b6a689c838e0c0e23cd5",
+      "confidence": 74,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 421125 121mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[8.599999999999996,14.499999999999996,20.000000000000004] gate-median=14.499999999999996 extra-models=[18.9,19.8,11.6] extra-median=18.9 gate-raw-sha256=ec972dc1460f088020a52bb90c46d55f15983e88bd9d4860793a871c4fd6edf0 extra-raw-sha256=7d87cb1e98f4341d5e5cd199d284bf5bebdda3e9b5ae46fb157c6a118b77e6ca adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-421125-202611061945-2c930b1b-e882-40a6-8081-36b627a1b873.json",
+        "gateRawSha256": "ec972dc1460f088020a52bb90c46d55f15983e88bd9d4860793a871c4fd6edf0",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421125.json",
+        "extraRawSha256": "7d87cb1e98f4341d5e5cd199d284bf5bebdda3e9b5ae46fb157c6a118b77e6ca"
+      }
+    },
+    {
+      "code": 421171,
+      "name": "龙感湖管理区",
+      "chainVal": 92,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gateModels": [
+        6.499999999999998,
+        12.699999999999998,
+        18
+      ],
+      "gateMedian": 12.699999999999998,
+      "extraModels": [
+        15.5,
+        12.5,
+        10.8
+      ],
+      "extraMedian": 12.5,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 105,
+      "evidenceHash": "0xb290da05a54458d37439a358db658c65596d97e358415c500078d6524a6b9567",
+      "confidence": 73,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 421171 105mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=9232642c7a3d6bec394ed0e5aecb3f6ce11f9738ccebd2c10f4d0f803c19bf4b extra-raw-sha256=07070a1cb03bfce7597b7c85efc1d87ab66b33912f080abc8c496d0c533c7afb adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-421171-202611061945-b02b97f6-6e10-42e6-9d29-43747613c1b4.json",
+        "gateRawSha256": "9232642c7a3d6bec394ed0e5aecb3f6ce11f9738ccebd2c10f4d0f803c19bf4b",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421171.json",
+        "extraRawSha256": "07070a1cb03bfce7597b7c85efc1d87ab66b33912f080abc8c496d0c533c7afb"
+      }
+    },
+    {
+      "code": 421181,
+      "name": "麻城市",
+      "chainVal": 148,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gateModels": [
+        2.8,
+        6,
+        8.9
+      ],
+      "gateMedian": 6,
+      "extraModels": [
+        7.8,
+        10.6,
+        6.5
+      ],
+      "extraMedian": 7.8,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 154,
+      "evidenceHash": "0xab5fb374d2f13670de8dcd7663fefeeac457fa0b2846749a53b253cbd96551b4",
+      "confidence": 66,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 421181 154mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[2.8,6,8.9] gate-median=6 extra-models=[7.8,10.6,6.5] extra-median=7.8 gate-raw-sha256=d0e42b28b6088edc890d90258e00e884d90dbf87db666b78ac30c4607f8dd70d extra-raw-sha256=f410dd2597c91245dac7187e632f941a7315490b9bf9124c0615d09c0c7c99e8 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-421181-202611061945-db76b76c-93f2-4d6a-9db0-bd036a138203.json",
+        "gateRawSha256": "d0e42b28b6088edc890d90258e00e884d90dbf87db666b78ac30c4607f8dd70d",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421181.json",
+        "extraRawSha256": "f410dd2597c91245dac7187e632f941a7315490b9bf9124c0615d09c0c7c99e8"
+      }
+    },
+    {
+      "code": 421200,
+      "name": "咸宁市",
+      "chainVal": 138,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gateModels": [
+        9.4,
+        19.299999999999994,
+        22.000000000000004
+      ],
+      "gateMedian": 19.299999999999994,
+      "extraModels": [
+        26.6,
+        18.4,
+        21.5
+      ],
+      "extraMedian": 21.5,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 157,
+      "evidenceHash": "0x74cef285ff73b44b216125e50cef34067273728ce0cd5aaa3310c167b5293fb8",
+      "confidence": 79,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 421200 157mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[9.4,19.299999999999994,22.000000000000004] gate-median=19.299999999999994 extra-models=[26.6,18.4,21.5] extra-median=21.5 gate-raw-sha256=4fddc8ad0940c78be1eaff5c87ae7b7627a420d50584d1a715dbc734c280477a extra-raw-sha256=4dbc89691c157d883a12028eec0daf4454fd41a4ab495b29bd894804d97a92fc adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-421200-202611061945-617e3161-e75e-4c1e-b23e-697b27218220.json",
+        "gateRawSha256": "4fddc8ad0940c78be1eaff5c87ae7b7627a420d50584d1a715dbc734c280477a",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421200.json",
+        "extraRawSha256": "4dbc89691c157d883a12028eec0daf4454fd41a4ab495b29bd894804d97a92fc"
+      }
+    },
+    {
+      "code": 421202,
+      "name": "咸安区",
+      "chainVal": 152,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
+      "gateModels": [
+        9.4,
+        19.299999999999994,
+        22.000000000000004
+      ],
+      "gateMedian": 19.299999999999994,
+      "extraModels": [
+        26.6,
+        18.4,
+        21.5
+      ],
+      "extraMedian": 21.5,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 171,
+      "evidenceHash": "0xad6ad982c43b1d4ebc32e5b8ab61d682b3afacacdcb10e75b31d46d79da2afe1",
+      "confidence": 79,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 421202 171mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[9.4,19.299999999999994,22.000000000000004] gate-median=19.299999999999994 extra-models=[26.6,18.4,21.5] extra-median=21.5 gate-raw-sha256=578e9a4bbac4c75daa699c04b69375b9e158f34ac2e021652bbe9d22e35bccd1 extra-raw-sha256=fdd412764f2091354c98b4cb2518c8d0f43f2c4c5287067bd6daa20a04e92dc7 adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-421202-202611061945-1e190c82-4b29-4989-8257-6b1e0e952806.json",
+        "gateRawSha256": "578e9a4bbac4c75daa699c04b69375b9e158f34ac2e021652bbe9d22e35bccd1",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421202.json",
+        "extraRawSha256": "fdd412764f2091354c98b4cb2518c8d0f43f2c4c5287067bd6daa20a04e92dc7"
+      }
+    },
+    {
+      "code": 420324,
+      "name": "竹溪县",
+      "chainVal": 148,
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gateModels": [],
+      "gateMedian": null,
+      "extraModels": [
+        0,
+        0,
+        0
+      ],
+      "extraMedian": 0,
+      "corroborated": false,
+      "decision": "hold",
+      "target": null,
+      "evidenceHash": null,
+      "confidence": null,
+      "sources": 6,
+      "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+    },
+    {
+      "code": 420525,
+      "name": "远安县",
+      "chainVal": 147,
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gateModels": [],
+      "gateMedian": null,
+      "extraModels": [
+        0,
+        0,
+        0
+      ],
+      "extraMedian": 0,
+      "corroborated": false,
+      "decision": "hold",
+      "target": null,
+      "evidenceHash": null,
+      "confidence": null,
+      "sources": 6,
+      "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+    },
+    {
+      "code": 420526,
+      "name": "兴山县",
+      "chainVal": 105,
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gateModels": [],
+      "gateMedian": null,
+      "extraModels": [
+        0,
+        0,
+        0
+      ],
+      "extraMedian": 0,
+      "corroborated": false,
+      "decision": "hold",
+      "target": null,
+      "evidenceHash": null,
+      "confidence": null,
+      "sources": 6,
+      "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+    },
+    {
+      "code": 420527,
+      "name": "秭归县",
+      "chainVal": 139,
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gateModels": [],
+      "gateMedian": null,
+      "extraModels": [
+        0,
+        0,
+        0
+      ],
+      "extraMedian": 0,
+      "corroborated": false,
+      "decision": "hold",
+      "target": null,
+      "evidenceHash": null,
+      "confidence": null,
+      "sources": 6,
+      "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
+    },
+    {
+      "code": 420882,
+      "name": "京山市",
+      "chainVal": 213,
+      "fromIso": "2026-11-03T07:00",
+      "toIso": "2026-11-03T16:00",
+      "gateModels": [
+        2,
+        3.3,
+        3.6
+      ],
+      "gateMedian": 3.3,
+      "extraModels": [
+        1.3,
+        3,
+        2.1
+      ],
+      "extraMedian": 2.1,
+      "corroborated": true,
+      "decision": "suggest-feed",
+      "target": 216,
+      "evidenceHash": "0x099fb839a5f925b8262e3ab42c75052c82fe6d3571e3686198d29b936ecbaf4b",
+      "confidence": 63,
+      "sources": 6,
+      "evidenceCanonical": "v6-feed-manual 420882 216mm window(2026-11-03T07:00→2026-11-03T16:00) gate-models=[2,3.3,3.6] gate-median=3.3 extra-models=[1.3,3,2.1] extra-median=2.1 gate-raw-sha256=dee3ce6297af089505e86027ae3933293820ca3a7b24c98495e6e98f4eff21fb extra-raw-sha256=268106b49560b38b65f2625e8cb4f26449a729ba8c307c833fc90de8601fa31c adjudication=2026-11-03",
+      "evidenceFileRefs": {
+        "gateRawEvidence": "raw/v6feed-420882-202611031615-88cf73fe-93a5-4d51-9d46-3d87d8652ffa.json",
+        "gateRawSha256": "dee3ce6297af089505e86027ae3933293820ca3a7b24c98495e6e98f4eff21fb",
+        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420882.json",
+        "extraRawSha256": "268106b49560b38b65f2625e8cb4f26449a729ba8c307c833fc90de8601fa31c"
+      }
+    },
+    {
+      "code": 421123,
+      "name": "罗田县",
+      "chainVal": 95,
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gateModels": [],
+      "gateMedian": null,
+      "extraModels": [
+        0,
+        0,
+        0
+      ],
+      "extraMedian": 0,
+      "corroborated": false,
+      "decision": "hold",
+      "target": null,
+      "evidenceHash": null,
+      "confidence": null,
+      "sources": 6,
+      "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
     },
     {
       "code": 421321,
       "name": "随县",
-      "chainVal": 189,
-      "fromIso": "2026-10-31T12:00",
-      "toIso": "2026-11-02T23:00",
-      "gateModels": [
-        11.999999999999998,
-        14.999999999999995,
-        20.100000000000005
-      ],
-      "gateMedian": 14.999999999999995,
+      "chainVal": 217,
+      "fromIso": "2026-11-03T00:00",
+      "toIso": "2026-11-03T00:00",
+      "gateModels": [],
+      "gateMedian": null,
       "extraModels": [
-        13.3,
-        19.2,
-        12.7
+        0,
+        0,
+        0
       ],
-      "extraMedian": 13.3,
-      "corroborated": true,
-      "decision": "suggest-feed",
-      "target": 204,
-      "evidenceHash": "0x6f5693268e34a9d184171ce8f4e585cd99c7b86ac8263023d0c31508d87eeeb8",
-      "confidence": 75,
+      "extraMedian": 0,
+      "corroborated": false,
+      "decision": "hold",
+      "target": null,
+      "evidenceHash": null,
+      "confidence": null,
       "sources": 6,
-      "evidenceCanonical": "v6-feed-manual 421321 204mm window(2026-10-31T12:00→2026-11-02T23:00) gate-models=[11.999999999999998,14.999999999999995,20.100000000000005] gate-median=14.999999999999995 extra-models=[13.3,19.2,12.7] extra-median=13.3 gate-raw-sha256=c8ed8ad03b21e89e41011fa89ac493267fc7bc6bb165418b71220daa3616b02a extra-raw-sha256=bd16b282bf003e80f13582379ceaf808b2e95765c88c0b72acc857306a0b2435 adjudication=2026-11-03",
-      "evidenceFileRefs": {
-        "gateRawEvidence": "raw/v6feed-421321-202611022315-4cc846e2-afda-42c1-99dc-eb03d99d1f2c.json",
-        "gateRawSha256": "c8ed8ad03b21e89e41011fa89ac493267fc7bc6bb165418b71220daa3616b02a",
-        "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421321.json",
-        "extraRawSha256": "bd16b282bf003e80f13582379ceaf808b2e95765c88c0b72acc857306a0b2435"
-      }
+      "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
     },
     {
       "code": 422827,
       "name": "来凤县",
-      "chainVal": 137,
-      "fromIso": "2026-11-01T11:00",
-      "toIso": "2026-11-02T23:00",
+      "chainVal": 156,
+      "fromIso": "2026-11-04T01:00",
+      "toIso": "2026-11-06T19:00",
       "gateModels": [
-        6.899999999999998,
-        12.100000000000001,
-        15.1
+        1.1,
+        8.299999999999997,
+        12.099999999999998
       ],
-      "gateMedian": 12.100000000000001,
+      "gateMedian": 8.299999999999997,
       "extraModels": [
-        8.7,
-        13.5,
-        3.2
+        7.1,
+        9.6,
+        3.4
       ],
-      "extraMedian": 8.7,
+      "extraMedian": 7.1,
       "corroborated": true,
       "decision": "suggest-feed",
-      "target": 149,
-      "evidenceHash": "0xbf9bc7b8fb1b16dead1356d71cc6c4756127f171cb27f3e93369f1a872fea82b",
-      "confidence": 72,
+      "target": 164,
+      "evidenceHash": "0x7a18fca6461e5bbf5ca8a282db00316f4fc1b4875d505f08ebf7caaf381cd9f9",
+      "confidence": 68,
       "sources": 6,
-      "evidenceCanonical": "v6-feed-manual 422827 149mm window(2026-11-01T11:00→2026-11-02T23:00) gate-models=[6.899999999999998,12.100000000000001,15.1] gate-median=12.100000000000001 extra-models=[8.7,13.5,3.2] extra-median=8.7 gate-raw-sha256=4b6289b9b9e92999734df94150a47d93cfa60b33180fba85bc976eb99dd7acf8 extra-raw-sha256=d6f5f0c55349967ec923d50cc78a8c14f8e6faedf6b30dc9374a0a1fd2f861b7 adjudication=2026-11-03",
+      "evidenceCanonical": "v6-feed-manual 422827 164mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[1.1,8.299999999999997,12.099999999999998] gate-median=8.299999999999997 extra-models=[7.1,9.6,3.4] extra-median=7.1 gate-raw-sha256=1134733bc75423d7f3d9776cd1732d186b1bf9df5dc7c4e54fe37c809998d8d9 extra-raw-sha256=c13b4b978a48b21d3bf0a8eabf355f6f41d6cd6ce949ac54dbe4753e6a2b9cde adjudication=2026-11-03",
       "evidenceFileRefs": {
-        "gateRawEvidence": "raw/v6feed-422827-202611022316-e67ff5ae-b120-4d05-92a5-9c8021c4a7d8.json",
-        "gateRawSha256": "4b6289b9b9e92999734df94150a47d93cfa60b33180fba85bc976eb99dd7acf8",
+        "gateRawEvidence": "raw/v6feed-422827-202611061946-d2b77d51-93cf-49c3-b9f9-864116d230e8.json",
+        "gateRawSha256": "1134733bc75423d7f3d9776cd1732d186b1bf9df5dc7c4e54fe37c809998d8d9",
         "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-422827.json",
-        "extraRawSha256": "d6f5f0c55349967ec923d50cc78a8c14f8e6faedf6b30dc9374a0a1fd2f861b7"
+        "extraRawSha256": "c13b4b978a48b21d3bf0a8eabf355f6f41d6cd6ce949ac54dbe4753e6a2b9cde"
       }
     },
     {
       "code": 422828,
       "name": "鹤峰县",
-      "chainVal": 195,
-      "fromIso": "2026-11-01T01:00",
-      "toIso": "2026-11-02T23:00",
-      "gateModels": [
-        32.900000000000006,
-        37.800000000000004,
-        52.4
-      ],
-      "gateMedian": 37.800000000000004,
+      "chainVal": 201,
+      "fromIso": "2026-11-06T16:00",
+      "toIso": "2026-11-06T16:00",
+      "gateModels": [],
+      "gateMedian": null,
       "extraModels": [
-        29.4,
-        53.1,
-        21.1
+        0,
+        0,
+        0
       ],
-      "extraMedian": 29.4,
+      "extraMedian": 0,
       "corroborated": false,
       "decision": "hold",
       "target": null,

@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:17.733Z",
+  "code": 420200,
+  "name": "黄石市",
+  "chainVal": 137,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T23:00",
+  "gateModels": [
+    8.799999999999997,
+    12.2,
+    21.5
+  ],
+  "gateMedian": 12.2,
+  "extraModels": [
+    21.3,
+    21.1,
+    13.5
+  ],
+  "extraMedian": 21.1,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 149,
+  "evidenceHash": "0xf191c41ea5f944e8bf347285cca895a748c7095b9dd55c16db03d61e37af5403",
+  "confidence": 72,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 420200 149mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[8.799999999999997,12.2,21.5] gate-median=12.2 extra-models=[21.3,21.1,13.5] extra-median=21.1 gate-raw-sha256=df0c30390bc0dd1d0dbf3fe34d8e1afccea8a8f380bdc1b7823a2cd23245a59b extra-raw-sha256=dd0cde6ff98d637168b12efd23b855fc2a83b23736f684536076a8df2677715a adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420200-202611062345-f07f111b-2dbf-4f5c-9cab-fe663b21edda.json",
+    "gateRawSha256": "df0c30390bc0dd1d0dbf3fe34d8e1afccea8a8f380bdc1b7823a2cd23245a59b",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420200.json",
+    "extraRawSha256": "dd0cde6ff98d637168b12efd23b855fc2a83b23736f684536076a8df2677715a"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:28.576Z",
+  "code": 421181,
+  "name": "麻城市",
+  "chainVal": 148,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T19:00",
+  "gateModels": [
+    2.8,
+    6,
+    8.9
+  ],
+  "gateMedian": 6,
+  "extraModels": [
+    7.8,
+    10.6,
+    6.5
+  ],
+  "extraMedian": 7.8,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 154,
+  "evidenceHash": "0xab5fb374d2f13670de8dcd7663fefeeac457fa0b2846749a53b253cbd96551b4",
+  "confidence": 66,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 421181 154mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[2.8,6,8.9] gate-median=6 extra-models=[7.8,10.6,6.5] extra-median=7.8 gate-raw-sha256=d0e42b28b6088edc890d90258e00e884d90dbf87db666b78ac30c4607f8dd70d extra-raw-sha256=f410dd2597c91245dac7187e632f941a7315490b9bf9124c0615d09c0c7c99e8 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-421181-202611061945-db76b76c-93f2-4d6a-9db0-bd036a138203.json",
+    "gateRawSha256": "d0e42b28b6088edc890d90258e00e884d90dbf87db666b78ac30c4607f8dd70d",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421181.json",
+    "extraRawSha256": "f410dd2597c91245dac7187e632f941a7315490b9bf9124c0615d09c0c7c99e8"
+  }
+}

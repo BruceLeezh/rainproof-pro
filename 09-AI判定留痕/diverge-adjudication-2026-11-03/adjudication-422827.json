@@ -1,34 +1,34 @@
 {
   "schema": "rainproof/feed-adjudication@1",
-  "generatedAt": "2026-11-02T16:16:59.818Z",
+  "generatedAt": "2026-11-06T15:59:35.708Z",
   "code": 422827,
   "name": "来凤县",
-  "chainVal": 137,
-  "fromIso": "2026-11-01T11:00",
-  "toIso": "2026-11-02T23:00",
+  "chainVal": 156,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T19:00",
   "gateModels": [
-    6.899999999999998,
-    12.100000000000001,
-    15.1
+    1.1,
+    8.299999999999997,
+    12.099999999999998
   ],
-  "gateMedian": 12.100000000000001,
+  "gateMedian": 8.299999999999997,
   "extraModels": [
-    8.7,
-    13.5,
-    3.2
+    7.1,
+    9.6,
+    3.4
   ],
-  "extraMedian": 8.7,
+  "extraMedian": 7.1,
   "corroborated": true,
   "decision": "suggest-feed",
-  "target": 149,
-  "evidenceHash": "0xbf9bc7b8fb1b16dead1356d71cc6c4756127f171cb27f3e93369f1a872fea82b",
-  "confidence": 72,
+  "target": 164,
+  "evidenceHash": "0x7a18fca6461e5bbf5ca8a282db00316f4fc1b4875d505f08ebf7caaf381cd9f9",
+  "confidence": 68,
   "sources": 6,
-  "evidenceCanonical": "v6-feed-manual 422827 149mm window(2026-11-01T11:00→2026-11-02T23:00) gate-models=[6.899999999999998,12.100000000000001,15.1] gate-median=12.100000000000001 extra-models=[8.7,13.5,3.2] extra-median=8.7 gate-raw-sha256=4b6289b9b9e92999734df94150a47d93cfa60b33180fba85bc976eb99dd7acf8 extra-raw-sha256=d6f5f0c55349967ec923d50cc78a8c14f8e6faedf6b30dc9374a0a1fd2f861b7 adjudication=2026-11-03",
+  "evidenceCanonical": "v6-feed-manual 422827 164mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[1.1,8.299999999999997,12.099999999999998] gate-median=8.299999999999997 extra-models=[7.1,9.6,3.4] extra-median=7.1 gate-raw-sha256=1134733bc75423d7f3d9776cd1732d186b1bf9df5dc7c4e54fe37c809998d8d9 extra-raw-sha256=c13b4b978a48b21d3bf0a8eabf355f6f41d6cd6ce949ac54dbe4753e6a2b9cde adjudication=2026-11-03",
   "evidenceFileRefs": {
-    "gateRawEvidence": "raw/v6feed-422827-202611022316-e67ff5ae-b120-4d05-92a5-9c8021c4a7d8.json",
-    "gateRawSha256": "4b6289b9b9e92999734df94150a47d93cfa60b33180fba85bc976eb99dd7acf8",
+    "gateRawEvidence": "raw/v6feed-422827-202611061946-d2b77d51-93cf-49c3-b9f9-864116d230e8.json",
+    "gateRawSha256": "1134733bc75423d7f3d9776cd1732d186b1bf9df5dc7c4e54fe37c809998d8d9",
     "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-422827.json",
-    "extraRawSha256": "d6f5f0c55349967ec923d50cc78a8c14f8e6faedf6b30dc9374a0a1fd2f861b7"
+    "extraRawSha256": "c13b4b978a48b21d3bf0a8eabf355f6f41d6cd6ce949ac54dbe4753e6a2b9cde"
   }
 }

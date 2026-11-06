@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:20.327Z",
+  "code": 420281,
+  "name": "大冶市",
+  "chainVal": 135,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T23:00",
+  "gateModels": [
+    7.999999999999998,
+    15.699999999999994,
+    24.400000000000006
+  ],
+  "gateMedian": 15.699999999999994,
+  "extraModels": [
+    20.4,
+    21.1,
+    16.1
+  ],
+  "extraMedian": 20.4,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 151,
+  "evidenceHash": "0xd02bdb0cc49578919b398a45648c1f555fcdf24bf4a902daf4938b9268676a7c",
+  "confidence": 76,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 420281 151mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[7.999999999999998,15.699999999999994,24.400000000000006] gate-median=15.699999999999994 extra-models=[20.4,21.1,16.1] extra-median=20.4 gate-raw-sha256=111bfee78f09507a88eb2bfec8fcfbb0bced4783c1d0c47b890943b32311d3db extra-raw-sha256=7f5c63c5193bf2db456ab0b3c384664afffb831093219bf9d2dfdec352c26054 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420281-202611062345-28ae2470-216d-4819-b28b-d1c6a0040c72.json",
+    "gateRawSha256": "111bfee78f09507a88eb2bfec8fcfbb0bced4783c1d0c47b890943b32311d3db",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420281.json",
+    "extraRawSha256": "7f5c63c5193bf2db456ab0b3c384664afffb831093219bf9d2dfdec352c26054"
+  }
+}

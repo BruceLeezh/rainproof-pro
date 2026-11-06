@@ -1,34 +1,24 @@
 {
   "schema": "rainproof/feed-adjudication@1",
-  "generatedAt": "2026-11-02T16:16:57.586Z",
+  "generatedAt": "2026-11-06T15:59:32.443Z",
   "code": 420525,
   "name": "远安县",
-  "chainVal": 125,
-  "fromIso": "2026-10-31T12:00",
-  "toIso": "2026-11-02T23:00",
-  "gateModels": [
-    9.599999999999998,
-    15.900000000000002,
-    22.6
-  ],
-  "gateMedian": 15.900000000000002,
+  "chainVal": 147,
+  "fromIso": "2026-11-03T00:00",
+  "toIso": "2026-11-03T00:00",
+  "gateModels": [],
+  "gateMedian": null,
   "extraModels": [
-    15.3,
-    24.3,
-    11.8
+    0,
+    0,
+    0
   ],
-  "extraMedian": 15.3,
-  "corroborated": true,
-  "decision": "suggest-feed",
-  "target": 141,
-  "evidenceHash": "0xf90de77fa07bfed1c2afd33b00dec257ae25f1b612923f7cde9abcb2a7c09203",
-  "confidence": 76,
+  "extraMedian": 0,
+  "corroborated": false,
+  "decision": "hold",
+  "target": null,
+  "evidenceHash": null,
+  "confidence": null,
   "sources": 6,
-  "evidenceCanonical": "v6-feed-manual 420525 141mm window(2026-10-31T12:00→2026-11-02T23:00) gate-models=[9.599999999999998,15.900000000000002,22.6] gate-median=15.900000000000002 extra-models=[15.3,24.3,11.8] extra-median=15.3 gate-raw-sha256=f749ec12398bdc8053aab5f252db7b35952b46ccb612546355620119a27adccf extra-raw-sha256=e25469c57e15199d704ce13c83c6346f5ec8b82bca408657457583736f4fb5de adjudication=2026-11-03",
-  "evidenceFileRefs": {
-    "gateRawEvidence": "raw/v6feed-420525-202611022315-571fca83-5c3a-4056-b323-5d8a16b6a3f5.json",
-    "gateRawSha256": "f749ec12398bdc8053aab5f252db7b35952b46ccb612546355620119a27adccf",
-    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420525.json",
-    "extraRawSha256": "e25469c57e15199d704ce13c83c6346f5ec8b82bca408657457583736f4fb5de"
-  }
+  "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
 }

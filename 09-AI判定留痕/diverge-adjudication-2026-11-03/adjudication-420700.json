@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:20.770Z",
+  "code": 420700,
+  "name": "鄂州市",
+  "chainVal": 105,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T23:00",
+  "gateModels": [
+    6.499999999999998,
+    12.699999999999998,
+    18
+  ],
+  "gateMedian": 12.699999999999998,
+  "extraModels": [
+    15.5,
+    12.5,
+    10.8
+  ],
+  "extraMedian": 12.5,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 118,
+  "evidenceHash": "0x59f42a5af2b4af98dc9e4aff7be0c86ffca25bbe2da29da9189d5a3ebfdeefc3",
+  "confidence": 73,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 420700 118mm window(2026-11-04T01:00→2026-11-06T23:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=8b88c1835719e531dec810676cab97d0130485c263a7599ab1e927ef3752050c extra-raw-sha256=d0760a84ac6bef9947d14ad004ae1b36e09aeb3f6b565b2614e48e83662587f7 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-420700-202611062345-45915373-8024-42f1-abc3-0c1c486c8cc6.json",
+    "gateRawSha256": "8b88c1835719e531dec810676cab97d0130485c263a7599ab1e927ef3752050c",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420700.json",
+    "extraRawSha256": "d0760a84ac6bef9947d14ad004ae1b36e09aeb3f6b565b2614e48e83662587f7"
+  }
+}

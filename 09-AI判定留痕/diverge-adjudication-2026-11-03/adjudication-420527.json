@@ -1,34 +1,24 @@
 {
   "schema": "rainproof/feed-adjudication@1",
-  "generatedAt": "2026-11-02T16:16:58.328Z",
+  "generatedAt": "2026-11-06T15:59:33.497Z",
   "code": 420527,
   "name": "秭归县",
-  "chainVal": 118,
-  "fromIso": "2026-10-31T12:00",
-  "toIso": "2026-11-02T23:00",
-  "gateModels": [
-    10.5,
-    14.7,
-    24.000000000000007
-  ],
-  "gateMedian": 14.7,
+  "chainVal": 139,
+  "fromIso": "2026-11-03T00:00",
+  "toIso": "2026-11-03T00:00",
+  "gateModels": [],
+  "gateMedian": null,
   "extraModels": [
-    15.3,
-    18.7,
-    13.2
+    0,
+    0,
+    0
   ],
-  "extraMedian": 15.3,
-  "corroborated": true,
-  "decision": "suggest-feed",
-  "target": 133,
-  "evidenceHash": "0x496058cd0b5f55916d5a5564372c245772ab3242e7b9447adef35d912229d55d",
-  "confidence": 75,
+  "extraMedian": 0,
+  "corroborated": false,
+  "decision": "hold",
+  "target": null,
+  "evidenceHash": null,
+  "confidence": null,
   "sources": 6,
-  "evidenceCanonical": "v6-feed-manual 420527 133mm window(2026-10-31T12:00→2026-11-02T23:00) gate-models=[10.5,14.7,24.000000000000007] gate-median=14.7 extra-models=[15.3,18.7,13.2] extra-median=15.3 gate-raw-sha256=5a21ef2569e0a5661b055521fc7c98f4858ddfdf58403877231a121713d659d6 extra-raw-sha256=ac4e5a064ef655d1be1c446b5e405a1cb5fbb248a33fb45c7faa1d87d89dd0c4 adjudication=2026-11-03",
-  "evidenceFileRefs": {
-    "gateRawEvidence": "raw/v6feed-420527-202611022315-6061a893-6822-4039-8bb2-238828fdf724.json",
-    "gateRawSha256": "5a21ef2569e0a5661b055521fc7c98f4858ddfdf58403877231a121713d659d6",
-    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-420527.json",
-    "extraRawSha256": "ac4e5a064ef655d1be1c446b5e405a1cb5fbb248a33fb45c7faa1d87d89dd0c4"
-  }
+  "reason": "独立模型中位数不在 gate 范围内（鹤峰）或证据不完整——建议等 ERA5 archive 回填（约 2-5 天）后再裁决"
 }

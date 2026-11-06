@@ -1,0 +1,34 @@
+{
+  "schema": "rainproof/feed-adjudication@1",
+  "generatedAt": "2026-11-06T15:59:26.693Z",
+  "code": 421102,
+  "name": "黄州区",
+  "chainVal": 92,
+  "fromIso": "2026-11-04T01:00",
+  "toIso": "2026-11-06T19:00",
+  "gateModels": [
+    6.499999999999998,
+    12.699999999999998,
+    18
+  ],
+  "gateMedian": 12.699999999999998,
+  "extraModels": [
+    15.5,
+    12.5,
+    10.8
+  ],
+  "extraMedian": 12.5,
+  "corroborated": true,
+  "decision": "suggest-feed",
+  "target": 105,
+  "evidenceHash": "0x7457017c688ce4192a4bd90fb0355f8e09ce0426b0530b037ec954a78280bd42",
+  "confidence": 73,
+  "sources": 6,
+  "evidenceCanonical": "v6-feed-manual 421102 105mm window(2026-11-04T01:00→2026-11-06T19:00) gate-models=[6.499999999999998,12.699999999999998,18] gate-median=12.699999999999998 extra-models=[15.5,12.5,10.8] extra-median=12.5 gate-raw-sha256=1c7b3591ad458a30adb27bdb1ba2101433c36e0d6f51e5e70291a51acaf6629d extra-raw-sha256=8fc966f3df2ccecd5c7c6e3171ce970ba9a74571815b564e50dddf8312af4967 adjudication=2026-11-03",
+  "evidenceFileRefs": {
+    "gateRawEvidence": "raw/v6feed-421102-202611061945-77e1a350-eee7-42da-874a-fcd4622475e6.json",
+    "gateRawSha256": "1c7b3591ad458a30adb27bdb1ba2101433c36e0d6f51e5e70291a51acaf6629d",
+    "extraRawEvidence": "09-AI判定留痕/diverge-archive-2026-11-02/extra-raw-421102.json",
+    "extraRawSha256": "8fc966f3df2ccecd5c7c6e3171ce970ba9a74571815b564e50dddf8312af4967"
+  }
+}
