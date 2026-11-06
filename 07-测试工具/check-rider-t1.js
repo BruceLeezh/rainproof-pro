@@ -45,7 +45,8 @@ async function main(){
   // Execute the real list/claim renderers as well, covering every visible use of the baseline.
   const els={who:{dataset:{addr:p.rider}},policies:{},claims:{},claimsWho:{}};
   Object.assign(ctx,{$:id=>els[id],DEMO_RIDER:p.rider,ethers:{id:String},provider:{getLogs:async()=>[]},
-    esc:runtime.esc,v6:{policiesOf:async()=>[0n],policies:async()=>p,policyStatus:async()=>"active",judgements:async()=>({...judgement,exists:true})}});
+    document:{querySelectorAll:()=>[]},esc:runtime.esc,v6:{policiesOf:async()=>[0n],policies:async()=>p,policyStatus:async()=>"active",judgements:async()=>({...judgement,exists:true})}});
+  vm.runInContext(source.slice(source.indexOf("function policyControlsHTML"),source.indexOf("async function refreshPolicyControls")),ctx);
   vm.runInContext("let POLICY_CACHE={};",ctx);
   vm.runInContext(source.slice(source.indexOf("async function refreshPolicies"),source.indexOf("let POLICY_CACHE")),ctx);
   vm.runInContext(source.slice(source.indexOf("const TOPIC_CLAIM"),source.indexOf("function denyReason")),ctx);

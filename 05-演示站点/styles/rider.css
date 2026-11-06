@@ -130,3 +130,10 @@
   @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms !important;transition-duration:.001ms !important}}
 :focus-visible{outline:2px solid var(--measure);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Self-service actions retain the existing panel, button and typography tokens. */
+.policy-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.policy-action-grid .btn{width:100%;white-space:normal}
+.policy-action-grid .note{margin-top:6px}
+.policy-ops [role="status"]{overflow-wrap:anywhere}
+@media(max-width:600px){.policy-action-grid{grid-template-columns:1fr}}

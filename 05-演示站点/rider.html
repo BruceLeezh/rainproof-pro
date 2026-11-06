@@ -9,6 +9,7 @@
 <script src="./ethers.umd.min.js"></script>
 <link rel="stylesheet" href="styles/rider.css">
 <script src="runtime.js"></script>
+<script src="policy-actions.js"></script>
 <script src="deployment.js"></script>
 <link rel="stylesheet" href="styles/site.css">
 <script src="site.js" defer></script>
@@ -67,7 +68,7 @@
       </div>
       <div class="k" id="allowLine" style="margin-top:6px">授权余额：连接钱包后显示</div>
       <button class="btn block" id="wallet">连接钱包（测试网 968）</button>
-      <details class="note" style="margin-top:12px"><summary>如何连接钱包并投保？</summary><p><b>步骤 1 · 连接账户。</b> 在装有浏览器钱包的 Edge / Chrome 中打开本页并解锁钱包，点击“连接钱包”，按提示连接账户并添加或切换到 BOT Chain 测试网 968。连接后“我的保单”切换到该账户，未连接时展示演示钱包的两张保单。</p><p><b>步骤 2 · 准备两种测试币。</b> BOT 支付交易手续费；RDROP 支付模拟保费，两者不能互相替代。RDROP 由项目方发放，本页不售卖代币。RDROP 可在钱包中手动导入：<span class="mono" style="overflow-wrap:anywhere">0x23e928922711903607031378005DFe29D9b730bD</span>，精度 2。导入只让余额可见，不会自动获得代币。</p><p><b>步骤 3 · 授权，再投保。</b> 选择区划与 12 / 24 小时保障，确认喂价有效。点击“投保”，首次依次确认“授权保费”和“投保”两笔交易；已有足够授权时只需确认投保。默认只授权本单保费。</p><p><b>步骤 4 · 核对凭证与生效时间。</b> 投保交易确认后在“我的保单”查看保单号、区域、保费与保障窗口。先等待 24 小时，之后进入所选保障期；运营端还需及时完成生效锚定及达标判定。测试资金不可兑换人民币。</p><p>手动网络参数：BOT Chain Testnet · 链 ID 968（0x3c8）· RPC https://rpc.bohr.life · 原生币 BOT。连接成功但没有自己的保单属于正常情况，需要完成投保交易后才会生成。</p></details>
+      <details class="note" style="margin-top:12px"><summary>如何连接钱包并投保？</summary><p><b>步骤 1 · 连接账户。</b> 在装有浏览器钱包的 Edge / Chrome 中打开本页并解锁钱包，点击“连接钱包”，按提示连接账户并添加或切换到 BOT Chain 测试网 968。连接后“我的保单”切换到该账户，未连接时展示演示钱包的两张保单。</p><p><b>步骤 2 · 准备两种测试币。</b> BOT 支付交易手续费；RDROP 支付模拟保费，两者不能互相替代。RDROP 由项目方发放，本页不售卖代币。RDROP 可在钱包中手动导入：<span class="mono" style="overflow-wrap:anywhere">0x23e928922711903607031378005DFe29D9b730bD</span>，精度 2。导入只让余额可见，不会自动获得代币。</p><p><b>步骤 3 · 授权，再投保。</b> 选择区划与 12 / 24 小时保障，确认喂价有效。点击“投保”，首次依次确认“授权保费”和“投保”两笔交易；已有足够授权时只需确认投保。默认只授权本单保费。</p><p><b>步骤 4 · 核对凭证与生效时间。</b> 投保交易确认后在“我的保单”查看保单号、区域、保费与保障窗口。先等待 24 小时，之后进入所选保障期；生效后可在保单操作中协助锚定；正式达标判定仍由运营端及时提交。测试资金不可兑换人民币。</p><p>手动网络参数：BOT Chain Testnet · 链 ID 968（0x3c8）· RPC https://rpc.bohr.life · 原生币 BOT。连接成功但没有自己的保单属于正常情况，需要完成投保交易后才会生成。</p></details>
       <div class="err" id="buyerr"></div>
     </div>
   </section>
@@ -75,7 +76,7 @@
   <section class="sec">
     <h2>我的保单<em id="who">演示骑手（免钱包可浏览）</em></h2>
     <div id="policies"><span class="loading">读取链上保单</span></div>
-    <p class="note">状态由链上 <code style="font-family:var(--mono)">policyStatus()</code> 直读：pending（冷静期）→ active（保障中）→ pending_judgement（已过线待判定）→ claimable（可赔付）→ paid（已到账）。雨量达标但数据不可信时如实判 <b>denied</b>；退款与到期结算以链上 <code style="font-family:var(--mono)">settled</code> 事实为准，显示 <b>已退款</b> / <b>已结算</b>。</p>
+    <p class="note">状态由链上 <code style="font-family:var(--mono)">policyStatus()</code> 直读：pending（冷静期）→ active（保障中）→ pending_judgement（已过线待判定）→ claimable（可赔付）→ paid（已到账）。已有链上 <b>denied</b> 记录可查看并申请复核；常规脚本不会把临时不赔结果提前上链。退款或到期结清后，链上状态统一为 <b>settled（已结清）</b>；退款是否成功以退款交易回执及付款人余额为准。展开保单操作可查看退款、生效锚定和手动领取的条件。</p>
   </section>
 
   <section class="sec">
@@ -130,7 +131,7 @@ function certHTML(id,p,st){
     +'<div class="srcrow"><span class="k">保障窗口</span><span class="v">'+fmtT(p.effectiveFrom)+' → '+fmtT(p.endTime)+'</span></div>'
     +'<div class="srcrow"><span class="k">触发条件</span><span class="v">新增 ≥'+t[0]+'mm 赔 50 元 · ≥'+t[1]+'mm 赔 75 元（国标）</span></div>'
     +'<div class="srcrow"><span class="k">'+baselineLabel(p)+'</span><span class="v">累计 '+policyBaseline(p)+'mm（链上可查）</span></div>'
-    +'<div class="srcrow"><span class="k">保费 / 赔付</span><span class="v"><b class="money">'+yuan(p.premium)+'</b> 元 · '+(p.paid?'已赔 <b class="money">'+yuan(p.payout)+'</b> 元':'未结算')+'</span></div>'
+    +'<div class="srcrow"><span class="k">保费 / 赔付</span><span class="v"><b class="money">'+yuan(p.premium)+'</b> 元 · '+(p.paid?'已赔 <b class="money">'+yuan(p.payout)+'</b> 元':p.settled?'已结清':'尚未给付')+'</span></div>'
     +'<div class="srcrow"><span class="k">链上核验</span><span class="v"><a href="https://scan.bohr.life/address/'+V6_ADDR+'" target="_blank" rel="noopener">scan.bohr.life（968）</a></span></div>'
     +'<div class="row" style="margin-top:10px"><button class="btn sm" data-copy="'+id+'">复制凭证文本</button>'
     +'<span class="k" style="margin:0">RDROP 演示计价 1:1 人民币 · 非真实保险要约</span></div>'
@@ -145,7 +146,7 @@ function certText(id,p,st){
     "触发条件：窗口内新增降雨 ≥"+t[0]+"mm 赔 50 元；≥"+t[1]+"mm 赔 75 元（国标 GB/T 28592—2012；额度基数 100 元，最高给付 75 元）",
     baselineLabel(p)+"：累计 "+policyBaseline(p)+"mm"+(p.anchored?"；增量从此读数起算":"；生效后须完成锚定，才可判定赔付"),
     "保费："+yuan(p.premium)+" 元（RDROP 演示计价 1:1 人民币，非真实保险要约）",
-    p.paid?"赔付："+yuan(p.payout)+" 元 · 已自动到账":"赔付：未结算（触发即自动打款，无需报案）",
+    p.paid?"赔付："+yuan(p.payout)+" 元 · 已到账":p.settled?"保单已结清；退款或到期结清请核对交易":"赔付：尚未给付（须有及时可赔判定，可由 Keeper 或手动领取）",
     "判定数据：ECMWF/GFS/ICON 三机构模型链上累计，交叉核验、全程留痕",
     "链上核验：BOT Chain 测试网 968 · 合约 "+V6_ADDR,
     "浏览器：https://scan.bohr.life/address/"+V6_ADDR,"治理：2/3 多签 "+MS_ADDR].join("\n");
@@ -161,7 +162,7 @@ let provider=RainproofRuntime.provider(E,RPC);
 const v6=new E.Contract(V6,V6ABI,provider), tok=new E.Contract(TOK,TOKABI,provider);
 const STAG={paid:["已赔付","ok"],denied:["判定不赔","red"],claimable:["可赔付","gold"],pending:["冷静期","warn"],
   active:["保障中",""],pending_judgement:["待判定","warn"],low_confidence:["置信不足","warn"],expired:["领取期结束或缺少及时判定","warn"],
-  refunded:["已退款","warn"],settled:["已结算","warn"]};
+  refunded:["已退款","warn"],settled:["已结清","warn"]};
 
 let netSequence=0;
 async function refreshNet(){
@@ -206,6 +207,7 @@ async function refreshQuote(){
   if(sequence===offerSequence)syncBuyButton();
 }
 async function refreshPolicies(){
+  const openControls=[...document.querySelectorAll(".policy-ops[open]")].map(el=>el.dataset.policyControls);
   const who=$("who").dataset.addr||DEMO_RIDER;
   try{
     const ids=await v6.policiesOf(who);
@@ -214,7 +216,7 @@ async function refreshPolicies(){
     let h="";
     for(const id of ids){
       const p=await v6.policies(id), raw=await v6.policyStatus(id);
-      // V6-T1 的 policyStatus() 已包含 refunded / settled，直接使用链上状态。
+      // V6-T1 对退款与到期结清统一返回 settled，不能仅凭这个状态区分退款。
       const st=raw;
       POLICY_CACHE[id]={p,st};   // 复制凭证及申诉使用同一份链上状态
       const [lab,cls]=STAG[st]||[st,""];
@@ -222,10 +224,11 @@ async function refreshPolicies(){
       h+=`<div class="pol ${st}">
         <div class="pid"><span class="tag ${cls}">${lab}</span><br>保单 <span class="mono">#${id}</span> · ${cityName(p.regionId)} ${p.windowHours}h</div>
         <div class="pmeta">生效 ${d}<br>档线 ${p.thresholdMm}mm · ${baselineLabel(p)} ${policyBaseline(p)}mm${p.payer!==p.rider?"<br>平台代付":""}</div>
-        <div class="pai">保费 <b class="money">${yuan(p.premium)}</b> 元<br>${p.paid?`赔付 <b class="money">${yuan(p.payout)}</b> 元 · 已到账`:"赔付 — 未结算"}</div>
-      </div>` + certHTML(id,p,st);
+        <div class="pai">保费 <b class="money">${yuan(p.premium)}</b> 元<br>${p.paid?`赔付 <b class="money">${yuan(p.payout)}</b> 元 · 已到账`:p.settled?"保单已结清":"赔付 — 尚未给付"}</div>
+      </div>` + certHTML(id,p,st) + policyControlsHTML(id);
     }
     box.innerHTML=h;
+    for(const id of openControls){const panel=document.querySelector('.policy-ops[data-policy-controls="'+id+'" ]');if(panel)panel.open=true;}
   }catch(e){$("policies").innerHTML=`<span class="err">读取失败：${esc((e.message||e).toString().slice(0,90))}</span>`}
 }
 let POLICY_CACHE={};   // 复制凭证时按 id 取链上读数
@@ -235,6 +238,62 @@ $("policies").addEventListener("click",async(e)=>{
   if(!rec)return toast("凭证数据还没读到，稍后再试","err");
   try{await navigator.clipboard.writeText(certText(id,rec.p,rec.st));toast("凭证文本已复制","ok")}
   catch(err){toast("复制失败：浏览器未授权剪贴板","err")}
+});
+/* 个人保单操作：权限和时间取当前区块，签名前再次读取并静态预演。 */
+function policyControlsHTML(id){
+  return '<details class="certbox policy-ops" data-policy-controls="'+id+'"><summary>保单操作 · 退款 / 生效锚定 / 领取</summary><div class="panel">'
+    +'<p class="note" style="margin-top:0">仅使用测试网 BOT 支付手续费。退款退给付款人，赔付发给被保险人；生效锚定一经提交不能改写。</p>'
+    +'<div class="policy-action-grid">'+[['refund','生效前退款'],['anchor','锚定生效基线'],['claim','领取赔付']].map(([kind,label])=>
+      '<div><button class="btn sm" disabled data-policy-action="'+kind+'" data-policy-id="'+id+'" aria-describedby="op-'+kind+'-'+id+'">'+label+'</button><p class="note" id="op-'+kind+'-'+id+'">展开后核对链上条件</p></div>').join('')+'</div>'
+    +'<p class="note" id="op-result-'+id+'" role="status" aria-live="polite"></p></div></details>';
+}
+async function refreshPolicyControls(id){
+  const account=$("who").dataset.addr;
+  try{
+    const state=account?await RainproofPolicyActions.snapshot(v6,id,account):null;
+    for(const kind of ['refund','anchor','claim']){
+      const button=document.querySelector('[data-policy-id="'+id+'"][data-policy-action="'+kind+'"]');
+      const reason=$("op-"+kind+"-"+id);if(!button||!reason)continue;
+      button.disabled=buying||!state||!state.actions[kind].enabled;
+      reason.textContent=state?state.actions[kind].reason:'请先连接自己的钱包';
+    }
+  }catch(e){
+    for(const button of document.querySelectorAll('[data-policy-id="'+id+'"]'))button.disabled=true;
+    const result=$("op-result-"+id);if(result)result.textContent='操作条件读取失败：'+(e.shortMessage||e.message);
+  }
+}
+function refreshOpenPolicyControls(){
+  for(const panel of document.querySelectorAll(".policy-ops[open]"))refreshPolicyControls(panel.dataset.policyControls);
+}
+async function runPolicyAction(kind,id){
+  if(buying)return;
+  if(!$("who").dataset.addr){toast("请先连接自己的钱包","err");return;}
+  const label={refund:'退款',anchor:'生效锚定',claim:'领取赔付'}[kind];if(!label)return;
+  const message=text=>{const el=$("op-result-"+id);if(el)el.textContent=text;};
+  try{
+    buying=true;syncBuyButton();
+    for(const button of document.querySelectorAll('[data-policy-action]'))button.disabled=true;
+    const signer=await RainproofRuntime.wallet(E,window.ethereum,RPC),account=await signer.getAddress();
+    // Avoid operating on a row from an account that was switched in the extension.
+    if(account.toLowerCase()!==$("who").dataset.addr.toLowerCase())throw new Error("钱包账户已变化，请重新连接并刷新保单");
+    message('正在核对'+label+'条件…');
+    const contract=new E.Contract(V6,V6ABI,signer);
+    const result=await RainproofPolicyActions.perform({contract,id,kind,account,onSent:hash=>message('交易已提交，等待确认：'+hash)});
+    const updates=await Promise.allSettled([refreshPolicies(),loadClaims(),refreshNet(),refreshAllowance()]);
+    message(label+'已确认 · '+result.hash+(kind==='refund'?' · 保费退回付款人':kind==='claim'?' · 赔付转给被保险人':'')+(updates.some(x=>x.status==='rejected')?' · 状态刷新未完成，请稍后刷新':''));
+    toast(label+'已确认','ok');
+  }catch(e){message(label+'未完成：'+(e.shortMessage||e.reason||e.message||'请重试'));toast(label+'未完成，请查看保单操作说明','err');}
+  finally{
+    buying=false;syncBuyButton();
+    for(const panel of document.querySelectorAll('.policy-ops[open]'))refreshPolicyControls(panel.dataset.policyControls);
+  }
+}
+$("policies").addEventListener('toggle',event=>{
+  const panel=event.target;if(panel.matches&&panel.matches('.policy-ops')&&panel.open)refreshPolicyControls(panel.dataset.policyControls);
+},true);
+$("policies").addEventListener('click',event=>{
+  const button=event.target.closest&&event.target.closest('[data-policy-action]');
+  if(button&&!button.disabled)runPolicyAction(button.dataset.policyAction,button.dataset.policyId);
 });
 /* G2 理赔记录：每张保单 → 判定结果 + 可推导的原因 + 到账交易 */
 const TOPIC_CLAIM = ethers.id("ClaimPaid(uint256,address,uint256,uint8)");
@@ -400,10 +459,10 @@ $("buy").onclick=buy;
 refreshNet();refreshQuote();refreshPolicies();loadClaims();
 /* G14 轮询：标签页隐藏时停轮询（省电省流量，也避免后台打满共享节点），回到前台立即刷新一次 */
 let _poll=null;
-function startPoll(){ if(_poll!==null) return; _poll=setInterval(()=>{ if(document.hidden) return; refreshNet();refreshQuote(); },30000); }
+function startPoll(){ if(_poll!==null) return; _poll=setInterval(()=>{ if(document.hidden) return; refreshNet();refreshQuote();refreshOpenPolicyControls(); },30000); }
 function stopPoll(){ if(_poll!==null){ clearInterval(_poll); _poll=null; } }
 document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){ stopPoll(); } else { startPoll(); refreshNet();refreshQuote();refreshAllowance(); }
+  if(document.hidden){ stopPoll(); } else { startPoll(); refreshNet();refreshQuote();refreshAllowance();refreshOpenPolicyControls(); }
 });
 startPoll();
 if(window.ethereum&&window.ethereum.on){
