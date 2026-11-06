@@ -1,0 +1,52 @@
+{
+  "block": 29457325,
+  "timestamp": "2026-11-06T08:07:57.000Z",
+  "chainId": 968,
+  "contract": "0xD61d4EfF50C3BeFbe555a604280985904Bc00363",
+  "token": "0x23e928922711903607031378005DFe29D9b730bD",
+  "tokenMetadata": {
+    "symbol": "RDROP",
+    "decimals": 2,
+    "owner": "0x21C8520D486be3805Cf3FaA7cCab896241410d98"
+  },
+  "config": {
+    "paused": "false",
+    "coolingPeriod": "86400",
+    "eligibleRequired": "false",
+    "MAX_FEED_AGE": "86400",
+    "CLAIM_GRACE": "604800",
+    "MAX_POLICIES_PER_RIDER": "3"
+  },
+  "policies": [
+    {
+      "id": 0,
+      "rider": "0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C",
+      "payer": "0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C",
+      "regionId": 420100,
+      "hours": 24,
+      "premiumFen": 880,
+      "buyMm": 110,
+      "anchored": true,
+      "effectiveMm": 126,
+      "status": "expired"
+    },
+    {
+      "id": 1,
+      "rider": "0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C",
+      "payer": "0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C",
+      "regionId": 440100,
+      "hours": 12,
+      "premiumFen": 590,
+      "buyMm": 60,
+      "anchored": true,
+      "effectiveMm": 60,
+      "status": "expired"
+    }
+  ],
+  "quotes": {
+    "wuhan12": 590,
+    "wuhan24": 880,
+    "guangzhou12": 590,
+    "guangzhou24": 790
+  }
+}

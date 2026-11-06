@@ -74,6 +74,7 @@ const UNTIL = (ARGV.find((a) => a.startsWith("--until=")) || "").split("=")[1] |
  *    而 push-rainfall 按主机本地时区切、hook-watch 按 UTC 切 —— 同一天在三个脚本里
  *    可能落在三个不同的日期上，而每边的哈希各自自洽，谁也报不出错。 */
 const { shDate } = require("./shardate");
+const { VERSION, policyWindow, hourlyModels, syntheticHourlyModels } = require("./policy-weather-v6");
 
 /** 逐日累加，返回 6 位小数 —— 和 canonical 的口径对齐，避免 0.30000000000000004 这种哈希漂移 */
 const sum6 = (arr) => Math.round(arr.reduce((x, y) => x + y, 0) * 1e6) / 1e6;
@@ -269,17 +270,35 @@ if (require.main === module) (async () => {
       catch (e3) { throwIfNetErr("v2", e3); kind = "v1"; c = new Contract(ADDR, ABI_V1, provider); }
     }
   }
-  await assertRegionsMatchContract(c);   // v5 走 regions(uint32)：名字 + active 双校   // 区域表对不上就别往下走
 
-  const p = await c.policies(POLICY_ID);
+  const v6 = kind === "v5" && ACTIVE.version === "V6";
+  if (!v6) await assertRegionsMatchContract(c);
+  const block = v6 ? await provider.getBlock("latest") : null;
+  const tag = block ? { blockTag: block.number } : {};
+  const p = await c.policies(POLICY_ID, tag);
   if (!p.exists) { console.error(`保单 #${POLICY_ID} 不存在`); process.exit(2); }
-  const region = regionOf(p.regionId);   // v5 传区划码、老版本传 1..5，regionOf 两套都认
+  const code = Number(p.regionId);
+  const registered = v6 ? require("./v5-regions.json").find(r => r.code === code) : null;
+  const region = v6 ? registered && { ...registered, id: code, key: String(code) } : regionOf(code);
   if (!region) { console.error(`区域 #${p.regionId} 不在区域表里`); process.exit(2); }
 
-  const startDate = shDate(p.startTime);
+  if (v6) {
+    const [onchainName] = await c.regions(code, tag);
+    if (onchainName !== region.name && onchainName !== region.name + "市") throw new Error("保单区划名称与链上注册信息不一致");
+  }
+
+  const startDate = shDate(v6 ? p.effectiveFrom : p.startTime);
   const endDate = UNTIL || shDate(p.endTime);
-  const onchainCum = Number(await c.rainfall(p.regionId));
-  const incrementMm = Number(await c.rainfallDuring(POLICY_ID));
+  const onchainCum = Number(await c.rainfall(p.regionId, tag));
+  let window = null, feedTime;
+  if (v6) {
+    if (UNTIL) throw new Error("V6 按保单实际生效时刻取证，不支持 --until 改写窗口");
+    const [lastFeedAt, existing] = await Promise.all([c.lastFeedAt(p.regionId, tag), c.judgements(POLICY_ID, tag)]);
+    if (existing.exists) throw new Error("该保单已有链上判定，请复核原证据");
+    feedTime = Number(lastFeedAt);
+    window = policyWindow(p, block.timestamp, feedTime);
+  }
+  const incrementMm = v6 ? onchainCum - Number(p.rainfallAtEffective) : Number(await c.rainfallDuring(POLICY_ID));
   // 阈值必须从「正在判定的那份合约」读，不能从定价表读 —— 2026-10-07 全仓审计 D1:
   //   链上 v2: thresholdOf(h) = 50 × h / 24（24/48/72h → 50/100/150mm，可线性外推）
   //   定价 v3: 国标 GB/T 28592 两档表 {12:[30,70], 24:[50,100]}mm（04-脚本 与 10-金融与定价/pricing-engine.json 口径）
@@ -300,7 +319,21 @@ if (require.main === module) (async () => {
   // 演示模式的合成序列本来就只铺到「今天」，两条路保证同一个上界。
   let windowEnd = shDate(Date.now() / 1000);
   let models;
-  if (DEMO) {
+  if (v6) {
+    const url = new URL("https://api.open-meteo.com/v1/forecast");
+    url.search = new URLSearchParams({
+      latitude: region.lat, longitude: region.lon, hourly: "precipitation", timezone: "Asia/Shanghai",
+      start_date: shDate(window.from), end_date: shDate(window.to), models: MODELS.map(m => m.id).join(","),
+    });
+    if (DEMO) {
+      models = syntheticHourlyModels(MODELS, window, incrementMm);
+    } else {
+      const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error("Open-Meteo HTTP " + response.status);
+      models = hourlyModels(MODELS, await response.json(), window);
+    }
+    windowEnd = shDate(window.to);
+  } else if (DEMO) {
     models = synthModels(region, startDate, incrementMm, onchainCum);
   } else {
     ({ models, windowEnd } = await fetchModels(region, startDate, endDate));
@@ -308,7 +341,7 @@ if (require.main === module) (async () => {
 
   const snapshot = {
     schema: "rainproof/judge-input@1",
-    collectVersion: COLLECT_VERSION,
+    collectVersion: v6 ? VERSION : COLLECT_VERSION,
     policyId: POLICY_ID,
     simulated: DEMO,
     ...(DEMO ? { simulationNote: "模型序列由链上注入值合成，用于演示；真实模式下会向 ECMWF/GFS/ICON 实取。" } : {}),
@@ -321,12 +354,14 @@ if (require.main === module) (async () => {
       endTime: Number(p.endTime),
       startDate,
       rainfallAtBuy: Number(p.rainfallAtBuy),
+      ...(v6 ? { effectiveFrom: Number(p.effectiveFrom), rainfallAtEffective: Number(p.rainfallAtEffective) } : {}),
       paid: p.paid,
     },
     oracle: {
       // 链上那本账（由喂价脚本写入）—— AI 的对照物
       cumulativeMm: onchainCum,
       officialIncrementMm: incrementMm,
+      ...(v6 ? { snapshotBlock: block.number, lastFeedAt: feedTime } : {}),
       contract: ADDR,
       chainId: Number((await provider.getNetwork()).chainId),
     },
@@ -337,6 +372,7 @@ if (require.main === module) (async () => {
       // 与 sliceModelSeries 实际求和的日子【同源】：窗口结束日与今天取小。
       // 写成 endDate 会撒谎 —— 未来两天的预报确实进了求和，但快照声称窗口还没结束。
       windowTo: windowEnd,
+      ...(v6 ? { fromUnix: window.from, toUnix: window.to, boundary: "preceding-hour-overlap" } : {}),
       models,
     },
     thresholds: { thresholdMm, minConfidence },
@@ -354,7 +390,8 @@ if (require.main === module) (async () => {
   console.log(`证据快照已生成（保单 #${POLICY_ID} · ${region.name}）${DEMO ? "  ⚠️ 模拟数据" : ""}`);
   console.log("=".repeat(74));
   console.log(`窗口        ${startDate} 起 · 阈值 ${thresholdMm}mm`);
-  console.log(`链上官方增量 ${incrementMm}mm  （累计 ${onchainCum}mm，投保时快照 ${p.rainfallAtBuy}mm）`);
+  const baseline = v6 ? p.rainfallAtEffective : p.rainfallAtBuy;
+  console.log("链上增量 " + incrementMm + " mm，累计 " + onchainCum + " mm，基线 " + baseline + " mm");
   console.log(`三模型窗口增量  ${inc.join(" / ")} mm   （${MODELS.map((m) => m.label).join(" · ")}）`);
   console.log(`inputHash   ${inputHash}`);
   console.log(`写入        ${file}`);

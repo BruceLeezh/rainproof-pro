@@ -1,0 +1,51 @@
+{
+  "time": "2026-11-05T15:28:37.012Z",
+  "results": [
+    {
+      "id": 0,
+      "from": "2026-11-04T14:00:50.000Z",
+      "to": "2026-11-05T14:00:50.000Z",
+      "rawFile": "到期气象-保单0.json",
+      "sha256": "f3f7c427ac2115a9d8ce89f6961357cf89313e755e1217e088c5affa8a94f133",
+      "url": "https://api.open-meteo.com/v1/forecast?latitude=30.615&longitude=114.251&hourly=precipitation&timezone=Asia%2FShanghai&start_date=2026-11-04&end_date=2026-11-05&models=ecmwf_ifs025%2Cgfs_seamless%2Cicon_seamless",
+      "models": [
+        {
+          "id": "ecmwf_ifs025",
+          "rainfallMm": 0
+        },
+        {
+          "id": "gfs_seamless",
+          "rainfallMm": 0
+        },
+        {
+          "id": "icon_seamless",
+          "rainfallMm": 0
+        }
+      ],
+      "entryThreshold": 50
+    },
+    {
+      "id": 1,
+      "from": "2026-11-04T14:00:56.000Z",
+      "to": "2026-11-05T02:00:56.000Z",
+      "rawFile": "到期气象-保单1.json",
+      "sha256": "10efe8d6827869c1cf58b02557db8c5669b0fa766b19ccc0355c3784fd1c5144",
+      "url": "https://api.open-meteo.com/v1/forecast?latitude=23.13&longitude=113.264&hourly=precipitation&timezone=Asia%2FShanghai&start_date=2026-11-04&end_date=2026-11-05&models=ecmwf_ifs025%2Cgfs_seamless%2Cicon_seamless",
+      "models": [
+        {
+          "id": "ecmwf_ifs025",
+          "rainfallMm": 1.096889
+        },
+        {
+          "id": "gfs_seamless",
+          "rainfallMm": 2.692222
+        },
+        {
+          "id": "icon_seamless",
+          "rainfallMm": 0.596889
+        }
+      ],
+      "entryThreshold": 30
+    }
+  ]
+}

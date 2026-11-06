@@ -28,6 +28,8 @@ const fs = require("fs");
 const path = require("path");
 const { JsonRpcProvider, Wallet, Contract } = require("ethers");
 const { evidenceHashOf } = require("./canonical");
+const { VERSION, policyWindow } = require("./policy-weather-v6");
+const { assertV6PayDecision, assertV6Payable } = require("./v6-judgement-guard");
 
 const ACTIVE = require("./active-deployment").applyDeployment();
 const RPC = process.env.SEPOLIA_RPC || process.env.RPC_URL || "http://127.0.0.1:8545";
@@ -85,6 +87,8 @@ function throwIfNetErr(kind, e) {
   if (judgement.inputHash !== snapHash) { console.error("💥 判定文件里记的 inputHash 与快照不匹配"); process.exit(1); }
   if (Number(judgement.policyId) !== policyId) { console.error("💥 判定文件里的保单号与参数不一致"); process.exit(1); }
 
+  if (ACTIVE.version === "V6") assertV6PayDecision(judgement.decision);
+
   const provider = new JsonRpcProvider(RPC);
   const wallet = new Wallet(KEY, provider);
   // 按链上有没有 v2 的 thresholdOf() 选 ABI：两边的 submitJudgement 参数个数不同（v2 多 sources）。
@@ -115,6 +119,28 @@ function throwIfNetErr(kind, e) {
     process.exit(0);   // 不是错误：状态本来就该是这样
   }
 
+  if (ACTIVE.version === "V6") {
+    if (snapshot.collectVersion !== VERSION || snapshot.oracle?.contract?.toLowerCase() !== ADDR.toLowerCase()
+        || Number(snapshot.policyId) !== policyId || Number(snapshot.oracle?.chainId) !== ACTIVE.chainId) {
+      throw new Error("V6 判定须使用当前合约的逐小时取证快照");
+    }
+    const abi = JSON.parse(fs.readFileSync(path.join(ABI_DIR, "RainDeliveryInsuranceV6.abi.json"), "utf8"));
+    const v6 = new Contract(ADDR, abi, provider);
+    const block = await provider.getBlock("latest");
+    const tag = { blockTag: block.number };
+    const { policy: p, rainfall } = await assertV6Payable(v6, [
+      policyId, judgement.decision, judgement.confidence, judgement.sources, snapshot.oracle.cumulativeMm,
+    ], block);
+    const lastFeedAt = await v6.lastFeedAt(p.regionId, tag);
+    const window = policyWindow(p, block.timestamp, Number(lastFeedAt));
+    if (Number(p.regionId) !== snapshot.policy.regionId || window.from !== snapshot.weather.fromUnix
+        || window.to !== snapshot.weather.toUnix || Number(lastFeedAt) !== snapshot.oracle.lastFeedAt
+        || Number(p.rainfallAtEffective) !== snapshot.policy.rainfallAtEffective
+        || Number(rainfall) !== snapshot.oracle.cumulativeMm
+        || Number(rainfall - p.rainfallAtEffective) !== snapshot.oracle.officialIncrementMm) {
+      throw new Error("保单或链上降雨已变化，请重新采集证据");
+    }
+  }
   const operator = (await c.operator()).toLowerCase();
   if (wallet.address.toLowerCase() !== operator) {
     // v5 起 operator 是 2/3 多签（0x21C8…0d98），单私钥直发必然 revert。

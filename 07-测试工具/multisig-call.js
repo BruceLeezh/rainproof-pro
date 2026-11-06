@@ -16,6 +16,7 @@ require(path.join(SCRIPTS, "node_modules", "dotenv")).config({ path: path.join(S
 const { ethers } = require(path.join(SCRIPTS, "node_modules", "ethers"));
 
 const ACTIVE = require("../04-脚本/active-deployment").applyDeployment();
+const { assertV6PayDecision, assertV6Payable } = require("../04-脚本/v6-judgement-guard");
 const argv = process.argv.slice(2);
 const send = argv.includes("--send");
 const rest = argv.filter((a) => a !== "--send");
@@ -36,7 +37,11 @@ const TARGET = process.env.CONTRACT_ADDRESS;
   const iface = new ethers.Interface(abiV5);
 
   const f = iface.getFunction(fn);
-  if (!f) throw new Error(`v5 ABI 里没有 ${fn}`);
+  if (!f) throw new Error(`当前 ABI 里没有 ${fn}`);
+  const v6 = ACTIVE.version === "V6";
+  if (v6 && f.name === "submitJudgements") {
+    throw new Error("V6 多签工具只接受逐单核验的 submitJudgement");
+  }
   if (rawArgs.length !== f.inputs.length) throw new Error(`${fn} 需要 ${f.inputs.length} 个参数，给了 ${rawArgs.length}`);
 
   const args = rawArgs.map((v, i) => {
@@ -46,6 +51,14 @@ const TARGET = process.env.CONTRACT_ADDRESS;
     if (type === "address") return ethers.getAddress(v);
     return v; // bytes32 / bytes / string 原样
   });
+  const checkJudgement = v6 && f.name === "submitJudgement" ? async () => {
+    const contract = new ethers.Contract(TARGET, abiV5, provider);
+    await assertV6Payable(contract, args.slice(0, 5), await provider.getBlock("latest"));
+  } : null;
+  if (checkJudgement) {
+    assertV6PayDecision(args[1]);
+    await checkJudgement();
+  }
   const data = iface.encodeFunctionData(fn, args);
 
   const ms = new ethers.Contract(process.env.MULTISIG_ADDR || "0x21C8520D486be3805Cf3FaA7cCab896241410d98", abiMs, provider);
@@ -68,6 +81,7 @@ const TARGET = process.env.CONTRACT_ADDRESS;
   const txId = require("../04-脚本/multisig-receipt").submittedTxId(ms, receipt, TARGET, data);   // submit 已回到链上，txCount 递增 1
   console.log(`\nsubmit  : ${sTx.hash} ⇒ txId ${txId}`);
   for (const s of signers.slice(1)) {
+    if (checkJudgement) await checkJudgement();
     const cTx = await ms.connect(s).confirm(txId);
     const rc = await cTx.wait();
     console.log(`confirm : ${cTx.hash}（区块 ${rc.blockNumber} · gas ${rc.gasUsed} · ${s.address}）`);

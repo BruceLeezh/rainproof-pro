@@ -1,0 +1,256 @@
+{
+  "snapshot": {
+    "schema": "rainproof/judge-input@1",
+    "collectVersion": "ai-collect-v6-hourly@1",
+    "policyId": 0,
+    "simulated": false,
+    "epoch": "2026-10-01",
+    "region": {
+      "id": 420100,
+      "key": "420100",
+      "name": "武汉",
+      "lat": 30.615,
+      "lon": 114.251
+    },
+    "policy": {
+      "rider": "0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C",
+      "regionId": 420100,
+      "startTime": 1793714450,
+      "endTime": 1793887250,
+      "startDate": "2026-11-04",
+      "rainfallAtBuy": 110,
+      "effectiveFrom": 1793800850,
+      "rainfallAtEffective": 126,
+      "paid": false
+    },
+    "oracle": {
+      "cumulativeMm": 126,
+      "officialIncrementMm": 0,
+      "snapshotBlock": 29315939,
+      "lastFeedAt": 1793844995,
+      "contract": "0xD61d4EfF50C3BeFbe555a604280985904Bc00363",
+      "chainId": 968
+    },
+    "weather": {
+      "source": "open-meteo:ecmwf_ifs025+gfs_seamless+icon_seamless",
+      "api": "open-meteo:forecast-api",
+      "windowFrom": "2026-11-04",
+      "windowTo": "2026-11-05",
+      "fromUnix": 1793800850,
+      "toUnix": 1793844000,
+      "boundary": "preceding-hour-overlap",
+      "models": [
+        {
+          "id": "ecmwf_ifs025",
+          "label": "ECMWF IFS025",
+          "org": "欧洲中期天气预报中心",
+          "hours": [
+            {
+              "endUnix": 1793804400,
+              "seconds": 3550,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793808000,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793811600,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793815200,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793818800,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793822400,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793826000,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793829600,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793833200,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793836800,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793840400,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793844000,
+              "seconds": 3600,
+              "mm": 0
+            }
+          ],
+          "inWindowMm": 0
+        },
+        {
+          "id": "gfs_seamless",
+          "label": "GFS",
+          "org": "美国 NOAA/NCEP",
+          "hours": [
+            {
+              "endUnix": 1793804400,
+              "seconds": 3550,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793808000,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793811600,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793815200,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793818800,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793822400,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793826000,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793829600,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793833200,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793836800,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793840400,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793844000,
+              "seconds": 3600,
+              "mm": 0
+            }
+          ],
+          "inWindowMm": 0
+        },
+        {
+          "id": "icon_seamless",
+          "label": "ICON",
+          "org": "德国气象局 DWD",
+          "hours": [
+            {
+              "endUnix": 1793804400,
+              "seconds": 3550,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793808000,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793811600,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793815200,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793818800,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793822400,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793826000,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793829600,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793833200,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793836800,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793840400,
+              "seconds": 3600,
+              "mm": 0
+            },
+            {
+              "endUnix": 1793844000,
+              "seconds": 3600,
+              "mm": 0
+            }
+          ],
+          "inWindowMm": 0
+        }
+      ]
+    },
+    "thresholds": {
+      "thresholdMm": 50,
+      "minConfidence": 60
+    }
+  },
+  "collectedAt": "2026-11-05T02:40:40.311Z",
+  "inputHash": "0x310ca951016eb9780819a40efa4d85a42787e6e7ccd05568c788b1a5e586e316"
+}

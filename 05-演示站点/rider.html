@@ -9,6 +9,7 @@
 <script src="./ethers.umd.min.js"></script>
 <link rel="stylesheet" href="styles/rider.css">
 <script src="runtime.js"></script>
+<script src="policy-actions.js"></script>
 <script src="deployment.js"></script>
 <link rel="stylesheet" href="styles/site.css">
 <script src="site.js" defer></script>
@@ -67,7 +68,7 @@
       </div>
       <div class="k" id="allowLine" style="margin-top:6px">授权余额：连接钱包后显示</div>
       <button class="btn block" id="wallet">连接钱包（测试网 968）</button>
-      <details class="note" style="margin-top:12px"><summary>如何连接钱包并投保？</summary><p>在装有浏览器钱包的 Edge / Chrome 中打开本页并解锁钱包，点击“连接钱包”，按提示连接账户并添加或切换到 BOT Chain 测试网 968。钱包需要少量测试 BOT 支付 gas，以及足够的模拟 RDROP 支付保费；RDROP 由项目方发放，本页不售卖代币。</p><p>选择城市与保障时长后点击“投保”。首次一般需要依次确认“授权保费”和“投保”两笔交易；已有足够授权时只需确认投保。交易确认后可在“我的保单”查看。测试资金不可兑换人民币。</p></details>
+      <details class="note" style="margin-top:12px"><summary>如何连接钱包并投保？</summary><p><b>步骤 1 · 连接账户。</b> 在装有浏览器钱包的 Edge / Chrome 中打开本页并解锁钱包，点击“连接钱包”，按提示连接账户并添加或切换到 BOT Chain 测试网 968。连接后“我的保单”切换到该账户，未连接时展示演示钱包的两张保单。</p><p><b>步骤 2 · 准备两种测试币。</b> BOT 支付交易手续费；RDROP 支付模拟保费，两者不能互相替代。RDROP 由项目方发放，本页不售卖代币。RDROP 可在钱包中手动导入：<span class="mono" style="overflow-wrap:anywhere">0x23e928922711903607031378005DFe29D9b730bD</span>，精度 2。导入只让余额可见，不会自动获得代币。</p><p><b>步骤 3 · 授权，再投保。</b> 选择区划与 12 / 24 小时保障，确认喂价有效。点击“投保”，首次依次确认“授权保费”和“投保”两笔交易；已有足够授权时只需确认投保。默认只授权本单保费。</p><p><b>步骤 4 · 核对凭证与生效时间。</b> 投保交易确认后在“我的保单”查看保单号、区域、保费与保障窗口。先等待 24 小时，之后进入所选保障期；生效后可在保单操作中协助锚定；正式达标判定仍由运营端及时提交。测试资金不可兑换人民币。</p><p>手动网络参数：BOT Chain Testnet · 链 ID 968（0x3c8）· RPC https://rpc.bohr.life · 原生币 BOT。连接成功但没有自己的保单属于正常情况，需要完成投保交易后才会生成。</p></details>
       <div class="err" id="buyerr"></div>
     </div>
   </section>
@@ -75,7 +76,7 @@
   <section class="sec">
     <h2>我的保单<em id="who">演示骑手（免钱包可浏览）</em></h2>
     <div id="policies"><span class="loading">读取链上保单</span></div>
-    <p class="note">状态由链上 <code style="font-family:var(--mono)">policyStatus()</code> 直读：pending（冷静期）→ active（保障中）→ pending_judgement（已过线待判定）→ claimable（可赔付）→ paid（已到账）。雨量达标但数据不可信时如实判 <b>denied</b>；退款与到期结算以链上 <code style="font-family:var(--mono)">settled</code> 事实为准，显示 <b>已退款</b> / <b>已结算</b>。</p>
+    <p class="note">状态由链上 <code style="font-family:var(--mono)">policyStatus()</code> 直读：pending（冷静期）→ active（保障中）→ pending_judgement（已过线待判定）→ claimable（可赔付）→ paid（已到账）。已有链上 <b>denied</b> 记录可查看并申请复核；常规脚本不会把临时不赔结果提前上链。退款或到期结清后，链上状态统一为 <b>settled（已结清）</b>；退款是否成功以退款交易回执及付款人余额为准。展开保单操作可查看退款、生效锚定和手动领取的条件。</p>
   </section>
 
   <section class="sec">
@@ -93,7 +94,7 @@
         <p class="note" style="margin-top:8px">复核材料 = 你的理由 + 链上判定数据（自动附上）。运营按《运营手册》§九 复核并在留痕目录回填结论——全程留痕可查。</p>
       </div>
     </div>
-    <p class="note">判定由链上确定性规则给出：窗口增量 = 判定时链上读数 − 投保基线。未达国标档线判「不赔」（R1）；数据核验未通过也判「不赔」（R2/R4：三机构模型分歧）。拒绝同样留痕上链——不赔也要说清为什么。</p>
+    <p class="note">窗口增量 = 判定时链上读数 − 生效锚定读数。生效后须先完成锚定；三模型交叉核验通过且达到档线，才提交可赔判定。未达线或数据核验未通过的结果留在链下证据中，避免提前占用每单唯一的判定机会。保单到期时没有及时可赔判定，将无法领取赔付。</p>
   </section>
   <footer>
     <p>判定依据三气象机构模型交叉核验（ECMWF / GFS / ICON），规则链上公开、任何人可复算；演示用模拟数据带 <code>simulated</code> 标记永久留痕。</p>
@@ -108,7 +109,7 @@
 const RPC=new URLSearchParams(location.search).get("rpc")||"https://rpc.bohr.life", CHAIN=968;
 const V6=RAINPROOF_DEPLOYMENT.contract;
 const TOK="0x23e928922711903607031378005DFe29D9b730bD";
-const DEMO_RIDER="0x6F0A73BCA4805950130D01069ebEb187C0f3DAb5";
+const DEMO_RIDER="0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C";
 // 122 个在售区划（04-脚本/v5-regions.json 生成；链上 regionCount 同源）
 const REGIONS=[["110100","北京"],["310100","上海"],["420100","武汉"],["420102","江岸区"],["420103","江汉区"],["420104","硚口区"],["420105","汉阳区"],["420106","武昌区"],["420107","青山区"],["420111","洪山区"],["420112","东西湖区"],["420113","汉南区"],["420114","蔡甸区"],["420115","江夏区"],["420116","黄陂区"],["420117","新洲区"],["420200","黄石市"],["420202","黄石港区"],["420203","西塞山区"],["420204","下陆区"],["420205","铁山区"],["420222","阳新县"],["420281","大冶市"],["420300","十堰市"],["420302","茅箭区"],["420303","张湾区"],["420304","郧阳区"],["420322","郧西县"],["420323","竹山县"],["420324","竹溪县"],["420325","房县"],["420381","丹江口市"],["420500","宜昌市"],["420502","西陵区"],["420503","伍家岗区"],["420504","点军区"],["420505","猇亭区"],["420506","夷陵区"],["420525","远安县"],["420526","兴山县"],["420527","秭归县"],["420528","长阳土家族自治县"],["420529","五峰土家族自治县"],["420581","宜都市"],["420582","当阳市"],["420583","枝江市"],["420600","襄阳市"],["420602","襄城区"],["420606","樊城区"],["420607","襄州区"],["420624","南漳县"],["420625","谷城县"],["420626","保康县"],["420682","老河口市"],["420683","枣阳市"],["420684","宜城市"],["420700","鄂州市"],["420702","梁子湖区"],["420703","华容区"],["420704","鄂城区"],["420800","荆门市"],["420802","东宝区"],["420804","掇刀区"],["420822","沙洋县"],["420881","钟祥市"],["420882","京山市"],["420900","孝感市"],["420902","孝南区"],["420921","孝昌县"],["420922","大悟县"],["420923","云梦县"],["420981","应城市"],["420982","安陆市"],["420984","汉川市"],["421000","荆州市"],["421002","沙市区"],["421003","荆州区"],["421022","公安县"],["421024","江陵县"],["421071","荆州经济技术开发区"],["421081","石首市"],["421083","洪湖市"],["421087","松滋市"],["421088","监利市"],["421100","黄冈市"],["421102","黄州区"],["421121","团风县"],["421122","红安县"],["421123","罗田县"],["421124","英山县"],["421125","浠水县"],["421126","蕲春县"],["421127","黄梅县"],["421171","龙感湖管理区"],["421181","麻城市"],["421182","武穴市"],["421200","咸宁市"],["421202","咸安区"],["421221","嘉鱼县"],["421222","通城县"],["421223","崇阳县"],["421224","通山县"],["421281","赤壁市"],["421300","随州市"],["421303","曾都区"],["421321","随县"],["421381","广水市"],["422800","恩施土家族苗族自治州"],["422801","恩施市"],["422802","利川市"],["422822","建始县"],["422823","巴东县"],["422825","宣恩县"],["422826","咸丰县"],["422827","来凤县"],["422828","鹤峰县"],["429004","仙桃市"],["429005","潜江市"],["429006","天门市"],["429021","神农架林区"],["440100","广州"],["510100","成都"]];
 const REGION_NAME=new Map(REGIONS.map(([c,n])=>[String(c),n]));
@@ -117,6 +118,9 @@ const V6_ADDR=RAINPROOF_DEPLOYMENT.contract, MS_ADDR="0x21C8520D486be3805Cf3FaA7
 const shortA=a=>String(a).slice(0,8)+"…"+String(a).slice(-4);
 const fmtT=u=>new Date(Number(u)*1000).toLocaleString("zh-CN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
 const THR2={12:[30,70],24:[50,100]};
+// 与 V6-T1 合约 _baselineFor 保持一致；等待期读数不能冒充生效基线。
+function policyBaseline(p){return p.anchored?p.rainfallAtEffective:p.rainfallAtBuy;}
+function baselineLabel(p){return p.anchored?"生效基线":"买入读数（待锚定）";}
 /* G1 保单凭证：数据全部来自链上读数；文本版可复制转发 */
 function certHTML(id,p,st){
   const [lab]=STAG[st]||[st]; const t=THR2[Number(p.windowHours)]||[0,0];
@@ -126,8 +130,8 @@ function certHTML(id,p,st){
     +'<div class="srcrow"><span class="k">保障区域 / 时长</span><span class="v">'+cityName(p.regionId)+'（#'+p.regionId+'）· '+p.windowHours+'h</span></div>'
     +'<div class="srcrow"><span class="k">保障窗口</span><span class="v">'+fmtT(p.effectiveFrom)+' → '+fmtT(p.endTime)+'</span></div>'
     +'<div class="srcrow"><span class="k">触发条件</span><span class="v">新增 ≥'+t[0]+'mm 赔 50 元 · ≥'+t[1]+'mm 赔 75 元（国标）</span></div>'
-    +'<div class="srcrow"><span class="k">投保基线</span><span class="v">累计 '+p.rainfallAtBuy+'mm（链上可查）</span></div>'
-    +'<div class="srcrow"><span class="k">保费 / 赔付</span><span class="v"><b class="money">'+yuan(p.premium)+'</b> 元 · '+(p.paid?'已赔 <b class="money">'+yuan(p.payout)+'</b> 元':'未结算')+'</span></div>'
+    +'<div class="srcrow"><span class="k">'+baselineLabel(p)+'</span><span class="v">累计 '+policyBaseline(p)+'mm（链上可查）</span></div>'
+    +'<div class="srcrow"><span class="k">保费 / 赔付</span><span class="v"><b class="money">'+yuan(p.premium)+'</b> 元 · '+(p.paid?'已赔 <b class="money">'+yuan(p.payout)+'</b> 元':p.settled?'已结清':'尚未给付')+'</span></div>'
     +'<div class="srcrow"><span class="k">链上核验</span><span class="v"><a href="https://scan.bohr.life/address/'+V6_ADDR+'" target="_blank" rel="noopener">scan.bohr.life（968）</a></span></div>'
     +'<div class="row" style="margin-top:10px"><button class="btn sm" data-copy="'+id+'">复制凭证文本</button>'
     +'<span class="k" style="margin:0">RDROP 演示计价 1:1 人民币 · 非真实保险要约</span></div>'
@@ -139,10 +143,10 @@ function certText(id,p,st){
     "被保险人："+shortA(p.rider)+(p.payer!==p.rider?"（付款："+shortA(p.payer)+"）":""),
     "保障区域："+cityName(p.regionId)+"（区划码 "+p.regionId+"）· 保障时长 "+p.windowHours+" 小时",
     "保障窗口："+fmtT(p.effectiveFrom)+" → "+fmtT(p.endTime),
-    "触发条件：窗口内新增降雨 ≥"+t[0]+"mm 赔 50 元；≥"+t[1]+"mm 赔 75 元（国标 GB/T 28592—2012；满额 100 元）",
-    "投保基线：自雨季起点累计 "+p.rainfallAtBuy+"mm",
+    "触发条件：窗口内新增降雨 ≥"+t[0]+"mm 赔 50 元；≥"+t[1]+"mm 赔 75 元（国标 GB/T 28592—2012；额度基数 100 元，最高给付 75 元）",
+    baselineLabel(p)+"：累计 "+policyBaseline(p)+"mm"+(p.anchored?"；增量从此读数起算":"；生效后须完成锚定，才可判定赔付"),
     "保费："+yuan(p.premium)+" 元（RDROP 演示计价 1:1 人民币，非真实保险要约）",
-    p.paid?"赔付："+yuan(p.payout)+" 元 · 已自动到账":"赔付：未结算（触发即自动打款，无需报案）",
+    p.paid?"赔付："+yuan(p.payout)+" 元 · 已到账":p.settled?"保单已结清；退款或到期结清请核对交易":"赔付：尚未给付（须有及时可赔判定，可由 Keeper 或手动领取）",
     "判定数据：ECMWF/GFS/ICON 三机构模型链上累计，交叉核验、全程留痕",
     "链上核验：BOT Chain 测试网 968 · 合约 "+V6_ADDR,
     "浏览器：https://scan.bohr.life/address/"+V6_ADDR,"治理：2/3 多签 "+MS_ADDR].join("\n");
@@ -158,7 +162,7 @@ let provider=RainproofRuntime.provider(E,RPC);
 const v6=new E.Contract(V6,V6ABI,provider), tok=new E.Contract(TOK,TOKABI,provider);
 const STAG={paid:["已赔付","ok"],denied:["判定不赔","red"],claimable:["可赔付","gold"],pending:["冷静期","warn"],
   active:["保障中",""],pending_judgement:["待判定","warn"],low_confidence:["置信不足","warn"],expired:["领取期结束或缺少及时判定","warn"],
-  refunded:["已退款","warn"],settled:["已结算","warn"]};
+  refunded:["已退款","warn"],settled:["已结清","warn"]};
 
 let netSequence=0;
 async function refreshNet(){
@@ -203,6 +207,7 @@ async function refreshQuote(){
   if(sequence===offerSequence)syncBuyButton();
 }
 async function refreshPolicies(){
+  const openControls=[...document.querySelectorAll(".policy-ops[open]")].map(el=>el.dataset.policyControls);
   const who=$("who").dataset.addr||DEMO_RIDER;
   try{
     const ids=await v6.policiesOf(who);
@@ -211,19 +216,19 @@ async function refreshPolicies(){
     let h="";
     for(const id of ids){
       const p=await v6.policies(id), raw=await v6.policyStatus(id);
-      // policyStatus() 没有 refunded / settled 分支（v6 待修）：已退款的单会仍返回 "pending"，
-      // 到期结算过的仍返回 "active/expired"。这里按链上 settled 事实覆盖显示，避免"退过款还显示待生效"。
+      // V6-T1 对退款与到期结清统一返回 settled，不能仅凭这个状态区分退款。
       const st=raw;
-      POLICY_CACHE[id]={p,st};   // 状态一起缓存：复制凭证/申诉都要用「已按 settled 覆盖过」的 st
+      POLICY_CACHE[id]={p,st};   // 复制凭证及申诉使用同一份链上状态
       const [lab,cls]=STAG[st]||[st,""];
       const d=new Date(Number(p.effectiveFrom)*1000).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
       h+=`<div class="pol ${st}">
         <div class="pid"><span class="tag ${cls}">${lab}</span><br>保单 <span class="mono">#${id}</span> · ${cityName(p.regionId)} ${p.windowHours}h</div>
-        <div class="pmeta">生效 ${d}<br>档线 ${p.thresholdMm}mm · 基线 ${p.rainfallAtBuy}mm${p.payer!==p.rider?"<br>平台代付":""}</div>
-        <div class="pai">保费 <b class="money">${yuan(p.premium)}</b> 元<br>${p.paid?`赔付 <b class="money">${yuan(p.payout)}</b> 元 · 已到账`:"赔付 — 未结算"}</div>
-      </div>` + certHTML(id,p,st);
+        <div class="pmeta">生效 ${d}<br>档线 ${p.thresholdMm}mm · ${baselineLabel(p)} ${policyBaseline(p)}mm${p.payer!==p.rider?"<br>平台代付":""}</div>
+        <div class="pai">保费 <b class="money">${yuan(p.premium)}</b> 元<br>${p.paid?`赔付 <b class="money">${yuan(p.payout)}</b> 元 · 已到账`:p.settled?"保单已结清":"赔付 — 尚未给付"}</div>
+      </div>` + certHTML(id,p,st) + policyControlsHTML(id);
     }
     box.innerHTML=h;
+    for(const id of openControls){const panel=document.querySelector('.policy-ops[data-policy-controls="'+id+'" ]');if(panel)panel.open=true;}
   }catch(e){$("policies").innerHTML=`<span class="err">读取失败：${esc((e.message||e).toString().slice(0,90))}</span>`}
 }
 let POLICY_CACHE={};   // 复制凭证时按 id 取链上读数
@@ -234,12 +239,68 @@ $("policies").addEventListener("click",async(e)=>{
   try{await navigator.clipboard.writeText(certText(id,rec.p,rec.st));toast("凭证文本已复制","ok")}
   catch(err){toast("复制失败：浏览器未授权剪贴板","err")}
 });
+/* 个人保单操作：权限和时间取当前区块，签名前再次读取并静态预演。 */
+function policyControlsHTML(id){
+  return '<details class="certbox policy-ops" data-policy-controls="'+id+'"><summary>保单操作 · 退款 / 生效锚定 / 领取</summary><div class="panel">'
+    +'<p class="note" style="margin-top:0">仅使用测试网 BOT 支付手续费。退款退给付款人，赔付发给被保险人；生效锚定一经提交不能改写。</p>'
+    +'<div class="policy-action-grid">'+[['refund','生效前退款'],['anchor','锚定生效基线'],['claim','领取赔付']].map(([kind,label])=>
+      '<div><button class="btn sm" disabled data-policy-action="'+kind+'" data-policy-id="'+id+'" aria-describedby="op-'+kind+'-'+id+'">'+label+'</button><p class="note" id="op-'+kind+'-'+id+'">展开后核对链上条件</p></div>').join('')+'</div>'
+    +'<p class="note" id="op-result-'+id+'" role="status" aria-live="polite"></p></div></details>';
+}
+async function refreshPolicyControls(id){
+  const account=$("who").dataset.addr;
+  try{
+    const state=account?await RainproofPolicyActions.snapshot(v6,id,account):null;
+    for(const kind of ['refund','anchor','claim']){
+      const button=document.querySelector('[data-policy-id="'+id+'"][data-policy-action="'+kind+'"]');
+      const reason=$("op-"+kind+"-"+id);if(!button||!reason)continue;
+      button.disabled=buying||!state||!state.actions[kind].enabled;
+      reason.textContent=state?state.actions[kind].reason:'请先连接自己的钱包';
+    }
+  }catch(e){
+    for(const button of document.querySelectorAll('[data-policy-id="'+id+'"]'))button.disabled=true;
+    const result=$("op-result-"+id);if(result)result.textContent='操作条件读取失败：'+(e.shortMessage||e.message);
+  }
+}
+function refreshOpenPolicyControls(){
+  for(const panel of document.querySelectorAll(".policy-ops[open]"))refreshPolicyControls(panel.dataset.policyControls);
+}
+async function runPolicyAction(kind,id){
+  if(buying)return;
+  if(!$("who").dataset.addr){toast("请先连接自己的钱包","err");return;}
+  const label={refund:'退款',anchor:'生效锚定',claim:'领取赔付'}[kind];if(!label)return;
+  const message=text=>{const el=$("op-result-"+id);if(el)el.textContent=text;};
+  try{
+    buying=true;syncBuyButton();
+    for(const button of document.querySelectorAll('[data-policy-action]'))button.disabled=true;
+    const signer=await RainproofRuntime.wallet(E,window.ethereum,RPC),account=await signer.getAddress();
+    // Avoid operating on a row from an account that was switched in the extension.
+    if(account.toLowerCase()!==$("who").dataset.addr.toLowerCase())throw new Error("钱包账户已变化，请重新连接并刷新保单");
+    message('正在核对'+label+'条件…');
+    const contract=new E.Contract(V6,V6ABI,signer);
+    const result=await RainproofPolicyActions.perform({contract,id,kind,account,onSent:hash=>message('交易已提交，等待确认：'+hash)});
+    const updates=await Promise.allSettled([refreshPolicies(),loadClaims(),refreshNet(),refreshAllowance()]);
+    message(label+'已确认 · '+result.hash+(kind==='refund'?' · 保费退回付款人':kind==='claim'?' · 赔付转给被保险人':'')+(updates.some(x=>x.status==='rejected')?' · 状态刷新未完成，请稍后刷新':''));
+    toast(label+'已确认','ok');
+  }catch(e){message(label+'未完成：'+(e.shortMessage||e.reason||e.message||'请重试'));toast(label+'未完成，请查看保单操作说明','err');}
+  finally{
+    buying=false;syncBuyButton();
+    for(const panel of document.querySelectorAll('.policy-ops[open]'))refreshPolicyControls(panel.dataset.policyControls);
+  }
+}
+$("policies").addEventListener('toggle',event=>{
+  const panel=event.target;if(panel.matches&&panel.matches('.policy-ops')&&panel.open)refreshPolicyControls(panel.dataset.policyControls);
+},true);
+$("policies").addEventListener('click',event=>{
+  const button=event.target.closest&&event.target.closest('[data-policy-action]');
+  if(button&&!button.disabled)runPolicyAction(button.dataset.policyAction,button.dataset.policyId);
+});
 /* G2 理赔记录：每张保单 → 判定结果 + 可推导的原因 + 到账交易 */
 const TOPIC_CLAIM = ethers.id("ClaimPaid(uint256,address,uint256,uint8)");
 const TOPIC_JUDGE = ethers.id("JudgementSubmitted(uint256,uint8,uint8,uint8,uint8,uint256,bytes32,bytes32,string)");
 const padId = id => "0x" + BigInt(id).toString(16).padStart(64, "0");
 function denyReason(p, j){
-  const during = Number(j.rainfallAtJudgement) - Number(p.rainfallAtBuy);
+  const during = Number(j.rainfallAtJudgement) - Number(policyBaseline(p));
   const thr = Number(p.thresholdMm);
   if (during < thr) return "R1 未达档线：窗口增量 " + during + "mm < " + thr + "mm（国标暴雨线）";
   return "链上记录为 DENY，增量 " + during + "mm；具体命中规则须查原始判定留痕，不能仅从链上读数推断。";
@@ -253,6 +314,8 @@ function appealData(){
     rider: p.rider, region: { code: Number(p.regionId), name: cityName(p.regionId) }, windowHours: Number(p.windowHours),
     judgement: { decision: Number(j.decision), confidence: Number(j.confidence), sources: Number(j.sources),
       rainfallAtJudgement: Number(j.rainfallAtJudgement), rainfallAtBuy: Number(p.rainfallAtBuy),
+      anchored: Boolean(p.anchored), rainfallAtEffective: Number(p.rainfallAtEffective),
+      baselineMm: Number(policyBaseline(p)), baselineKind: p.anchored ? "effective" : "purchase",
       thresholdMm: Number(p.thresholdMm), judgedAt: Number(j.judgedAt) },
     derivedDenyReason: denyReason(p, j), reason,
     generatedAt: new Date().toISOString() };
@@ -261,7 +324,7 @@ function appealText(){
   const d = appealData();
   return ["【雨证 · 判定复核申请】", "保单 #" + d.policyId + " · " + d.region.name + " " + d.windowHours + "h",
     "判定：" + (d.judgement.decision === 1 ? "PAY" : "DENY") + "（置信 " + d.judgement.confidence + "（自评口径：多源一致性，非统计置信区间） · 源 " + d.judgement.sources + "）",
-    "链上读数：判定时 " + d.judgement.rainfallAtJudgement + "mm · 基线 " + d.judgement.rainfallAtBuy + "mm · 档线 " + d.judgement.thresholdMm + "mm",
+    "链上读数：判定时 " + d.judgement.rainfallAtJudgement + "mm · 基线 " + d.judgement.baselineMm + "mm（" + (d.judgement.anchored ? "生效锚定" : "买入读数，未锚定") + "） · 档线 " + d.judgement.thresholdMm + "mm",
     "系统给出的拒赔原因：" + d.derivedDenyReason, "申请人理由：" + (d.reason || "（未填写）"),
     "核验：" + d.contract + "（BOT Chain 测试网 968）· 申请人 " + d.rider, "生成时间：" + d.generatedAt].join("\n");
 }
@@ -276,7 +339,7 @@ async function loadClaims(){
     for (const id of ids) {
       const rawP = POLICY_CACHE[id] ? POLICY_CACHE[id].p : await v6.policies(id);
       const rawSt = await v6.policyStatus(id);
-      // 与「我的保单」同一口径：policyStatus() 没有 refunded/settled 分支，按 settled 事实覆盖
+      // 与「我的保单」一致，使用 V6-T1 合约的完整状态
       const st = rawSt;
       POLICY_CACHE[id] = { p: rawP, st };
       const p = rawP;
@@ -288,7 +351,7 @@ async function loadClaims(){
       h += '<div class="pol ' + st + '">';
       if (j.exists) {
         h += '<div class="pid"><span class="tag ' + (Number(j.decision) === 1 ? "ok" : "red") + '">' + (Number(j.decision) === 1 ? "判定 PAY" : "判定 DENY") + '</span><br>保单 <span class="mono">#' + id + '</span> · ' + cityName(p.regionId) + ' ' + p.windowHours + 'h</div>';
-        h += '<div class="pmeta">判定 ' + fmtT(j.judgedAt) + '<br>置信 ' + j.confidence + ' <span class="cnf" title="置信度为判定层的多源一致性自评（三模型落在中位数容差内的比例 + 与链上读数相符程度），不是统计置信区间/概率">自评口径</span> · 源 ' + j.sources + '<br>判定时读数 ' + j.rainfallAtJudgement + 'mm（基线 ' + p.rainfallAtBuy + 'mm）</div>';
+        h += '<div class="pmeta">判定 ' + fmtT(j.judgedAt) + '<br>置信 ' + j.confidence + ' <span class="cnf" title="置信度为判定层的多源一致性自评（三模型落在中位数容差内的比例 + 与链上读数相符程度），不是统计置信区间/概率">自评口径</span> · 源 ' + j.sources + '<br>判定时读数 ' + j.rainfallAtJudgement + 'mm（' + baselineLabel(p) + ' ' + policyBaseline(p) + 'mm）</div>';
         h += '<div class="pai">' + (Number(j.decision) === 1
           ? (p.paid ? '已赔 <b class="money">' + yuan(p.payout) + '</b> 元' + (paidLog ? '<br><span class="mono">' + String(paidLog.transactionHash).slice(0, 14) + '…</span>' : '<br><span class="dim">（打款凭证读取失败，稍后刷新）</span>') : (st === "expired" || st === "settled" ? "已过领取期限，请联系演示方复核" : "待触发打款"))
           : "未赔付") + '</div></div>';
@@ -396,10 +459,10 @@ $("buy").onclick=buy;
 refreshNet();refreshQuote();refreshPolicies();loadClaims();
 /* G14 轮询：标签页隐藏时停轮询（省电省流量，也避免后台打满共享节点），回到前台立即刷新一次 */
 let _poll=null;
-function startPoll(){ if(_poll!==null) return; _poll=setInterval(()=>{ if(document.hidden) return; refreshNet();refreshQuote(); },30000); }
+function startPoll(){ if(_poll!==null) return; _poll=setInterval(()=>{ if(document.hidden) return; refreshNet();refreshQuote();refreshOpenPolicyControls(); },30000); }
 function stopPoll(){ if(_poll!==null){ clearInterval(_poll); _poll=null; } }
 document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){ stopPoll(); } else { startPoll(); refreshNet();refreshQuote();refreshAllowance(); }
+  if(document.hidden){ stopPoll(); } else { startPoll(); refreshNet();refreshQuote();refreshAllowance();refreshOpenPolicyControls(); }
 });
 startPoll();
 if(window.ethereum&&window.ethereum.on){

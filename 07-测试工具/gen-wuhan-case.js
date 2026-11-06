@@ -94,7 +94,7 @@ const rows = wuhan.map(r => {
   L.push(`2. 「同一个月，不同季节价差最高 ${julJan[0].ratio.toFixed(1)} 倍（${julJan[0].name}）——这是 11 年逐小时数据算出来的，不是拍脑袋的季节系数。」`);
   L.push("3. 「这些数字不是 PPT 里的表：链上 244 格随时可 `premiumOf` 逐格核对，研究价用同一份代码可重算（`gen-wuhan-case.js` 一行命令）。」\n");
   L.push("## 四、配套的真实素材（已在链上跑）\n");
-  L.push("- 演示保单 #0：武汉 24h，8.80 元，11-03 22:00 买入 → 11-04 22:00 生效（T+1）→ keeper 自动锚定基线 12.6mm，状态 active；");
+  L.push("- 演示保单 #0：武汉 24h，8.80 元，11-03 22:00 买入 → 11-04 22:00 生效（T+1）→ keeper 自动锚定基线 126 mm，状态 active；");
   L.push("- 2024-06-24~26 三天 230mm 回放：`node 07-测试工具/check-replay.js`（历史窗口逐窗可复算）。\n");
 
   const out = path.join(ROOT, "02-作战与答辩/武汉落地素材-2026-11-04.md");

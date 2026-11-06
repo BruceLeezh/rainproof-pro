@@ -42,7 +42,7 @@
     "check-replay": "node ../04-脚本/replay-judgement.js --all --legacy",
     "check-cadence": "node check-cadence.js",
     "check-cadence:ops": "node check-cadence.js --ops",
-    "check-review": "node check-review-regressions.js && node check-operations.js && node check-pricing-next.js",
+    "check-review": "node check-review-regressions.js && node check-operations.js && node check-rider-t1.js && node check-policy-actions.js && node check-demo-idempotence.js && node e2e_policy_actions.js && node check-pricing-next.js",
     "check-pricing-next": "node check-pricing-next.js",
     "pricing:build": "node ../10-金融与定价/pricing-next/build-model.js && node ../10-金融与定价/pricing-next/summarize.js",
     "e2e:v6-review": "node e2e_v6_review.js || node e2e_v6_review.js || node e2e_v6_review.js",

@@ -211,6 +211,23 @@ console.log("\n[可复算·实证据] 仓库里每一条留痕，哈希都要能
   ok(`新留痕（${fresh.length} 个）里没有易变字段`, dirty.length === 0, dirty.map((f) => path.basename(f)).join(","));
 }
 
+// V6 starts at effectiveFrom, and the rain timestamp closes the preceding hour.
+{
+  const {policyWindow,hourlyModels}=require("../04-脚本/policy-weather-v6");
+  const start=Date.parse("2026-11-04T22:30:00+08:00")/1000;
+  const policy={startTime:start-86400,effectiveFrom:start,endTime:start+12*3600,anchored:true,settled:false};
+  const window=policyWindow(policy,start+9000,start+6300);
+  ok("V6 排除购买到生效的降雨，截止不晚于链上更新的完整小时",window.from===start && window.to===start+5400);
+  const model={id:"m",label:"M"};
+  const raw={utc_offset_seconds:28800,hourly_units:{precipitation_m:"mm"},
+    hourly:{time:["2026-11-04T22:00","2026-11-04T23:00","2026-11-05T00:00","2026-11-05T01:00"],precipitation_m:[90,4,6,80]}};
+  ok("V6 跨午夜取证，首小时按覆盖比例且未来小时不计入",hourlyModels([model],raw,window)[0].inWindowMm===8);
+  raw.hourly.precipitation_m[2]=null;
+  let missing=false,expired=false;
+  try { hourlyModels([model],raw,window); } catch { missing=true; }
+  try { policyWindow(policy,policy.endTime+1,start+6300); } catch { expired=true; }
+  ok("V6 缺测或超过判定窗口均拒绝取证",missing && expired);
+}
 console.log("\n" + "=".repeat(74));
 console.log(`结果：${pass} 项通过 / ${fail} 项失败`);
 console.log(fail === 0 ? "✅ 全部通过 —— AI 判定规则可以拿去现场了" : "❌ 有失败项");

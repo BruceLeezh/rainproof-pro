@@ -1,0 +1,102 @@
+{
+  "schema": "rainproof/research-quote@1",
+  "modelId": "a615d9275d967e37f6c66ea180fa1c16c062ff98f4ee725d95a752d6406d4c6d",
+  "region": {
+    "code": 420100,
+    "name": "武汉"
+  },
+  "month": 7,
+  "startHour": 12,
+  "hours": 12,
+  "channel": "calendar-batch-precommitted",
+  "assumptions": {
+    "benefitMode": "fixed-v6",
+    "fixedTiersFen": [
+      5000,
+      7500
+    ],
+    "incomeYuanPerHour": 20,
+    "insuredWorkHours": {
+      "12": 6,
+      "24": 10
+    },
+    "incomeReplacement": 0.5,
+    "tierFractions": [
+      0.5,
+      0.75
+    ],
+    "perPolicyCostFen": 30,
+    "perBatchCostFen": 30,
+    "batchSize": 100,
+    "claimHandlingFen": 20,
+    "annualFixedCostYuan": 60000,
+    "plannedAnnualPolicies": 200000,
+    "variableExpenseRatio": 0.08,
+    "targetProfitRatio": 0.15,
+    "annualCapitalCostRatio": 0.08,
+    "coolingHours": 24,
+    "capitalHoldExtraHours": 168,
+    "minPremiumFen": 100,
+    "maxPremiumFen": 2500,
+    "premiumTickFen": 10
+  },
+  "statistics": {
+    "month": 7,
+    "startHour": 12,
+    "q": [
+      0.02622063464235624,
+      0.0018627279102384293
+    ],
+    "upper": [
+      0.06972902787517532,
+      0.0069852296633941095
+    ],
+    "n": 248,
+    "trainingYears": 8,
+    "minimumTrainingYears": 8,
+    "credibility": 0.6739130434782609
+  },
+  "result": {
+    "hours": 12,
+    "incomeBasisFen": 10000,
+    "tiers": [
+      5000,
+      7500
+    ],
+    "reserveFen": 10000,
+    "q": [
+      0.02622063464235624,
+      0.0018627279102384293
+    ],
+    "upper": [
+      0.06972902787517532,
+      0.0069852296633941095
+    ],
+    "lossFen": 135.75999298737727,
+    "riskLossFen": 366.1082135343619,
+    "fixedFen": 30.3,
+    "overheadFen": 30,
+    "capitalFen": 18.63013698630137,
+    "commonCostFen": 78.93013698630136,
+    "upperCostFen": 80.32471754380487,
+    "requiredFen": 579.7830273742425,
+    "premiumFen": 580,
+    "profitFen": 318.3854573334743,
+    "stressProfitFen": 87.16706892183328,
+    "contributionFen": 348.3854573334743,
+    "profitRatio": 0.5489404436784039,
+    "stressProfitRatio": 0.15028804986522978,
+    "breakEvenProbability": 0.0874768635594693,
+    "breakEvenAnnualPolicies": 17223,
+    "quoteable": true,
+    "reasons": [],
+    "productionReady": false
+  },
+  "source": {
+    "file": "10-金融与定价/cache-hubei/420100.json.gz",
+    "sha256": "5f554b00880c4fb3d7ff202ee168e9752bf8452168815c4da9e50a3187adb7b2",
+    "model": "archive-default-not-pinned",
+    "url": null
+  },
+  "productionReady": false
+}
