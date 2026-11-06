@@ -37,6 +37,18 @@ const ok = (a, m) => rec("ok", a, m);
 const warn = (a, m) => rec("warn", a, m);
 const bad = (a, m) => rec("bad", a, m);
 
+// 只检查路径和文件元信息；不读取、不解析、不输出密钥内容。
+function checkOwnerKeyFile() {
+  const file = process.env.OWNER_KEY_FILE || path.join(__dirname, "../../密钥-本地/owner-keys-2026-10-24.json");
+  try {
+    const stat = fs.statSync(file);
+    if (!stat.isFile() || stat.size === 0) throw new Error("not a nonempty file");
+    ok("配置", "OWNER_KEY_FILE 指向现存非空文件（未读取密钥内容）");
+  } catch (_) {
+    bad("配置", "OWNER_KEY_FILE 缺失、不可访问或不是非空文件；请核对迁移后的本机路径，自动喂价签名会失败");
+  }
+}
+
 // ── 1. 静态资源 ────────────────────────────────────────────────
 function checkFiles() {
   const need = [
@@ -113,10 +125,6 @@ async function checkChain() {
     if(grace !== 604800n) bad("V6", "领取宽限不是7天");
     else ok("V6", "合约7天领取宽限已验证");
   }
-  // 缓存上限
-  const keyCfg = path.join(SITE, "..", "..", "密钥-本地", "owner-keys-2026-10-24.json");
-  void keyCfg;
-
   // 网格价：演示城市两档都必须有价
   for (const h of [12, 24]) {
     try {
@@ -253,6 +261,7 @@ function checkKeeperLog() {
 // ── 输出 ───────────────────────────────────────────────────────
 (async () => {
   checkFiles();
+  checkOwnerKeyFile();
   checkRegistry();
   try { await checkChain(); }
   catch (e) { bad("链", `检查中断：${e.shortMessage || e.message}`); }
