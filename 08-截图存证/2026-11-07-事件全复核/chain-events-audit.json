@@ -1,0 +1,4701 @@
+{
+  "schema": "rainproof/event-audit@1",
+  "generatedAt": "2026-11-07T12:22:17.335Z",
+  "range": {
+    "start": 29138166,
+    "head": 29592744
+  },
+  "contract": "0xD61d4EfF50C3BeFbe555a604280985904Bc00363",
+  "totalLogs": 1220,
+  "counts": {
+    "OperatorChanged": 2,
+    "PausedSet": 2,
+    "RegionRegistered": 122,
+    "PremiumSet": 244,
+    "RainfallUpdated": 844,
+    "PoolFunded": 1,
+    "CoolingPeriodSet": 1,
+    "PolicyBought": 2,
+    "PolicyAnchored": 2
+  },
+  "findings": [
+    "✅ 全部 122 区划末次喂价事件值与链上 rainfall() 一致",
+    "⚠️ 存在保单类事件：PolicyBought",
+    "✅ FeedRejected 0 条——分歧被链下闸门拦住，从未把可疑值送上链",
+    "✅ 全部 844 条喂价事件操作人与事发当时在任 operator 一致（含迁移期 0x984af687349fa37f56d9bdb7c615179b1648ab97 窗口）"
+  ],
+  "special": {
+    "policyEvents": {
+      "PolicyBought": 2,
+      "PolicyRefunded": 0,
+      "JudgementSubmitted": 0,
+      "ClaimPaid": 0,
+      "ExposureSettled": 0
+    },
+    "OperatorChanged": [
+      {
+        "block": 29138166,
+        "time": "2026-11-03 21:38",
+        "tx": "0xf93f715e172eb4c60de34a0b899969582a9b2226ae6301869a41e74aaa4cdff8",
+        "args": {
+          "from": "0x0000000000000000000000000000000000000000",
+          "to": "0x984AF687349Fa37F56D9bDb7C615179B1648Ab97"
+        }
+      },
+      {
+        "block": 29138354,
+        "time": "2026-11-03 21:40",
+        "tx": "0x7a1432bf0f9548a4311fc5bf20d50cdf9344b978682ac37e8e6cb07141728694",
+        "args": {
+          "from": "0x984AF687349Fa37F56D9bDb7C615179B1648Ab97",
+          "to": "0x21C8520D486be3805Cf3FaA7cCab896241410d98"
+        }
+      }
+    ],
+    "PausedSet": [
+      {
+        "block": 29138173,
+        "time": "2026-11-03 21:38",
+        "tx": "0x75347217cda6252913e6f500910a5e790823b8106e966b812e9b1d5bece102f9",
+        "args": {
+          "paused": true
+        }
+      },
+      {
+        "block": 29138363,
+        "time": "2026-11-03 21:40",
+        "tx": "0x2857397974a6a8fdb6ea6d54eb748298e5f678311efd9d1c43c60afc88615eb7",
+        "args": {
+          "paused": false
+        }
+      }
+    ],
+    "RegionRegistered": [
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "110100",
+          "name": "北京市",
+          "regionCount": "1"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "310100",
+          "name": "上海市",
+          "regionCount": "2"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420100",
+          "name": "武汉市",
+          "regionCount": "3"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420102",
+          "name": "江岸区",
+          "regionCount": "4"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420103",
+          "name": "江汉区",
+          "regionCount": "5"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420104",
+          "name": "硚口区",
+          "regionCount": "6"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420105",
+          "name": "汉阳区",
+          "regionCount": "7"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420106",
+          "name": "武昌区",
+          "regionCount": "8"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420107",
+          "name": "青山区",
+          "regionCount": "9"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420111",
+          "name": "洪山区",
+          "regionCount": "10"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420112",
+          "name": "东西湖区",
+          "regionCount": "11"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "code": "420113",
+          "name": "汉南区",
+          "regionCount": "12"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420114",
+          "name": "蔡甸区",
+          "regionCount": "13"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420115",
+          "name": "江夏区",
+          "regionCount": "14"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420116",
+          "name": "黄陂区",
+          "regionCount": "15"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420117",
+          "name": "新洲区",
+          "regionCount": "16"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420200",
+          "name": "黄石市",
+          "regionCount": "17"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420202",
+          "name": "黄石港区",
+          "regionCount": "18"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420203",
+          "name": "西塞山区",
+          "regionCount": "19"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420204",
+          "name": "下陆区",
+          "regionCount": "20"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420205",
+          "name": "铁山区",
+          "regionCount": "21"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420222",
+          "name": "阳新县",
+          "regionCount": "22"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420281",
+          "name": "大冶市",
+          "regionCount": "23"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "code": "420300",
+          "name": "十堰市",
+          "regionCount": "24"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420302",
+          "name": "茅箭区",
+          "regionCount": "25"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420303",
+          "name": "张湾区",
+          "regionCount": "26"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420304",
+          "name": "郧阳区",
+          "regionCount": "27"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420322",
+          "name": "郧西县",
+          "regionCount": "28"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420323",
+          "name": "竹山县",
+          "regionCount": "29"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420324",
+          "name": "竹溪县",
+          "regionCount": "30"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420325",
+          "name": "房县",
+          "regionCount": "31"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420381",
+          "name": "丹江口市",
+          "regionCount": "32"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420500",
+          "name": "宜昌市",
+          "regionCount": "33"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420502",
+          "name": "西陵区",
+          "regionCount": "34"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420503",
+          "name": "伍家岗区",
+          "regionCount": "35"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "code": "420504",
+          "name": "点军区",
+          "regionCount": "36"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420505",
+          "name": "猇亭区",
+          "regionCount": "37"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420506",
+          "name": "夷陵区",
+          "regionCount": "38"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420525",
+          "name": "远安县",
+          "regionCount": "39"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420526",
+          "name": "兴山县",
+          "regionCount": "40"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420527",
+          "name": "秭归县",
+          "regionCount": "41"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420528",
+          "name": "长阳土家族自治县",
+          "regionCount": "42"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420529",
+          "name": "五峰土家族自治县",
+          "regionCount": "43"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420581",
+          "name": "宜都市",
+          "regionCount": "44"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420582",
+          "name": "当阳市",
+          "regionCount": "45"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420583",
+          "name": "枝江市",
+          "regionCount": "46"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420600",
+          "name": "襄阳市",
+          "regionCount": "47"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "code": "420602",
+          "name": "襄城区",
+          "regionCount": "48"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420606",
+          "name": "樊城区",
+          "regionCount": "49"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420607",
+          "name": "襄州区",
+          "regionCount": "50"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420624",
+          "name": "南漳县",
+          "regionCount": "51"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420625",
+          "name": "谷城县",
+          "regionCount": "52"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420626",
+          "name": "保康县",
+          "regionCount": "53"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420682",
+          "name": "老河口市",
+          "regionCount": "54"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420683",
+          "name": "枣阳市",
+          "regionCount": "55"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420684",
+          "name": "宜城市",
+          "regionCount": "56"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420700",
+          "name": "鄂州市",
+          "regionCount": "57"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420702",
+          "name": "梁子湖区",
+          "regionCount": "58"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420703",
+          "name": "华容区",
+          "regionCount": "59"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "code": "420704",
+          "name": "鄂城区",
+          "regionCount": "60"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420800",
+          "name": "荆门市",
+          "regionCount": "61"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420802",
+          "name": "东宝区",
+          "regionCount": "62"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420804",
+          "name": "掇刀区",
+          "regionCount": "63"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420822",
+          "name": "沙洋县",
+          "regionCount": "64"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420881",
+          "name": "钟祥市",
+          "regionCount": "65"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420882",
+          "name": "京山市",
+          "regionCount": "66"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420900",
+          "name": "孝感市",
+          "regionCount": "67"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420902",
+          "name": "孝南区",
+          "regionCount": "68"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420921",
+          "name": "孝昌县",
+          "regionCount": "69"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420922",
+          "name": "大悟县",
+          "regionCount": "70"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420923",
+          "name": "云梦县",
+          "regionCount": "71"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "code": "420981",
+          "name": "应城市",
+          "regionCount": "72"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "420982",
+          "name": "安陆市",
+          "regionCount": "73"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "420984",
+          "name": "汉川市",
+          "regionCount": "74"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421000",
+          "name": "荆州市",
+          "regionCount": "75"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421002",
+          "name": "沙市区",
+          "regionCount": "76"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421003",
+          "name": "荆州区",
+          "regionCount": "77"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421022",
+          "name": "公安县",
+          "regionCount": "78"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421024",
+          "name": "江陵县",
+          "regionCount": "79"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421071",
+          "name": "荆州经济技术开发区",
+          "regionCount": "80"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421081",
+          "name": "石首市",
+          "regionCount": "81"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421083",
+          "name": "洪湖市",
+          "regionCount": "82"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421087",
+          "name": "松滋市",
+          "regionCount": "83"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "code": "421088",
+          "name": "监利市",
+          "regionCount": "84"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421100",
+          "name": "黄冈市",
+          "regionCount": "85"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421102",
+          "name": "黄州区",
+          "regionCount": "86"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421121",
+          "name": "团风县",
+          "regionCount": "87"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421122",
+          "name": "红安县",
+          "regionCount": "88"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421123",
+          "name": "罗田县",
+          "regionCount": "89"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421124",
+          "name": "英山县",
+          "regionCount": "90"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421125",
+          "name": "浠水县",
+          "regionCount": "91"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421126",
+          "name": "蕲春县",
+          "regionCount": "92"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421127",
+          "name": "黄梅县",
+          "regionCount": "93"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421171",
+          "name": "龙感湖管理区",
+          "regionCount": "94"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421181",
+          "name": "麻城市",
+          "regionCount": "95"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "code": "421182",
+          "name": "武穴市",
+          "regionCount": "96"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421200",
+          "name": "咸宁市",
+          "regionCount": "97"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421202",
+          "name": "咸安区",
+          "regionCount": "98"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421221",
+          "name": "嘉鱼县",
+          "regionCount": "99"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421222",
+          "name": "通城县",
+          "regionCount": "100"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421223",
+          "name": "崇阳县",
+          "regionCount": "101"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421224",
+          "name": "通山县",
+          "regionCount": "102"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421281",
+          "name": "赤壁市",
+          "regionCount": "103"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421300",
+          "name": "随州市",
+          "regionCount": "104"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421303",
+          "name": "曾都区",
+          "regionCount": "105"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421321",
+          "name": "随县",
+          "regionCount": "106"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "421381",
+          "name": "广水市",
+          "regionCount": "107"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "code": "422800",
+          "name": "恩施土家族苗族自治州",
+          "regionCount": "108"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422801",
+          "name": "恩施市",
+          "regionCount": "109"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422802",
+          "name": "利川市",
+          "regionCount": "110"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422822",
+          "name": "建始县",
+          "regionCount": "111"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422823",
+          "name": "巴东县",
+          "regionCount": "112"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422825",
+          "name": "宣恩县",
+          "regionCount": "113"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422826",
+          "name": "咸丰县",
+          "regionCount": "114"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422827",
+          "name": "来凤县",
+          "regionCount": "115"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "422828",
+          "name": "鹤峰县",
+          "regionCount": "116"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "429004",
+          "name": "仙桃市",
+          "regionCount": "117"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "429005",
+          "name": "潜江市",
+          "regionCount": "118"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "429006",
+          "name": "天门市",
+          "regionCount": "119"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "code": "429021",
+          "name": "神农架林区",
+          "regionCount": "120"
+        }
+      },
+      {
+        "block": 29138245,
+        "time": "2026-11-03 21:39",
+        "tx": "0x54c6b8f76e6aea87749592a3521c45168e63e4fba9209863da382b4314000481",
+        "args": {
+          "code": "440100",
+          "name": "广州市",
+          "regionCount": "121"
+        }
+      },
+      {
+        "block": 29138245,
+        "time": "2026-11-03 21:39",
+        "tx": "0x54c6b8f76e6aea87749592a3521c45168e63e4fba9209863da382b4314000481",
+        "args": {
+          "code": "510100",
+          "name": "成都市",
+          "regionCount": "122"
+        }
+      }
+    ],
+    "PremiumSet": [
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "110100",
+          "windowHours": "12",
+          "premium": "360",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "110100",
+          "windowHours": "24",
+          "premium": "510",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "310100",
+          "windowHours": "12",
+          "premium": "420",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "310100",
+          "windowHours": "24",
+          "premium": "530",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420100",
+          "windowHours": "12",
+          "premium": "590",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420100",
+          "windowHours": "24",
+          "premium": "880",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420102",
+          "windowHours": "12",
+          "premium": "590",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420102",
+          "windowHours": "24",
+          "premium": "880",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420103",
+          "windowHours": "12",
+          "premium": "590",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420103",
+          "windowHours": "24",
+          "premium": "880",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420104",
+          "windowHours": "12",
+          "premium": "600",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420104",
+          "windowHours": "24",
+          "premium": "910",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420105",
+          "windowHours": "12",
+          "premium": "600",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420105",
+          "windowHours": "24",
+          "premium": "910",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420106",
+          "windowHours": "12",
+          "premium": "590",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420106",
+          "windowHours": "24",
+          "premium": "920",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420107",
+          "windowHours": "12",
+          "premium": "620",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420107",
+          "windowHours": "24",
+          "premium": "900",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420111",
+          "windowHours": "12",
+          "premium": "620",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420111",
+          "windowHours": "24",
+          "premium": "860",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420112",
+          "windowHours": "12",
+          "premium": "570",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420112",
+          "windowHours": "24",
+          "premium": "860",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420113",
+          "windowHours": "12",
+          "premium": "670",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138180,
+        "time": "2026-11-03 21:38",
+        "tx": "0x83e721178d35e78788e3e6445632ec3aa1b99be9480845e5212568bcc96ca90f",
+        "args": {
+          "regionId": "420113",
+          "windowHours": "24",
+          "premium": "1050",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420114",
+          "windowHours": "12",
+          "premium": "620",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420114",
+          "windowHours": "24",
+          "premium": "950",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420115",
+          "windowHours": "12",
+          "premium": "640",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420115",
+          "windowHours": "24",
+          "premium": "960",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420116",
+          "windowHours": "12",
+          "premium": "470",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420116",
+          "windowHours": "24",
+          "premium": "600",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420117",
+          "windowHours": "12",
+          "premium": "610",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420117",
+          "windowHours": "24",
+          "premium": "960",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420200",
+          "windowHours": "12",
+          "premium": "480",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420200",
+          "windowHours": "24",
+          "premium": "660",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420202",
+          "windowHours": "12",
+          "premium": "480",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420202",
+          "windowHours": "24",
+          "premium": "660",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420203",
+          "windowHours": "12",
+          "premium": "480",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420203",
+          "windowHours": "24",
+          "premium": "660",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420204",
+          "windowHours": "12",
+          "premium": "500",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420204",
+          "windowHours": "24",
+          "premium": "660",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420205",
+          "windowHours": "12",
+          "premium": "500",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420205",
+          "windowHours": "24",
+          "premium": "660",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420222",
+          "windowHours": "12",
+          "premium": "460",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420222",
+          "windowHours": "24",
+          "premium": "660",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420281",
+          "windowHours": "12",
+          "premium": "480",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420281",
+          "windowHours": "24",
+          "premium": "690",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420300",
+          "windowHours": "12",
+          "premium": "240",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138187,
+        "time": "2026-11-03 21:38",
+        "tx": "0xaf5f671b05d38739b8cbb718cd10cd67cfdd1f4e6f3765095ab7e5855278adb7",
+        "args": {
+          "regionId": "420300",
+          "windowHours": "24",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420302",
+          "windowHours": "12",
+          "premium": "230",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420302",
+          "windowHours": "24",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420303",
+          "windowHours": "12",
+          "premium": "240",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420303",
+          "windowHours": "24",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420304",
+          "windowHours": "12",
+          "premium": "230",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420304",
+          "windowHours": "24",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420322",
+          "windowHours": "12",
+          "premium": "230",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420322",
+          "windowHours": "24",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420323",
+          "windowHours": "12",
+          "premium": "180",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420323",
+          "windowHours": "24",
+          "premium": "280",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420324",
+          "windowHours": "12",
+          "premium": "270",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420324",
+          "windowHours": "24",
+          "premium": "310",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420325",
+          "windowHours": "12",
+          "premium": "180",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420325",
+          "windowHours": "24",
+          "premium": "240",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420381",
+          "windowHours": "12",
+          "premium": "280",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420381",
+          "windowHours": "24",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420500",
+          "windowHours": "12",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420500",
+          "windowHours": "24",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420502",
+          "windowHours": "12",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420502",
+          "windowHours": "24",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420503",
+          "windowHours": "12",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420503",
+          "windowHours": "24",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420504",
+          "windowHours": "12",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138194,
+        "time": "2026-11-03 21:38",
+        "tx": "0xd562ca584a8c93836b38898480a9bd7a8550fc3990b1c0d6d2f1d06e81a4a6b2",
+        "args": {
+          "regionId": "420504",
+          "windowHours": "24",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420505",
+          "windowHours": "12",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420505",
+          "windowHours": "24",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420506",
+          "windowHours": "12",
+          "premium": "390",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420506",
+          "windowHours": "24",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420525",
+          "windowHours": "12",
+          "premium": "360",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420525",
+          "windowHours": "24",
+          "premium": "490",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420526",
+          "windowHours": "12",
+          "premium": "310",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420526",
+          "windowHours": "24",
+          "premium": "390",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420527",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420527",
+          "windowHours": "24",
+          "premium": "420",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420528",
+          "windowHours": "12",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420528",
+          "windowHours": "24",
+          "premium": "570",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420529",
+          "windowHours": "12",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420529",
+          "windowHours": "24",
+          "premium": "640",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420581",
+          "windowHours": "12",
+          "premium": "300",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420581",
+          "windowHours": "24",
+          "premium": "380",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420582",
+          "windowHours": "12",
+          "premium": "360",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420582",
+          "windowHours": "24",
+          "premium": "490",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420583",
+          "windowHours": "12",
+          "premium": "320",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420583",
+          "windowHours": "24",
+          "premium": "390",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420600",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420600",
+          "windowHours": "24",
+          "premium": "460",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420602",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138201,
+        "time": "2026-11-03 21:38",
+        "tx": "0xff18c764f4f2dff49a1e9b976022693bcbadeb4102b927ade077178ad5d02282",
+        "args": {
+          "regionId": "420602",
+          "windowHours": "24",
+          "premium": "460",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420606",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420606",
+          "windowHours": "24",
+          "premium": "460",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420607",
+          "windowHours": "12",
+          "premium": "320",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420607",
+          "windowHours": "24",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420624",
+          "windowHours": "12",
+          "premium": "290",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420624",
+          "windowHours": "24",
+          "premium": "410",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420625",
+          "windowHours": "12",
+          "premium": "270",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420625",
+          "windowHours": "24",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420626",
+          "windowHours": "12",
+          "premium": "250",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420626",
+          "windowHours": "24",
+          "premium": "380",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420682",
+          "windowHours": "12",
+          "premium": "290",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420682",
+          "windowHours": "24",
+          "premium": "430",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420683",
+          "windowHours": "12",
+          "premium": "380",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420683",
+          "windowHours": "24",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420684",
+          "windowHours": "12",
+          "premium": "320",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420684",
+          "windowHours": "24",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420700",
+          "windowHours": "12",
+          "premium": "530",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420700",
+          "windowHours": "24",
+          "premium": "750",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420702",
+          "windowHours": "12",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420702",
+          "windowHours": "24",
+          "premium": "640",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420703",
+          "windowHours": "12",
+          "premium": "590",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420703",
+          "windowHours": "24",
+          "premium": "860",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420704",
+          "windowHours": "12",
+          "premium": "530",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138208,
+        "time": "2026-11-03 21:38",
+        "tx": "0xc78d8e617ce71144df32e8169e156d018b64ce591cba8937355a6b3d9dbb4eaa",
+        "args": {
+          "regionId": "420704",
+          "windowHours": "24",
+          "premium": "750",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420800",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420800",
+          "windowHours": "24",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420802",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420802",
+          "windowHours": "24",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420804",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420804",
+          "windowHours": "24",
+          "premium": "510",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420822",
+          "windowHours": "12",
+          "premium": "300",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420822",
+          "windowHours": "24",
+          "premium": "420",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420881",
+          "windowHours": "12",
+          "premium": "380",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420881",
+          "windowHours": "24",
+          "premium": "480",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420882",
+          "windowHours": "12",
+          "premium": "310",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420882",
+          "windowHours": "24",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420900",
+          "windowHours": "12",
+          "premium": "390",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420900",
+          "windowHours": "24",
+          "premium": "540",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420902",
+          "windowHours": "12",
+          "premium": "390",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420902",
+          "windowHours": "24",
+          "premium": "540",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420921",
+          "windowHours": "12",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420921",
+          "windowHours": "24",
+          "premium": "490",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420922",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420922",
+          "windowHours": "24",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420923",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420923",
+          "windowHours": "24",
+          "premium": "480",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420981",
+          "windowHours": "12",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138215,
+        "time": "2026-11-03 21:39",
+        "tx": "0xf32d878e61debae44a9a3e218a01c5c50b21711bc9b6b553df1a675af26113f4",
+        "args": {
+          "regionId": "420981",
+          "windowHours": "24",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "420982",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "420982",
+          "windowHours": "24",
+          "premium": "460",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "420984",
+          "windowHours": "12",
+          "premium": "500",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "420984",
+          "windowHours": "24",
+          "premium": "760",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421000",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421000",
+          "windowHours": "24",
+          "premium": "410",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421002",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421002",
+          "windowHours": "24",
+          "premium": "410",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421003",
+          "windowHours": "12",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421003",
+          "windowHours": "24",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421022",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421022",
+          "windowHours": "24",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421024",
+          "windowHours": "12",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421024",
+          "windowHours": "24",
+          "premium": "510",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421071",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421071",
+          "windowHours": "24",
+          "premium": "410",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421081",
+          "windowHours": "12",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421081",
+          "windowHours": "24",
+          "premium": "560",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421083",
+          "windowHours": "12",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421083",
+          "windowHours": "24",
+          "premium": "590",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421087",
+          "windowHours": "12",
+          "premium": "270",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421087",
+          "windowHours": "24",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421088",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138222,
+        "time": "2026-11-03 21:39",
+        "tx": "0x5f1d09622c99b98f5751bd2024a7e947709209943d6bea0cead5b4116a5ef1f7",
+        "args": {
+          "regionId": "421088",
+          "windowHours": "24",
+          "premium": "410",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421100",
+          "windowHours": "12",
+          "premium": "570",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421100",
+          "windowHours": "24",
+          "premium": "810",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421102",
+          "windowHours": "12",
+          "premium": "570",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421102",
+          "windowHours": "24",
+          "premium": "810",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421121",
+          "windowHours": "12",
+          "premium": "610",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421121",
+          "windowHours": "24",
+          "premium": "960",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421122",
+          "windowHours": "12",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421122",
+          "windowHours": "24",
+          "premium": "670",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421123",
+          "windowHours": "12",
+          "premium": "580",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421123",
+          "windowHours": "24",
+          "premium": "800",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421124",
+          "windowHours": "12",
+          "premium": "580",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421124",
+          "windowHours": "24",
+          "premium": "880",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421125",
+          "windowHours": "12",
+          "premium": "600",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421125",
+          "windowHours": "24",
+          "premium": "790",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421126",
+          "windowHours": "12",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421126",
+          "windowHours": "24",
+          "premium": "740",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421127",
+          "windowHours": "12",
+          "premium": "520",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421127",
+          "windowHours": "24",
+          "premium": "720",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421171",
+          "windowHours": "12",
+          "premium": "570",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421171",
+          "windowHours": "24",
+          "premium": "810",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421181",
+          "windowHours": "12",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421181",
+          "windowHours": "24",
+          "premium": "560",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421182",
+          "windowHours": "12",
+          "premium": "460",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138229,
+        "time": "2026-11-03 21:39",
+        "tx": "0x47e4253f077a6a90caacd64ef659a5163fa17f19c193fe7bc2d7acdd53d4e893",
+        "args": {
+          "regionId": "421182",
+          "windowHours": "24",
+          "premium": "640",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421200",
+          "windowHours": "12",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421200",
+          "windowHours": "24",
+          "premium": "640",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421202",
+          "windowHours": "12",
+          "premium": "470",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421202",
+          "windowHours": "24",
+          "premium": "660",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421221",
+          "windowHours": "12",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421221",
+          "windowHours": "24",
+          "premium": "530",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421222",
+          "windowHours": "12",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421222",
+          "windowHours": "24",
+          "premium": "770",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421223",
+          "windowHours": "12",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421223",
+          "windowHours": "24",
+          "premium": "700",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421224",
+          "windowHours": "12",
+          "premium": "470",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421224",
+          "windowHours": "24",
+          "premium": "710",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421281",
+          "windowHours": "12",
+          "premium": "440",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421281",
+          "windowHours": "24",
+          "premium": "540",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421300",
+          "windowHours": "12",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421300",
+          "windowHours": "24",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421303",
+          "windowHours": "12",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421303",
+          "windowHours": "24",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421321",
+          "windowHours": "12",
+          "premium": "330",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421321",
+          "windowHours": "24",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421381",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "421381",
+          "windowHours": "24",
+          "premium": "500",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "422800",
+          "windowHours": "12",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138231,
+        "time": "2026-11-03 21:39",
+        "tx": "0x7f59eef9b8030d36bbca5704a2059b3d998e32c2b6c8a0068a6ddeca808a82f7",
+        "args": {
+          "regionId": "422800",
+          "windowHours": "24",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422801",
+          "windowHours": "12",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422801",
+          "windowHours": "24",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422802",
+          "windowHours": "12",
+          "premium": "320",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422802",
+          "windowHours": "24",
+          "premium": "450",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422822",
+          "windowHours": "12",
+          "premium": "370",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422822",
+          "windowHours": "24",
+          "premium": "530",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422823",
+          "windowHours": "12",
+          "premium": "360",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422823",
+          "windowHours": "24",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422825",
+          "windowHours": "12",
+          "premium": "390",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422825",
+          "windowHours": "24",
+          "premium": "550",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422826",
+          "windowHours": "12",
+          "premium": "430",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422826",
+          "windowHours": "24",
+          "premium": "710",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422827",
+          "windowHours": "12",
+          "premium": "400",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422827",
+          "windowHours": "24",
+          "premium": "640",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422828",
+          "windowHours": "12",
+          "premium": "570",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "422828",
+          "windowHours": "24",
+          "premium": "750",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429004",
+          "windowHours": "12",
+          "premium": "480",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429004",
+          "windowHours": "24",
+          "premium": "620",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429005",
+          "windowHours": "12",
+          "premium": "350",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429005",
+          "windowHours": "24",
+          "premium": "430",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429006",
+          "windowHours": "12",
+          "premium": "340",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429006",
+          "windowHours": "24",
+          "premium": "420",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429021",
+          "windowHours": "12",
+          "premium": "270",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138238,
+        "time": "2026-11-03 21:39",
+        "tx": "0x00c95bf5b58520e578b3f026f071ac30f0e507df1b3c01ad5da7d316f13302b4",
+        "args": {
+          "regionId": "429021",
+          "windowHours": "24",
+          "premium": "320",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138245,
+        "time": "2026-11-03 21:39",
+        "tx": "0x54c6b8f76e6aea87749592a3521c45168e63e4fba9209863da382b4314000481",
+        "args": {
+          "regionId": "440100",
+          "windowHours": "12",
+          "premium": "590",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138245,
+        "time": "2026-11-03 21:39",
+        "tx": "0x54c6b8f76e6aea87749592a3521c45168e63e4fba9209863da382b4314000481",
+        "args": {
+          "regionId": "440100",
+          "windowHours": "24",
+          "premium": "790",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138245,
+        "time": "2026-11-03 21:39",
+        "tx": "0x54c6b8f76e6aea87749592a3521c45168e63e4fba9209863da382b4314000481",
+        "args": {
+          "regionId": "510100",
+          "windowHours": "12",
+          "premium": "580",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      },
+      {
+        "block": 29138245,
+        "time": "2026-11-03 21:39",
+        "tx": "0x54c6b8f76e6aea87749592a3521c45168e63e4fba9209863da382b4314000481",
+        "args": {
+          "regionId": "510100",
+          "windowHours": "24",
+          "premium": "820",
+          "reasonHash": "0x05b362796502ae6212cf7b078be51b1c4679019ff59c5b85ba9ca96e39ffe22a"
+        }
+      }
+    ],
+    "PoolFunded": [
+      {
+        "block": 29138349,
+        "time": "2026-11-03 21:40",
+        "tx": "0x51d6f8e566e6969ceb0a9f952be8edd1770f86e1bd19c9edc6bf24352956c399",
+        "args": {
+          "from": "0x21C8520D486be3805Cf3FaA7cCab896241410d98",
+          "amount": "495840",
+          "newBalance": "495840"
+        }
+      }
+    ],
+    "CoolingPeriodSet": [
+      {
+        "block": 29138893,
+        "time": "2026-11-03 21:47",
+        "tx": "0x5d92cc7bf936f87a5fbab8c5c612dfbe0d7d5c21f04543c3c3fc6450b37d82a5",
+        "args": {
+          "seconds_": "86400"
+        }
+      }
+    ]
+  },
+  "feedByRegion": {
+    "110100": {
+      "chainVal": 64,
+      "evVal": 64,
+      "evCount": 4
+    },
+    "310100": {
+      "chainVal": 213,
+      "evVal": 213,
+      "evCount": 4
+    },
+    "420100": {
+      "chainVal": 127,
+      "evVal": 127,
+      "evCount": 9
+    },
+    "420102": {
+      "chainVal": 127,
+      "evVal": 127,
+      "evCount": 9
+    },
+    "420103": {
+      "chainVal": 127,
+      "evVal": 127,
+      "evCount": 9
+    },
+    "420104": {
+      "chainVal": 131,
+      "evVal": 131,
+      "evCount": 9
+    },
+    "420105": {
+      "chainVal": 123,
+      "evVal": 123,
+      "evCount": 5
+    },
+    "420106": {
+      "chainVal": 122,
+      "evVal": 122,
+      "evCount": 5
+    },
+    "420107": {
+      "chainVal": 132,
+      "evVal": 132,
+      "evCount": 9
+    },
+    "420111": {
+      "chainVal": 143,
+      "evVal": 143,
+      "evCount": 9
+    },
+    "420112": {
+      "chainVal": 126,
+      "evVal": 126,
+      "evCount": 9
+    },
+    "420113": {
+      "chainVal": 130,
+      "evVal": 130,
+      "evCount": 9
+    },
+    "420114": {
+      "chainVal": 124,
+      "evVal": 124,
+      "evCount": 9
+    },
+    "420115": {
+      "chainVal": 139,
+      "evVal": 139,
+      "evCount": 9
+    },
+    "420116": {
+      "chainVal": 142,
+      "evVal": 142,
+      "evCount": 9
+    },
+    "420117": {
+      "chainVal": 113,
+      "evVal": 113,
+      "evCount": 9
+    },
+    "420200": {
+      "chainVal": 149,
+      "evVal": 149,
+      "evCount": 5
+    },
+    "420202": {
+      "chainVal": 149,
+      "evVal": 149,
+      "evCount": 5
+    },
+    "420203": {
+      "chainVal": 149,
+      "evVal": 149,
+      "evCount": 5
+    },
+    "420204": {
+      "chainVal": 138,
+      "evVal": 138,
+      "evCount": 5
+    },
+    "420205": {
+      "chainVal": 143,
+      "evVal": 143,
+      "evCount": 5
+    },
+    "420222": {
+      "chainVal": 120,
+      "evVal": 120,
+      "evCount": 8
+    },
+    "420281": {
+      "chainVal": 151,
+      "evVal": 151,
+      "evCount": 5
+    },
+    "420300": {
+      "chainVal": 108,
+      "evVal": 108,
+      "evCount": 4
+    },
+    "420302": {
+      "chainVal": 102,
+      "evVal": 102,
+      "evCount": 4
+    },
+    "420303": {
+      "chainVal": 108,
+      "evVal": 108,
+      "evCount": 4
+    },
+    "420304": {
+      "chainVal": 90,
+      "evVal": 90,
+      "evCount": 4
+    },
+    "420322": {
+      "chainVal": 63,
+      "evVal": 63,
+      "evCount": 5
+    },
+    "420323": {
+      "chainVal": 128,
+      "evVal": 128,
+      "evCount": 5
+    },
+    "420324": {
+      "chainVal": 148,
+      "evVal": 148,
+      "evCount": 4
+    },
+    "420325": {
+      "chainVal": 101,
+      "evVal": 101,
+      "evCount": 4
+    },
+    "420381": {
+      "chainVal": 88,
+      "evVal": 88,
+      "evCount": 4
+    },
+    "420500": {
+      "chainVal": 130,
+      "evVal": 130,
+      "evCount": 5
+    },
+    "420502": {
+      "chainVal": 130,
+      "evVal": 130,
+      "evCount": 5
+    },
+    "420503": {
+      "chainVal": 138,
+      "evVal": 138,
+      "evCount": 6
+    },
+    "420504": {
+      "chainVal": 130,
+      "evVal": 130,
+      "evCount": 5
+    },
+    "420505": {
+      "chainVal": 147,
+      "evVal": 147,
+      "evCount": 7
+    },
+    "420506": {
+      "chainVal": 134,
+      "evVal": 134,
+      "evCount": 5
+    },
+    "420525": {
+      "chainVal": 147,
+      "evVal": 147,
+      "evCount": 5
+    },
+    "420526": {
+      "chainVal": 105,
+      "evVal": 105,
+      "evCount": 5
+    },
+    "420527": {
+      "chainVal": 139,
+      "evVal": 139,
+      "evCount": 5
+    },
+    "420528": {
+      "chainVal": 177,
+      "evVal": 177,
+      "evCount": 6
+    },
+    "420529": {
+      "chainVal": 134,
+      "evVal": 134,
+      "evCount": 7
+    },
+    "420581": {
+      "chainVal": 129,
+      "evVal": 129,
+      "evCount": 8
+    },
+    "420582": {
+      "chainVal": 157,
+      "evVal": 157,
+      "evCount": 5
+    },
+    "420583": {
+      "chainVal": 119,
+      "evVal": 119,
+      "evCount": 8
+    },
+    "420600": {
+      "chainVal": 89,
+      "evVal": 89,
+      "evCount": 6
+    },
+    "420602": {
+      "chainVal": 89,
+      "evVal": 89,
+      "evCount": 6
+    },
+    "420606": {
+      "chainVal": 89,
+      "evVal": 89,
+      "evCount": 6
+    },
+    "420607": {
+      "chainVal": 91,
+      "evVal": 91,
+      "evCount": 7
+    },
+    "420624": {
+      "chainVal": 77,
+      "evVal": 77,
+      "evCount": 5
+    },
+    "420625": {
+      "chainVal": 77,
+      "evVal": 77,
+      "evCount": 5
+    },
+    "420626": {
+      "chainVal": 89,
+      "evVal": 89,
+      "evCount": 6
+    },
+    "420682": {
+      "chainVal": 82,
+      "evVal": 82,
+      "evCount": 5
+    },
+    "420683": {
+      "chainVal": 104,
+      "evVal": 104,
+      "evCount": 5
+    },
+    "420684": {
+      "chainVal": 99,
+      "evVal": 99,
+      "evCount": 7
+    },
+    "420700": {
+      "chainVal": 118,
+      "evVal": 118,
+      "evCount": 6
+    },
+    "420702": {
+      "chainVal": 131,
+      "evVal": 131,
+      "evCount": 6
+    },
+    "420703": {
+      "chainVal": 127,
+      "evVal": 127,
+      "evCount": 9
+    },
+    "420704": {
+      "chainVal": 118,
+      "evVal": 118,
+      "evCount": 6
+    },
+    "420800": {
+      "chainVal": 151,
+      "evVal": 151,
+      "evCount": 5
+    },
+    "420802": {
+      "chainVal": 151,
+      "evVal": 151,
+      "evCount": 5
+    },
+    "420804": {
+      "chainVal": 165,
+      "evVal": 165,
+      "evCount": 5
+    },
+    "420822": {
+      "chainVal": 154,
+      "evVal": 154,
+      "evCount": 7
+    },
+    "420881": {
+      "chainVal": 178,
+      "evVal": 178,
+      "evCount": 6
+    },
+    "420882": {
+      "chainVal": 213,
+      "evVal": 213,
+      "evCount": 9
+    },
+    "420900": {
+      "chainVal": 141,
+      "evVal": 141,
+      "evCount": 9
+    },
+    "420902": {
+      "chainVal": 141,
+      "evVal": 141,
+      "evCount": 9
+    },
+    "420921": {
+      "chainVal": 140,
+      "evVal": 140,
+      "evCount": 9
+    },
+    "420922": {
+      "chainVal": 178,
+      "evVal": 178,
+      "evCount": 8
+    },
+    "420923": {
+      "chainVal": 155,
+      "evVal": 155,
+      "evCount": 9
+    },
+    "420981": {
+      "chainVal": 134,
+      "evVal": 134,
+      "evCount": 9
+    },
+    "420982": {
+      "chainVal": 140,
+      "evVal": 140,
+      "evCount": 8
+    },
+    "420984": {
+      "chainVal": 128,
+      "evVal": 128,
+      "evCount": 9
+    },
+    "421000": {
+      "chainVal": 124,
+      "evVal": 124,
+      "evCount": 9
+    },
+    "421002": {
+      "chainVal": 124,
+      "evVal": 124,
+      "evCount": 9
+    },
+    "421003": {
+      "chainVal": 118,
+      "evVal": 118,
+      "evCount": 9
+    },
+    "421022": {
+      "chainVal": 122,
+      "evVal": 122,
+      "evCount": 9
+    },
+    "421024": {
+      "chainVal": 111,
+      "evVal": 111,
+      "evCount": 7
+    },
+    "421071": {
+      "chainVal": 124,
+      "evVal": 124,
+      "evCount": 9
+    },
+    "421081": {
+      "chainVal": 153,
+      "evVal": 153,
+      "evCount": 7
+    },
+    "421083": {
+      "chainVal": 140,
+      "evVal": 140,
+      "evCount": 11
+    },
+    "421087": {
+      "chainVal": 139,
+      "evVal": 139,
+      "evCount": 7
+    },
+    "421088": {
+      "chainVal": 124,
+      "evVal": 124,
+      "evCount": 9
+    },
+    "421100": {
+      "chainVal": 105,
+      "evVal": 105,
+      "evCount": 6
+    },
+    "421102": {
+      "chainVal": 105,
+      "evVal": 105,
+      "evCount": 6
+    },
+    "421121": {
+      "chainVal": 102,
+      "evVal": 102,
+      "evCount": 9
+    },
+    "421122": {
+      "chainVal": 167,
+      "evVal": 167,
+      "evCount": 9
+    },
+    "421123": {
+      "chainVal": 95,
+      "evVal": 95,
+      "evCount": 9
+    },
+    "421124": {
+      "chainVal": 101,
+      "evVal": 101,
+      "evCount": 8
+    },
+    "421125": {
+      "chainVal": 121,
+      "evVal": 121,
+      "evCount": 5
+    },
+    "421126": {
+      "chainVal": 141,
+      "evVal": 141,
+      "evCount": 8
+    },
+    "421127": {
+      "chainVal": 126,
+      "evVal": 126,
+      "evCount": 7
+    },
+    "421171": {
+      "chainVal": 105,
+      "evVal": 105,
+      "evCount": 6
+    },
+    "421181": {
+      "chainVal": 154,
+      "evVal": 154,
+      "evCount": 6
+    },
+    "421182": {
+      "chainVal": 127,
+      "evVal": 127,
+      "evCount": 9
+    },
+    "421200": {
+      "chainVal": 157,
+      "evVal": 157,
+      "evCount": 5
+    },
+    "421202": {
+      "chainVal": 171,
+      "evVal": 171,
+      "evCount": 5
+    },
+    "421221": {
+      "chainVal": 142,
+      "evVal": 142,
+      "evCount": 9
+    },
+    "421222": {
+      "chainVal": 176,
+      "evVal": 176,
+      "evCount": 7
+    },
+    "421223": {
+      "chainVal": 193,
+      "evVal": 193,
+      "evCount": 8
+    },
+    "421224": {
+      "chainVal": 134,
+      "evVal": 134,
+      "evCount": 9
+    },
+    "421281": {
+      "chainVal": 166,
+      "evVal": 166,
+      "evCount": 11
+    },
+    "421300": {
+      "chainVal": 221,
+      "evVal": 221,
+      "evCount": 8
+    },
+    "421303": {
+      "chainVal": 221,
+      "evVal": 221,
+      "evCount": 8
+    },
+    "421321": {
+      "chainVal": 217,
+      "evVal": 217,
+      "evCount": 8
+    },
+    "421381": {
+      "chainVal": 185,
+      "evVal": 185,
+      "evCount": 8
+    },
+    "422800": {
+      "chainVal": 183,
+      "evVal": 183,
+      "evCount": 8
+    },
+    "422801": {
+      "chainVal": 183,
+      "evVal": 183,
+      "evCount": 8
+    },
+    "422802": {
+      "chainVal": 198,
+      "evVal": 198,
+      "evCount": 6
+    },
+    "422822": {
+      "chainVal": 218,
+      "evVal": 218,
+      "evCount": 8
+    },
+    "422823": {
+      "chainVal": 148,
+      "evVal": 148,
+      "evCount": 5
+    },
+    "422825": {
+      "chainVal": 222,
+      "evVal": 222,
+      "evCount": 6
+    },
+    "422826": {
+      "chainVal": 169,
+      "evVal": 169,
+      "evCount": 8
+    },
+    "422827": {
+      "chainVal": 164,
+      "evVal": 164,
+      "evCount": 3
+    },
+    "422828": {
+      "chainVal": 203,
+      "evVal": 203,
+      "evCount": 10
+    },
+    "429004": {
+      "chainVal": 131,
+      "evVal": 131,
+      "evCount": 9
+    },
+    "429005": {
+      "chainVal": 147,
+      "evVal": 147,
+      "evCount": 9
+    },
+    "429006": {
+      "chainVal": 157,
+      "evVal": 157,
+      "evCount": 9
+    },
+    "429021": {
+      "chainVal": 101,
+      "evVal": 101,
+      "evCount": 4
+    },
+    "440100": {
+      "chainVal": 77,
+      "evVal": 77,
+      "evCount": 11
+    },
+    "510100": {
+      "chainVal": 25,
+      "evVal": 25,
+      "evCount": 4
+    }
+  },
+  "diverge9": [
+    {
+      "code": 420324,
+      "name": "竹溪县",
+      "lastFeedAt": 1793952971,
+      "lastFeedIso": "2026-11-06 16:16",
+      "lastEventValue": 148,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 420525,
+      "name": "远安县",
+      "lastFeedAt": 1794010607,
+      "lastFeedIso": "2026-11-07 08:16",
+      "lastEventValue": 147,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 420526,
+      "name": "兴山县",
+      "lastFeedAt": 1794010607,
+      "lastFeedIso": "2026-11-07 08:16",
+      "lastEventValue": 105,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 420527,
+      "name": "秭归县",
+      "lastFeedAt": 1794010607,
+      "lastFeedIso": "2026-11-07 08:16",
+      "lastEventValue": 139,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 420882,
+      "name": "京山市",
+      "lastFeedAt": 1794010618,
+      "lastFeedIso": "2026-11-07 08:16",
+      "lastEventValue": 213,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 421123,
+      "name": "罗田县",
+      "lastFeedAt": 1794010628,
+      "lastFeedIso": "2026-11-07 08:17",
+      "lastEventValue": 95,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 421321,
+      "name": "随县",
+      "lastFeedAt": 1794010628,
+      "lastFeedIso": "2026-11-07 08:17",
+      "lastEventValue": 217,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 422827,
+      "name": "来凤县",
+      "lastFeedAt": 1794054030,
+      "lastFeedIso": "2026-11-07 20:20",
+      "lastEventValue": 164,
+      "check": "✅ 一致"
+    },
+    {
+      "code": 422828,
+      "name": "鹤峰县",
+      "lastFeedAt": 1794010639,
+      "lastFeedIso": "2026-11-07 08:17",
+      "lastEventValue": 203,
+      "check": "✅ 一致"
+    }
+  ],
+  "operatorTimeline": [
+    {
+      "block": 29138166,
+      "to": "0x984af687349fa37f56d9bdb7c615179b1648ab97"
+    },
+    {
+      "block": 29138354,
+      "to": "0x21c8520d486be3805cf3faa7ccab896241410d98"
+    }
+  ],
+  "operatorAnomalies": []
+}

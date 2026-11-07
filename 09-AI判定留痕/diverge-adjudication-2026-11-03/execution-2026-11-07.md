@@ -1,0 +1,41 @@
+# 17 区裁决执行记录 · 2026-11-07
+
+> 依据《分歧区划裁决操作手册-2026-11-07》与 `决策记录.md` 2026-11-07 条目执行。
+> 执行方式：`multisig-call.js updateRainfall <code> <target> <evidenceHash> <confidence> 6 --send`，每条自动两票（owner0 submit → owner1 confirm → executed）。
+> 执行窗口：区块 29,592,413–29,592,729。事件审计：`08-截图存证/2026-11-07-事件全复核/chain-events-audit.json`（844 条 RainfallUpdated 全 ✅ · FeedRejected=0 · sha256 f59c132f…）。
+> 京山 420882 按决策排除（增量已上链）；汉阳 420105 / 武昌 420106 hold。
+
+## 个人钱包注资（同日早先执行）
+
+| 笔 | 哈希 | 内容 |
+|---|---|---|
+| 1 | `0x2f2bff4284eda9d3b007c4812aae9cd5699089fc701c9fd66e14ed1fbffa86a4` | deployer → 0x5e95…76DD，0.5 BOT（区块 29,592,413）；另个人钱包经官方水龙头自领 10 BOT |
+| 2 | `0xe7f8ab52d8978850b8ee761ea158f65b5367a98deeb01b3cd84a890ab9cb58d3` | demo → 0x5e95…76DD，12 RDROP（区块 29,592,436） |
+
+## 17 区喂价（txId 567–583，全部 executed=true · confirmations=2）
+
+| # | 区划 | 值变化 | txId | submit | confirm |
+|---|---|---|---|---|---|
+| 1 | 420200 黄石市 | 137→149 | 567 | `0xc8b5a45e664ac1aa49874f9611f7cd0e33bbcd6c143f4c38f3404a6a716ace03` | `0xa07de52c091abb1f7c56af5b6853b7575da328149f1e5006b4faf74905a513b6` |
+| 2 | 420202 黄石港区 | 137→149 | 568 | `0xac0299eebb153ff28a298ab263e0664f45cd42050695ce499251381eca92ad11` | `0x9d98a9b1a598a1ec236da98a418b569dbe70530a2fdedad430c945387d3cae9b` |
+| 3 | 420203 西塞山区 | 137→149 | 569 | `0x158e6e954947b15b5f8f3cc7fb4a54c15b21df4e74401e5870bbcb12e5e55878` | `0xc77e57ddf686d599987a23b378a4f5b0e0fac53732e76d2620e2afea3ca9f131` |
+| 4 | 420204 下陆区 | 124→138 | 570 | `0x6702ba413a47753004459ea76bd3aa13cb138564f600ddca1930be87acbde941` | `0x31007380a2e6d30a0bf4610054d86e9ad0c0d546fd0a590d2eafc298f8b082d6` |
+| 5 | 420205 铁山区 | 128→143 | 571 | `0x6f2b32a9f5888832443cea53577c903900c69890549e1d618daf3f33e12a6fb7` | `0x7aaa6acfa04b2a020d6579983c5f88b16743b89e7a865e18b3a1360ee764a8fa` |
+| 6 | 420281 大冶市 | 135→151 | 572 | `0x560f5813698ac01f1aaa5377b1bb30d7307b140319ff1ea9cdb1b90c7db22290` | `0x4b1045ac35f92db91336b1a89563fd3744dfeb50a69020cf4d8bb55c2bd6078f` |
+| 7 | 420700 鄂州市 | 105→118 | 573 | `0x1cf60e1febb714dbf868ac077c9fc13adf7d34ac6c908f19f279845160f5391e` | `0x1496d54c1a16120525257ee689bff4b21411b514f95b7869f64302f83e8ab280` |
+| 8 | 420702 梁子湖区 | 118→131 | 574 | `0x4e486dcd9d5087eeb3096eac91105c8c5b0dda11d6c2d7cb8f987e1eaca338c8` | `0x6dadd82a439a953ebaec81cc435491f4eb6e75018c84d9b7219996a6d576c258` |
+| 9 | 420704 鄂城区 | 105→118 | 575 | `0x366b1e44c013eb8caeb885826bdc40dc81bb2daca05ca09f11dc36f2c6d66188` | `0xd5179ef2120d3d9b2647f621cdeefe336cef006da25e55c28c2b9cee3c1680eb` |
+| 10 | 421100 黄冈市 | 92→105 | 576 | `0xa2733b659a4894c8a67cf7eb1820db480238f8e979b8981504721906b939dd0e` | `0xb4538ad7840896f1b96d7e0e3b1354934af42b2ed6971c6e275c884aced7f729` |
+| 11 | 421102 黄州区 | 92→105 | 577 | `0x86921e11653cbcd97b3e8d285c784384481367abc1f9689d805e7d4d9ccb7f70` | `0xfb1baca856df291c8ecfcd9b0b2ad15dec626f740ac19acbc65efcfc599bc48e` |
+| 12 | 421125 浠水县 | 107→121 | 578 | `0x08c4631b69c1e846216a44457389a7961ad8a49fd39301823d15f0ef611f090b` | `0x45620967755bce11e7efda1e473c2a35ae11cd91111c83bfee343d31259ff436` |
+| 13 | 421171 龙感湖管理区 | 92→105 | 579 | `0xce5c115a8abe1dbe34566e4cbec45053ce300a950c86d04f54389b25cf97f4ea` | `0x3174856fd764f001cce7a6b17aad31de714c64a1c03c2354715e40e3c10e3e34` |
+| 14 | 421181 麻城市 | 148→154 | 580 | `0xe457e1fead5c852fdcafdb72b0182127a25d7c8efc5e3afb66492ab46d77f866` | `0xe18d83abbe191718b287108d3d2a78274c9083869cbe76ba9d2d91d76e25d3dc` |
+| 15 | 421200 咸宁市 | 138→157 | 581 | `0xac19bc0525340e26ca1f0d01e1ab02a0c38d54084292229c92ea07f8d8d59a0f` | `0x3ddfdbd87eb9bd397663b0ef3ad69bf7cd755986a73f2fbbcae39588c9475d1b` |
+| 16 | 421202 咸安区 | 152→171 | 582 | `0x101ac04137570bb9fdbe4e4ae4bbb0e1cab2c5d982cf36ae5f9ef1698380caa0` | `0x054a6da0c0c1effbbaa8de967dcb140f162b56365fac08875e59e2f88fecda11` |
+| 17 | 422827 来凤县 | 156→164 | 583 | `0x6ea8c37bb0734dfe54d4d97efd59230f4b7519e1b84d8487635b957d925e09f8` | `0xe5af11e04810519004eca44d852c450df7c17580c67523dc53f5c05ff3e4503f` |
+
+## 执行后状态
+
+- 审计：122 区划末次喂价事件与链上 `rainfall()` 逐区一致，全 ✅。
+- preflight：本次喂的 17 区全部恢复新鲜；另有 31 区因当晚 `rpc.bohr.life` 故障（Feed 定时任务停摆数小时）自然老化至 28.1h，由下一次 Feed 轮次自动补齐；汉阳/武昌 91.1h 为 hold 预期。
+- 运行环境注记：执行期间本机直连路由对 rpc.bohr.life / github.com 故障，经 FlClash TUN 模式恢复（对脚本透明，不改变任何口径）。
