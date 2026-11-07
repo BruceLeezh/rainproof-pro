@@ -28,7 +28,7 @@
 >
 > - 上场前自检：`cd 04-脚本 && node preflight.js`（一条命令看「现在能不能演」：文件齐不齐 / 链读得通吗 / 122 个区划喂价还新鲜吗 / 钱包够不够两票 gas / 计划任务是不是被电池策略挡了；全绿退出码 0，`--json` 出机器可读）
 > - 喂价保鲜：计划任务 `RainProof-Feed` 每 30 分钟先 `node 04-脚本/fund-v6-ops-gas.js --send` 补 confirm 钱包 gas、再 `node 04-脚本/push-rainfall-v6.js --send`（`MAX_FEED_AGE=86400`，超时买不了新保单）
-> - 门禁：`cd 07-测试工具 && npm test`（29 组、642 项断言）
+> - 门禁：`cd 07-测试工具 && npm test`（29 组、818+ 项断言；2026-11-07 按全量日志逐断言行复核，另有城市天气/历史基线两组单行汇总未计入）
 > - 权威现状仍是 [交接文档](02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md)；本页下方内容保留作演进记录。
 
 [![Gates](https://github.com/BruceLeezh/rainproof-pro/actions/workflows/gates.yml/badge.svg)](https://github.com/BruceLeezh/rainproof-pro/actions/workflows/gates.yml)
