@@ -38,7 +38,12 @@ async function main() {
       : new Date(lastFed * 1000 + 8 * 3600e3).toISOString().slice(0, 13) + ":00";
     // 口径对齐：模型端沿用当轮 raw 证据的取证时刻（forecast 数据不越过该时刻），
     // archive 端用同一 (from, to] 槽位集，保证两边可逐数对照。
-    const rawDir = fs.readdirSync(RAW_DIR).filter(f => f.startsWith(`v6feed-${code}-`)).sort();
+    // 2026-11-08 起 raw 按年月子目录归档（raw/2026-11/…），递归找该城最新一份 v6feed 报文；
+    // 顶层旧文件（含 11-07 裁决引用的 11-06 报文）原地保留，相对路径 raw/… 两种都兼容。
+    const listRaw = (dir, rel = "") => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e =>
+      e.isDirectory() ? listRaw(path.join(dir, e.name), `${rel}${e.name}/`)
+        : (e.name.startsWith(`v6feed-${code}-`) ? [`${rel}${e.name}`] : []));
+    const rawDir = fs.existsSync(RAW_DIR) ? listRaw(RAW_DIR).sort() : [];
     if (!rawDir.length) { rows.push({ code, error: "no raw evidence" }); continue; }
     const rawFile = rawDir[rawDir.length - 1];
     const raw = JSON.parse(fs.readFileSync(path.join(RAW_DIR, rawFile), "utf8"));

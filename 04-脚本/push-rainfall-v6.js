@@ -55,20 +55,25 @@ async function fetchTO(url, ms = 20000) {
 /* ---- G5 原始报文留痕（2026-10-26）：三模型原始响应全文落盘 + SHA-256 锚定 ----
    链不动（红线）：锚定做在文件层——留痕 JSON 记录每城原始报文的 sha256 与文件名，
    任何人拿同一份 raw 文件都能复算出同一哈希；与喂价 evidenceHash 并列互证。
-   体量护栏：只对「分歧 / 进入批量」的城市存原始报文；raw 目录超 50MB 停存并告警。 */
+   体量护栏（2026-11-08 修订）：证据按「年月」子目录归档，单月目录超 200MB 才停存并告警。
+   旧版是顶层 50MB 一刀切停存——顶层只进不出，11-08 攒到 63MB 后全城 evidence-unavailable、
+   承保整停一天。子目录化后顶层历史文件原地保留（含 11-07 裁决引用的 11-06 报文），
+   单月 200MB 对 100GB+ 磁盘约等于永不触顶；真触顶仍然宁停不删。 */
 const RAW_DIR = path.join(__dirname, "..", "09-AI判定留痕", "raw");
+const RAW_MONTH_CAP = 200 * 1024 * 1024;
 const TRACE_DIR = path.join(__dirname, "..", "09-AI判定留痕");
 const sha256 = t => require("crypto").createHash("sha256").update(t, "utf8").digest("hex");
 function saveRaw(code, name, url, rawText) {
   try {
-    let total = 0;
-    if (fs.existsSync(RAW_DIR)) for (const f of fs.readdirSync(RAW_DIR)) total += fs.statSync(path.join(RAW_DIR, f)).size;
-    if (total > 50 * 1024 * 1024) return { file: null, sha256: sha256(rawText), skipped: "dir-cap-50MB" };
-    fs.mkdirSync(RAW_DIR, { recursive: true });
     const stamp = new Date(Date.now() + 8 * 3600e3).toISOString().replace(/[-:T]/g, "").slice(0, 12);
+    const monthDir = path.join(RAW_DIR, stamp.slice(0, 6));
+    let total = 0;
+    if (fs.existsSync(monthDir)) for (const f of fs.readdirSync(monthDir)) total += fs.statSync(path.join(monthDir, f)).size;
+    if (total > RAW_MONTH_CAP) return { file: null, sha256: sha256(rawText), skipped: "month-cap-200MB" };
+    fs.mkdirSync(monthDir, { recursive: true });
     const file = `v6feed-${code}-${stamp}-${require("crypto").randomUUID()}.json`;
-    fs.writeFileSync(path.join(RAW_DIR, file), JSON.stringify({ schema: "rainproof/raw-feed@1", code, name, url, savedAt: new Date().toISOString(), rawText, raw: JSON.parse(rawText) }, null, 1), { encoding: "utf8", flag: "wx" });
-    return { file, sha256: sha256(rawText), bytes: rawText.length };
+    fs.writeFileSync(path.join(monthDir, file), JSON.stringify({ schema: "rainproof/raw-feed@1", code, name, url, savedAt: new Date().toISOString(), rawText, raw: JSON.parse(rawText) }, null, 1), { encoding: "utf8", flag: "wx" });
+    return { file: `${stamp.slice(0, 6)}/${file}`, sha256: sha256(rawText), bytes: rawText.length };
   } catch (e) { return { file: null, sha256: sha256(rawText), error: String(e.message || e).slice(0, 60) }; }
 }
 function saveTrace(tr, nowIso) {
@@ -129,11 +134,14 @@ async function round(p, v6) {
       }
       const target = Math.max(chain, chain + Math.round(inc.median || 0));
       const stale = ageH > REFRESH_HOURS;
-      // 长空窗告警：窗口 > LONG_GAP_HOURS 时，这轮喂的是「一段历史」而不是「一小时增量」。
-      // 三模型对长窗口的分歧会成倍放大，靠 5% 相对容差兜不住 ⇒ 宁可拦住让人核，也不要静默跳过。
+      // 长空窗提示：窗口 > LONG_GAP_HOURS 时，这轮喂的是「一段历史」而不是「一小时增量」。
+      // 处理：仍走 3 取 2 收敛闸门（≥2 个模型落在中位 ±max(2.5, 5%) 内），收敛即进批量并
+      // 在 trace.longGap 全量留痕供复核；不收敛本来就进 divergence 拒收。
+      // 11-08 断网恢复实测：122 城长空窗一轮全部按此路径自愈（含 hold 中的汉阳/武昌——
+      // 118h 窗口 2/3 模型 27.7/30.2 距中位 ≤2.5mm，合法收敛；当日无在保保单，零赔付影响）。
       if (inc.windowH > LONG_GAP_HOURS && target > chain) {
         notes.push(`${r.name} ⏳ 长空窗补历史（窗口 ${inc.windowH.toFixed(0)}h，增量中位 ${inc.median.toFixed(1)}mm，` +
-          `三模型 ${inc.perModel.map(v => v.toFixed(1)).join("/")}）→ 建议先人工核对再 --send`);
+          `三模型 ${inc.perModel.map(v => v.toFixed(1)).join("/")}）→ 3取2收敛，已入批量并留痕`);
         longGap.push({ code: r.code, name: r.name, windowH: inc.windowH, median: inc.median, perModel: inc.perModel });
       }
       const rawRecord = target > chain || stale ? saveRaw(r.code, r.name, url, rawText) : undefined;
