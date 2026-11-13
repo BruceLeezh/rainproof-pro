@@ -277,7 +277,8 @@ async function round(p, v6) {
   const w1 = new ethers.Wallet(owners[1].privateKey, p);
 
   // 演示点位优先：余额只够发一批时，先保台上要念的六个区划，再轮到其余（保持原顺序，稳定排序）。
-  const PRIORITY = new Set([420113, 420116, 440100, 110100, 310100, 510100]);
+  // 420100 武汉主城在列：控制台「五城降雨与费率」第一行就是它，漏了它会单独变灰。
+  const PRIORITY = new Set([420100, 420113, 420116, 440100, 110100, 310100, 510100]);
   {
     const idx = batch.ids.map((c, i) => i).sort((a, b) => {
       const pa = PRIORITY.has(batch.ids[a]) ? 0 : 1, pb = PRIORITY.has(batch.ids[b]) ? 0 : 1;
@@ -292,8 +293,21 @@ async function round(p, v6) {
   const gasPrice = fee.gasPrice || 20000000000n;
   const bal0 = await p.getBalance(w0.address);
   const BASE_GAS = 400000n, PER_CITY_GAS = 114000n;
-  // 低余额保命（2026-11-13 夜加）：钱只够十城以内时，只喂台上会念的六个区划，
-  // 别把最后一点 gas 花在演示用不到的城市上——否则下一轮连演示区划都喂不动。
+  // 演示保命模式（2026-11-13 夜加，至 11-17 00:00 自动失效）：这段时间只喂台上会念的六个区划。
+  // 理由：预算一次性降到「不再依赖外部注资」的量级。六个区划每 20h 才进一次批，约 0.08 BOT/轮，
+  // 现有余额（owner0 0.18 + owner1 0.17 + owner2 0.17 + deployer 0.28）足够跑到 11-17，无需再要钱。
+  // 11-17 之后若补足 gas，删掉这段即恢复全量；低余额分支保留作二次兜底。
+  {
+    const PRIORITY_ONLY_UNTIL = Date.parse("2026-11-17T00:00:00+08:00");
+    if (Date.now() < PRIORITY_ONLY_UNTIL) {
+      const keep = batch.ids.map((c, i) => (PRIORITY.has(c) ? i : -1)).filter(i => i >= 0);
+      if (keep.length && keep.length < batch.ids.length) {
+        console.log(`  ⛽ 演示保命模式（至 11-17）：本轮只喂演示 ${keep.length} 城（武汉主城/汉南/黄陂/广州/北京/上海/成都）`);
+        for (const k of Object.keys(batch)) batch[k] = keep.map(i => batch[k][i]);
+      }
+      if (!keep.length) { console.log("  ⚪ 演示六城都在保鲜期内，本轮无需上链"); return; }
+    }
+  }
   {
     const budget = bal0 - bal0 / 10n;
     const perCity = PER_CITY_GAS * gasPrice;
