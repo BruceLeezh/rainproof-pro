@@ -6,8 +6,8 @@ from pathlib import Path
 
 PPT = Path(r"C:\Users\lenovo\Desktop\雨证\01-参赛材料\交付物\PPT")
 BK = Path(r"C:\Users\lenovo\Desktop\雨证\08-截图存证")
-DA = PPT / "神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx"
-JJ = PPT / "神麻组-雨证-路演PPT-精简版-2026-10-30.pptx"
+DA = PPT / "雨证-路演PPT-答辩版-2026-10-28.pptx"
+JJ = PPT / "雨证-路演PPT-精简版-2026-10-30.pptx"
 
 for f in (DA, JJ):
     dst = BK / ("deck-backup-before-numfix-" + f.name)

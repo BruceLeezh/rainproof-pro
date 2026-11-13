@@ -16,7 +16,7 @@ from pptx.oxml.ns import qn
 from lxml import etree
 
 SRC = os.environ.get("RAINPROOF_DECK_TEMPLATE", os.path.join(os.path.dirname(os.path.abspath(__file__)), "_归档", "神麻组-雨证-路演PPT1.pptx"))
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "雨证-路演PPT-答辩版-2026-10-28.pptx")
 
 prs = Presentation(SRC)
 TOTAL = 19

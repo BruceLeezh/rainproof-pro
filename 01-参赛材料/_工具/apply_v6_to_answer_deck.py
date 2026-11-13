@@ -17,7 +17,7 @@ from pptx.oxml.ns import qn
 from dark_lib import T, CARD, R, kicker, RULE, CYAN, BLUE, AMBER, WHITE, YAHEI, MONO, LEFT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DECK = os.path.join(HERE, "神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx")
+DECK = os.path.join(HERE, "雨证-路演PPT-答辩版-2026-10-28.pptx")
 IMG_P07 = os.path.join(os.environ["TEMP"], "shot2", "p07_verify.png")
 IMG_P08 = os.path.join(os.environ["TEMP"], "shot2", "p08_triple.png")
 

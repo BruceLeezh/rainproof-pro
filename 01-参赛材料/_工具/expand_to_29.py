@@ -8,7 +8,7 @@ from pptx.enum.text import PP_ALIGN
 from dark_lib import T, CARD, R, RULE, kicker, notes, CYAN, BLUE, AMBER, WHITE, MONO, YAHEI
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DECK = os.path.join(HERE, "神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx")
+DECK = os.path.join(HERE, "雨证-路演PPT-答辩版-2026-10-28.pptx")
 X0, CW, TOTAL = 1.00, 11.55, 29
 prs = Presentation(DECK)
 assert len(prs.slides) == 26, len(prs.slides)

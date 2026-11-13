@@ -14,8 +14,8 @@ from pptx.util import Pt
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DECKS = [
-    ROOT / "01-参赛材料/交付物/PPT/神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx",
-    ROOT / "01-参赛材料/交付物/PPT/神麻组-雨证-路演PPT-精简版-2026-10-30.pptx",
+    ROOT / "01-参赛材料/交付物/PPT/雨证-路演PPT-答辩版-2026-10-28.pptx",
+    ROOT / "01-参赛材料/交付物/PPT/雨证-路演PPT-精简版-2026-10-30.pptx",
 ]
 
 

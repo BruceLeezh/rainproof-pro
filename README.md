@@ -37,7 +37,7 @@
 > **可验证的 AI 参数化配送险** —— 把「你信不信我」换成「你自己验」。
 
 汉客松 S1 & ETH Wuhan 2026 参赛作品 · 赛程 2026-10-06 20:00 → 2026-10-08 12:00
-队名：**神麻** · 仓库：https://github.com/BruceLeezh/rainproof-pro
+队名：**雨证** · 仓库：https://github.com/BruceLeezh/rainproof-pro
 
 ---
 
@@ -63,7 +63,7 @@
 - **v3 underwriting layer** (deployed on mainnet 677; verified end-to-end on a local replay chain) — cover windows **12 h / 24 h only** (GB/T 28592—2012), threshold table 12 h → **30 / 70 mm**, 24 h → **50 / 100 mm**, two payout tiers **50% / 75%**.
 - **AI judgement layer** — three independent weather models are crossed-checked, deterministic rules R1–R5 return **DENY / PAY**, and the input hash + output hash go on-chain. The LLM never decides, and its explanation never enters the hash.
 - **Verify it yourself** — open `06-核验台单文件/雨证-链上核验台.html` (one file, no backend) or the demo site's `verifier.html`, paste any transaction hash or address, and read the raw `eth_getLogs` / `eth_getTransactionByHash` output. No block explorer required.
-- **Team** 神麻 · 汉客松 S1 & ETH Wuhan 2026. The rest of this README is Chinese-first; this block is the English summary.
+- **Team** 雨证 · 汉客松 S1 & ETH Wuhan 2026. The rest of this README is Chinese-first; this block is the English summary.
 
 ---
 

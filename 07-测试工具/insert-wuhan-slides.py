@@ -11,7 +11,7 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DECK = ROOT / "01-参赛材料/交付物/PPT/神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx"
+DECK = ROOT / "01-参赛材料/交付物/PPT/雨证-路演PPT-答辩版-2026-10-28.pptx"
 CHART = ROOT / "01-参赛材料/交付物/图表"
 NAVY = RGBColor(0x1F, 0x38, 0x64)
 GRAY = RGBColor(0x77, 0x77, 0x77)

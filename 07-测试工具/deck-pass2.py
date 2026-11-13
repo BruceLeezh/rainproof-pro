@@ -12,7 +12,7 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DECK = ROOT / "01-参赛材料/交付物/PPT/神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx"
+DECK = ROOT / "01-参赛材料/交付物/PPT/雨证-路演PPT-答辩版-2026-10-28.pptx"
 CN = "微软雅黑"
 MONO = "Consolas"
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)

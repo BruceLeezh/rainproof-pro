@@ -23,7 +23,7 @@ from dark_lib import (T, CARD, R, RULE, kicker, retitle, notes,
                       CYAN, BLUE, AMBER, WHITE, YAHEI, MONO, BG)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DECK = os.path.join(HERE, "神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx")
+DECK = os.path.join(HERE, "雨证-路演PPT-答辩版-2026-10-28.pptx")
 
 X0, CW = 1.00, 11.55          # 内容区左边界与宽度（英寸）
 FINAL_TOTAL = 26

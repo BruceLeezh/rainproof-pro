@@ -7,7 +7,7 @@ from pathlib import Path
 from pptx import Presentation
 
 HERE = Path(__file__).resolve().parent
-DECK = HERE.parent / "01-参赛材料" / "交付物" / "PPT" / "神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx"
+DECK = HERE.parent / "01-参赛材料" / "交付物" / "PPT" / "雨证-路演PPT-答辩版-2026-10-28.pptx"
 METRICS = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "deck-metrics.json"
 
 m = json.loads(METRICS.read_text(encoding="utf-8"))
