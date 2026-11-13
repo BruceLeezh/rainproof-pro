@@ -255,6 +255,9 @@ function checkTasks() {
       // 当成异常报会让「红了」变成背景色，人就开始忽略真正的红。
       const code = Number(last) >>> 0;
       if (code === 0xC000013A) ok("任务", `${name} 收尾被 Ctrl+C 打断（工作已完成，非故障）· ${bits.join(" · ")}`);
+      // 0x2 = 喂价脚本按设计返回「本轮有区划被分歧闸门拒收」：批量已成功上链，只是没做到全城同刷。
+      // 这是数据闸门在工作，不是故障——报成 ⚠ 会让「红了」变成背景色（与上面 Ctrl+C 同理）。
+      else if (code === 2 && /feed/i.test(name)) ok("任务", `${name} 本轮有区划被分歧闸门拒收（设计内，批量已上链）· ${bits.join(" · ")}`);
       else warn("任务", `${name} 上次退出码 0x${code.toString(16).toUpperCase()}（非 0，查日志）· ${bits.join(" · ")}`);
     } else ok("任务", `${name} ${bits.join(" · ")}`);
   }
