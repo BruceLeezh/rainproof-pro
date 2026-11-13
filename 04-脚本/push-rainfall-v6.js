@@ -53,21 +53,89 @@ const REGIONS = JSON.parse(fs.readFileSync(REG_FILE, "utf8"));
 // 只对「网络层失败」和 429/5xx 重试；4xx 是请求本身写错（纬度/参数/额度策略），重试没意义，原样抛回去。
 // 实测（11-13 15:40）这台机器对 api.open-meteo.com 会整段 10~12 秒连不上、随后又恢复 1 秒内 200，
 // 所以退避要够长：4 次尝试、单次 12 秒上限，最坏约 27 秒才放弃，足以跨过一次抖动。
-async function fetchTO(url, ms = 12000) {
-  const attempts = 4;
-  let lastErr;
-  for (let i = 1; i <= attempts; i++) {
-    try {
-      const resp = await fetch(url, { headers: { "User-Agent": "rainproof-v6-feeder/1.0" }, signal: AbortSignal.timeout(ms) });
-      if (resp.ok || (resp.status !== 429 && resp.status < 500)) return resp;
-      lastErr = new Error(`weather HTTP ${resp.status}`);
-      try { await resp.text(); } catch { /* 丢弃响应体，腾出连接 */ }
-    } catch (e) {
-      lastErr = e;
-    }
-    if (i < attempts) await new Promise(r => setTimeout(r, 800 * i));
+/* 网络层兜底（2026-11-13）：api.open-meteo.com 公布的 IPv4 51.81.167.44 会间歇性
+   TCP 443 被掐——ICMP 通、DNS 正常、同一后端在 Hetzner 边缘（5.9.98.12 / IPv6
+   2a01:4f8:162:30a1::2）可达且返回同一份 JSON。所以：主路走系统 DNS，失败时固定
+   边缘 IP + SNI 直连，Host/路径/参数一个字不改——纯网络层修复，不动取数口径。 */
+const EDGE_HOST = "api.open-meteo.com";
+const EDGE_IPS = ["5.9.98.12", "2a01:4f8:162:30a1::2"];
+let PREFER_EDGE = process.env.FEED_FORCE_EDGE === "1", edgeStreak = 0, edgeNoted = false;   // FEED_FORCE_EDGE=1 强制走边缘 IP（主路被封时的手动开关）
+
+function fetchViaEdge(url, ms) {
+  const https = require("https");
+  if (process.env.FEED_FORCE_EDGE === "1" && !edgeNoted) {
+    console.log("ℹ️ FEED_FORCE_EDGE=1：本轮直接走边缘 IP（同一后端、同一路径，取数口径不变）");
+    edgeNoted = true;
   }
-  throw lastErr;
+  const u = new URL(url);
+  const one = ip => new Promise((resolve, reject) => {
+    const req = https.request({
+      host: ip, port: 443, servername: EDGE_HOST, method: "GET",
+      path: u.pathname + u.search, rejectUnauthorized: true,
+      family: ip.includes(":") ? 6 : 4,
+      headers: { Host: EDGE_HOST, "User-Agent": "rainproof-v6-feeder/1.0" },
+    }, res => {
+      const chunks = [];
+      res.on("data", c => chunks.push(c));
+      res.on("end", () => {
+        const body = Buffer.concat(chunks).toString("utf8");
+        const status = res.statusCode || 0;
+        resolve({ ok: status >= 200 && status < 300, status, text: async () => body });
+      });
+    });
+    req.setTimeout(ms, () => req.destroy(new Error("edge timeout")));
+    req.on("error", reject);
+    req.end();
+  });
+  return (async () => {
+    for (const ip of EDGE_IPS) {
+      try { return await one(ip); } catch { /* 换下一个边缘 */ }
+    }
+    throw new Error("weather edge unreachable");
+  })();
+}
+
+async function fetchTO(url, ms = 12000) {
+  let lastErr;
+  const primary = async n => {
+    let err;
+    for (let i = 1; i <= n; i++) {
+      try {
+        const resp = await fetch(url, { headers: { "User-Agent": "rainproof-v6-feeder/1.0" }, signal: AbortSignal.timeout(ms) });
+        if (resp.ok || (resp.status !== 429 && resp.status < 500)) return resp;
+        err = new Error(`weather HTTP ${resp.status}`);
+        try { await resp.text(); } catch { /* 丢弃响应体，腾出连接 */ }
+      } catch (e) {
+        err = e;
+      }
+      if (i < n) await new Promise(r => setTimeout(r, 800 * i));
+    }
+    throw err;
+  };
+  if (!PREFER_EDGE) {
+    try {
+      const resp = await primary(4);
+      edgeStreak = 0;
+      return resp;
+    } catch (e) { lastErr = e; }
+  }
+  try {
+    const resp = await fetchViaEdge(url, ms);
+    if (++edgeStreak >= 3 && !PREFER_EDGE) {
+      PREFER_EDGE = true;
+      if (!edgeNoted) {
+        console.log("ℹ️ 主路 api.open-meteo.com 连不上，本轮起改走边缘 IP（同一后端、同一路径，取数口径不变）");
+        edgeNoted = true;
+      }
+    }
+    return resp;
+  } catch (e2) {
+    if (PREFER_EDGE) {
+      edgeStreak = 0;
+      try { return await primary(2); } catch { /* 边缘与主路都挂 */ }
+    }
+    throw lastErr || e2;
+  }
 }
 
 /* ---- G5 原始报文留痕（2026-10-26）：三模型原始响应全文落盘 + SHA-256 锚定 ----
@@ -205,22 +273,56 @@ async function round(p, v6) {
   const MS = new ethers.Contract(process.env.MULTISIG_ADDR, require(path.join(__dirname, "..", "03-合约", "OperatorMultisig.abi.json")), p);
   // 湖北 118 区划开通后单批已超块上限：20 城/笔（首喂 ~8 个存储槽/城，20 城≈3.2M gas，留足余量）
   const CHUNK = 20;
-  for (let off = 0; off < batch.ids.length; off += CHUNK) {
+  const w0 = new ethers.Wallet(owners[0].privateKey, p);
+  const w1 = new ethers.Wallet(owners[1].privateKey, p);
+
+  // 演示点位优先：余额只够发一批时，先保台上要念的六个区划，再轮到其余（保持原顺序，稳定排序）。
+  const PRIORITY = new Set([420113, 420116, 440100, 110100, 310100, 510100]);
+  {
+    const idx = batch.ids.map((c, i) => i).sort((a, b) => {
+      const pa = PRIORITY.has(batch.ids[a]) ? 0 : 1, pb = PRIORITY.has(batch.ids[b]) ? 0 : 1;
+      return pa - pb || a - b;
+    });
+    for (const k of Object.keys(batch)) batch[k] = idx.map(i => batch[k][i]);
+  }
+
+  // 实测（2026-11-13，20 gwei）：submit 的 gas ≈ 400k + 114k×城数，1 城 0.0100 BOT、20 城 0.0534 BOT。
+  // 钱不够时整批抛账会一刀不喂，比少喂更糟：这里按余额算这一轮能发几城，剩下的留到下一轮。
+  const fee = await p.getFeeData();
+  const gasPrice = fee.gasPrice || 20000000000n;
+  const bal0 = await p.getBalance(w0.address);
+  const BASE_GAS = 400000n, PER_CITY_GAS = 114000n;
+  const usable = bal0 - bal0 / 10n;   // 留 10% 余量，别炸在最后一步
+  const afford = usable > BASE_GAS * gasPrice
+    ? Number((usable - BASE_GAS * gasPrice) / (PER_CITY_GAS * gasPrice)) : 0;
+  const sendCount = Math.min(batch.ids.length, Math.max(0, afford));
+  if (sendCount === 0) {
+    console.log(`  ⛔ owner0 余额 ${ethers.formatEther(bal0)} BOT，连 1 城都不够（约 ${ethers.formatEther(BASE_GAS * gasPrice)} BOT）——本轮不发送，先补 gas`);
+    process.exitCode = 1;
+    return;
+  }
+  if (sendCount < batch.ids.length) {
+    console.log(`  ⚠️ 余额 ${ethers.formatEther(bal0)} BOT 只够 ${sendCount} 城（本轮共 ${batch.ids.length} 城待喂），先发这批，其余下一轮补`);
+  }
+  const sendBatch = {};
+  for (const k of Object.keys(batch)) sendBatch[k] = batch[k].slice(0, sendCount);
+
+  for (let off = 0; off < sendBatch.ids.length; off += CHUNK) {
     const part = (arr) => arr.slice(off, off + CHUNK);
     const data = v6.interface.encodeFunctionData("updateRainfallBatch",
-      [part(batch.ids), part(batch.mms), part(batch.evs), part(batch.conf), part(batch.src)]);
-    const s = await (await MS.connect(new ethers.Wallet(owners[0].privateKey, p)).submit((process.env.CONTRACT_ADDRESS_V6 || process.env.CONTRACT_ADDRESS), 0, data)).wait();
+      [part(sendBatch.ids), part(sendBatch.mms), part(sendBatch.evs), part(sendBatch.conf), part(sendBatch.src)]);
+    const s = await (await MS.connect(w0).submit((process.env.CONTRACT_ADDRESS_V6 || process.env.CONTRACT_ADDRESS), 0, data)).wait();
     const submitted = s.logs.map(l => { try { return MS.interface.parseLog(l); } catch { return null; } })
       .find(l => l && l.name === "Submitted");
     if (!submitted) throw new Error("multisig submit receipt missing Submitted event");
     const idBefore = submitted.args.txId;
     const pending = await MS.getTx(idBefore);
     if (pending.target.toLowerCase() !== (process.env.CONTRACT_ADDRESS_V6 || process.env.CONTRACT_ADDRESS).toLowerCase() || pending.data !== data || pending.value !== 0n) throw new Error("multisig payload mismatch");
-    const c = await (await MS.connect(new ethers.Wallet(owners[1].privateKey, p)).confirm(idBefore)).wait();
+    const c = await (await MS.connect(w1).confirm(idBefore)).wait();
     const t = await MS.getTx(idBefore);
-    console.log(`  ✅ 两票上链 [${off + 1}-${Math.min(off + CHUNK, batch.ids.length)}/${batch.ids.length}]：submit ${s.hash.slice(0, 18)}… confirm ${c.hash.slice(0, 18)}… (txId ${idBefore}) executed=${t[4]}`);
+    console.log(`  ✅ 两票上链 [${off + 1}-${Math.min(off + CHUNK, sendBatch.ids.length)}/${sendBatch.ids.length}]：submit ${s.hash.slice(0, 18)}… confirm ${c.hash.slice(0, 18)}… (txId ${idBefore}) executed=${t[4]}`);
     if (!t[4]) throw new Error(`批次 ${idBefore} 未执行`);
-    saveTrace({execution: {txId:String(idBefore), submit:s.hash, confirm:c.hash, executed:true, regions:part(batch.ids)}},nowIso);
+    saveTrace({execution: {txId:String(idBefore), submit:s.hash, confirm:c.hash, executed:true, regions:part(sendBatch.ids)}},nowIso);
   }
 }
 
