@@ -199,8 +199,8 @@ async function checkChain() {
       const bot = Number(ethers.formatEther(b));
       if (bot < MIN_WALLET_BOT) bad("钱包", `owner${i} ${a.slice(0, 8)}… 只有 ${bot.toFixed(3)} BOT（两票需要 ≥${MIN_WALLET_BOT}）`);
       // 一次 20 区划批量投票两票各 ~0.064 BOT。0.3 以下只够两批，提前喊；
-      // 正常余额应在 0.5 上下（RainProof-Feed 每轮先跑 fund-v6-ops-gas.js 自动补到这个数）。
-      else if (bot < 0.3) warn("钱包", `owner${i} ${a.slice(0, 8)}… ${bot.toFixed(3)} BOT —— 只够一两批，下一轮 RainProof-Feed 会自动补到 0.5；想立刻补跑 node fund-v6-ops-gas.js --send`);
+      // 正常余额应在 0.30 上下（RainProof-Feed 每轮先跑 fund-v6-ops-gas.js 自动补到这个数；deployer 只保留 0.25 底仓）。
+      else if (bot < 0.3) warn("钱包", `owner${i} ${a.slice(0, 8)}… ${bot.toFixed(3)} BOT —— 只够一两批，下一轮 RainProof-Feed 会自动补到 0.30；想立刻补跑 node fund-v6-ops-gas.js --send`);
       else ok("钱包", `owner${i} ${a.slice(0, 8)}… ${bot.toFixed(3)} BOT`);
     }
   }
