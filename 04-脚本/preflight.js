@@ -6,7 +6,7 @@
  * 钱包够不够两票 gas、页面依赖的内联数据在不在。
  *
  * 用法：node preflight.js [--json]
- * 退出码：0 全绿 / 1 有 ❌（会挡住演示，如喂价超 MAX_FEED_AGE、余额不够两票）
+ * 退出码：0 全绿或有 ⏳（数据未到，不阻塞）/ 1 有 ❌（真挡住演示：全区划喂价过期、余额不够两票、链读不到）
  *         有 ⚠ 不影响退出码（如剩 3 小时新鲜度、某城无网格价）
  *
  * 只读：不发交易、不改任何文件。
@@ -36,6 +36,8 @@ function rec(level, area, msg) { rows.push({ level, area, msg }); }
 const ok = (a, m) => rec("ok", a, m);
 const warn = (a, m) => rec("warn", a, m);
 const bad = (a, m) => rec("bad", a, m);
+// 「数据未到」既不是通过也不是故障：不阻塞演示，但要让人一眼看出还有多少城可承保。
+const wait_ = (a, m) => rec("wait", a, m);
 
 // 只检查路径和文件元信息；不读取、不解析、不输出密钥内容。
 function checkOwnerKeyFile() {
@@ -139,6 +141,7 @@ async function checkChain() {
   const maxAgeS = Number(maxAge);
   const stale = [];
   let oldest = { code: null, h: -1 };
+  let newest = 0; // 最近一次成功喂价的时间戳：判「喂价器还活着吗」比判「最老多少小时」可靠
   for (const r of REGIONS) {
     let lf = 0n;
     try { lf = await withRetry(() => c.lastFeedAt(r.code)); }
@@ -149,11 +152,31 @@ async function checkChain() {
     if (!lf) { stale.push({ code: r.code, name: r.name, h: Infinity }); continue; }
     const h = (now - Number(lf)) / 3600;
     if (h > oldest.h) oldest = { code: r.code, name: r.name, h };
+    if (Number(lf) > newest) newest = Number(lf);
     if (now - Number(lf) > maxAgeS) stale.push({ code: r.code, name: r.name, h });
   }
   if (oldest.code === null) bad("喂价", "所有区划都没喂过价");
   else if (stale.length) {
-    bad("喂价", `${stale.length}/${REGIONS.length} 个区划已超 MAX_FEED_AGE(${maxAgeS / 3600}h)，最老 ${oldest.name} ${oldest.h.toFixed(1)}h —— 这些区划的新保单会被拒`);
+    const staleCodes = new Set(stale.map(r => r.code));
+    const fresh = REGIONS.filter(r => !staleCodes.has(r.code));
+    const detail = `${stale.length}/${REGIONS.length} 个区划超 MAX_FEED_AGE(${maxAgeS / 3600}h)，最老 ${oldest.name} ${oldest.h.toFixed(1)}h`;
+    if (fresh.length === 0) {
+      bad("喂价", `${detail} —— 一个能承保的区划都没有，先跑 push-rainfall-v6.js --send 再上台`);
+    } else {
+      // 2026-11-13 踩过：43 城因三模型分歧被闸门拒收（设计内行为），preflight 却和「喂价器真挂了」一起报 ❌，
+      // 彩排时看到红字就以为整场坏了。分级判据：还有新鲜城 = 数据未到，能演示；全过期或最老超两天 = 真故障。
+      // 判据用「最近一次成功喂价距今多久」，不用「最老多少小时」：只要喂价器还在动，
+      // 剩下那些老是过期就是三模型没收敛（闸门拒收），跟机器坏了是两件事。
+      const idleH = (now - newest) / 3600;
+      if (idleH > 2) {
+        warn("喂价", `${detail} —— 最近一次成功喂价在 ${idleH.toFixed(1)}h 前，喂价器可能停了：查 RainProof-Feed 退出码、gas 余额、raw/ 留痕是否被护栏停存`);
+      } else {
+        wait_("喂价", `${detail} —— 另 ${fresh.length} 城可承保；喂价器 ${idleH.toFixed(1)}h 前还在跑，过期城是三模型未收敛被闸门拒收（设计内），不阻塞演示`);
+      }
+      const ordered = fresh.slice().sort((x, y) => ([420113, 420116].includes(x.code) ? 0 : 1) - ([420113, 420116].includes(y.code) ? 0 : 1));
+      const sample = ordered.slice(0, 8).map(r => `${r.name}(${r.code})`).join("、");
+      ok("喂价·可演示", `${fresh.length} 城新鲜：${sample}${fresh.length > 8 ? " …" : ""}；上台只用这些区划`);
+    }
     for (const r of stale) rec("info", "过期区划", `${r.name}(${r.code})：${Number.isFinite(r.h) ? r.h.toFixed(1) + "h" : "从未喂价"}；需核实数据，不能绕过分歧闸门同值续期`);
   } else {
     const left = maxAgeS / 3600 - oldest.h;
@@ -271,15 +294,18 @@ function checkKeeperLog() {
   const json = process.argv.includes("--json");
   const bads = rows.filter(r => r.level === "bad");
   const warns = rows.filter(r => r.level === "warn");
+  const waits = rows.filter(r => r.level === "wait");
 
   if (json) {
-    console.log(JSON.stringify({ ok: bads.length === 0, bad: bads.length, warn: warns.length, rows }, null, 2));
+    console.log(JSON.stringify({ ok: bads.length === 0, bad: bads.length, warn: warns.length, wait: waits.length, rows }, null, 2));
   } else {
-    const tag = { ok: "✅", warn: "⚠️ ", bad: "❌", info: "ℹ️ " };
+    const tag = { ok: "✅", warn: "⚠️ ", bad: "❌", wait: "⏳", info: "ℹ️ " };
     for (const r of rows) console.log(`${tag[r.level]} [${r.area}] ${r.msg}`);
     console.log("");
-    if (bads.length) console.log(`❌ 上场前必须解决 ${bads.length} 项`);
-    else if (warns.length) console.log(`⚠️  可以上场，但有 ${warns.length} 项提醒`);
+    const tail = waits.length ? `；⏳ 另有 ${waits.length} 项在等数据（不阻塞演示）` : "";
+    if (bads.length) console.log(`❌ 上场前必须解决 ${bads.length} 项${tail}`);
+    else if (warns.length) console.log(`⚠️  可以上场，但有 ${warns.length} 项提醒${tail}`);
+    else if (waits.length) console.log(`✅ 可以上场（${waits.length} 项在等数据，不阻塞）`);
     else console.log("✅ 全绿，可以上场");
   }
   process.exit(bads.length ? 1 : 0);
