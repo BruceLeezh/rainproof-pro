@@ -1,0 +1,50 @@
+{
+ "schema": "rainproof/v6-feed-trace@1",
+ "generatedAt": "2026-11-13T05:57:21.920Z",
+ "roundNote": "has-batch",
+ "regions": [
+  {
+   "code": 420116,
+   "name": "黄陂区",
+   "chainBefore": 142,
+   "target": 173,
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-13T13:00",
+   "perModel": [
+    25.800000000000015,
+    30.6,
+    32.40000000000001
+   ],
+   "median": 30.6,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420116-202611131357-73d006a9-ce75-46ae-a9a5-4d2d71f48825.json",
+    "sha256": "f4eed881411c18f5415d158fbc11888b85c01a038f0303636f7de74348f41666",
+    "bytes": 7774
+   }
+  }
+ ],
+ "skipped": [],
+ "longGap": [
+  {
+   "code": 420116,
+   "name": "黄陂区",
+   "windowH": 149,
+   "median": 30.6,
+   "perModel": [
+    25.800000000000015,
+    30.6,
+    32.40000000000001
+   ]
+  }
+ ],
+ "batch": [
+  {
+   "code": 420116,
+   "to": "173",
+   "conf": 91
+  }
+ ]
+}

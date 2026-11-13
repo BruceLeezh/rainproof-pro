@@ -1,0 +1,38 @@
+{
+ "schema": "rainproof/v6-feed-trace@1",
+ "generatedAt": "2026-11-13T05:55:53.917Z",
+ "roundNote": "has-batch",
+ "regions": [
+  {
+   "code": 440100,
+   "name": "广州",
+   "chainBefore": 79,
+   "target": 79,
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-13T13:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-440100-202611131355-a594f8d3-041c-474c-8f4f-239f6347fc9a.json",
+    "sha256": "677f7cead5a71d1f699d2710021e9504e47e67560b814275dbe47518343bf5b9",
+    "bytes": 4512
+   }
+  }
+ ],
+ "skipped": [],
+ "longGap": [],
+ "batch": [
+  {
+   "code": 440100,
+   "to": "79",
+   "conf": 60
+  }
+ ]
+}

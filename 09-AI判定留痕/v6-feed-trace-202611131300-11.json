@@ -1,0 +1,38 @@
+{
+ "schema": "rainproof/v6-feed-trace@1",
+ "generatedAt": "2026-11-13T05:57:34.014Z",
+ "roundNote": "has-batch",
+ "regions": [
+  {
+   "code": 510100,
+   "name": "成都",
+   "chainBefore": 27,
+   "target": 27,
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-13T13:00",
+   "perModel": [
+    0,
+    0,
+    0.5
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-510100-202611131357-82aa9b8b-0c11-4f35-953a-d0e23b1b6c75.json",
+    "sha256": "3bb94d16fb71275b8bbd7eca6c0a0e8dad4c46c4e56f1ff12ecb888a8cd632b5",
+    "bytes": 4511
+   }
+  }
+ ],
+ "skipped": [],
+ "longGap": [],
+ "batch": [
+  {
+   "code": 510100,
+   "to": "27",
+   "conf": 60
+  }
+ ]
+}

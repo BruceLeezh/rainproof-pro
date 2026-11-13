@@ -1,0 +1,50 @@
+{
+ "schema": "rainproof/v6-feed-trace@1",
+ "generatedAt": "2026-11-13T05:57:58.702Z",
+ "roundNote": "has-batch",
+ "regions": [
+  {
+   "code": 310100,
+   "name": "上海",
+   "chainBefore": 223,
+   "target": 226,
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-13T13:00",
+   "perModel": [
+    2.1000000000000005,
+    2.800000000000001,
+    3.0000000000000004
+   ],
+   "median": 2.800000000000001,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-310100-202611131357-3d33e9a0-6276-4ddb-ba50-bbc8573a177f.json",
+    "sha256": "0f57f5a748baf3e20d0c4013a84764ac47c788861c4d399877f5799e9f896161",
+    "bytes": 4508
+   }
+  }
+ ],
+ "skipped": [],
+ "longGap": [
+  {
+   "code": 310100,
+   "name": "上海",
+   "windowH": 49,
+   "median": 2.800000000000001,
+   "perModel": [
+    2.1000000000000005,
+    2.800000000000001,
+    3.0000000000000004
+   ]
+  }
+ ],
+ "batch": [
+  {
+   "code": 310100,
+   "to": "226",
+   "conf": 63
+  }
+ ]
+}

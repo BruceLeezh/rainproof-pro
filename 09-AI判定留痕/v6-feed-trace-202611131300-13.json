@@ -1,0 +1,38 @@
+{
+ "schema": "rainproof/v6-feed-trace@1",
+ "generatedAt": "2026-11-13T05:57:46.495Z",
+ "roundNote": "has-batch",
+ "regions": [
+  {
+   "code": 110100,
+   "name": "北京",
+   "chainBefore": 82,
+   "target": 82,
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-13T13:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-110100-202611131357-c3052837-2257-4ae4-bfd9-cb0b41acfab3.json",
+    "sha256": "35df434152e5b5b492c095b7c5fc98c24d57ce1a0514521193a287dd0662f420",
+    "bytes": 4509
+   }
+  }
+ ],
+ "skipped": [],
+ "longGap": [],
+ "batch": [
+  {
+   "code": 110100,
+   "to": "82",
+   "conf": 60
+  }
+ ]
+}
