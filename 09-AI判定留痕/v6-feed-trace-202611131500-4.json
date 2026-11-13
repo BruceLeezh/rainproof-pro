@@ -1,0 +1,38 @@
+{
+ "schema": "rainproof/v6-feed-trace@1",
+ "generatedAt": "2026-11-13T07:49:55.159Z",
+ "roundNote": "has-batch",
+ "regions": [
+  {
+   "code": 420113,
+   "name": "汉南区",
+   "chainBefore": 173,
+   "target": 174,
+   "windowFrom": "2026-11-13T13:00",
+   "windowTo": "2026-11-13T15:00",
+   "perModel": [
+    0.7,
+    1.4,
+    4.5
+   ],
+   "median": 1.4,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420113-202611131549-b54bd916-8d0f-44c2-bf27-f4f196f8446e.json",
+    "sha256": "cfeb2c043bd321c413c048a88f9def5dc3bc85780b3dccac425a0289d136819a",
+    "bytes": 2878
+   }
+  }
+ ],
+ "skipped": [],
+ "longGap": [],
+ "batch": [
+  {
+   "code": 420113,
+   "to": "174",
+   "conf": 61
+  }
+ ]
+}

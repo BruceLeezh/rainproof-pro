@@ -48,8 +48,26 @@ if (!fs.existsSync(REG_FILE)) {
 }
 const REGIONS = JSON.parse(fs.readFileSync(REG_FILE, "utf8"));
 
-async function fetchTO(url, ms = 20000) {
-  return fetch(url, { headers: { "User-Agent": "rainproof-v6-feeder/1.0" }, signal: AbortSignal.timeout(ms) });
+// 取数重试（2026-11-13）：单次 fetch 在这台机器上会偶发 `fetch failed`（TUN 代理抖动），
+// 一城失败就等于该城 24 小时内不再更新——演示当天若正好砸在汉南/黄陂，台上就得解释灰块。
+// 只对「网络层失败」和 429/5xx 重试；4xx 是请求本身写错（纬度/参数/额度策略），重试没意义，原样抛回去。
+// 实测（11-13 15:40）这台机器对 api.open-meteo.com 会整段 10~12 秒连不上、随后又恢复 1 秒内 200，
+// 所以退避要够长：4 次尝试、单次 12 秒上限，最坏约 27 秒才放弃，足以跨过一次抖动。
+async function fetchTO(url, ms = 12000) {
+  const attempts = 4;
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const resp = await fetch(url, { headers: { "User-Agent": "rainproof-v6-feeder/1.0" }, signal: AbortSignal.timeout(ms) });
+      if (resp.ok || (resp.status !== 429 && resp.status < 500)) return resp;
+      lastErr = new Error(`weather HTTP ${resp.status}`);
+      try { await resp.text(); } catch { /* 丢弃响应体，腾出连接 */ }
+    } catch (e) {
+      lastErr = e;
+    }
+    if (i < attempts) await new Promise(r => setTimeout(r, 800 * i));
+  }
+  throw lastErr;
 }
 
 /* ---- G5 原始报文留痕（2026-10-26）：三模型原始响应全文落盘 + SHA-256 锚定 ----
