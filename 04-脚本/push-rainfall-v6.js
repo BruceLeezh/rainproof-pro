@@ -292,6 +292,19 @@ async function round(p, v6) {
   const gasPrice = fee.gasPrice || 20000000000n;
   const bal0 = await p.getBalance(w0.address);
   const BASE_GAS = 400000n, PER_CITY_GAS = 114000n;
+  // 低余额保命（2026-11-13 夜加）：钱只够十城以内时，只喂台上会念的六个区划，
+  // 别把最后一点 gas 花在演示用不到的城市上——否则下一轮连演示区划都喂不动。
+  {
+    const budget = bal0 - bal0 / 10n;
+    const perCity = PER_CITY_GAS * gasPrice;
+    if (budget < perCity * 10n + BASE_GAS * gasPrice) {
+      const keep = batch.ids.map((c, i) => (PRIORITY.has(c) ? i : -1)).filter(i => i >= 0);
+      if (keep.length && keep.length < batch.ids.length) {
+        console.log(`  ⛽ 低余额模式：余额 ${ethers.formatEther(bal0)} BOT（不足 10 城），本轮只喂演示 ${keep.length} 城，其余等注资后补`);
+        for (const k of Object.keys(batch)) batch[k] = keep.map(i => batch[k][i]);
+      }
+    }
+  }
   const usable = bal0 - bal0 / 10n;   // 留 10% 余量，别炸在最后一步
   const afford = usable > BASE_GAS * gasPrice
     ? Number((usable - BASE_GAS * gasPrice) / (PER_CITY_GAS * gasPrice)) : 0;
