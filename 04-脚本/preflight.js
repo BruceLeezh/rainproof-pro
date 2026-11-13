@@ -226,14 +226,14 @@ function checkTasks() {
       if (-not $t) { "MISSING|$n"; continue }
       $s = $t.Settings; $i = $t | Get-ScheduledTaskInfo
       $a = $t.Actions[0].Arguments
-      "$n|$($t.Triggers[0].Repetition.Interval)|$($s.DisallowStartIfOnBatteries)|$($s.StartWhenAvailable)|$($i.LastTaskResult)|$($i.NumberOfMissedRuns)|$($i.NextRunTime)|$a"
+      "$n|$($t.Triggers[0].Repetition.Interval)|$($s.DisallowStartIfOnBatteries)|$($s.StartWhenAvailable)|$($i.LastTaskResult)|$($i.NumberOfMissedRuns)|$($i.NextRunTime)|$($i.LastRunTime.ToString('yyyy-MM-dd HH:mm'))|$a"
     }`;
   let raw;
   try {
     raw = execFileSync("powershell", ["-NoProfile", "-Command", ps], { encoding: "utf8", timeout: 30000 });
   } catch (e) { warn("任务", `查计划任务失败：${e.message}`); return; }
   for (const line of raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean)) {
-    const [name, interval, battery, when, last, missed, next, ...rest] = line.split("|");
+    const [name, interval, battery, when, last, missed, next, lastRun, ...rest] = line.split("|");
     const actionArgs = rest.join("|");
     if (name === "MISSING") { bad("任务", `${interval} 未注册`); continue; }
     // 2026-10-30 踩过：用「无 BOM 的 .ps1」改任务动作，Windows PowerShell 5.1 按 GBK 解码，
@@ -249,6 +249,7 @@ function checkTasks() {
     if (when === "False") bad("任务", `${name} 「错过不补跑」= False —— 睡过去就永久跳过，改掉`);
     if (Number(missed) > 0) bits.push(`已错过 ${missed} 次`);
     if (next) bits.push(`下次 ${next}`);
+    if (lastRun && lastRun !== "0001-01-01 00:00") bits.push(`上次运行 ${lastRun}`);
     if (last !== "0") {
       // 0xC000013A = STATUS_CONTROL_C_EXIT：控制台收到 Ctrl+C 或被关闭。查过 6 次记录，全部发生在
       // 批次已 ✅ executed=true 之后（见 02-作战与答辩/自动完善-定时日志.txt），属收尾噪声。
@@ -258,7 +259,15 @@ function checkTasks() {
       // 0x2 = 喂价脚本按设计返回「本轮有区划被分歧闸门拒收」：批量已成功上链，只是没做到全城同刷。
       // 这是数据闸门在工作，不是故障——报成 ⚠ 会让「红了」变成背景色（与上面 Ctrl+C 同理）。
       else if (code === 2 && /feed/i.test(name)) ok("任务", `${name} 本轮有区划被分歧闸门拒收（设计内，批量已上链）· ${bits.join(" · ")}`);
-      else warn("任务", `${name} 上次退出码 0x${code.toString(16).toUpperCase()}（非 0，查日志）· ${bits.join(" · ")}`);
+      // 0x41301 = SCHED_S_TASK_RUNNING：正好在跑（preflight 撞上 30 分钟一轮的窗口就能看到）。
+      else if (code === 0x41301) ok("任务", `${name} 正在运行（本轮未结束）· ${bits.join(" · ")}`);
+      else {
+        // 每日任务的历史退出码不代表此刻的状态（例如 OpsDaily 13:03 那次跑在喂价全城过期时，
+        // 之后已修复）。这类只标「那一次的」，避免把历史红点当成现在坏了。
+        const stale = !interval && lastRun && lastRun !== "0001-01-01 00:00";
+        const tail = stale ? `（${lastRun.slice(11)} 那一次的状态，非此刻；查日志）` : "（非 0，查日志）";
+        warn("任务", `${name} 上次退出码 0x${code.toString(16).toUpperCase()}${tail}· ${bits.join(" · ")}`);
+      }
     } else ok("任务", `${name} ${bits.join(" · ")}`);
   }
 }
