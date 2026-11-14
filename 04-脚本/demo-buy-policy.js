@@ -14,7 +14,7 @@ const {planBuys,withDemoLock}=require("./demo-policy-plan");
 const {submittedTxId}=require("./multisig-receipt");
 const {feedStatus}=require("../05-演示站点/runtime");
 const ROOT=path.resolve(__dirname,"..");
-const BUYS=[{code:420100,hours:24,label:"武汉 24h"},{code:440100,hours:12,label:"广州 12h"}];
+const BUYS=[{code:420100,hours:24,label:"武汉 24h"},{code:440100,hours:12,label:"广州 12h"},{code:420113,hours:24,label:"汉南 24h（路演保障中）"}];
 const DEFAULT_DEMO="0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C";
 async function main(){
   require("dotenv").config({path:path.join(__dirname,".env")});

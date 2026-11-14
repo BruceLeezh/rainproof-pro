@@ -76,7 +76,7 @@
   <section class="sec">
     <h2>我的保单<em id="who">演示骑手（免钱包可浏览）</em></h2>
     <div id="policies"><span class="loading">读取链上保单</span></div>
-    <p class="note" style="margin-top:8px">本页只列<b>当前账户</b>名下的保单；未连接钱包时列演示钱包 0x5D13…0283C 的两张历史单。其他钱包签发的保单在「平台控制台」与「证据核验台」按全量统计。</p>
+    <p class="note" style="margin-top:8px">本页只列<b>当前账户</b>名下的保单；未连接钱包时列演示钱包 0x5D13…0283C 的 3 张演示单（2 张已结清、1 张冷静期待生效）。其他钱包签发的保单在「平台控制台」与「证据核验台」按全量统计。</p>
     <p class="note">状态由链上 <code style="font-family:var(--mono)">policyStatus()</code> 直读：pending（冷静期）→ active（保障中）→ pending_judgement（已过线待判定）→ claimable（可赔付）→ paid（已到账）。已有链上 <b>denied</b> 记录可查看并申请复核；常规脚本不会把临时不赔结果提前上链。退款或到期结清后，链上状态统一为 <b>settled（已结清）</b>；退款是否成功以退款交易回执及付款人余额为准。展开保单操作可查看退款、生效锚定和手动领取的条件。</p>
   </section>
 

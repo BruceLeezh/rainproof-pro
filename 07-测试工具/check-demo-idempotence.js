@@ -2,7 +2,7 @@
 const assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
 const {planBuys,withDemoLock}=require("../04-脚本/demo-policy-plan");
 const root=path.resolve(__dirname,".."),demo="0x5D13941203e46Cde6d3f2DfC6e7947f6a7b0283C";
-const buys=[{code:420100,hours:24,label:"武汉 24h"},{code:440100,hours:12,label:"广州 12h"}];
+const buys=[{code:420100,hours:24,label:"武汉 24h"},{code:440100,hours:12,label:"广州 12h"},{code:420113,hours:24,label:"汉南 24h（路演保障中）"}];
 let count=0;function ok(label,fn){fn();count++;console.log("OK "+label);}
 const row=buy=>({exists:true,rider:demo,regionId:BigInt(buy.code),windowHours:BigInt(buy.hours),settled:true});
 function contractFor(rows){return {policiesOf:async()=>rows.map((_,i)=>BigInt(i)),policies:async id=>rows[Number(id)]};}
@@ -14,7 +14,7 @@ function cli({send=false,complete=false,raceAtLock=false,duplicateAtApproval=fal
   const insurance={...contractFor(rows),premiumOf:async()=>{if(badQuote)throw new Error("quote unavailable");return 590n;},
     connect(){return this;},buyPolicy:async(code,hours)=>{events.buys++;rows.push(row({code,hours}));return {hash:"0xbuy",wait:async()=>({status:1})};}};
   const token={balanceOf:async()=>9999n,allowance:async()=>0n,connect(){return this;},approve:async()=>{
-    events.approvals++;return {wait:async()=>{if(duplicateAtApproval)rows.push(row(buys[1]));return {status:1};}};
+    events.approvals++;return {wait:async()=>{if(duplicateAtApproval)rows.push(...buys.slice(1).map(row));return {status:1};}};
   }};
   const provider={getNetwork:async()=>({chainId:968n}),getBalance:async()=>100n,destroy:()=>events.destroyed++};
   const fakeEthers={getAddress:a=>a,parseEther:x=>BigInt(Math.round(Number(x)*1000)),formatUnits:(n)=>String(Number(n)/100),
@@ -28,7 +28,7 @@ function cli({send=false,complete=false,raceAtLock=false,duplicateAtApproval=fal
     return JSON.stringify({address:demo,privateKey:"fixture-only"});
   }};
   const dependencies={fs:fakeFs,path,ethers:{ethers:fakeEthers},"./rpc-read":{withRetry:fn=>fn(),provider:()=>provider},
-    "./demo-policy-plan":{planBuys,withDemoLock:async(_file,fn)=>{events.locks++;if(raceAtLock)rows.push(row(buys[1]));return fn();}},
+    "./demo-policy-plan":{planBuys,withDemoLock:async(_file,fn)=>{events.locks++;if(raceAtLock)rows.push(...buys.slice(1).map(row));return fn();}},
     "./multisig-receipt":{},"../05-演示站点/runtime":{feedStatus:async()=>({available:true})},dotenv:{config:()=>{}},
     "./active-deployment":{applyDeployment:()=>({version:"V6",rpc:"fixture",contract:"insurance",token:"token",multisig:"multisig"})}};
   const requireFake=name=>{if(!(name in dependencies))throw new Error("Unexpected dependency "+name);return dependencies[name];};
@@ -38,7 +38,7 @@ function cli({send=false,complete=false,raceAtLock=false,duplicateAtApproval=fal
 }
 async function main(){
   const all=await planBuys(contractFor(buys.map(row)),demo,buys);
-  ok("已到期或结清的历史组合仍然算买过",()=>{assert.equal(all.missing.length,0);assert.equal(all.skipped.length,2);});
+  ok("已到期或结清的历史组合仍然算买过",()=>{assert.equal(all.missing.length,0);assert.equal(all.skipped.length,buys.length);});
   await assert.rejects(planBuys({policiesOf:async()=>{throw new Error("offline");}},demo,buys),/offline/);
   ok("查重 RPC 失败不能被当成没有买过",()=>assert(true));
   await assert.rejects(planBuys(contractFor([{...row(buys[0]),rider:"different"}]),demo,buys),/不一致/);
@@ -69,7 +69,7 @@ async function main(){
   const approvalRace=cli({send:true,duplicateAtApproval:true});await approvalRace.run();
   ok("授权等待时出现相同组合，投保前再次查重并跳过",()=>{assert.equal(approvalRace.events.approvals,1);assert.equal(approvalRace.events.buys,0);});
   const fresh=cli({send:true});await fresh.run();await fresh.run();
-  ok("首次仅补缺失组合，第二次运行零新增交易",()=>{assert.equal(fresh.events.approvals,1);assert.equal(fresh.events.buys,1);assert.equal(fresh.events.privateFiles,1);});
+  ok("首次仅补缺失组合，第二次运行零新增交易",()=>{assert.equal(fresh.events.approvals,buys.length-1);assert.equal(fresh.events.buys,buys.length-1);assert.equal(fresh.events.privateFiles,1);});
   const failure=cli({send:true,badQuote:true});await assert.rejects(failure.run(),/quote unavailable/);
   ok("读取保费失败会退出，不吞错也不读私钥",()=>{assert.equal(failure.events.privateFiles,0);assert.equal(failure.events.buys,0);assert.equal(failure.events.destroyed,1);});
   console.log(`演示脚本幂等隔离回归：${count} 项通过`);

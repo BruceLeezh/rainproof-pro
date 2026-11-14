@@ -1,0 +1,604 @@
+
+> test
+> npm run check-public-repo && npm run check-frozen-node && npm run check-verify-pack && npm run check-canonical && npm run check-ai && npm run check-ui && npm run check-abi && npm run check-page-decode && npm run check-feed-verify && npm run check-pricing-grid && npm run check-v3-prices:offline && npm run check-event-topics && npm run check-rmb-grid && npm run check-v5-bytecode && npm run check-html-syntax && npm run check-cities && npm run check-city-weather && npm run check-cadence && npm run check-pricing-engine && npm run check-review && npm run check-v6 && npm run e2e && npm run e2e:v2 && npm run e2e:multisig && npm run e2e:v3 && npm run e2e:v4 && npm run e2e:v5 && npm run check-replay && npm run e2e:v6-review
+
+
+> check-public-repo
+> node check-public-repo.js
+
+
+[公开仓库自检] 被跟踪文件 2091 个
+
+[① 禁止入库清单]
+  [OK] ^01-赛事资料\/ 不在跟踪列表里
+  [OK] (^|\/)\.env$ 不在跟踪列表里
+  [OK] _local_chain\.json$ 不在跟踪列表里
+  [OK] 没有 *.key / *.pem / *.p12 被跟踪
+
+[② 私钥赋值]
+  [OK] 没有 PRIVATE_KEY/SECRET_KEY/MNEMONIC = 0x…64 的赋值
+
+[③ 个人信息]
+  [OK] 被跟踪的文本文件里没有手机号 / 身份证号
+  （粗筛命中 25035 行 / 507 个文件，都属于十六进制串/长小数的一部分，已按 token 边界排除）
+
+[④ 真实密钥反查]
+  （.env 里被判为「密钥形状」的变量：.env:PRIVATE_KEY, .env:RIDER_KEY, .env:CONTRACT_ADDRESS_V4, .env:OWNER_KEY_FILE）
+  [OK] 1 个 .env* 里 4 个密钥形状的值在被跟踪文件里 0 命中
+
+通过 7 项 · 跳过 0 项 · 失败 0 项
+
+> check-frozen-node
+> node check-frozen-node.js
+
+============================================================
+检查：链上快照兜底（05-演示站点/frozen-node.js ↔ index.html）
+============================================================
+  ✅ ① frozen-node.js 存在
+  ✅ ① 能解析出 window.FROZEN_NODE（JSON 合法）
+  ✅ ② 快照链是 677（主网）· 实际 677
+  ✅ ② 快照地址与页面 FALLBACK_ADDR 一致（两处口径不许漂）
+  ✅ ③ code 长度 = 15823 字节，与 meta.codeLength 一致
+  ✅ ③ bytecode.txt 是合法十六进制，且不短于 15823 字节运行时（实际全长 15928 字节）
+  ✅ ③ meta.codeLength = 15823 与旁车 runtime-size.txt 一致（实际 15823）
+  ✅ ③ code 与 bytecode.txt 尾部的 15823 字节运行时逐字节一致（不再是自己造 0x00 自证）
+  ✅ ④ eth_call 条目 48 条（≥40）
+  ✅ ④ 如实记录 2 条 revert（v3 只卖 12/24，48/72 链上真的 revert）· 实际 2
+  ✅ ④ hoursAllowed(12) 在快照里是可用的（true）
+  ✅ ④ hoursAllowed(24) 在快照里是可用的（true）
+  ✅ ④ hoursAllowed(48) 在快照里如实记录为 revert（v3 现行只卖 12/24；check-ui.js 的静态脚手架同样只列 12/24）
+  ✅ ④ hoursAllowed(72) 在快照里如实记录为 revert（v3 现行只卖 12/24；check-ui.js 的静态脚手架同样只列 12/24）
+  ✅ ⑤ 保费网格满 10 格（5 城 × 12h/24h）· 实际 10
+  ✅ ⑥ 事件行 8 条（≥8）
+  ✅ ⑥ 含 FeedRejected（成都被闸门拒收的留痕）
+  ✅ ⑥ 事件区块只收录确凿时间（4 条 = 四次喂价的链上时刻），其余宁缺勿编
+  ✅ ⑥ 时间戳都落在 2025-10 ~ 2027-01（1760000000–1800000000）—— 比原来 2023–2030 的松区间更紧，编的 0 或 2025 年也得被卡住
+  ✅ ⑦ 页面在主脚本之前加载 frozen-node.js
+  ✅ ⑦ 页面里有 FrozenProvider（快照 provider）
+  ✅ ⑦ 页面支持 ?snap=1 强制 / ?snap=0 关闭
+------------------------------------------------------------
+结果：22 项通过 / 0 项失败
+快照兜底口径一致（断网时页面显示的就是这份快照，不再是一片「—」）
+
+> check-verify-pack
+> node make-verify-pack.js --check
+
+solc: 0.8.37+commit.f401782d.Emscripten.clang
+
+=== RainDeliveryInsuranceV3（RainDeliveryInsuranceV3.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 15823 字节 = 链上实测长度（主网 677 上 eth_getCode 实测（2026-10-08））
+  ✅ runtime-size 旁车文件一致
+     源码 sha256        : 0x4151dd750cc2a0b18ceaf5cbe88b4a97cbf72b31ee6412e1b35e62049a900e26
+     创建码 sha256      : 0xd1a511170e3e3c679bdf8dc9e02842caf59a6218e50ad61dfc93bad33058f91b
+     运行时 sha256      : 0xf415f6d30c548f42bb52a328ece810745fd7d79fcf3e55121ece6c7f4ee85bdc
+     运行时 keccak256   : 0x68cf9c8d03fdfa709f0520dde68dac4e50faa3b2371bb5a9df72bddc6851fcdb
+
+=== OperatorMultisig（OperatorMultisig.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 4746 字节 = 链上实测长度（主网 677 上 eth_getCode 实测（2026-10-08））
+  ✅ runtime-size 旁车文件一致
+     源码 sha256        : 0x6280a8d99984b76dbf600a4623489516f7ac83d277abf7cbe90b0686fc82045b
+     创建码 sha256      : 0x8e36a2bd79940a1c15c11031ae2ceba99bdff13a9e3fa0741a8224885dba6205
+     运行时 sha256      : 0x4bbaf22e239d65bb2f292e731ae558ada60bd27b0c0864966ba739e540cdfbd1
+     运行时 keccak256   : 0xb2c26ac993b3e61dff461ee09fa7f573d591bde479978f201818b0fb0c1a7c7a
+
+=== RainDeliveryInsurance（RainDeliveryInsurance.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 10758 字节 = 链上实测长度（Sepolia 11155111 上 eth_getCode 实测（02-作战与答辩/汉客松-交易哈希清单.md:237、08-截图存证/真链留痕-2026-10-06.md:19））
+  ✅ 无 runtime-size 旁车（v1 历来没有，A33：compile_sol.js 本会写）
+     源码 sha256        : 0xce4a89bd728175975e88f9e4d368b58abd9f8f9e71cfc72a8be7b7625bde0614
+     创建码 sha256      : 0x024f22838c6378b34b818bfe8ed66a8d38aa382b33fec66466e35f19faaabd28
+     运行时 sha256      : 0x46bb1293d42782c6fbef44162d983f18316fd1c76e86b38c5ff3b948e36346d9
+     运行时 keccak256   : 0xf241ff63766d661a3be18c97ba873d386a9563adcac16c18f6ec9b3faa791b50
+
+=== RainDeliveryInsuranceV2（RainDeliveryInsuranceV2.sol）===
+  ✅ 源文件无 import ⇒ 它本身就是 flatten 结果（无需另存副本）
+  ✅ 盘上 .bytecode.txt 与本次重编逐字节一致
+  ✅ 运行时 12378 字节 = 链上实测长度（BOT Chain 968 上 eth_getCode 实测（08-截图存证/截图断言报告-2026-10-07.json）+ 旁车 RainDeliveryInsuranceV2.runtime-size.txt）
+  ✅ runtime-size 旁车文件一致
+     源码 sha256        : 0x92ca07c8ca2a151c6098c426af5d729b74a3db974e329168bb279336566364b4
+     创建码 sha256      : 0x932a602b10807588d287ab36037b9bca0644bdbe9ebeaadf270ee310aa87e870
+     运行时 sha256      : 0xbea23afb5a87c8abf43394d27d2fffd05a0714c4e75fef1d879770cef59a0d35
+     运行时 keccak256   : 0xafb563dc2e24338fd2664126409841b81d79e8d78b22f52b4e02648d134ddb92
+
+✅ 0 项失败 → 03-合约\verify-manifest.json（内容无变化，未改写）
+
+> check-canonical
+> node check-canonical.js
+
+
+哈希口径回归 · canonical.js
+============================================================
+  ✅ 键序不同 → 同一个哈希
+  ✅ 嵌套对象的键序也不同 → 仍同一个哈希
+  ✅ 37.2 与 37.20 同哈希；第 7 位小数被截掉，也同哈希
+  ✅ 精度差异落在第 6 位 → 哈希必须不同（否则精度就没意义了）
+  ✅ 数组顺序不同 → 哈希必须不同
+  ✅ canonicalize 的具体形状符合约定的口径
+  ✅ 不支持的类型直接报错，不做隐式转换
+  ✅ 雨量改 1mm → 哈希变（防「哈希没跟着数据走」）
+============================================================
+结果：8 项通过 / 0 项失败
+
+
+> check-ai
+> node check-ai.js
+
+==========================================================================
+AI 判定层检查
+==========================================================================
+
+[R1] 雨量本身没达标 —— 与模型无关，直接不赔
+  ✅ official 30 < 阈值 50 → DENY  decision=0
+  ✅ 置信度给到 95（这是确定性的，不是推测）  confidence=95
+  ✅ 理由里点名了阈值
+
+[R2] ★ 独立复核发现预言机和模型严重不符 —— AI 真正值钱的地方
+  ✅ 链上 80mm vs 三模型中位数 21mm（背离 73.8% > 60%）→ DENY  decision=0 divergence=73.8%
+  ✅ 背离时给高置信度 92（对『链上数据不可信』这件事很确定）
+  ✅ 理由里写明了背离百分比
+  ✅ 反向验证：同样的数字打了 simulated=true，R2 的背离复核照样跑（模拟标记只写进理由，不再整条免检）
+  ✅ simulated=true 仍会在理由里如实写出「这是合成数据」
+  ✅ 混进一个取数失败的模型：中位数仍是 80、判定仍是 PAY  decision=1 metrics={"thresholdMm":50,"minConfidence":60,"officialIncrementMm":80,"modelIncrementsMm":[80,84,78],"medianMm":80,"spreadMm":6,"agreeCount":3,"divergencePct":0}
+  ✅ 取数失败的模型不算来源（sources = 3，不是 4）
+
+[R3] 三家里只有 ≤1 家支持赔付
+  ✅ 达标模型 0/3 → DENY  agree=0
+  ✅ 理由里报告了达标家数
+
+[R4] 模型自己吵翻天 —— 置信度压到门槛以下，不敢拍板
+  ✅ 离散度 80 ≥ 中位数 50 → DENY
+  ✅ 置信度被压到 45（< 验收门槛 60）  confidence=45
+  ✅ 理由里说明了离散度与门槛
+
+[R5] 正常赔付路径
+  ✅ 3/3 模型一致且与链上相符 → PAY  decision=1
+  ✅ 置信度 ≥ 门槛  confidence=95
+  ✅ 离散度越小置信度越高（单调性）
+
+[硬约束] 绝不允许输出「PAY 且置信度 < 门槛」
+  ✅ 1178 个 PAY 用例全部过门槛，且置信度都落在 0..99
+
+[可复算] 同一份快照必须得到逐字节相同的结果
+  ✅ 两次调用结果完全一致
+  ✅ decide() 不修改输入快照
+
+[哈希绑定] 结论一变，outputHash 必变
+  ✅ decision 变 → 哈希变
+  ✅ confidence 变 → 哈希变
+  ✅ 键序不同、内容相同 → 哈希不变
+
+[可复算] 换个运行时间、换段解释文字，outputHash 必须一个字节都不动
+  ✅ decidedAt 变 → outputHash 不变  0xa97245dcaeb4db60e6f121501606c7811538f7c5553f5fae7df319cfae38f800
+  ✅ 解释文字/来源变 → outputHash 不变
+  ✅ judgement 对象里不含 decidedAt / rationale
+  ✅ 同一份输入重跑 → 整条记录逐字节相同
+  ✅ 指标（离散度）变 → outputHash 必变
+
+[可复算·实证据] 仓库里每一条留痕，哈希都要能当场重算出来
+  ✅ 找到 22 个留痕文件
+  ✅ 所有留痕的哈希都能重算出来（含真链 #0/#1 的修复前留档、含承保复核的 reviewHash）  22 个全对
+  ✅ 带 reviewHash 的承保复核留痕（8 个）一个都没漏进复算  8 个全在
+  ✅ 新留痕（4 个）里没有易变字段
+  ✅ V6 排除购买到生效的降雨，截止不晚于链上更新的完整小时
+  ✅ V6 跨午夜取证，首小时按覆盖比例且未来小时不计入
+  ✅ V6 缺测或超过判定窗口均拒绝取证
+
+==========================================================================
+结果：36 项通过 / 0 项失败
+✅ 全部通过 —— AI 判定规则可以拿去现场了
+==========================================================================
+
+> check-ui
+> node check-ui.js
+
+
+[① 降雨看板] 刻度与触发线必须指同一个地方
+  [OK] 填充公式是 v / (阈值 × 2) × 100
+  [OK] 触发线 .bar::after 在 left:50%
+  [OK] 触发线标签 .bar::before 在 calc(50% + 6px)
+
+  阈值 50mm，条子满格 = 100mm，触发线在 50%：
+    武汉   24 mm  → 填  24%   
+    上海   34 mm  → 填  34%   
+    北京    0 mm  → 填   0%   
+    广州   50 mm  → 填  50%   ← 正好压在触发线上
+    成都  120 mm  → 填 100%   （冲过触发线）
+  [OK] 50mm 的填充比例 == 触发线位置 50%
+  [OK] 24mm 明显在触发线左侧
+  [OK] 120mm 顶满条子
+  [OK] 没有区域被算成负数
+
+[② 保障时长] 静态脚手架只能是主网现行 v3 的两档（12/24），某层实际卖哪几档由链上 hoursAllowed 说了算
+  [OK] hoursInput 是 <select> 不是自由输入框
+  [OK] 静态脚手架只有 12 / 24（按顺序；不再摆 v3 已删的 48/72）
+  [OK] 默认选中 24 小时（v3 两档里的长档）
+  [OK] JS 用 .value 读它（select 没有 valueAsNumber）
+  [OK] 档位标签与设计页一致（12 小时 / 24 小时）
+  [OK] 候选只有 12/24，并由链上 hoursAllowed(h) 收窄
+
+[③ DOM 契约] 页面 JS 引用的 id / class 必须真实存在
+  [OK] 05-演示站点/index.html：引用的 56 个 id / 3 个 class 都在
+  [OK] 05-演示站点/verifier.html：引用的 21 个 id / 1 个 class 都在
+
+[④ 演讲提示] 演示界面里不许出现"讲给我们自己听"的话
+  [OK] 05-演示站点/index.html：没有演讲提示
+  [OK] 05-演示站点/verifier.html：没有演讲提示
+  [OK] 06-核验台单文件/雨证-链上核验台.html：没有演讲提示
+
+[⑤ 判定口径] 赔付按「投保后的增量」，不是累计雨量
+  [OK] 看板越过阈值时说的是「投保后的增量」
+  [OK] 投保区说明写「新增累计降雨」而不是「累计降雨」
+  [OK] 没有「现在就能申请赔付」这种承诺
+
+[⑥ 窄屏不溢出的静态代理] 长地址 / 长数字必须能换行，否则 390px 下横向滚动
+  [OK] index.html 的栅格子项有 min-width:0（.grid2 > * / .cols > *）
+  [OK] 05-演示站点/index.html：至少一条 min-width:0 守卫
+  [OK] 05-演示站点/verifier.html：至少一条 min-width:0 守卫
+  [OK] 06-核验台单文件/雨证-链上核验台.html：至少一条 min-width:0 守卫
+  [OK] 05-演示站点/verifier.html：长地址容器有 overflow-wrap:anywhere
+  [OK] 06-核验台单文件/雨证-链上核验台.html：长地址容器有 overflow-wrap:anywhere
+
+========================================================
+结果：27 项通过 / 0 项失败
+前端契约没被改坏
+========================================================
+
+> check-abi
+> node sync_abi.js --check
+
+05-演示站点\index.html
+  ✅ const ABI     ← RainDeliveryInsuranceV3.abi.json（95 条，逐字节一致）
+  ✅ const ABI_V2  ← RainDeliveryInsuranceV2.abi.json（85 条，逐字节一致）
+05-演示站点\index-v5.html
+  ✅ const ABI     ← RainDeliveryInsuranceV5.abi.json（102 条，逐字节一致）
+05-演示站点\index-v6.html
+  ✅ const ABI     ← RainDeliveryInsuranceV6.abi.json（107 条，逐字节一致）
+
+✅ 通过 4 项 · 失败 0 项（3 个文件 / 共 4 个 ABI 块：内嵌 ABI 与 03-合约 逐字节一致）
+
+> check-page-decode
+> node check-page-decode.js
+
+页面 ABI 输出形状 ⇄ 真链返回（05-演示站点\index.html）
+
+  ✅ 页面 const ABI（v3）的每一处 outputs 形状都与 03-合约/RainDeliveryInsuranceV3.abi.json 一致（含字段名与顺序）
+  ✅ policies(uint256) 解出 16 个字段
+  ✅ policies(uint256) 字段名与 V3 ABI 逐个一致
+  ✅ policies(uint256) 首尾取值位置正确（首位与末位都与编码哨兵相等）
+  ✅ judgements(uint256) 解出 10 个字段
+  ✅ judgements(uint256) 字段名与 V3 ABI 逐个一致
+  ✅ judgements(uint256) 首尾取值位置正确（首位与末位都与编码哨兵相等）
+  ✅ feedJudgements(uint8) 解出 10 个字段
+  ✅ feedJudgements(uint8) 字段名与 V3 ABI 逐个一致
+  ✅ feedJudgements(uint8) 首尾取值位置正确（首位与末位都与编码哨兵相等）
+  ✅ v3 payload 用 ABI_V2 的 v2 形状解 ≠ v3 结果（正好是 677 上错位解码的那个 bug）
+  ✅ v3 payload 用 ABI_V2 的 v2 形状解 ≠ v3 结果（正好是 677 上错位解码的那个 bug）
+  ✅ v3 payload 用 ABI_V2 的 v2 形状解 ≠ v3 结果（正好是 677 上错位解码的那个 bug）
+  ✅ thresholdOf 同名多参：页面取到的是 v3 的 (uint256,uint8) 重载（selector 0xd8c93818）
+  ✅ thresholdOf 同名多参：v2 那份 (uint256) 是另一个函数（selector 不同），不会被误取
+  ✅ thresholdOf(uint256,uint8) 解出的值等于编码时的哨兵
+  ✅ premiumOf 两个重载都取到且不是同一个（5 参与 2 参 selector 不同）
+  ✅ premiumOf 5 参重载解出的值等于编码时的哨兵
+  ✅ 快照 48 条调用 >= 40 且带返回的 46 条全都能按页面 ABI_V3 解出（解出 46 条）
+  ℹ️ 快照里的结构体读法（policies/judgements/feedJudgements）共 0 条；形状覆盖靠上面 ① 的合成 payload
+
+✅ check-page-decode：19 项通过 / 0 项失败
+
+> check-feed-verify
+> node check-feed-verify.js
+
+
+feed-verify 判定规则（离线用例）
+  ✅ 模型 id 顺序 = ecmwf_ifs025 / gfs_seamless / icon_seamless
+  ✅ 三个一致 → agree / 92 / 源 3 / mm=42
+  ✅ 一个离群 → majority / 84 / 源 2 / mm=10
+  ✅ 离群模型被点名
+  ✅ 三个都离群 → diverge / 拒收 / mm=null / 置信 40
+  ✅ 两个可用且一致 → agree / 88 / 源 2
+  ✅ 只剩一个模型 → insufficient / 拒收
+  ✅ 没有公共日期 → no-overlap / 拒收
+  ✅ 极差超容差但都在中位数附近 → agree（不是 majority）
+  ✅ 离群列表为空、说明里不出现「离群」
+  ✅ 小雨 0.2/0.4 → agree（容差地板 1mm）
+  ✅ 只比公共日期（不把 10-03 的 99mm 算进来）
+
+承保复核判定（hook-watch.js 的 reviewPolicy，纯函数）
+  ✅ 窗口/基线/喂价/三模型都过 → REVIEW_OK
+  ✅ 喂价 25 小时前 → stale-feed 标红
+  ✅ 三模型 diverge → models-not-agreeing 标红
+  ✅ 链上 120mm vs 中位数 6.5mm → 背离 1746.15% 且标红
+  ✅ 喂价未知 + 三模型未取数 → REVIEW_PARTIAL（既不误报通过、也不误报存疑）
+  ✅ 投保时 50mm > 链上现值 30mm → baseline-above-onchain 标红
+  ✅ 窗口 12h → window-out-of-range 标红
+
+✅ feed-verify 判定 + 承保复核判定：19 项通过 / 0 项失败
+
+> check-pricing-grid
+> node check-pricing-grid.js
+
+
+定价网格维度绑定 · pricing-engine.json ↔ 03-合约/RainDeliveryInsuranceV3.sol
+========================================================================
+  ✅ 网格形状 = 40 格（5 城 × 2 时长 × 4 段）；批量档只在平台代付渠道展开
+  ✅ meta.thresholdsMm = 国标两档（12→30/70、24→50/100）
+  ✅ 每一格的 thresholdsMm 等于它自己 hours 那一行（维度绑定，防串档）
+  ✅ hours 只有 12 / 24（v3 的 hoursAllowed；48/72 已退役）
+  ✅ segId ↔ (riderTier, channel) 与 meta.segments 的定义逐格一致
+  ✅ 每格 costFloorEth ≤ premiumRetailEth ≤ premiumCapEth（0.002）
+       → 逐格区间 83.7× ～ 325.7×（均值 177.6×）
+  ✅ 平台代付渠道逐格摊薄倍数 ≥ 80（审计实测区间 83.7×～325.7×）
+  ✅ V3 合约常量与定价引擎口径一致（MIN_PREMIUM / 两档 / 时长）
+  ✅ V3 ABI 里 v3 新增入口都在（buyFor / refundPolicy / pricingModule / openPoliciesOf）
+  ℹ️  锚点（只报不判，供对外材料引用时连维度一起写）：
+       零售价 min 0.00028（beijing 12h t2c1）
+       零售价 max 0.00105（wuhan 24h t0c0）  = 上限的 1/1.905
+       cells[0]（wuhan 12h t2c1）摊薄 197.8× —— 「198×」是这一格，不是全表
+========================================================================
+结果：9 项通过 / 0 项失败
+
+
+> check-v3-prices:offline
+> node check-v3-prices.js --offline
+
+对照表：07-测试工具/fixtures/pricing-engine-deployed-968.json
+payload：60 行（57 可售 / 3 不卖）
+payload 自身不变量：✅ 通过
+
+--offline：只做上面的离线自证，不读链。
+
+> check-event-topics
+> node check-event-topics.js
+
+
+事件 topic0 核验  ·  核验台手写 5 条 / verifier 内嵌 16 条
+
+  ✅ console 5 条：每条签名能算出 topic0
+  ✅ console 每条：签名与 V6 合约 ABI 里的同名事件一致
+  ✅ console 每条：topic0 与 V6 ABI 实算值逐字节相同
+  ✅ console 没漏掉 V6 的关键事件（赔付/承保/喂价/拒绝/判定）
+  ✅ verifier.html 内嵌 16 条 ABI：每条与合约 ABI 的同名事件签名一致
+  ✅ verifier.html 每条：topic0 与 ABI 实算值相同（页面解码靠它）
+  ✅ console(V6) 与 verifier(V3) 同名事件：topic0 要么相同，要么登记在 CROSS_VERSION_OK
+
+✅ 事件 topic0 核验：7 项通过 / 0 项失败
+
+> check-rmb-grid
+> node check-rmb-grid.js
+
+  ✅ 数表 12h/24h 两段各解析出 5 行  12h=5 行 · 24h=5 行
+  ✅ 10 格逐格一致（GRID ↔ 数表众包自助列）  10 格核对
+  ✅ 基准表是 100 元额度基数
+  ✅ 10 格与当前引擎的风险上界及定价公式一致
+  ✅ GRID 值域合理（100–1000 分 = 1–10 元，且 < 满额 10000）
+============================================================
+通过 5 项 / 失败 0 项
+
+> check-v5-bytecode
+> node check-v5-bytecode.js
+
+================================================================
+v5 字节码一致性门禁（源码 ↔ 产物 ↔ 链上）
+================================================================
+  ✅ 源码重编译 == 仓库 bytecode.txt  20112 字节
+  ✅ 源码重编译 == 仓库 abi.json  102 条目
+  ✅ runtime-size.txt 与实际一致  19841 字节
+  ✅ runtime < 24576 字节（EIP-170）  19841 / 24576
+  ⏭  链上比对（--onchain 才跑，节点不可达时不影响离线门禁）
+================================================================
+通过 4 项 / 失败 0 项
+================================================================
+
+> check-html-syntax
+> node check-html-syntax.js
+
+OK   index.html script#1  (120389 字符)
+OK   index.html script#2  (3992 字符)
+OK   index.html script#3  (2563 字符)
+OK   index-v5.html script#1  (138999 字符)
+OK   index-v5.html script#2  (3992 字符)
+OK   index-v5.html script#3  (2563 字符)
+OK   index-v6.html script#1  (142196 字符)
+OK   index-v6.html script#2  (4108 字符)
+OK   index-v6.html script#3  (2639 字符)
+OK   index-v4.html script#1  (121358 字符)
+OK   index-v4.html script#2  (3992 字符)
+OK   index-v4.html script#3  (2563 字符)
+OK   rider.html script#1  (51525 字符)
+OK   console.html script#1  (44475 字符)
+OK   verifier.html script#1  (38934 字符)
+OK   verifier.html script#2  (3602 字符)
+OK   雨证-链上核验台.html script#1  (3528 字符)
+OK   雨证-链上核验台.html script#2  (950 字符)
+OK   雨证-链上核验台.html script#3  (26390 字符)
+OK   雨证-链上核验台.html script#4  (2355 字符)
+OK   雨证-链上核验台.html script#5  (526550 字符)
+OK   雨证-链上核验台.html script#6  (46414 字符)
+OK   雨证-链上核验台.html script#7  (5173 字符)
+OK   verify-v5.html script#1  (11608 字符)
+OK   注入面：2 个链上 string 字段（modelVersion, name）进模板时全部过 esc()
+OK   index.html 的 esc() 对 < > & " 都做了转义
+OK   index-v5.html 的 esc() 对 < > & " 都做了转义
+OK   index-v6.html 的 esc() 对 < > & " 都做了转义
+SKIP verify-v6.html 不调用 esc（纯静态页）
+OK   index-v4.html 的 esc() 对 < > & " 都做了转义
+SKIP insurance.html 不调用 esc（纯静态页）
+OK   rider.html 的 esc() 对 < > & " 都做了转义
+OK   console.html 的 esc() 对 < > & " 都做了转义
+OK   verifier.html 的 esc() 对 < > & " 都做了转义
+OK   verify-v5.html 的 esc() 对 < > & " 都做了转义
+SKIP terms.html 不调用 esc（纯静态页）
+OK   三个页面的 <script src> 全是同目录本地文件（36 处）
+OK   单文件核验台与在线页同步（623 KB，零外链）
+
+✅ 三个页面的内联脚本语法全部通过
+
+> check-cities
+> node check-cities.js
+
+
+[① 数据源与页面加载件必须同一份]
+  ✅ cn-cities.js 能解析出 window.CN_CITIES = …
+  ✅ cn-cities.js 与 cn-cities.json 完全一致（改了 JSON 必须重生成 JS）
+
+[② 区划码形状（页面换算规则的前提）]
+  ✅ 31 个省 / 自治区 / 直辖市
+  ✅ 342 个地级市
+  ✅ 3056 个县级单位（含直筒子市的镇街）
+  ✅ 地级市代码全部 4 位（4 位 + "00" 才是链上 6 位 regionId）
+  ✅ 县级单位只有 6 位（真区划）与 9 位（镇街，不进候选）
+  ✅ 省直辖伪地级市恰为 4190 / 4290 / 4690 / 6590（不能 +"00"）
+
+[③ 演示城市与链上 regionId 对得上]
+  ✅ 武汉 420100 能在区划表里找到
+  ✅ 上海 310100 能在区划表里找到
+  ✅ 北京 110100 能在区划表里找到
+  ✅ 广州 440100 能在区划表里找到
+  ✅ 成都 510100 能在区划表里找到
+  ✅ 义乌 330782 能在区划表里找到
+  ✅ 县级 6 位码里确实包含义乌 330782
+
+[④ 页面加载方式]
+  ✅ index-v5.html 首次打开弹层时动态注入 cn-cities.js（file:// 下也能用，且不拖慢首屏）
+  ✅ 保留 cn-cities.json 的 fetch 兜底（脚本缺失但 JSON 在的 HTTP 环境仍可用）
+
+======================================================================
+✅ 通过 17 项 / 失败 0 项
+
+> check-city-weather
+> node check-city-weather.js
+
+City weather: hourly boundaries, valid zero, missing values, invalid values, gaps, duplicate hours, units and historical range passed
+Historical baseline: five ERA5 sources, original hashes, complete 912-hour window and CSV sums passed
+
+> check-cadence
+> node check-cadence.js
+
+OK   README.md 无 4 小时旧口径
+OK   02-作战与答辩/运营手册-初版-2026-10-25.md 无 4 小时旧口径
+OK   02-作战与答辩/部署-2C2G-生产手册-2026-10-27.md 无 4 小时旧口径
+OK   02-作战与答辩/本轮改动与遗留风险-2026-10-26.md 无 4 小时旧口径
+OK   02-作战与答辩/交接-项目全貌-给接手Agent-2026-10-26.md 无 4 小时旧口径
+OK   04-脚本/push-rainfall-v5.js：用法示例 --watch=30
+OK   04-脚本/warning-watch.js：用法示例 --watch=30
+OK   04-脚本/keeper.js：--interval 默认值（秒） = 1800 秒（30 分钟）
+OK   04-脚本/push-rainfall-v5.js 有非法值校验
+OK   04-脚本/push-rainfall-v5.js：--watch 同时认 = 与空格两种写法
+OK   04-脚本/warning-watch.js 有非法值校验
+OK   04-脚本/warning-watch.js：--watch 同时认 = 与空格两种写法
+OK   04-脚本/keeper.js 有非法值校验
+OK   04-脚本/hook-watch.js 有非法值校验
+SKIP 计划任务检查（运行环境核验请在 Windows 使用 --ops；离线门禁不依赖本机任务）
+OK   122 区划 × 48 轮 = 5856 次/日，占免费额度 58.6%
+OK   材料里的门禁组数与 npm test 一致（29 组，校验 6 处）
+
+轮询口径一致：全仓 30 分钟一轮
+
+> check-pricing-engine
+> node ../10-金融与定价/pricing_engine.js --self-check
+
+
+自检结果：509 项断言，全部通过
+
+> check-review
+> node check-review-regressions.js && node check-operations.js && node check-rider-t1.js && node check-policy-actions.js && node check-demo-idempotence.js && node e2e_policy_actions.js && node check-pricing-next.js
+
+OK 完整零降雨可采信
+OK null 缺测不能变为零降雨
+OK 字符串与负数不能充当有效降雨
+OK 空窗口不虚构三源共识
+OK 缺失整点拒收
+OK 两源中位数取平均且来源数如实记录
+OK 重复时刻不能重复累计
+OK 批量名单拒绝重复、零地址和混入的坏行
+OK RPC 异常 HTML 作为纯文本转义
+OK 用户拒绝切网时不继续添加网络
+OK 授权确认前不发送投保
+OK 双击不重复提交
+OK 投保确认前不显示成功
+OK 交易确认后成功且按钮恢复
+OK 失败后可重试且保留错误
+OK 多签使用回执中的 proposal ID，避免 txCount 竞态
+OK 多签回执的目标与 calldata 必须一致
+OK 外部合约伪造 Submitted 日志不可采信
+OK V6 keeper 宽限期内不将过期单列为可结算
+OK V6 keeper 宽限结束后才结算敞口
+OK keeper V2 采用正确金额单位
+OK keeper V3 采用正确金额单位
+OK keeper V4 采用正确金额单位
+OK keeper V5 采用正确金额单位
+OK keeper V6 采用正确金额单位
+OK 停售哨兵不能用缺测生成恢复建议
+OK 停售指令使用现有工具及合法保费
+OK 非法或超量批次、写请求未到达上游
+OK 批次按实际 RPC 条数限流
+OK 上游超时返回 504
+审查回归：30 项通过
+OK 24h 精确边界允许；超过 1 秒拒绝
+OK 从未喂价、未来时间及缺失读数不能投保
+OK 签名钱包通过 provider 读取区块时间
+OK paused 禁止投保时必须拦截
+OK regions 禁止投保时必须拦截
+OK riskLevel 禁止投保时必须拦截
+OK DNS 临时失败重试并退避后恢复
+OK 合约业务错误不重试
+OK 持续网络故障重试有上限
+OK 顶部降雨读数不被旧城市迟到响应覆盖
+OK 旧城市迟到的报价不覆盖新选择
+OK 过期区划保留报价并禁用投保
+OK RPC 失败清除旧报价并禁止投保
+OK 状态在签名期间过期时，授权前再次拦截
+OK RDROP 不足时不发送授权交易
+OK 等待授权期间过期时不再发送投保
+运维与投保回归：16 项通过
+OK 锚定后基线取生效雨量而非买入雨量
+OK 凭证 HTML 与复制文本显示相同生效基线
+OK 冷静期明确尚未锚定，不冒充生效基线
+OK 拒赔原因按生效增量 35mm 解释，不错误采用买入增量 60mm
+OK 复核 JSON 保留买入读数并独立提供生效基线
+OK 保单卡片与判定记录均显示生效基线
+OK 默认演示地址对应已购保单钱包
+OK 未知网络先添加再切换 968，确认后才交付签名账户
+OK 已在 968 时不重复要求添加和切网
+OK 钱包未真正切网时拒绝继续
+OK 本机预检采用 OWNER_KEY_FILE 覆盖路径，且只读文件元信息
+OK 缺失、目录及空文件配置均报阻断项
+V6-T1 骑手与配置隔离回归：12 项通过（无网络、无密钥读取、无链上交易）
+OK 生效前仅付款人可退款
+OK 未连接、已赔及已结清不能再次操作
+OK 锚定须在保障期内且有生效后喂价
+OK 领取只允许可赔状态和宽限范围，精确截止仍有效
+OK 操作读取同一区块并先静态预演；回执前不报成功
+OK 确认成功后才返回成功结果
+OK 页面渲染后若已生效，签名前再次阻止退款
+OK 静态预演失败时不发送交易
+OK 操作限定三种方法，不接受任意合约调用
+OK 操作中再次点击不重复签名，尚未确认时没有成功提示
+OK 确认后刷新状态、解除按钮锁并展示回执
+OK 钱包临时换账户时拒绝操作旧账户的保单
+个人保单操作隔离回归：12 项通过
+OK 已到期或结清的历史组合仍然算买过
+OK 查重 RPC 失败不能被当成没有买过
+OK 错误保单索引拒绝继续
+OK 重复计划本身拒绝执行
+OK 同一脚本并发运行时第二个进程被拦截
+OK 运行完成后释放锁
+OK 异常退出路径也释放锁
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at C:\Users\lenovo\Desktop\雨证\07-测试工具\check-demo-idempotence.js:60:96
+    at ok (C:\Users\lenovo\Desktop\雨证\07-测试工具\check-demo-idempotence.js:6:35)
+    at main (C:\Users\lenovo\Desktop\雨证\07-测试工具\check-demo-idempotence.js:59:3) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
