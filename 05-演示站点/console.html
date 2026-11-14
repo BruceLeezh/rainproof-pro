@@ -251,15 +251,20 @@ const CODES=[[420100,"武汉"],[310100,"上海"],[110100,"北京"],[440100,"广�
     const blk=await Promise.race([p.getBlockNumber(),new Promise(r=>setTimeout(()=>r(null),8000))]);
     if(blk==null) throw new Error("节点 8 秒没返回区块号");
     const failed=[]; const seen=new Set();
-    for(const[name,topic]of Object.entries(TOPICS)){
-      try{const ls=await p.getLogs({address:V6,topics:[topic],fromBlock:Math.max(0,blk-60000)});
-        for(const l of ls.reverse().slice(0,10)){
+    // 五个 topic 并发查：串行时一个慢查询就把整块拖到十几秒，现场看起来像卡死。
+    const batches=await Promise.all(Object.entries(TOPICS).map(async ([name,topic])=>{
+      try{ return [name, await p.getLogs({address:V6,topics:[topic],fromBlock:Math.max(0,blk-60000)})]; }
+      catch(e){ failed.push(name); return [name,null]; }
+    }));
+    for(const[name,ls]of batches){
+      if(!ls) continue;
+      { for(const l of ls.reverse().slice(0,10)){
           // 合约的 updateRainfallBatch 每城会 emit 两次 RainfallUpdated（_feed 里一次、循环里又一次），
           // 同一笔交易同一 topics 的两条按一条显示，否则事件流看起来像喂了两遍。
           const key=l.transactionHash+"|"+l.topics.join("|");
           if(seen.has(key))continue; seen.add(key);
           log.push({blk:l.blockNumber,name,l});
-        }}catch(e){ failed.push(name); }
+        } }
     }
     log.sort((a,b)=>b.blk-a.blk);
     // 最近 30 条几乎全是同批喂价，会把投保/判定/赔付挤掉：喂价只留 6 条，其余折成一行汇总。
@@ -347,7 +352,8 @@ window.ledgerRows = [];
 async function ledgerLoad(){
   const box = $("ledgerBody"); if (!box) return;
   try {
-    const logs = await p.getLogs({ address: V6, fromBlock: 0 });   // console 的 provider 变量名是 p
+    const DEPLOY_BLK = Number((window.RAINPROOF_DEPLOYMENT||{}).deploymentBlock || 0);
+    const logs = await p.getLogs({ address: V6, fromBlock: DEPLOY_BLK }); // 从部署块起扫：合约之前不可能有本地址日志   // console 的 provider 变量名是 p
     const entries = [];
     for (const lg of logs) {
       const parsed = IF.parseLog({ topics: [...lg.topics], data: lg.data });
