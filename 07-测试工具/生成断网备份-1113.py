@@ -61,7 +61,7 @@ offline.write_text(
 <main><header><small>雨证 · V6-T1 · 现场备用</small><h1>断网演示</h1><p>固定快照，记录北京时间 <strong>{local(data['timestamp'])}</strong>。恢复网络后，可用核验台读最新状态。</p></header>
 <article><h2>{len(data['policies'])} 张测试网演示保单</h2><p>链 ID {data['chainId']} · 区块 {data['block']:,} · 合约 <code>{data['address']}</code></p>
 <table><thead><tr><th>保单</th><th>保费（模拟元）</th><th>累计锚值</th><th>到期（北京时间）</th><th>记录状态</th><th>给付（模拟元）</th></tr></thead><tbody>{rows}</tbody></table>
-<p>池子 {fmt(data['poolFen'])} 模拟元，未结清敞口 {fmt(data['exposureFen'])} 模拟元，准备金 {fmt(data['reserveFen'])} 模拟元。{stale}/{len(data['regions'])} 个区划的链上雨量超过 24 小时未更新（被数据闸门拒收，非机器故障）。</p></article>
+<p>池子 {fmt(data['poolFen'])} 模拟元，未结清敞口 {fmt(data['exposureFen'])} 模拟元，准备金 {fmt(data['reserveFen'])} 模拟元。{stale}/{len(data['regions'])} 个区划的链上雨量超过 24 小时未更新（路演前只保鲜七个演示区划，其余暂停更新——设计内，非故障）。</p></article>
 <article><h2>答辩备用资料</h2><ul><li><a href="答辩版.pdf">答辩版（35 页）</a></li><li><a href="精简版.pdf">精简版（15 页）</a></li><li><a href="口播逐字稿.md">口播逐字稿（14:30，含救场话术）</a></li><li><a href="研究定价.png">研究定价试算截图</a>（与链上现价分别展示）</li><li><a href="精算保单复核.docx">精算与保单复核 Word</a></li><li><a href="链上只读快照.json">逐项链上读数</a></li><li><a href="核验台.html">单文件核验台</a>（页面可离线打开，链上查询需恢复网络）</li></ul></article></main></html>""",
     encoding="utf8",
 )
