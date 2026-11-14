@@ -1,11 +1,19 @@
-# 生成 2026-11-13 版断网演示备份包
+# 生成断网演示备份包（默认当天日期；用 PACK_DATE=2026-11-16 可指定）
 # 原版：12-开发归档/2026-11-05-待办收口/生成断网备份.py（PDF 页数与文件名已过期，故另起一份）
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
-import hashlib, json
+import hashlib, json, os
 
 from playwright.sync_api import sync_playwright
+
+def latest_pdf(folder, pattern):
+    """取文件名里日期最新的那份 PDF（避免把日期写死，改一次日期就 KeyError）。"""
+    files = sorted(folder.glob(pattern), key=lambda f: f.stat().st_mtime)
+    if not files:
+        raise SystemExit(f"找不到 {pattern}（请先导出 PDF）")
+    return files[-1]
+
 
 root = Path.cwd()
 archive = root / "12-开发归档/2026-11-05-待办收口"
@@ -14,7 +22,8 @@ data = json.loads(snapshot.read_text(encoding="utf8"))
 material = root / "01-参赛材料/交付物"
 output = material / "演示备份"
 output.mkdir(exist_ok=True)
-work = root / "12-开发归档/2026-11-13-断网包"
+STAMP = os.environ.get("PACK_DATE") or datetime.now().strftime("%Y-%m-%d")
+work = root / f"12-开发归档/{STAMP}-断网包"
 work.mkdir(exist_ok=True)
 offline = work / "断网入口.html"
 zone = timezone(timedelta(hours=8))
@@ -51,8 +60,8 @@ offline.write_text(
 
 assets = {
     "断网入口.html": offline,
-    "答辩版.pdf": next((material / "PPT").glob("*答辩版-33页-2026-11-13.pdf")),
-    "精简版.pdf": next((material / "PPT").glob("*精简版-15页-2026-11-13.pdf")),
+    "答辩版.pdf": latest_pdf(material / "PPT", "*答辩版-33页-*.pdf"),
+    "精简版.pdf": latest_pdf(material / "PPT", "*精简版-15页-*.pdf"),
     "口播逐字稿.md": root / "02-作战与答辩/口播逐字稿-14分30秒-2026-11-06.md",
     "研究定价.png": root / "12-开发归档/2026-11-05-模型复核/试算浏览器复核/pricing-1440.png",
     "精算保单复核.docx": next((material / "模型").glob("雨证-V6-T1-*.docx")),
@@ -60,7 +69,7 @@ assets = {
     "核验台.html": root / "06-核验台单文件/雨证-链上核验台.html",
 }
 
-dest = output / "雨证-V6-T1-断网演示备份-2026-11-13.zip"
+dest = output / f"雨证-V6-T1-断网演示备份-{STAMP}.zip"
 with ZipFile(dest, "w", compression=ZIP_DEFLATED) as z:
     for name, file in assets.items():
         z.write(file, name)
