@@ -157,6 +157,9 @@ async function checkChain() {
   }
   if (oldest.code === null) bad("喂价", "所有区划都没喂过价");
   else if (stale.length) {
+    let demoWin = null;
+    try { demoWin = require("./demo-window"); } catch { demoWin = null; }
+    const inDemoWindow = Boolean(demoWin && demoWin.active());
     const staleCodes = new Set(stale.map(r => r.code));
     const fresh = REGIONS.filter(r => !staleCodes.has(r.code));
     const detail = `${stale.length}/${REGIONS.length} 个区划超 MAX_FEED_AGE(${maxAgeS / 3600}h)，最老 ${oldest.name} ${oldest.h.toFixed(1)}h`;
@@ -170,6 +173,8 @@ async function checkChain() {
       const idleH = (now - newest) / 3600;
       if (idleH > 2) {
         warn("喂价", `${detail} —— 最近一次成功喂价在 ${idleH.toFixed(1)}h 前，喂价器可能停了：查 RainProof-Feed 退出码、gas 余额、raw/ 留痕是否被护栏停存`);
+      } else if (inDemoWindow) {
+        rec("info", "喂价", `${detail} —— 演示保命模式期内只保 ${demoWin.names()}，其余区划暂停保鲜（至 ${demoWin.UNTIL_ISO.slice(0, 10)} 自动恢复全量），设计内，不阻塞演示`);
       } else {
         wait_("喂价", `${detail} —— 另 ${fresh.length} 城可承保；喂价器 ${idleH.toFixed(1)}h 前还在跑，过期城是三模型未收敛被闸门拒收（设计内），不阻塞演示`);
       }
@@ -177,7 +182,12 @@ async function checkChain() {
       const sample = ordered.slice(0, 8).map(r => `${r.name}(${r.code})`).join("、");
       ok("喂价·可演示", `${fresh.length} 城新鲜：${sample}${fresh.length > 8 ? " …" : ""}；上台只用这些区划`);
     }
-    for (const r of stale) rec("info", "过期区划", `${r.name}(${r.code})：${Number.isFinite(r.h) ? r.h.toFixed(1) + "h" : "从未喂价"}；需核实数据，不能绕过分歧闸门同值续期`);
+    if (inDemoWindow && stale.length > demoWin.PRIORITY.length) {
+      // 演示保命模式期内，「过期」大概率是设计内暂停（只保七个区划），不是数据没到。
+      rec("info", "演示保命模式", `${stale.length} 个区划暂停保鲜（至 ${demoWin.UNTIL_ISO.slice(0, 10)} 自动恢复全量）；当前只保 ${demoWin.names()}，设计内，不阻塞演示`);
+    } else {
+      for (const r of stale) rec("info", "过期区划", `${r.name}(${r.code})：${Number.isFinite(r.h) ? r.h.toFixed(1) + "h" : "从未喂价"}；需核实数据，不能绕过分歧闸门同值续期`);
+    }
   } else {
     const left = maxAgeS / 3600 - oldest.h;
     const m = `最老 ${oldest.name}(${oldest.code}) ${oldest.h.toFixed(1)}h，还剩 ${left.toFixed(1)}h`;

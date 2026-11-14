@@ -94,7 +94,9 @@ const safe = async (fn, tries = 3) => { try { return await retry(fn, tries); } c
     lines.push(`- 链：BOT Chain 测试网 ${dep.chainId} ｜ 区块 **${block.number}**`);
     lines.push(`- 合约：\`${dep.contract}\``);
     lines.push(`- 池子：**${money(pool === null ? NaN : Number(pool) / 100)}** 模拟元 ｜ 未结清敞口：${money(exposure === null ? NaN : Number(exposure) / 100)} ｜ 已签发保单：${count === null ? "—" : Number(count)} 张`);
-    lines.push(`- 喂价新鲜：**${fresh.length}/${REGIONS.length}** 区划（上限 ${Number(maxAge) / 3600}h）｜ 最近一次成功喂价：${newest > 0 ? `${local(newest)}（${fmt((nowSec - newest) / 3600, 1)}h 前）` : "无"}`);
+    const dw = (() => { try { return require(path.join(__dirname, "../04-脚本/demo-window")); } catch { return null; } })();
+    const dwNote = dw && dw.active() ? `（演示保命模式：只保 ${dw.names()}，至 ${dw.UNTIL_ISO.slice(0, 10)}）` : "";
+    lines.push(`- 喂价新鲜：**${fresh.length}/${REGIONS.length}** 区划（上限 ${Number(maxAge) / 3600}h）${dwNote}｜ 最近一次成功喂价：${newest > 0 ? `${local(newest)}（${fmt((nowSec - newest) / 3600, 1)}h 前）` : "无"}`);
     if (unread > 0 || never > 0) lines.push(`- ⚠️ 本次读不到 ${unread} 个区划的喂价时间、${never} 个从未喂过（RPC 抖动或真的没喂），其余照常；重跑一次即可补上。`);
     lines.push("");
     lines.push("| 城市 / 区划 | 链上雨量 | 12h 保费 | 24h 保费 | 喂价年龄 | 能否投保 |");
