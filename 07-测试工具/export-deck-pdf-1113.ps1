@@ -2,8 +2,8 @@
 $ErrorActionPreference = "Stop"
 $base = "C:\Users\lenovo\Desktop\雨证\01-参赛材料\交付物\PPT"
 $jobs = @(
-  @{ src = "$base\神麻组-雨证-路演PPT-答辩版-2026-10-28.pptx"; out = "$base\雨证-V6-T1-答辩版-33页-2026-11-13.pdf" },
-  @{ src = "$base\神麻组-雨证-路演PPT-精简版-2026-10-30.pptx"; out = "$base\雨证-V6-T1-精简版-15页-2026-11-13.pdf" }
+  @{ src = "$base\雨证-路演PPT-答辩版-2026-10-28.pptx"; out = "$base\雨证-V6-T1-答辩版-33页-2026-11-13.pdf" },
+  @{ src = "$base\雨证-路演PPT-精简版-2026-10-30.pptx"; out = "$base\雨证-V6-T1-精简版-15页-2026-11-13.pdf" }
 )
 $app = New-Object -ComObject PowerPoint.Application
 foreach ($j in $jobs) {

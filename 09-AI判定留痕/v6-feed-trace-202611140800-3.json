@@ -1,0 +1,3116 @@
+{
+ "schema": "rainproof/v6-feed-trace@1",
+ "generatedAt": "2026-11-14T00:16:37.198Z",
+ "roundNote": "has-batch",
+ "regions": [
+  {
+   "code": 110100,
+   "name": "北京",
+   "chainBefore": 82,
+   "target": 82,
+   "windowFrom": "2026-11-13T13:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 310100,
+   "name": "上海",
+   "windowFrom": "2026-11-13T13:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 19,
+   "perModel": [
+    4.8,
+    8.2,
+    12.3
+   ],
+   "median": 8.2,
+   "tol": 2.5,
+   "spread": 7.500000000000001,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-310100-202611140815-601be26f-4c37-4965-aa51-e68a6681b956.json",
+    "sha256": "0465d301de27bf45f86c24998ab1f8caa6690a3e002b475597b8be75bbd1d1d4",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420102,
+   "name": "江岸区",
+   "chainBefore": 167,
+   "target": 169,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    2.2,
+    2.9000000000000004
+   ],
+   "median": 2.2,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420102-202611140815-811d4491-7fd9-468e-ac0f-b27ebadfe30f.json",
+    "sha256": "b0e3b59de7bb9783c5d852fab6855b527c9a58e8eef8d71f16791e88eedded02",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420103,
+   "name": "江汉区",
+   "chainBefore": 167,
+   "target": 169,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    2.2,
+    2.9000000000000004
+   ],
+   "median": 2.2,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420103-202611140815-942018b0-a2c9-478f-b217-a11dfc103b71.json",
+    "sha256": "4cc86e81136864c760d10610e2b0bff83854b0aef5334334b47fbf771eacefc3",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420104,
+   "name": "硚口区",
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 68,
+   "perModel": [
+    6.699999999999999,
+    20.39999999999999,
+    25.599999999999994
+   ],
+   "median": 20.39999999999999,
+   "tol": 2.5,
+   "spread": 18.899999999999995,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420104-202611140815-9e4bcdc0-7a9f-4b7e-9b90-6ff9f83612e2.json",
+    "sha256": "8048dbf7324aea8fdad4a4083d93ff6db3923fb22b361ff5c145c1db262d3d18",
+    "bytes": 4509
+   }
+  },
+  {
+   "code": 420105,
+   "name": "汉阳区",
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 68,
+   "perModel": [
+    8.299999999999999,
+    20.39999999999999,
+    25.599999999999994
+   ],
+   "median": 20.39999999999999,
+   "tol": 2.5,
+   "spread": 17.299999999999997,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420105-202611140815-686ff08f-48d2-4568-b26c-aa573fce25cb.json",
+    "sha256": "1fec1497f183141a83d8cb27d869a6c7d699a130b86ae945f66d1590c8f37554",
+    "bytes": 4510
+   }
+  },
+  {
+   "code": 420106,
+   "name": "武昌区",
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 68,
+   "perModel": [
+    8.299999999999999,
+    20.39999999999999,
+    25.599999999999994
+   ],
+   "median": 20.39999999999999,
+   "tol": 2.5,
+   "spread": 17.299999999999997,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420106-202611140815-be29004a-ad39-4885-95ba-2004e44318b0.json",
+    "sha256": "f63c5ea580087d1e0d5bd151c9d29ed3ccb6b5455876150cfd260ab4bd2805b3",
+    "bytes": 4510
+   }
+  },
+  {
+   "code": 420107,
+   "name": "青山区",
+   "chainBefore": 132,
+   "target": 177,
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    40.20000000000006,
+    45.20000000000002,
+    47.200000000000024
+   ],
+   "median": 45.20000000000002,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420107-202611140815-1ca8b1e5-b68c-48a5-a7e2-720c1820d29c.json",
+    "sha256": "821e69b8dc3afee054220cfe3bb5ba66194a946da9b42a57153c85efdb7800ce",
+    "bytes": 7774
+   }
+  },
+  {
+   "code": 420111,
+   "name": "洪山区",
+   "windowFrom": "2026-11-11T12:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 68,
+   "perModel": [
+    11.7,
+    21.299999999999994,
+    26.7
+   ],
+   "median": 21.299999999999994,
+   "tol": 2.5,
+   "spread": 15,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420111-202611140815-6b1a678d-4627-428b-a674-d4bf63da2e3c.json",
+    "sha256": "813458a4646283857b390bd09cab2fa3a71ab8b5a317bb20028010530e24da71",
+    "bytes": 4509
+   }
+  },
+  {
+   "code": 420112,
+   "name": "东西湖区",
+   "chainBefore": 165,
+   "target": 167,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    1.8000000000000003,
+    2.2
+   ],
+   "median": 1.8000000000000003,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420112-202611140815-958d6362-75c3-4448-9dc2-ce22bd2340b1.json",
+    "sha256": "548299a18332bc4e41500ec0dfad89e18731bd9e63743fd3a43a85341670f1e3",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420114,
+   "name": "蔡甸区",
+   "chainBefore": 158,
+   "target": 159,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.8999999999999999,
+    2.3000000000000003
+   ],
+   "median": 0.8999999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420114-202611140815-8669b551-49b3-48c4-8725-def790263fbf.json",
+    "sha256": "7afd510ee35af05ca17dfd12fdcfd420a5637dafa2c17302e389993733585a41",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420115,
+   "name": "江夏区",
+   "chainBefore": 189,
+   "target": 193,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    2.4,
+    3.5,
+    5.9
+   ],
+   "median": 3.5,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420115-202611140815-019fccc7-0612-4169-bff9-2d7012315977.json",
+    "sha256": "2c008a312d3b286fd4e9f88ff450641ac431b1944a7b8621ec59d94963b31d79",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 420117,
+   "name": "新洲区",
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 10,
+   "perModel": [
+    0.2,
+    4.7,
+    8.899999999999999
+   ],
+   "median": 4.7,
+   "tol": 2.5,
+   "spread": 8.7,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420117-202611140815-8535ea48-8a20-441d-a117-8025ffd0b811.json",
+    "sha256": "b6dc3dfef1d77534f8353abc5069870368943e4bdb531f2a73e4edb44d9b85ea",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 420200,
+   "name": "黄石市",
+   "chainBefore": 179,
+   "target": 185,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    5.799999999999999,
+    6.1,
+    13
+   ],
+   "median": 6.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420200-202611140815-6db526f2-dbdb-431d-a25c-a7f0b873b00e.json",
+    "sha256": "0c3d6a11ecff16ace11f8a0fdfa50b04d26d08b153e040a86e5f4cdaff2c2d95",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420202,
+   "name": "黄石港区",
+   "chainBefore": 179,
+   "target": 185,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    5.799999999999999,
+    6.1,
+    13
+   ],
+   "median": 6.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420202-202611140815-91464c02-6a98-4fea-89db-2a087e66ecd2.json",
+    "sha256": "df4a50a57717d8f0e151fbc2ccf9b2c714ecceedc88536f620b5169ded2408a6",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420203,
+   "name": "西塞山区",
+   "chainBefore": 179,
+   "target": 185,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    5.799999999999999,
+    6.1,
+    13
+   ],
+   "median": 6.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420203-202611140815-224e82a2-8c15-4e5e-a162-c9cf9a62d280.json",
+    "sha256": "278121ea11e0d6210439482054bdf4134cc60506d787dd5962d3e27866fdbb53",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420204,
+   "name": "下陆区",
+   "chainBefore": 166,
+   "target": 173,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    5.799999999999999,
+    6.999999999999999,
+    7.1000000000000005
+   ],
+   "median": 6.999999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420204-202611140815-e2c473c5-cd77-463e-a3d8-8bed71891091.json",
+    "sha256": "40d7480b3722207bf4fbc7e5a82752fa9de47387ef47acc7a893412b0187080d",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420205,
+   "name": "铁山区",
+   "chainBefore": 173,
+   "target": 180,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    5.799999999999999,
+    7.199999999999999,
+    14.6
+   ],
+   "median": 7.199999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420205-202611140815-db0125a5-e796-4b17-92a3-c776c5e7df16.json",
+    "sha256": "623497c3090914a25c402bf58163da4439fb2af424d408e148a0f13439474bcf",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420222,
+   "name": "阳新县",
+   "chainBefore": 183,
+   "target": 184,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.30000000000000004,
+    0.7,
+    3.6999999999999997
+   ],
+   "median": 0.7,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420222-202611140815-0f417851-7fa2-458e-bc59-287a825af192.json",
+    "sha256": "c7690bfd4f9e4861d7818cf6ffa90f3c7abf832539cea3287d12c93e70724165",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 420281,
+   "name": "大冶市",
+   "chainBefore": 184,
+   "target": 189,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    4.299999999999999,
+    5.1000000000000005,
+    7.1000000000000005
+   ],
+   "median": 5.1000000000000005,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420281-202611140815-46144965-0f33-446f-8dd5-a92c5104f301.json",
+    "sha256": "80fa45a71bc5c53a7dafdb744004980ce7fced9bc1e1794a0bb0ba4d8eaff100",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420300,
+   "name": "十堰市",
+   "chainBefore": 112,
+   "target": 112,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420302,
+   "name": "茅箭区",
+   "chainBefore": 106,
+   "target": 106,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420303,
+   "name": "张湾区",
+   "chainBefore": 112,
+   "target": 112,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420304,
+   "name": "郧阳区",
+   "chainBefore": 92,
+   "target": 92,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420322,
+   "name": "郧西县",
+   "chainBefore": 64,
+   "target": 64,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420323,
+   "name": "竹山县",
+   "chainBefore": 130,
+   "target": 130,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420324,
+   "name": "竹溪县",
+   "chainBefore": 151,
+   "target": 151,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420325,
+   "name": "房县",
+   "chainBefore": 104,
+   "target": 104,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420381,
+   "name": "丹江口市",
+   "chainBefore": 91,
+   "target": 91,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420500,
+   "name": "宜昌市",
+   "chainBefore": 137,
+   "target": 137,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.8999999999999999
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420502,
+   "name": "西陵区",
+   "chainBefore": 137,
+   "target": 137,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.8999999999999999
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420503,
+   "name": "伍家岗区",
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 168,
+   "perModel": [
+    7.2,
+    11.799999999999997,
+    20.699999999999996
+   ],
+   "median": 11.799999999999997,
+   "tol": 2.5,
+   "spread": 13.499999999999996,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420503-202611140815-54948973-2e83-4c25-8ef2-679c1a60041b.json",
+    "sha256": "3766e747e4bdde654741df7943f35edbfe9d2c726d759543764510c3a0325184",
+    "bytes": 7775
+   }
+  },
+  {
+   "code": 420504,
+   "name": "点军区",
+   "chainBefore": 141,
+   "target": 141,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.1,
+    0.3,
+    0.8999999999999999
+   ],
+   "median": 0.3,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420505,
+   "name": "猇亭区",
+   "chainBefore": 165,
+   "target": 165,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.2,
+    0.30000000000000004,
+    0.30000000000000004
+   ],
+   "median": 0.30000000000000004,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420506,
+   "name": "夷陵区",
+   "chainBefore": 141,
+   "target": 141,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.30000000000000004,
+    0.8999999999999999
+   ],
+   "median": 0.30000000000000004,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420525,
+   "name": "远安县",
+   "chainBefore": 151,
+   "target": 151,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.6000000000000001
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420526,
+   "name": "兴山县",
+   "chainBefore": 108,
+   "target": 108,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420527,
+   "name": "秭归县",
+   "chainBefore": 145,
+   "target": 145,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.6000000000000001
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420528,
+   "name": "长阳土家族自治县",
+   "chainBefore": 195,
+   "target": 195,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.1
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420529,
+   "name": "五峰土家族自治县",
+   "windowFrom": "2026-11-06T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 183,
+   "perModel": [
+    13.799999999999999,
+    20.700000000000006,
+    45.500000000000014
+   ],
+   "median": 20.700000000000006,
+   "tol": 2.5,
+   "spread": 31.700000000000017,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420529-202611140815-881c69c3-27fe-4638-811a-ce543f3b6828.json",
+    "sha256": "4a85859306766af9961f952d6b5c828fbfeb9ee2f64304be8071717ca8b71994",
+    "bytes": 8592
+   }
+  },
+  {
+   "code": 420581,
+   "name": "宜都市",
+   "chainBefore": 148,
+   "target": 148,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420582,
+   "name": "当阳市",
+   "chainBefore": 166,
+   "target": 166,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.1,
+    0.1,
+    0.6000000000000001
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420583,
+   "name": "枝江市",
+   "chainBefore": 145,
+   "target": 145,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420600,
+   "name": "襄阳市",
+   "chainBefore": 93,
+   "target": 93,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420602,
+   "name": "襄城区",
+   "chainBefore": 93,
+   "target": 93,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420606,
+   "name": "樊城区",
+   "chainBefore": 93,
+   "target": 93,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420607,
+   "name": "襄州区",
+   "chainBefore": 95,
+   "target": 95,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420624,
+   "name": "南漳县",
+   "chainBefore": 80,
+   "target": 80,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420625,
+   "name": "谷城县",
+   "chainBefore": 79,
+   "target": 79,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420626,
+   "name": "保康县",
+   "chainBefore": 93,
+   "target": 93,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420682,
+   "name": "老河口市",
+   "chainBefore": 84,
+   "target": 84,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420683,
+   "name": "枣阳市",
+   "chainBefore": 107,
+   "target": 107,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420684,
+   "name": "宜城市",
+   "chainBefore": 103,
+   "target": 103,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420700,
+   "name": "鄂州市",
+   "chainBefore": 156,
+   "target": 163,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ],
+   "median": 6.699999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420700-202611140815-28e8c9c6-048b-44fa-83ce-63d31bbf406b.json",
+    "sha256": "6d2119fe5845ab807501483b0d1c64dbc271e27606aa3e41492c936f8eac31e4",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420702,
+   "name": "梁子湖区",
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 10,
+   "perModel": [
+    4.1,
+    7.199999999999999,
+    10.899999999999999
+   ],
+   "median": 7.199999999999999,
+   "tol": 2.5,
+   "spread": 6.799999999999999,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-420702-202611140815-a35108ec-599b-4fbe-a56e-7747ef709bc0.json",
+    "sha256": "ebd89b42e31e86d219668767d365cecf36a4ffe690502949db0bc59cdca2f699",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420703,
+   "name": "华容区",
+   "chainBefore": 179,
+   "target": 186,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    6.1000000000000005,
+    6.599999999999999,
+    8.2
+   ],
+   "median": 6.599999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420703-202611140815-1632543a-079f-46ed-9f3a-362b36b88352.json",
+    "sha256": "827c794447f013493010dc19f5e5227cba32a236093a47a56b23ccd8b22e2af5",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420704,
+   "name": "鄂城区",
+   "chainBefore": 156,
+   "target": 163,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ],
+   "median": 6.699999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420704-202611140815-3c2b1fa8-e913-4729-bf78-11a5b15af267.json",
+    "sha256": "9e71a0862e5d65157afad545ef250c3c4da8fa21034f2ddfb416d0f7053f6476",
+    "bytes": 2876
+   }
+  },
+  {
+   "code": 420800,
+   "name": "荆门市",
+   "chainBefore": 160,
+   "target": 160,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.2,
+    0.30000000000000004
+   ],
+   "median": 0.2,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420802,
+   "name": "东宝区",
+   "chainBefore": 160,
+   "target": 160,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.2,
+    0.30000000000000004
+   ],
+   "median": 0.2,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420804,
+   "name": "掇刀区",
+   "chainBefore": 174,
+   "target": 174,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.2,
+    0.30000000000000004
+   ],
+   "median": 0.2,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420822,
+   "name": "沙洋县",
+   "chainBefore": 174,
+   "target": 174,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.2
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420881,
+   "name": "钟祥市",
+   "chainBefore": 186,
+   "target": 186,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.3
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420882,
+   "name": "京山市",
+   "chainBefore": 229,
+   "target": 229,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.5
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 420900,
+   "name": "孝感市",
+   "chainBefore": 169,
+   "target": 170,
+   "windowFrom": "2026-11-13T19:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.30000000000000004,
+    1.3000000000000003,
+    7.000000000000001
+   ],
+   "median": 1.3000000000000003,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420900-202611140815-a27a5012-d7e1-4faa-b477-5c2ce39d95ab.json",
+    "sha256": "527cbda32c8c1efd7cb8ce9722da223be68766042fa13523748ec09695154f79",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420902,
+   "name": "孝南区",
+   "chainBefore": 169,
+   "target": 170,
+   "windowFrom": "2026-11-13T19:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.30000000000000004,
+    1.3000000000000003,
+    7.000000000000001
+   ],
+   "median": 1.3000000000000003,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420902-202611140815-2159b809-3b2a-4b5a-8605-b6548dc70f76.json",
+    "sha256": "595551c4393e4d673d3e8b9113d5ab9a7d638ede2a36f2b4c567cffe7335648e",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420921,
+   "name": "孝昌县",
+   "chainBefore": 162,
+   "target": 164,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    1.2000000000000002,
+    1.6000000000000003,
+    4.2
+   ],
+   "median": 1.6000000000000003,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420921-202611140815-32d72ca8-e772-40b9-8a44-2642b5c0d1f8.json",
+    "sha256": "54f9ba45d061c7a159f7182916e67605042afa950d591583c9e55f20a27019f4",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 420922,
+   "name": "大悟县",
+   "chainBefore": 196,
+   "target": 198,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.2,
+    2.4000000000000004,
+    4.8
+   ],
+   "median": 2.4000000000000004,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420922-202611140815-31068857-4adc-40c7-9054-bdf7d317cd52.json",
+    "sha256": "679b04a22fe7513ecd1dc1a47c7ae8ca6419cb8bc73d9466d50209a914954b52",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420923,
+   "name": "云梦县",
+   "chainBefore": 182,
+   "target": 184,
+   "windowFrom": "2026-11-13T19:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    1.3,
+    2.3,
+    3.1999999999999997
+   ],
+   "median": 2.3,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420923-202611140815-1d5992af-f5ce-4e94-ad91-2f032699c743.json",
+    "sha256": "4d0f7459833dc6f0c56eaeb65b0ce7d1f7e3df798217d8af4f88f17da18fed3f",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 420981,
+   "name": "应城市",
+   "chainBefore": 157,
+   "target": 159,
+   "windowFrom": "2026-11-13T19:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.5,
+    2.3000000000000003,
+    3.2
+   ],
+   "median": 2.3000000000000003,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420981-202611140815-451e5260-6e35-45e9-838e-4d06c3f971de.json",
+    "sha256": "b0f285bc7b14e21a5dd3522f94700a44ee0d157ade632baf5b9b82117b21528e",
+    "bytes": 2876
+   }
+  },
+  {
+   "code": 420982,
+   "name": "安陆市",
+   "chainBefore": 161,
+   "target": 162,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.7,
+    0.8999999999999999,
+    1.7999999999999998
+   ],
+   "median": 0.8999999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420982-202611140815-e63f4b80-017c-47ef-9c59-12922f7fdcfa.json",
+    "sha256": "fd9523584c9783be7614ac4ad6b6b00bbada2e305d4a08dfd7dfdc1d5cf06a1c",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 420984,
+   "name": "汉川市",
+   "chainBefore": 157,
+   "target": 159,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    1.5,
+    8.7
+   ],
+   "median": 1.5,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-420984-202611140815-25ff3a1c-bffd-4f7d-9708-958ae33d81c8.json",
+    "sha256": "fabd352ff08207a470191c74597186c3e5d3cde6060e5dcc80c6d14bef1d7616",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 421000,
+   "name": "荆州市",
+   "chainBefore": 146,
+   "target": 146,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.1
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421002,
+   "name": "沙市区",
+   "chainBefore": 146,
+   "target": 146,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.1
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421003,
+   "name": "荆州区",
+   "chainBefore": 139,
+   "target": 139,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.1
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421022,
+   "name": "公安县",
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 168,
+   "perModel": [
+    25.500000000000018,
+    29.500000000000007,
+    38.5
+   ],
+   "median": 29.500000000000007,
+   "tol": 2.5,
+   "spread": 12.999999999999982,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421022-202611140815-ee0e85d8-dca3-4d72-840a-3002921b0693.json",
+    "sha256": "8909aac19f0b5b69cca374d88d2adf753fab5c5e8d5f2c2a8be9ef6b79980e69",
+    "bytes": 7773
+   }
+  },
+  {
+   "code": 421024,
+   "name": "江陵县",
+   "chainBefore": 150,
+   "target": 151,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.1,
+    0.5,
+    0.6
+   ],
+   "median": 0.5,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421024-202611140816-8ceea06f-1d52-401d-8b65-a3dece02fb0f.json",
+    "sha256": "a4cb1ee178ed4e0c26c4f7960b6e758b52c935a220ed962d4b39869c244ebbed",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 421071,
+   "name": "荆州经济技术开发区",
+   "chainBefore": 146,
+   "target": 146,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.1
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421081,
+   "name": "石首市",
+   "chainBefore": 197,
+   "target": 197,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.1
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421083,
+   "name": "洪湖市",
+   "chainBefore": 202,
+   "target": 203,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.3,
+    0.6,
+    1.2000000000000002
+   ],
+   "median": 0.6,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421083-202611140816-77212f32-8ba6-4648-bf3e-11c28b15a57a.json",
+    "sha256": "57e4e97201b6d282243b6ac7c263f771d824893abb583b72a3b0ee303c013447",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 421087,
+   "name": "松滋市",
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 168,
+   "perModel": [
+    22.600000000000005,
+    27.600000000000026,
+    37.80000000000002
+   ],
+   "median": 27.600000000000026,
+   "tol": 2.5,
+   "spread": 15.200000000000014,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421087-202611140816-b6616cdf-4956-4156-a6f7-44221429d0ec.json",
+    "sha256": "5b46e3f237821746ff65d6f582aecb2399ee3eb7b4089c507d18580d6d8c4f68",
+    "bytes": 7775
+   }
+  },
+  {
+   "code": 421088,
+   "name": "监利市",
+   "chainBefore": 146,
+   "target": 146,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.1
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421100,
+   "name": "黄冈市",
+   "chainBefore": 143,
+   "target": 150,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ],
+   "median": 6.699999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421100-202611140816-736021be-949f-4461-ada4-16ff60c53b7e.json",
+    "sha256": "2b40c42641d551d3ba7bf95b1984d65476c52129fe298becc429228bd69073ad",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 421102,
+   "name": "黄州区",
+   "chainBefore": 143,
+   "target": 150,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ],
+   "median": 6.699999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421102-202611140816-e980d147-f862-406f-8b16-19bfb1c2a530.json",
+    "sha256": "b8ce579f3cee0d1c3400b5d49f6863f388de2aea1db006045c537bf23a992866",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 421121,
+   "name": "团风县",
+   "chainBefore": 152,
+   "target": 160,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    4.7,
+    8.1,
+    8.5
+   ],
+   "median": 8.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421121-202611140816-ac87be10-7088-4da2-b5d4-39cf3d249e44.json",
+    "sha256": "56015c284fab0039fa370fd023e28a62cb995af4598bcc7c2132745ff9c5a5f5",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 421122,
+   "name": "红安县",
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 10,
+   "perModel": [
+    0.30000000000000004,
+    3.6000000000000005,
+    7.500000000000001
+   ],
+   "median": 3.6000000000000005,
+   "tol": 2.5,
+   "spread": 7.200000000000001,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421122-202611140816-59a44c51-ed4f-4da1-a088-ee8bf4d58293.json",
+    "sha256": "d22527252c95089c0ceba935a6bf030e65e08b77bcbbb51878246d4a12b4a4c4",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 421123,
+   "name": "罗田县",
+   "chainBefore": 141,
+   "target": 150,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    7.8999999999999995,
+    9.4,
+    13.6
+   ],
+   "median": 9.4,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421123-202611140816-14f1d137-8888-487e-9bd0-bf140da068f4.json",
+    "sha256": "348d9aa6ff63f609d63ddf74f25664496a895338b6348412f26dcab1abf94e50",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 421124,
+   "name": "英山县",
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 10,
+   "perModel": [
+    4.3999999999999995,
+    7.499999999999998,
+    11.5
+   ],
+   "median": 7.499999999999998,
+   "tol": 2.5,
+   "spread": 7.1000000000000005,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421124-202611140816-424e1c71-7901-425c-81ae-41e9b2c004cb.json",
+    "sha256": "71b92a3ffb12974f8da440de49dbf0276a147e38909b3511299621c82e0967e4",
+    "bytes": 2880
+   }
+  },
+  {
+   "code": 421125,
+   "name": "浠水县",
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 10,
+   "perModel": [
+    3.9000000000000004,
+    8.200000000000001,
+    15.1
+   ],
+   "median": 8.200000000000001,
+   "tol": 2.5,
+   "spread": 11.2,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421125-202611140816-5d72ea5a-6276-482c-8f1e-800832be8582.json",
+    "sha256": "3d4c1e0372e363bb1d87ee0229e0ec8e067e82c2933b15db7380164deb3042d3",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 421126,
+   "name": "蕲春县",
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 168,
+   "perModel": [
+    44.00000000000003,
+    52.400000000000006,
+    59.7
+   ],
+   "median": 52.400000000000006,
+   "tol": 2.6200000000000006,
+   "spread": 15.699999999999974,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421126-202611140816-9bc07e34-4ce0-47b5-a36c-70f400c90cab.json",
+    "sha256": "7571c9d5145d06b1c5cc74f088d158a0440c333d12abfb7e6f0937cfadf9b464",
+    "bytes": 7773
+   }
+  },
+  {
+   "code": 421127,
+   "name": "黄梅县",
+   "chainBefore": 186,
+   "target": 187,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.1,
+    1.1,
+    3.3000000000000003
+   ],
+   "median": 1.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421127-202611140816-55e82cdd-a1ed-4015-b689-c5e6b7f0333e.json",
+    "sha256": "63259f49fd976b96890dbc9dd3ce433f944c42ce01c43d49cc93c67f0863234f",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 421171,
+   "name": "龙感湖管理区",
+   "chainBefore": 143,
+   "target": 150,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ],
+   "median": 6.699999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421171-202611140816-2f2962ef-5a7b-4a5f-b84d-c781b1adb4dd.json",
+    "sha256": "fbd3a0d6a586443b2d346982bd7778dbd4055d6699d2c462dca0ee342fdbeb56",
+    "bytes": 2876
+   }
+  },
+  {
+   "code": 421181,
+   "name": "麻城市",
+   "chainBefore": 174,
+   "target": 179,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.6000000000000001,
+    4.8,
+    5.999999999999999
+   ],
+   "median": 4.8,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421181-202611140816-3f8a4304-c628-4301-995d-44c0ba53ffe9.json",
+    "sha256": "250342f6c720b7df9aefb04dbfe7e2f509e0cc9663974a3176a335e4dd0ddc7a",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 421182,
+   "name": "武穴市",
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 168,
+   "perModel": [
+    59.40000000000003,
+    65.39999999999998,
+    76.99999999999996
+   ],
+   "median": 65.39999999999998,
+   "tol": 3.269999999999999,
+   "spread": 17.59999999999993,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421182-202611140816-d1940734-e6df-4400-9fcf-2a62eefc9a95.json",
+    "sha256": "3a0afa6d86c3d9e598d8d7faa83ea624a789d502cb26da6b356986f8903886a7",
+    "bytes": 7774
+   }
+  },
+  {
+   "code": 421200,
+   "name": "咸宁市",
+   "chainBefore": 200,
+   "target": 206,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    5.3,
+    6.299999999999999,
+    6.699999999999998
+   ],
+   "median": 6.299999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421200-202611140816-02a9e1e6-c7a4-4e29-8ca2-77b5484a80da.json",
+    "sha256": "cb2449e2cf82a6a89a2f909eeb583a5eb33f8e3f40cb6dcbd284c7ddd4942f5d",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 421202,
+   "name": "咸安区",
+   "chainBefore": 214,
+   "target": 220,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    5.3,
+    6.299999999999999,
+    6.699999999999998
+   ],
+   "median": 6.299999999999999,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421202-202611140816-0d35f50a-4f34-454d-ba8a-750a11f9fd7b.json",
+    "sha256": "d078d777e190f257642b1b51b16122aaa9025ef0be3b7ebb002305f1b935a7e6",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 421221,
+   "name": "嘉鱼县",
+   "chainBefore": 201,
+   "target": 203,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    1.4000000000000001,
+    1.5000000000000002,
+    1.5999999999999999
+   ],
+   "median": 1.5000000000000002,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421221-202611140816-4770cd91-fcd4-41b5-a86b-abe897758118.json",
+    "sha256": "633877d31415b8216f58c112ce9a0960db772a2b19b50e42e70bf01e31e6b4fb",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 421222,
+   "name": "通城县",
+   "chainBefore": 250,
+   "target": 252,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.4,
+    2.2,
+    7.1
+   ],
+   "median": 2.2,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421222-202611140816-2b0fdea5-567b-41b6-9e72-2e28e4b3ba16.json",
+    "sha256": "295add984218036ee240707a64ff750754844145cd44376d48d8ab485df321cb",
+    "bytes": 2876
+   }
+  },
+  {
+   "code": 421223,
+   "name": "崇阳县",
+   "windowFrom": "2026-11-07T08:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 168,
+   "perModel": [
+    65.09999999999998,
+    70.50000000000003,
+    97.49999999999994
+   ],
+   "median": 70.50000000000003,
+   "tol": 3.5250000000000017,
+   "spread": 32.39999999999996,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421223-202611140816-720a686b-a773-4ed4-8ed4-3193a2887a43.json",
+    "sha256": "0a5bcf0c43c05f0b5beede99a8e1d77ac538b0ee765b649743e6abd2fef32e13",
+    "bytes": 7773
+   }
+  },
+  {
+   "code": 421224,
+   "name": "通山县",
+   "chainBefore": 207,
+   "target": 209,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    1.4000000000000001,
+    1.8,
+    5.199999999999998
+   ],
+   "median": 1.8,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421224-202611140816-f33e0cfd-3284-4ff3-b7a1-ea61c088e45a.json",
+    "sha256": "d638e006356281dd8856c44c453c0a7208a921e6be25b07f9ac9d29168d86959",
+    "bytes": 2877
+   }
+  },
+  {
+   "code": 421281,
+   "name": "赤壁市",
+   "windowFrom": "2026-11-12T00:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 56,
+   "perModel": [
+    13.200000000000001,
+    21.899999999999995,
+    31.700000000000006
+   ],
+   "median": 21.899999999999995,
+   "tol": 2.5,
+   "spread": 18.500000000000007,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-421281-202611140816-8a58d20b-db29-46ce-aa00-56164fffaa6e.json",
+    "sha256": "59c008e949e958e8b27fca6ccbf689ab538f47ad7d4d8855d8d08aba992b125e",
+    "bytes": 4510
+   }
+  },
+  {
+   "code": 421300,
+   "name": "随州市",
+   "chainBefore": 228,
+   "target": 228,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.30000000000000004
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421303,
+   "name": "曾都区",
+   "chainBefore": 228,
+   "target": 228,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.30000000000000004
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421321,
+   "name": "随县",
+   "chainBefore": 224,
+   "target": 224,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.1
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 421381,
+   "name": "广水市",
+   "chainBefore": 202,
+   "target": 203,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    1.2,
+    1.6
+   ],
+   "median": 1.2,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-421381-202611140816-2644c1db-a049-49ab-ba00-57a0f01483f7.json",
+    "sha256": "fa6dbe5f5cc3f2fb9092ab6945639ae67cedc330bf185b01425ebeec4a86c52d",
+    "bytes": 2878
+   }
+  },
+  {
+   "code": 422800,
+   "name": "恩施土家族苗族自治州",
+   "chainBefore": 203,
+   "target": 203,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 422801,
+   "name": "恩施市",
+   "chainBefore": 203,
+   "target": 203,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 422802,
+   "name": "利川市",
+   "chainBefore": 216,
+   "target": 216,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.30000000000000004
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 422822,
+   "name": "建始县",
+   "chainBefore": 230,
+   "target": 230,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.1
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 422823,
+   "name": "巴东县",
+   "windowFrom": "2026-11-06T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 183,
+   "perModel": [
+    10.799999999999997,
+    14.199999999999996,
+    22.700000000000003
+   ],
+   "median": 14.199999999999996,
+   "tol": 2.5,
+   "spread": 11.900000000000006,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-422823-202611140816-1109248e-db1a-4b16-aea4-060e12e52c68.json",
+    "sha256": "dd49de812eba7ddf92c42fd659f685026ab8deccb38fa089514f75f44027c4a4",
+    "bytes": 8591
+   }
+  },
+  {
+   "code": 422825,
+   "name": "宣恩县",
+   "chainBefore": 242,
+   "target": 242,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.30000000000000004
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 422826,
+   "name": "咸丰县",
+   "chainBefore": 192,
+   "target": 192,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.30000000000000004
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 422827,
+   "name": "来凤县",
+   "chainBefore": 181,
+   "target": 181,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.30000000000000004,
+    0.4
+   ],
+   "median": 0.30000000000000004,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 422828,
+   "name": "鹤峰县",
+   "chainBefore": 222,
+   "target": 222,
+   "windowFrom": "2026-11-13T17:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0.6000000000000001
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 429004,
+   "name": "仙桃市",
+   "chainBefore": 171,
+   "target": 171,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.7
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 429005,
+   "name": "潜江市",
+   "chainBefore": 171,
+   "target": 171,
+   "windowFrom": "2026-11-13T22:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0.1,
+    0.4
+   ],
+   "median": 0.1,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 429006,
+   "name": "天门市",
+   "chainBefore": 179,
+   "target": 181,
+   "windowFrom": "2026-11-13T19:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0.2,
+    1.5,
+    2.3000000000000003
+   ],
+   "median": 1.5,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": true,
+   "raw": {
+    "file": "202611/v6feed-429006-202611140816-75eefcf3-4f0d-4da4-8c6f-b1e6363a7fe6.json",
+    "sha256": "07dee44739047eeb5b13da62413c1b84da8a9b3f845ff55bf5fbd012e80144ed",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 429021,
+   "name": "神农架林区",
+   "chainBefore": 103,
+   "target": 103,
+   "windowFrom": "2026-11-13T14:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  },
+  {
+   "code": 440100,
+   "name": "广州",
+   "windowFrom": "2026-11-13T23:00",
+   "windowTo": "2026-11-14T08:00",
+   "windowH": 9,
+   "perModel": [
+    12.699999999999998,
+    18.3,
+    30.900000000000002
+   ],
+   "median": 18.3,
+   "tol": 2.5,
+   "spread": 18.200000000000003,
+   "ok": false,
+   "raw": {
+    "file": "202611/v6feed-440100-202611140816-4b175cc8-1002-49c3-971e-ef1c0e47726a.json",
+    "sha256": "b37d3e2c568dea0e3657615445d4bed4e23511cf62f00cbdd8a820d0e5ea6389",
+    "bytes": 2879
+   }
+  },
+  {
+   "code": 510100,
+   "name": "成都",
+   "chainBefore": 27,
+   "target": 27,
+   "windowFrom": "2026-11-13T13:00",
+   "windowTo": "2026-11-14T08:00",
+   "perModel": [
+    0,
+    0,
+    0
+   ],
+   "median": 0,
+   "tol": 2.5,
+   "ok": true,
+   "enterBatch": false
+  }
+ ],
+ "skipped": [
+  {
+   "code": 310100,
+   "name": "上海",
+   "reason": "diverge",
+   "windowH": 19,
+   "spread": 7.500000000000001,
+   "tol": 2.5
+  },
+  {
+   "code": 420104,
+   "name": "硚口区",
+   "reason": "diverge",
+   "windowH": 68,
+   "spread": 18.899999999999995,
+   "tol": 2.5
+  },
+  {
+   "code": 420105,
+   "name": "汉阳区",
+   "reason": "diverge",
+   "windowH": 68,
+   "spread": 17.299999999999997,
+   "tol": 2.5
+  },
+  {
+   "code": 420106,
+   "name": "武昌区",
+   "reason": "diverge",
+   "windowH": 68,
+   "spread": 17.299999999999997,
+   "tol": 2.5
+  },
+  {
+   "code": 420111,
+   "name": "洪山区",
+   "reason": "diverge",
+   "windowH": 68,
+   "spread": 15,
+   "tol": 2.5
+  },
+  {
+   "code": 420117,
+   "name": "新洲区",
+   "reason": "diverge",
+   "windowH": 10,
+   "spread": 8.7,
+   "tol": 2.5
+  },
+  {
+   "code": 420503,
+   "name": "伍家岗区",
+   "reason": "diverge",
+   "windowH": 168,
+   "spread": 13.499999999999996,
+   "tol": 2.5
+  },
+  {
+   "code": 420529,
+   "name": "五峰土家族自治县",
+   "reason": "diverge",
+   "windowH": 183,
+   "spread": 31.700000000000017,
+   "tol": 2.5
+  },
+  {
+   "code": 420702,
+   "name": "梁子湖区",
+   "reason": "diverge",
+   "windowH": 10,
+   "spread": 6.799999999999999,
+   "tol": 2.5
+  },
+  {
+   "code": 421022,
+   "name": "公安县",
+   "reason": "diverge",
+   "windowH": 168,
+   "spread": 12.999999999999982,
+   "tol": 2.5
+  },
+  {
+   "code": 421087,
+   "name": "松滋市",
+   "reason": "diverge",
+   "windowH": 168,
+   "spread": 15.200000000000014,
+   "tol": 2.5
+  },
+  {
+   "code": 421122,
+   "name": "红安县",
+   "reason": "diverge",
+   "windowH": 10,
+   "spread": 7.200000000000001,
+   "tol": 2.5
+  },
+  {
+   "code": 421124,
+   "name": "英山县",
+   "reason": "diverge",
+   "windowH": 10,
+   "spread": 7.1000000000000005,
+   "tol": 2.5
+  },
+  {
+   "code": 421125,
+   "name": "浠水县",
+   "reason": "diverge",
+   "windowH": 10,
+   "spread": 11.2,
+   "tol": 2.5
+  },
+  {
+   "code": 421126,
+   "name": "蕲春县",
+   "reason": "diverge",
+   "windowH": 168,
+   "spread": 15.699999999999974,
+   "tol": 2.6200000000000006
+  },
+  {
+   "code": 421182,
+   "name": "武穴市",
+   "reason": "diverge",
+   "windowH": 168,
+   "spread": 17.59999999999993,
+   "tol": 3.269999999999999
+  },
+  {
+   "code": 421223,
+   "name": "崇阳县",
+   "reason": "diverge",
+   "windowH": 168,
+   "spread": 32.39999999999996,
+   "tol": 3.5250000000000017
+  },
+  {
+   "code": 421281,
+   "name": "赤壁市",
+   "reason": "diverge",
+   "windowH": 56,
+   "spread": 18.500000000000007,
+   "tol": 2.5
+  },
+  {
+   "code": 422823,
+   "name": "巴东县",
+   "reason": "diverge",
+   "windowH": 183,
+   "spread": 11.900000000000006,
+   "tol": 2.5
+  },
+  {
+   "code": 440100,
+   "name": "广州",
+   "reason": "diverge",
+   "windowH": 9,
+   "spread": 18.200000000000003,
+   "tol": 2.5
+  }
+ ],
+ "longGap": [
+  {
+   "code": 420102,
+   "name": "江岸区",
+   "windowH": 10,
+   "median": 2.2,
+   "perModel": [
+    0,
+    2.2,
+    2.9000000000000004
+   ]
+  },
+  {
+   "code": 420103,
+   "name": "江汉区",
+   "windowH": 10,
+   "median": 2.2,
+   "perModel": [
+    0,
+    2.2,
+    2.9000000000000004
+   ]
+  },
+  {
+   "code": 420107,
+   "name": "青山区",
+   "windowH": 168,
+   "median": 45.20000000000002,
+   "perModel": [
+    40.20000000000006,
+    45.20000000000002,
+    47.200000000000024
+   ]
+  },
+  {
+   "code": 420112,
+   "name": "东西湖区",
+   "windowH": 10,
+   "median": 1.8000000000000003,
+   "perModel": [
+    0,
+    1.8000000000000003,
+    2.2
+   ]
+  },
+  {
+   "code": 420114,
+   "name": "蔡甸区",
+   "windowH": 10,
+   "median": 0.8999999999999999,
+   "perModel": [
+    0,
+    0.8999999999999999,
+    2.3000000000000003
+   ]
+  },
+  {
+   "code": 420115,
+   "name": "江夏区",
+   "windowH": 10,
+   "median": 3.5,
+   "perModel": [
+    2.4,
+    3.5,
+    5.9
+   ]
+  },
+  {
+   "code": 420200,
+   "name": "黄石市",
+   "windowH": 10,
+   "median": 6.1,
+   "perModel": [
+    5.799999999999999,
+    6.1,
+    13
+   ]
+  },
+  {
+   "code": 420202,
+   "name": "黄石港区",
+   "windowH": 10,
+   "median": 6.1,
+   "perModel": [
+    5.799999999999999,
+    6.1,
+    13
+   ]
+  },
+  {
+   "code": 420203,
+   "name": "西塞山区",
+   "windowH": 10,
+   "median": 6.1,
+   "perModel": [
+    5.799999999999999,
+    6.1,
+    13
+   ]
+  },
+  {
+   "code": 420204,
+   "name": "下陆区",
+   "windowH": 10,
+   "median": 6.999999999999999,
+   "perModel": [
+    5.799999999999999,
+    6.999999999999999,
+    7.1000000000000005
+   ]
+  },
+  {
+   "code": 420205,
+   "name": "铁山区",
+   "windowH": 10,
+   "median": 7.199999999999999,
+   "perModel": [
+    5.799999999999999,
+    7.199999999999999,
+    14.6
+   ]
+  },
+  {
+   "code": 420222,
+   "name": "阳新县",
+   "windowH": 10,
+   "median": 0.7,
+   "perModel": [
+    0.30000000000000004,
+    0.7,
+    3.6999999999999997
+   ]
+  },
+  {
+   "code": 420281,
+   "name": "大冶市",
+   "windowH": 10,
+   "median": 5.1000000000000005,
+   "perModel": [
+    4.299999999999999,
+    5.1000000000000005,
+    7.1000000000000005
+   ]
+  },
+  {
+   "code": 420700,
+   "name": "鄂州市",
+   "windowH": 10,
+   "median": 6.699999999999999,
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ]
+  },
+  {
+   "code": 420703,
+   "name": "华容区",
+   "windowH": 10,
+   "median": 6.599999999999999,
+   "perModel": [
+    6.1000000000000005,
+    6.599999999999999,
+    8.2
+   ]
+  },
+  {
+   "code": 420704,
+   "name": "鄂城区",
+   "windowH": 10,
+   "median": 6.699999999999999,
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ]
+  },
+  {
+   "code": 420900,
+   "name": "孝感市",
+   "windowH": 13,
+   "median": 1.3000000000000003,
+   "perModel": [
+    0.30000000000000004,
+    1.3000000000000003,
+    7.000000000000001
+   ]
+  },
+  {
+   "code": 420902,
+   "name": "孝南区",
+   "windowH": 13,
+   "median": 1.3000000000000003,
+   "perModel": [
+    0.30000000000000004,
+    1.3000000000000003,
+    7.000000000000001
+   ]
+  },
+  {
+   "code": 420921,
+   "name": "孝昌县",
+   "windowH": 10,
+   "median": 1.6000000000000003,
+   "perModel": [
+    1.2000000000000002,
+    1.6000000000000003,
+    4.2
+   ]
+  },
+  {
+   "code": 420922,
+   "name": "大悟县",
+   "windowH": 15,
+   "median": 2.4000000000000004,
+   "perModel": [
+    0.2,
+    2.4000000000000004,
+    4.8
+   ]
+  },
+  {
+   "code": 420923,
+   "name": "云梦县",
+   "windowH": 13,
+   "median": 2.3,
+   "perModel": [
+    1.3,
+    2.3,
+    3.1999999999999997
+   ]
+  },
+  {
+   "code": 420981,
+   "name": "应城市",
+   "windowH": 13,
+   "median": 2.3000000000000003,
+   "perModel": [
+    0.5,
+    2.3000000000000003,
+    3.2
+   ]
+  },
+  {
+   "code": 420982,
+   "name": "安陆市",
+   "windowH": 10,
+   "median": 0.8999999999999999,
+   "perModel": [
+    0.7,
+    0.8999999999999999,
+    1.7999999999999998
+   ]
+  },
+  {
+   "code": 420984,
+   "name": "汉川市",
+   "windowH": 10,
+   "median": 1.5,
+   "perModel": [
+    0,
+    1.5,
+    8.7
+   ]
+  },
+  {
+   "code": 421024,
+   "name": "江陵县",
+   "windowH": 15,
+   "median": 0.5,
+   "perModel": [
+    0.1,
+    0.5,
+    0.6
+   ]
+  },
+  {
+   "code": 421083,
+   "name": "洪湖市",
+   "windowH": 10,
+   "median": 0.6,
+   "perModel": [
+    0.3,
+    0.6,
+    1.2000000000000002
+   ]
+  },
+  {
+   "code": 421100,
+   "name": "黄冈市",
+   "windowH": 10,
+   "median": 6.699999999999999,
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ]
+  },
+  {
+   "code": 421102,
+   "name": "黄州区",
+   "windowH": 10,
+   "median": 6.699999999999999,
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ]
+  },
+  {
+   "code": 421121,
+   "name": "团风县",
+   "windowH": 10,
+   "median": 8.1,
+   "perModel": [
+    4.7,
+    8.1,
+    8.5
+   ]
+  },
+  {
+   "code": 421123,
+   "name": "罗田县",
+   "windowH": 10,
+   "median": 9.4,
+   "perModel": [
+    7.8999999999999995,
+    9.4,
+    13.6
+   ]
+  },
+  {
+   "code": 421127,
+   "name": "黄梅县",
+   "windowH": 10,
+   "median": 1.1,
+   "perModel": [
+    0.1,
+    1.1,
+    3.3000000000000003
+   ]
+  },
+  {
+   "code": 421171,
+   "name": "龙感湖管理区",
+   "windowH": 10,
+   "median": 6.699999999999999,
+   "perModel": [
+    4.7,
+    6.699999999999999,
+    14
+   ]
+  },
+  {
+   "code": 421181,
+   "name": "麻城市",
+   "windowH": 10,
+   "median": 4.8,
+   "perModel": [
+    0.6000000000000001,
+    4.8,
+    5.999999999999999
+   ]
+  },
+  {
+   "code": 421200,
+   "name": "咸宁市",
+   "windowH": 10,
+   "median": 6.299999999999999,
+   "perModel": [
+    5.3,
+    6.299999999999999,
+    6.699999999999998
+   ]
+  },
+  {
+   "code": 421202,
+   "name": "咸安区",
+   "windowH": 10,
+   "median": 6.299999999999999,
+   "perModel": [
+    5.3,
+    6.299999999999999,
+    6.699999999999998
+   ]
+  },
+  {
+   "code": 421221,
+   "name": "嘉鱼县",
+   "windowH": 10,
+   "median": 1.5000000000000002,
+   "perModel": [
+    1.4000000000000001,
+    1.5000000000000002,
+    1.5999999999999999
+   ]
+  },
+  {
+   "code": 421222,
+   "name": "通城县",
+   "windowH": 10,
+   "median": 2.2,
+   "perModel": [
+    0.4,
+    2.2,
+    7.1
+   ]
+  },
+  {
+   "code": 421224,
+   "name": "通山县",
+   "windowH": 10,
+   "median": 1.8,
+   "perModel": [
+    1.4000000000000001,
+    1.8,
+    5.199999999999998
+   ]
+  },
+  {
+   "code": 421381,
+   "name": "广水市",
+   "windowH": 15,
+   "median": 1.2,
+   "perModel": [
+    0,
+    1.2,
+    1.6
+   ]
+  },
+  {
+   "code": 429006,
+   "name": "天门市",
+   "windowH": 13,
+   "median": 1.5,
+   "perModel": [
+    0.2,
+    1.5,
+    2.3000000000000003
+   ]
+  }
+ ],
+ "batch": [
+  {
+   "code": 420102,
+   "to": "169",
+   "conf": 62
+  },
+  {
+   "code": 420103,
+   "to": "169",
+   "conf": 62
+  },
+  {
+   "code": 420107,
+   "to": "177",
+   "conf": 95
+  },
+  {
+   "code": 420112,
+   "to": "167",
+   "conf": 62
+  },
+  {
+   "code": 420114,
+   "to": "159",
+   "conf": 61
+  },
+  {
+   "code": 420115,
+   "to": "193",
+   "conf": 64
+  },
+  {
+   "code": 420200,
+   "to": "185",
+   "conf": 66
+  },
+  {
+   "code": 420202,
+   "to": "185",
+   "conf": 66
+  },
+  {
+   "code": 420203,
+   "to": "185",
+   "conf": 66
+  },
+  {
+   "code": 420204,
+   "to": "173",
+   "conf": 67
+  },
+  {
+   "code": 420205,
+   "to": "180",
+   "conf": 67
+  },
+  {
+   "code": 420222,
+   "to": "184",
+   "conf": 61
+  },
+  {
+   "code": 420281,
+   "to": "189",
+   "conf": 65
+  },
+  {
+   "code": 420700,
+   "to": "163",
+   "conf": 67
+  },
+  {
+   "code": 420703,
+   "to": "186",
+   "conf": 67
+  },
+  {
+   "code": 420704,
+   "to": "163",
+   "conf": 67
+  },
+  {
+   "code": 420900,
+   "to": "170",
+   "conf": 61
+  },
+  {
+   "code": 420902,
+   "to": "170",
+   "conf": 61
+  },
+  {
+   "code": 420921,
+   "to": "164",
+   "conf": 62
+  },
+  {
+   "code": 420922,
+   "to": "198",
+   "conf": 62
+  },
+  {
+   "code": 420923,
+   "to": "184",
+   "conf": 62
+  },
+  {
+   "code": 420981,
+   "to": "159",
+   "conf": 62
+  },
+  {
+   "code": 420982,
+   "to": "162",
+   "conf": 61
+  },
+  {
+   "code": 420984,
+   "to": "159",
+   "conf": 62
+  },
+  {
+   "code": 421024,
+   "to": "151",
+   "conf": 61
+  },
+  {
+   "code": 421083,
+   "to": "203",
+   "conf": 61
+  },
+  {
+   "code": 421100,
+   "to": "150",
+   "conf": 67
+  },
+  {
+   "code": 421102,
+   "to": "150",
+   "conf": 67
+  },
+  {
+   "code": 421121,
+   "to": "160",
+   "conf": 68
+  },
+  {
+   "code": 421123,
+   "to": "150",
+   "conf": 69
+  },
+  {
+   "code": 421127,
+   "to": "187",
+   "conf": 61
+  },
+  {
+   "code": 421171,
+   "to": "150",
+   "conf": 67
+  },
+  {
+   "code": 421181,
+   "to": "179",
+   "conf": 65
+  },
+  {
+   "code": 421200,
+   "to": "206",
+   "conf": 66
+  },
+  {
+   "code": 421202,
+   "to": "220",
+   "conf": 66
+  },
+  {
+   "code": 421221,
+   "to": "203",
+   "conf": 62
+  },
+  {
+   "code": 421222,
+   "to": "252",
+   "conf": 62
+  },
+  {
+   "code": 421224,
+   "to": "209",
+   "conf": 62
+  },
+  {
+   "code": 421381,
+   "to": "203",
+   "conf": 61
+  },
+  {
+   "code": 429006,
+   "to": "181",
+   "conf": 62
+  }
+ ]
+}
