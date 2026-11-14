@@ -375,14 +375,25 @@ async function connectWallet(){
   connecting=true;btn.disabled=true;btn.textContent="等待钱包确认…";
   try{
     let signer;
-    try{signer=await RainproofRuntime.wallet(E,window.ethereum,RPC);}
+    // 已经授权过本站时，eth_accounts 直接给账户——不弹窗、不触发 wallet_requestPermissions。
+    // 台上第二次演示会因此变成「秒连」。
+    let known=[];
+    try{known=await window.ethereum.request({method:"eth_accounts"});}catch(e){}
+    if(known&&known.length){
+      if(Number(await window.ethereum.request({method:"eth_chainId"}))!==968){
+        try{await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:"0x3c8"}]});}
+        catch(err){if(Number(err.code)===4902)await window.ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0x3c8",chainName:"BOT Chain Testnet",nativeCurrency:{name:"BOT",symbol:"BOT",decimals:18},rpcUrls:[RPC],blockExplorerUrls:["https://scan.bohr.life"]}]});else throw err;}
+      }
+      signer=await new E.BrowserProvider(window.ethereum).getSigner();
+    }
+    try{ if(!signer) signer=await RainproofRuntime.wallet(E,window.ethereum,RPC); }
     catch(err){
       // MetaMask 会把上一次没关掉的授权请求挂着，第二次点就报 already pending。
       // 这时不当作失败：等用户在扩展里把弹窗点掉，账户出现在 eth_accounts 就算连上。
       if(!/already pending/i.test(String((err&&err.message)||"")))throw err;
       let acc=[];
       for(let i=0;i<10&&!acc.length;i++){await new Promise(r=>setTimeout(r,800));try{acc=await window.ethereum.request({method:"eth_accounts"});}catch(e){}}
-      if(!acc.length)throw new Error("钱包里有一个没关的授权弹窗：点浏览器右上角的小狐狸，把弹窗点掉（或刷新本页）再点一次");
+      if(!acc.length)throw new Error("钱包里有一个没关的授权弹窗。三步任选：①点小狐狸把弹窗点掉；②彻底退出浏览器再打开（不是只关窗口）；③小狐狸 → 设置 → 已连接网站 → 移除 127.0.0.1:8090，然后刷新本页");
       signer=await RainproofRuntime.wallet(E,window.ethereum,RPC);
     }
     const acc=[await signer.getAddress()];
