@@ -1607,7 +1607,7 @@ function historySourceHTML(row){
   if(!row)return '';
   const period=historyPeriod();
   const when=row.at?new Date(row.at).toLocaleString('zh-CN',{hour12:false,timeZone:'Asia/Shanghai'}):REAL_RAIN.generatedAt;
-  return '<details class="weather-provenance"><summary>数据来源与复核</summary><p>模型：ERA5 · 时区：Asia/Shanghai · 区间：'+esc(REAL_RAIN.epoch)+' 00:00 至 '+period.endExclusive+' 00:00（完整 '+period.days+' 天）。降水时间戳对应前一小时。</p>'
+  return '<details class="weather-provenance"><summary>数据来源与复核</summary><p>模型：ERA5 · 时区：Asia/Shanghai · 区间：'+esc(REAL_RAIN.epoch)+' 00:00 至 '+period.endExclusive+' 00:00（完整 '+period.days+' 天）'+(REAL_RAIN.mode==='rolling'?'，滚动窗口：取最近 '+REAL_RAIN.windowDays+' 个已归档日，ERA5 归档滞后约 '+REAL_RAIN.lagDays+' 天':'')+'。降水时间戳对应前一小时。</p>'
     +'<p>'+esc(row.name)+' · 请求坐标 '+Number(row.lat).toFixed(4)+', '+Number(row.lon).toFixed(4)+(Number.isFinite(row.gridLat)&&Number.isFinite(row.gridLon)?' · 返回网格 '+row.gridLat+', '+row.gridLon:'')+' · 获取于 '+esc(when)+'</p>'
     +'<div class="weather-source-links"><a href="'+esc(row.url)+'" target="_blank" rel="noopener">打开原始 API 查询 ↗</a>'+(row.csvFile?'<a href="'+esc(row.csvFile)+'" download>下载统计窗口 CSV</a>':'')+(row.rawFile?'<a href="'+esc(row.rawFile)+'" download>下载已留存逐小时报文</a>':'')+'</div>'
     +(row.sha256?'<p class="weather-source-hash">原始报文 SHA-256：'+esc(row.sha256)+'</p>':'')+'</details>';
@@ -1716,7 +1716,8 @@ function drawWeather(mode, state) {
   const period=mode==='real'?REAL_RAIN.epoch+' → '+REAL_RAIN.until:'最近 '+hours+' 小时（截至当前整点）';
   const notices=state.rows.filter(r=>r.pending||r.error).map(r=>'<div class="weather-status'+(r.error?' is-error':'')+'"><b>'+esc(ucShort(r.name))+'</b><span>'+esc(r.error||'正在查询气象数据…')+'</span></div>').join('');
   box.innerHTML='<div class="weather-heading"><div><b>'+title+'</b><span>'+esc(period)+'</span></div><button type="button" class="btn sm" data-weather-retry="'+mode+'"'+(state.loading?' disabled':'')+'>'+(state.loading?'查询中…':errors.length?'重试缺失数据':mode==='real'?'在线复核当前城市':'刷新数据')+'</button></div>'
-    +'<p class="weather-disclaimer">'+(mode==='real'?'五城与自选城市均使用 ERA5 和同一完整日界。图中展示 '+historyPeriod().days+' 天累计，仅供历史对照，不写链、不触发赔付。':'参考阈值 '+thr+' mm / '+hours+'h。Forecast API 提供气象模型数据，不是独立雨量站实测。所有气象数据仅供查看，不写链、不触发赔付。')+'</p>'
+    +'<p class="weather-disclaimer">'+(mode==='real'?'五城与自选城市均使用 ERA5 和同一完整日界。图中展示最近 '+historyPeriod().days+' 天滚动累计，'
+      +(REAL_RAIN.mode==='rolling'?('数据截至 '+REAL_RAIN.until+'，ERA5 归档滞后约 '+REAL_RAIN.lagDays+' 天'):'')+'，仅供历史对照，不写链、不触发赔付。':'参考阈值 '+thr+' mm / '+hours+'h。Forecast API 提供气象模型数据，不是独立雨量站实测。所有气象数据仅供查看，不写链、不触发赔付。')+'</p>'
     +notices+(meas.length?boardHTML(meas,sel,thr,hours,{real:mode==='real',live:mode==='live',epoch:REAL_RAIN.epoch,until:REAL_RAIN.until}):'<div class="empty">'+(pending.length?'正在加载所选城市…':'暂未取得完整雨量，请重试。')+'</div>')
     +(sel&&!ready.some(r=>r.code===sel)?'<p class="weather-disclaimer">所选城市尚无可用读数，下方主读数暂显示其他已加载城市。</p>':'')
     +(mode==='real'?historySourceHTML(ready.find(r=>r.code===sel)||ready[0]):'<p class="weather-disclaimer">最近窗口逐小时数据必须完整；缺测、空值和网络失败均不会当作 0 mm。</p>')
