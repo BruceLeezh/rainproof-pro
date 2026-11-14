@@ -1684,7 +1684,11 @@ function setWarn(key, txt) {
 async function boot() {
   // 合约地址：URL 参数 > localStorage
   const fromUrl = QS.get("addr") || QS.get("c");
-  const saved = fromUrl || localStorage.getItem(LS_KEY) || "";
+  let saved = fromUrl || localStorage.getItem(LS_KEY) || "";
+  // 浏览器里可能还记着上一版部署的地址（旧合约在链上仍有代码，attach 会“成功”），
+  // 那样看板会显示旧合约、旧读数。识别到已知旧地址就直接丢弃并清掉。
+  const prevAddr = String((window.RAINPROOF_DEPLOYMENT||{}).sourceContract||"").toLowerCase();
+  if (saved && prevAddr && saved.toLowerCase() === prevAddr) { try{localStorage.removeItem(LS_KEY);}catch(e){} saved = ""; }
   if (saved) $("addrInput").value = saved;
 
   // 链状态
