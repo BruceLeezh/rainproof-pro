@@ -21,10 +21,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "04-脚本"
-DECK_DA = ROOT / "01-参赛材料/交付物/PPT/雨证-路演PPT-答辩版-2026-10-28.pptx"
+DECK_DA = ROOT / "01-参赛材料/交付物/PPT/雨证-路演PPT-答辩版-2026-11-14.pptx"
 DECK_JJ = ROOT / "01-参赛材料/交付物/PPT/雨证-路演PPT-精简版-2026-10-30.pptx"
 README = ROOT / "README.md"
-RUNBOOK = ROOT / "02-作战与答辩/现场执行卡-33页-2026-11-13.md"
+RUNBOOK = ROOT / "02-作战与答辩/现场执行卡-35页-2026-11-14.md"
 
 NODE_READ = r"""
 const fs=require('fs'),path=require('path');
