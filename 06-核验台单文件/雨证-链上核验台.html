@@ -487,10 +487,10 @@ window.V6_MIGRATION_TEXT = "{\n  \"schema\": \"rainproof/v6-baseline@1\",\n  \"c
         if(op.toLowerCase()!==D.multisig.toLowerCase()||paused||threshold!==2n||owners.length!==3)throw new Error("治理或销售状态不符合配置");
         return "operator="+op+"；演示钥匙同机，2/3门槛不等于独立机构托管。";
       }],
-      ["4. 领取宽限期为 7 天，冷静期为 0",async()=>{
+      ["4. 领取宽限 7 天，冷静期 24 小时（T+1 生效）",async()=>{
         const [grace,cooling]=await Promise.all([c.CLAIM_GRACE(),c.coolingPeriod()]);
-        if(grace!==604800n||cooling!==0n)throw new Error("领取/生效参数不符");
-        return "及时提交的判定可在保障结束后7天内领取；宽限期不补救窗口内从未获得判定。";
+        if(grace!==604800n||cooling!==86400n)throw new Error("领取/生效参数不符：宽限 "+grace+"s、冷静期 "+cooling+"s");
+        return "投保后满 24 小时才生效（T+1，防雨中投保）；及时提交的判定可在保障结束后 7 天内领取。";
       }],
       ["5. 122 个区划及五城价目可读取",async()=>{
         const n=await c.regionCount();if(n!==BigInt(D.regions))throw new Error("区划总数与迁移记录不同");
