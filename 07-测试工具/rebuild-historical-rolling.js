@@ -32,6 +32,18 @@ async function fetchCity(code,startDate,endDate){
 }
 async function main(){
   const today=day(Date.now());
+  const force=process.argv.includes("--force");
+  const outFile=path.join(site,"historical-rainfall.js");
+  if(!force&&fs.existsSync(outFile)){
+    try{
+      const cur=JSON.parse(fs.readFileSync(outFile,"utf8").replace(/^window\.RAINPROOF_HISTORICAL_RAINFALL=/,"").replace(/;\s*$/,""));
+      const since=(Date.parse(today+"T00:00:00Z")-Date.parse(cur.until+"T00:00:00Z"))/86400e3;
+      if(cur.mode==="rolling"&&since<=Number(cur.lagDays||0)){
+        console.log(`跳过：窗口已是最新（${cur.epoch} → ${cur.until}，滞后 ${cur.lagDays} 天，距今天 ${since} 天）`);
+        return;
+      }
+    }catch(e){console.log("现有 manifest 读不懂，重建：",e.message.slice(0,60));}
+  }
   let chosen=null;
   for(let d=4;d<=16;d++){
     const endDate=day(Date.parse(today+"T00:00:00Z")-d*24*HOUR);

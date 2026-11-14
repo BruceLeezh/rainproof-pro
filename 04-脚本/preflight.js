@@ -171,7 +171,10 @@ async function checkChain() {
       // 判据用「最近一次成功喂价距今多久」，不用「最老多少小时」：只要喂价器还在动，
       // 剩下那些老是过期就是三模型没收敛（闸门拒收），跟机器坏了是两件事。
       const idleH = (now - newest) / 3600;
-      if (idleH > 2) {
+      // 保命模式只保七个区划、按 REFRESH_HOURS=20 才刷，所以「最近一次成功喂价」3–19h 前都正常；
+      // 非保命模式 122 城每轮都该有可刷的，2h 没动才是可疑。
+      const aliveLimit = inDemoWindow ? 24 : 2;
+      if (idleH > aliveLimit) {
         warn("喂价", `${detail} —— 最近一次成功喂价在 ${idleH.toFixed(1)}h 前，喂价器可能停了：查 RainProof-Feed 退出码、gas 余额、raw/ 留痕是否被护栏停存`);
       } else if (inDemoWindow) {
         rec("info", "喂价", `${detail} —— 演示保命模式期内只保 ${demoWin.names()}，其余区划暂停保鲜（至 ${demoWin.UNTIL_ISO.slice(0, 10)} 自动恢复全量），设计内，不阻塞演示`);
@@ -200,6 +203,10 @@ async function checkChain() {
   }
 
   // ── 5. 钱包余额 ──
+  // deployer 余额决定 fund-v6-ops-gas.js 还能不能补：它要「补到 0.30 且留 0.25 底仓」，
+  // 低于 0.25 时整个自动补 gas 会静默跳过，所以下面的提醒文案不能一律写「会自动补」。
+  const deployerAddr = process.env.PRIVATE_KEY ? new ethers.Wallet(process.env.PRIVATE_KEY).address : null;
+  const deployerBot = deployerAddr ? Number(ethers.formatEther(await p.getBalance(deployerAddr))) : null;
   {
     const ms = new ethers.Contract(ACTIVE.multisig, ["function getOwners() view returns(address[])"], p);
     const owners = await withRetry(() => ms.getOwners());
@@ -210,9 +217,12 @@ async function checkChain() {
       if (bot < MIN_WALLET_BOT) bad("钱包", `owner${i} ${a.slice(0, 8)}… 只有 ${bot.toFixed(3)} BOT（两票需要 ≥${MIN_WALLET_BOT}）`);
       // 一次 20 区划批量投票两票各 ~0.064 BOT。0.3 以下只够两批，提前喊；
       // 正常余额应在 0.30 上下（RainProof-Feed 每轮先跑 fund-v6-ops-gas.js 自动补到这个数；deployer 只保留 0.25 底仓）。
-      else if (bot < 0.3) warn("钱包", `owner${i} ${a.slice(0, 8)}… ${bot.toFixed(3)} BOT —— 只够一两批，下一轮 RainProof-Feed 会自动补到 0.30；想立刻补跑 node fund-v6-ops-gas.js --send`);
+      else if (bot < 0.3) warn("钱包", `owner${i} ${a.slice(0, 8)}… ${bot.toFixed(3)} BOT —— 只够一两批，${deployerBot !== null && deployerBot < 0.25 ? "deployer 低于底仓、自动补 gas 暂停" : "下一轮 RainProof-Feed 会自动补到 0.30"}；想立刻补跑 node fund-v6-ops-gas.js --send`);
       else ok("钱包", `owner${i} ${a.slice(0, 8)}… ${bot.toFixed(3)} BOT`);
     }
+  }
+  if (deployerBot !== null && deployerBot < 0.25) {
+    rec("info", "钱包", `deployer ${deployerBot.toFixed(3)} BOT 低于 0.25 底仓 → 自动补 gas 暂停；保命模式每轮约 0.002–0.02 BOT，现有余额够到 11-17（要恢复补 gas 需先给 deployer 转 BOT）`);
   }
   if (process.env.PRIVATE_KEY) {
     const d = new ethers.Wallet(process.env.PRIVATE_KEY).address;
@@ -226,6 +236,15 @@ async function checkChain() {
 // ── 6. 计划任务 ────────────────────────────────────────────────
 // 2026-10-28 踩过：两个任务都是「只用电池就不启动」+「错过不补跑」，
 // 笔记本拔电睡一晚，喂价静默停了 13 小时、还记了 25 次 Missed。
+function lastOpsSummary() {
+  try {
+    const p = path.join(__dirname, "..", "02-作战与答辩", "自动完善-定时日志.txt");
+    const text = fs.readFileSync(p, "utf8");
+    const lines = text.split(/\r?\n/).filter(l => l.includes("OpsDaily summary"));
+    return lines.length ? lines[lines.length - 1] : "";
+  } catch { return ""; }
+}
+
 function checkTasks() {
   if (process.platform !== "win32") { warn("任务", "非 Windows，跳过计划任务检查"); return; }
   const { execFileSync } = require("child_process");
@@ -269,6 +288,9 @@ function checkTasks() {
       // 0x2 = 喂价脚本按设计返回「本轮有区划被分歧闸门拒收」：批量已成功上链，只是没做到全城同刷。
       // 这是数据闸门在工作，不是故障——报成 ⚠ 会让「红了」变成背景色（与上面 Ctrl+C 同理）。
       else if (code === 2 && /feed/i.test(name)) ok("任务", `${name} 本轮有区划被分歧闸门拒收（设计内，批量已上链）· ${bits.join(" · ")}`);
+      // OpsDaily 的 0x2 是「某一步非零」，可能是喂价 dry-run（设计内），也可能是门禁挂了——
+      // 只有日志末尾的 gates= 能区分，别把整条日常当成坏。
+      else if (code === 2 && /opsdaily/i.test(name) && /gates=0\b/.test(lastOpsSummary())) ok("任务", `${name} 各步已跑完，非零来自喂价 dry-run（设计内）· ${bits.join(" · ")}`);
       // 0x41301 = SCHED_S_TASK_RUNNING：正好在跑（preflight 撞上 30 分钟一轮的窗口就能看到）。
       else if (code === 0x41301) ok("任务", `${name} 正在运行（本轮未结束）· ${bits.join(" · ")}`);
       else {
@@ -303,6 +325,23 @@ function checkKeeperLog() {
   }
 }
 
+// ── 历史对照窗口（网站技术看板用的 ERA5 滚动窗口） ─────────────
+function checkHistoryWindow() {
+  const f = path.join(__dirname, "..", "05-演示站点", "historical-rainfall.js");
+  if (!fs.existsSync(f)) { warn("历史对照", "historical-rainfall.js 不存在 —— 技术看板的历史页会空白"); return; }
+  let m;
+  try {
+    const raw = fs.readFileSync(f, "utf8");
+    m = JSON.parse(raw.replace(/^window\.RAINPROOF_HISTORICAL_RAINFALL\s*=\s*/, "").replace(/;\s*$/, ""));
+  } catch (e) { warn("历史对照", "manifest 解析失败：" + (e.message || e)); return; }
+  const until = m.until || "?";
+  const age = Math.round((Date.now() - new Date(until + "T00:00:00+08:00").getTime()) / 86400000);
+  const span = m.mode === "rolling" ? `最近 ${m.windowDays || 30} 天滚动` : "固定窗口";
+  if (!Number.isFinite(age)) { warn("历史对照", `窗口 ${m.epoch} → ${until}（${span}），日期解析失败`); return; }
+  if (age > 14) warn("历史对照", `窗口停在 ${until}（已 ${age} 天没前进）—— 跑 node 07-测试工具/rebuild-historical-rolling.js 重抓`);
+  else ok("历史对照", `${span}：${m.epoch} → ${until}，截至今天 ${age} 天（ERA5 归档滞后 ${m.lagDays ?? "?"} 天）`);
+}
+
 // ── 输出 ───────────────────────────────────────────────────────
 (async () => {
   checkFiles();
@@ -312,6 +351,7 @@ function checkKeeperLog() {
   catch (e) { bad("链", `检查中断：${e.shortMessage || e.message}`); }
   checkTasks();
   checkKeeperLog();
+  checkHistoryWindow();
 
   const json = process.argv.includes("--json");
   const bads = rows.filter(r => r.level === "bad");

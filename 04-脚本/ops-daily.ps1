@@ -23,6 +23,8 @@ Write-OpsLog ('===== {0} OpsDaily start =====' -f (Get-Date -Format 'yyyy-MM-dd 
 $gateExit = Invoke-OpsStep -Label 'gates' -Executable 'npm.cmd' -StepArguments @('test') -WorkDirectory (Join-Path $scriptRoot '../07-测试工具')
 $notifyExit = Invoke-OpsStep -Label 'health' -Executable 'node' -StepArguments @('notify.js', '--blocks', '60000') -WorkDirectory $scriptRoot
 $feedExit = Invoke-OpsStep -Label 'feed-dry-run' -Executable 'node' -StepArguments @('push-rainfall-v6.js') -WorkDirectory $scriptRoot
-Write-OpsLog "----- OpsDaily summary: gates=$gateExit health=$notifyExit feed=$feedExit"
+# 历史对照滚动窗口：窗口没前进时脚本自己跳过（ERA5 归档滞后 5–6 天）
+$histExit = Invoke-OpsStep -Label 'history-rolling' -Executable 'node' -StepArguments @('../07-测试工具/rebuild-historical-rolling.js') -WorkDirectory $scriptRoot
+Write-OpsLog "----- OpsDaily summary: gates=$gateExit health=$notifyExit feed=$feedExit history=$histExit"
 if ($gateExit -ne 0 -or $notifyExit -ne 0 -or $feedExit -ne 0) { exit 2 }
 exit 0
