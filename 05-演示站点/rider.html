@@ -8,6 +8,18 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 253 253'%3E%3Crect width='253' height='253' rx='40' fill='%2308121c'/%3E%3Crect x='6.5' y='6.5' width='239' height='239' rx='22' fill='none' stroke='%237cb0f9' stroke-width='13'/%3E%3Cpath d='M116.5 62.5L60.5 155.5M171.5 47.5L124.5 123.5M189.5 89.5L150.5 155.5' fill='none' stroke='%23b9e0f8' stroke-width='13' stroke-linecap='round'/%3E%3Cpath d='M42 189.5h170' fill='none' stroke='%23fec459' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E">
 <script src="./ethers.umd.min.js"></script>
 <link rel="stylesheet" href="styles/rider.css">
+<script>
+/* EIP-6963：有些环境（Edge 多配置、钱包侧栏、扩展延迟注入）会让 window.ethereum 缺失或指向别的钱包。
+   这里始终收集 6963 announce，作为 window.ethereum 的兜底。 */
+window.__rpEip6963 = null;
+window.addEventListener('eip6963:announceProvider', function (e) {
+  var d = e.detail || {};
+  if (!d.provider) return;
+  var isMM = /metamask/i.test((d.info && d.info.name) || '');
+  if (!window.__rpEip6963 || isMM) window.__rpEip6963 = d;
+});
+window.dispatchEvent(new Event('eip6963:requestProvider'));
+</script>
 <script src="runtime.js"></script>
 <script src="policy-actions.js"></script>
 <script src="deployment.js"></script>
@@ -367,10 +379,19 @@ async function loadClaims(){
     box.innerHTML = h || '<span class="empty">暂无判定记录</span>';
   } catch (e) { box.innerHTML = '<span class="err">理赔记录读取失败：' + esc((e.message || e).toString().slice(0, 80)) + '</span>'; }
 }
+async function getProv(){
+  let p=(window.__rpEip6963&&window.__rpEip6963.provider)||window.ethereum||null;
+  if(p)return p;
+  try{window.dispatchEvent(new Event("eip6963:requestProvider"))}catch(e){}
+  for(let i=0;i<6&&!p;i++){await new Promise(r=>setTimeout(r,300));
+    p=(window.__rpEip6963&&window.__rpEip6963.provider)||window.ethereum||null;}
+  return p;
+}
 let connecting=false,demoView=false;
 async function connectWallet(){
   if(connecting){toast("正在等钱包确认，别重复点");return}
-  if(!window.ethereum){toast("未检测到钱包，请用装有浏览器钱包的 Edge / Chrome 打开本页并解锁钱包");return}
+  const prov=await getProv();
+  if(!prov){toast("未检测到钱包：① 地址栏右侧应有狐狸图标，没有就说明这个浏览器配置没装 MetaMask；② 点开 MetaMask → 右上设置 → 站点权限，把本站设为「在所有网站上」；③ F5 刷新后再点一次","err");return}
   const btn=$("wallet"),old=btn.textContent;
   connecting=true;btn.disabled=true;btn.textContent="等待钱包确认…";
   try{
@@ -378,23 +399,23 @@ async function connectWallet(){
     // 已经授权过本站时，eth_accounts 直接给账户——不弹窗、不触发 wallet_requestPermissions。
     // 台上第二次演示会因此变成「秒连」。
     let known=[];
-    try{known=await window.ethereum.request({method:"eth_accounts"});}catch(e){}
+    try{known=await prov.request({method:"eth_accounts"});}catch(e){}
     if(known&&known.length){
-      if(Number(await window.ethereum.request({method:"eth_chainId"}))!==968){
-        try{await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:"0x3c8"}]});}
-        catch(err){if(Number(err.code)===4902)await window.ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0x3c8",chainName:"BOT Chain Testnet",nativeCurrency:{name:"BOT",symbol:"BOT",decimals:18},rpcUrls:[RPC],blockExplorerUrls:["https://scan.bohr.life"]}]});else throw err;}
+      if(Number(await prov.request({method:"eth_chainId"}))!==968){
+        try{await prov.request({method:"wallet_switchEthereumChain",params:[{chainId:"0x3c8"}]});}
+        catch(err){if(Number(err.code)===4902)await prov.request({method:"wallet_addEthereumChain",params:[{chainId:"0x3c8",chainName:"BOT Chain Testnet",nativeCurrency:{name:"BOT",symbol:"BOT",decimals:18},rpcUrls:[RPC],blockExplorerUrls:["https://scan.bohr.life"]}]});else throw err;}
       }
-      signer=await new E.BrowserProvider(window.ethereum).getSigner();
+      signer=await new E.BrowserProvider(prov).getSigner();
     }
-    try{ if(!signer) signer=await RainproofRuntime.wallet(E,window.ethereum,RPC); }
+    try{ if(!signer) signer=await RainproofRuntime.wallet(E,prov,RPC); }
     catch(err){
       // MetaMask 会把上一次没关掉的授权请求挂着，第二次点就报 already pending。
       // 这时不当作失败：等用户在扩展里把弹窗点掉，账户出现在 eth_accounts 就算连上。
       if(!/already pending/i.test(String((err&&err.message)||"")))throw err;
       let acc=[];
-      for(let i=0;i<10&&!acc.length;i++){await new Promise(r=>setTimeout(r,800));try{acc=await window.ethereum.request({method:"eth_accounts"});}catch(e){}}
+      for(let i=0;i<10&&!acc.length;i++){await new Promise(r=>setTimeout(r,800));try{acc=await prov.request({method:"eth_accounts"});}catch(e){}}
       if(!acc.length)throw new Error("钱包里有一个没关的授权弹窗。三步任选：①点小狐狸把弹窗点掉；②彻底退出浏览器再打开（不是只关窗口）；③小狐狸 → 设置 → 已连接网站 → 移除 127.0.0.1:8090，然后刷新本页");
-      signer=await RainproofRuntime.wallet(E,window.ethereum,RPC);
+      signer=await RainproofRuntime.wallet(E,prov,RPC);
     }
     const acc=[await signer.getAddress()];
     $("who").dataset.mine=acc[0];$("who").dataset.addr=acc[0];
@@ -417,11 +438,12 @@ async function refreshAllowance(){
 async function buy(){
   if($("buy").disabled)return;
   $("buyerr").textContent="";
-  if(!window.ethereum){$("buyerr").textContent="投保需要钱包（点「连接钱包」）；浏览与查询不需要。";return}
+  const prov=await getProv();
+  if(!prov){$("buyerr").textContent="投保需要钱包（点「连接钱包」）；浏览与查询不需要。";return}
   try{
     buying=true;syncBuyButton();
     const city=Number($("city").value), hours=+$("hours").value;
-    const s=await RainproofRuntime.wallet(E,window.ethereum,RPC);
+    const s=await RainproofRuntime.wallet(E,prov,RPC);
     const me=await s.getAddress();
     const t=new E.Contract(TOK,TOKABI,s), v=new E.Contract(V6,V6ABI,s);
     const state=await RainproofRuntime.feedStatus(v,city);
