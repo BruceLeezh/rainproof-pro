@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<title>雨证 · 断网兜底（2026-11-16）</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{--bg:#070b12;--panel:#0e1522;--line:#1e2a3d;--fg:#e8eef7;--dim:#93a4bb;--teal:#22d3ee;--gold:#f5b93b;--red:#f87171;--green:#34d399}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.7 "Microsoft YaHei","PingFang SC",system-ui,sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 28px 80px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:.5px}
+  .sub{color:var(--dim);font-size:13px;margin-bottom:26px}
+  h2{font-size:19px;margin:34px 0 12px;padding-left:10px;border-left:3px solid var(--teal)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .k{color:var(--dim);font-size:12px;letter-spacing:.4px}
+  .v{font-size:22px;margin-top:4px}
+  .v.sm{font-size:15px;word-break:break-all}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13.5px}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--dim);font-weight:400;font-size:12px;letter-spacing:.4px}
+  .num{font-variant-numeric:tabular-nums}
+  .ok{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--gold)}
+  figure{margin:14px 0 26px}
+  figure img{width:100%;border:1px solid var(--line);border-radius:10px;display:block}
+  figcaption{color:var(--dim);font-size:12.5px;margin-top:8px}
+  .note{background:#101a2a;border:1px solid #1d3b52;border-radius:10px;padding:14px 16px;color:#cfe4f5;font-size:13.5px}
+  .note b{color:var(--teal)}
+  code{font-family:Consolas,monospace;font-size:12.5px;color:#9ad8ff}
+</style>
+<div class="wrap">
+  <h1>断网兜底 · 2026-11-16</h1>
+  <div class="sub">站点打不开时用这一页讲：数字取自 2026-11-16 00:10 的链上快照，截图同期。<b>现值以《上台读数卡》与现场刷新为准。</b></div>
+
+  <h2>链上读数</h2>
+  <div class="grid">
+    <div class="card"><div class="k">合约（V6-T1）</div><div class="v sm">0xD61d4EfF50C3BeFbe555a604280985904Bc00363</div></div>
+    <div class="card"><div class="k">资金池</div><div class="v">4,987.80 <span style="font-size:13px;color:var(--dim)">模拟元</span></div></div>
+    <div class="card"><div class="k">已签发保单</div><div class="v">4 <span style="font-size:13px;color:var(--dim)">张</span></div></div>
+    <div class="card"><div class="k">未结清敞口</div><div class="v">200.00 <span style="font-size:13px;color:var(--dim)">元</span></div></div>
+    <div class="card"><div class="k">喂价区划</div><div class="v">122 <span style="font-size:13px;color:var(--dim)">个 · 244 格价目</span></div></div>
+    <div class="card"><div class="k">生效时点</div><div class="v">T+1 <span style="font-size:13px;color:var(--dim)">冷却 24 小时</span></div></div>
+  </div>
+
+  <h2>保单（链上原始状态）</h2>
+  <table>
+    <tr><th>#</th><th>区划</th><th>时长</th><th>保费</th><th>生效基线</th><th>到期（北京）</th><th>状态</th><th>给付</th></tr>
+    <tr><td class="num">#0</td><td>武汉 420100</td><td>24h</td><td class="num">8.80</td><td class="num">126 mm</td><td>2026-11-05 22:00</td><td class="ok">已结清</td><td class="num">0.00</td></tr>
+    <tr><td class="num">#1</td><td>广州 440100</td><td>12h</td><td class="num">5.90</td><td class="num">60 mm</td><td>2026-11-05 10:00</td><td class="ok">已结清</td><td class="num">0.00</td></tr>
+    <tr><td class="num">#2</td><td>汉南 420113</td><td>24h</td><td class="num">10.50</td><td class="num">180 mm</td><td>2026-11-16 12:10</td><td class="warn">保障中</td><td class="num">—</td></tr>
+    <tr><td class="num">#3</td><td>上海 310100</td><td>12h</td><td class="num">4.20</td><td class="num">242 mm</td><td>2026-11-16 01:34</td><td class="warn">保障中</td><td class="num">—</td></tr>
+  </table>
+  <div class="note" style="margin-top:12px">
+    <b>上台时应该看到：</b>3 张已结清 + 1 张保障中（#2 汉南，明早 12:10 到期；#3 上海 01:34 到期后由 keeper 结清）。若页面显示不同，点一次「重新核验」或刷新。
+  </div>
+
+  <h2>五城读数与保费</h2>
+  <table>
+    <tr><th>城市 / 区划</th><th>链上累计</th><th>12h 保费</th><th>24h 保费</th><th>喂价年龄</th><th>能否投保</th></tr>
+    <tr><td>武汉 420100</td><td class="num">169 mm</td><td class="num">5.90</td><td class="num">8.80</td><td class="num">0.3 h</td><td class="ok">可投</td></tr>
+    <tr><td>汉南 420113</td><td class="num">180 mm</td><td class="num">6.70</td><td class="num">10.50</td><td class="num">0.3 h</td><td class="ok">可投</td></tr>
+    <tr><td>黄陂 420116</td><td class="num">182 mm</td><td class="num">4.70</td><td class="num">6.00</td><td class="num">0.3 h</td><td class="ok">可投</td></tr>
+    <tr><td>北京 110100</td><td class="num">82 mm</td><td class="num">3.60</td><td class="num">5.10</td><td class="num">0.3 h</td><td class="ok">可投</td></tr>
+    <tr><td>上海 310100</td><td class="num">242 mm</td><td class="num">4.20</td><td class="num">5.30</td><td class="num">0.3 h</td><td class="ok">可投</td></tr>
+    <tr><td>成都 510100</td><td class="num">27 mm</td><td class="num">5.80</td><td class="num">8.20</td><td class="num">0.3 h</td><td class="ok">可投</td></tr>
+    <tr><td>广州 440100</td><td class="num">92 mm</td><td class="num">5.90</td><td class="num">7.90</td><td class="num">48.9 h</td><td class="bad">暂停（喂价超 24h）</td></tr>
+  </table>
+  <div class="note" style="margin-top:12px">
+    <b>广州为什么灰了：</b>三个模型对同一窗口的增量分歧 17.9 mm，超过 2.5 mm 容差，闸门拒收 —— 这正是「宁可停卖，也不拿不可信的数去赔」。讲的时候把它当证据，不是当故障。
+  </div>
+
+  <h2>页面截图（同期）</h2>
+  <figure><img src="rider-tall.png" alt="骑手页"><figcaption>骑手保障中心：池子 4,987.80、上海 242 mm、我的保单里 #2 汉南「保障中 · 锚定 180 mm · 保费 10.50 元」。</figcaption></figure>
+  <figure><img src="console-tall.png" alt="控制台"><figcaption>平台控制台：池子、敞口、五城费率与链上事件流（每 30 分钟一批喂价）。</figcaption></figure>
+  <figure><img src="verify.png" alt="核验台"><figcaption>证据核验台：8/8 通过 —— 链 ID、代码指纹、治理多签、冷却期 24h、122 区划、迁移哈希、资金台账逐项可核。</figcaption></figure>
+  <figure><img src="home.png" alt="首页"><figcaption>入口页：一句话讲清「雨天的每一单，都多一份底气」。</figcaption></figure>
+
+  <h2>一句话口径</h2>
+  <div class="note">
+    雨是数据，判定是代码，付款不需要我们点头 —— 规则与证据都在链上，<b>你自己验</b>。
+  </div>
+</div>
+</html>
