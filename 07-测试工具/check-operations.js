@@ -69,7 +69,7 @@ async function main() {
   const transactionElements = { buy: { disabled: false }, buyerr: {}, city: {value:"1"}, hours:{value:"12"} };
   const transactionContext = {
     $: id => transactionElements[id],
-    buying:false, offerReady:true, syncBuyButton:()=>{}, toast:()=>{}, window:{ethereum:{}}, RPC:"fixture", TOK:"token",V6:"insurance",TOKABI:[],V6ABI:[],
+    buying:false, offerReady:true, syncBuyButton:()=>{}, toast:()=>{}, window:{ethereum:{}}, getProv: async()=>({}), RPC:"fixture", TOK:"token",V6:"insurance",TOKABI:[],V6ABI:[],
     E:{Contract:function(){return {approve:()=>{approvals++;},premiumOf:()=>{throw new Error("should not quote");}};}},
     RainproofRuntime:{wallet:async()=>({getAddress:async()=>"rider"}),feedStatus:async()=>({available:false,label:"stale"})}
   };

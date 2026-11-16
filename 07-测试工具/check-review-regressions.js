@@ -48,7 +48,7 @@ async function main() {
   const contract = { premiumOf: async () => 500n, buyPolicy: async () => {
     events.push("buy-sent"); return { wait: () => new Promise(resolve => { mineBuy = () => { events.push("buy-mined"); resolve(); }; }) };
   } };
-  const ctx = { $: id => els[id], window: { ethereum: {} }, CITY_CODE: { 1: 420100 }, TOK: "token", V5: "insurance", V6: "insurance", TOKABI: [], V5ABI: [], V6ABI: [], RPC: "local",
+  const ctx = { $: id => els[id], window: { ethereum: {} }, getProv: async () => ({}), CITY_CODE: { 1: 420100 }, TOK: "token", V5: "insurance", V6: "insurance", TOKABI: [], V5ABI: [], V6ABI: [], RPC: "local",
     E: { Contract: function (address) { return address === "token" ? token : contract; } },
     RainproofRuntime: { wallet: async () => ({ getAddress: async () => a }), feedStatus: async () => ({available:true}) },
     buying:false, offerReady:true, syncBuyButton:()=>{els.buy.disabled=ctx.buying||!ctx.offerReady;},
